@@ -360,6 +360,14 @@ section {
   color: var(--color-text);
 }
 
+.location {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  letter-spacing: 0.02em;
+  margin-bottom: var(--space-md);
+}
+
 /* ==========================================================================
    Experience Section
    ========================================================================== */
@@ -476,6 +484,54 @@ section {
 .cta-link {
   display: inline-block;
   font-weight: 500;
+}
+
+/* ==========================================================================
+   Skills Section
+   ========================================================================== */
+
+.skills-grid {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.skill-card {
+  padding: var(--space-md);
+  background-color: var(--color-light);
+  border-radius: 4px;
+  border-left: 4px solid var(--color-accent);
+  transition: transform var(--transition-fast),
+              box-shadow var(--transition-fast);
+}
+
+.skill-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.skill-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: var(--color-accent);
+  border-radius: 4px;
+  margin-bottom: var(--space-sm);
+}
+
+.skill-icon svg {
+  color: var(--color-navy);
+}
+
+.skill-card h3 {
+  margin-bottom: var(--space-xs);
+}
+
+.skill-card p {
+  font-size: 0.9375rem;
+  color: var(--color-muted);
+  margin-bottom: 0;
 }
 
 /* ==========================================================================
@@ -657,7 +713,8 @@ footer {
     padding-bottom: var(--space-2xl);
   }
 
-  .tools-grid {
+  .tools-grid,
+  .skills-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -748,7 +805,8 @@ footer {
   }
 
   /* Disable tool card lift on hover */
-  .tool-card:hover {
+  .tool-card:hover,
+  .skill-card:hover {
     transform: none;
   }
 }
