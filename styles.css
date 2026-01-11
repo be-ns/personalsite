@@ -600,6 +600,45 @@ section {
   margin-bottom: var(--space-md);
 }
 
+.tool-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.tool-header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.tool-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--color-text);
+  border-radius: 999px;
+  color: var(--color-text);
+  text-decoration: none;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.tool-action:hover,
+.tool-action:focus {
+  background-color: var(--color-text);
+  color: var(--color-bg);
+}
+
+.tool-action:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
 .tool-header p {
   color: var(--color-muted);
   font-size: 0.9375rem;
