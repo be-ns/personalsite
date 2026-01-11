@@ -125,23 +125,23 @@
       var quadrantMeta = {
         maintain: {
           label: 'Maintain',
-          note: 'Keep doing what you're doing.',
-          summary: 'Important to you and you're satisfied. Keep it up.'
+          note: "Keep doing what you're doing.",
+          summary: "Important to you and you're satisfied. Keep it up."
         },
         invest: {
           label: 'Invest',
           note: 'This deserves more of your time.',
-          summary: 'Important to you but you're not satisfied. Focus here.'
+          summary: "Important to you but you're not satisfied. Focus here."
         },
         rebalance: {
           label: 'Rebalance',
           note: 'Consider easing back here.',
-          summary: 'You're satisfied but it's less important. Scale back if needed.'
+          summary: "You're satisfied but it's less important. Scale back if needed."
         },
         release: {
           label: 'Release',
-          note: 'It's okay to let this coast.',
-          summary: 'Less important and you're not satisfied. Let it be for now.'
+          note: "It's okay to let this coast.",
+          summary: "Less important and you're not satisfied. Let it be for now."
         }
       };
 
@@ -218,7 +218,7 @@
           })[0];
           return {
             category: bestInvest,
-            message: 'Your priority: ' + bestInvest.label + '. It's important to you, but you're not satisfied. This is where to invest your energy this month. What's one concrete thing you can do this week to move the needle?'
+            message: 'Your priority: ' + bestInvest.label + ". It's important to you, but you're not satisfied. This is where to invest your energy this month. What's one concrete thing you can do this week to move the needle?"
           };
         }
 
@@ -228,7 +228,7 @@
           })[0];
           return {
             category: easeOff,
-            message: 'Your priority: ' + easeOff.label + '. You're putting time in here and it's going well, but it's less important right now. Can you ease back a bit to create space for what matters more?'
+            message: 'Your priority: ' + easeOff.label + ". You're putting time in here and it's going well, but it's less important right now. Can you ease back a bit to create space for what matters more?"
           };
         }
 
@@ -500,7 +500,7 @@
           panel.className = 'results-panel';
 
           if (!isComplete()) {
-            panel.innerHTML = '<p class="incomplete-message">You're almost there! Complete all categories to see your full strategy matrix.</p>';
+            panel.innerHTML = '<p class="incomplete-message">Almost there! Complete all categories to see your full strategy matrix.</p>';
             elements.content.appendChild(panel);
             return;
           }
