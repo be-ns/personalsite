@@ -726,9 +726,27 @@
         return '<div class="grouped-list-block"><h4>' + title + ' (' + items.length + ')</h4><ul>' + listItems + '</ul></div>';
       }
 
+      function saveCurrentValue() {
+        var input = document.getElementById('score-input');
+        if (!input) return;
+        var category = state.categories[state.currentCategoryIndex];
+        var value = Number(input.value);
+        if (state.currentStep === 1) {
+          category.importance = value;
+        } else if (state.currentStep === 2) {
+          category.satisfaction = value;
+        }
+      }
+
       function handleNext() {
         var total = state.categories.length;
         elements.note.textContent = '';
+
+        // Save the current slider value before advancing
+        if (state.currentStep === 1 || state.currentStep === 2) {
+          saveCurrentValue();
+        }
+
         if (state.currentStep === 1) {
           if (state.currentCategoryIndex < total - 1) {
             state.currentCategoryIndex += 1;
