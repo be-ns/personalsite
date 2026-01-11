@@ -576,6 +576,13 @@ section {
   color: inherit;
 }
 
+.tool-card--link,
+.tool-card--link:hover,
+.tool-card--link:focus {
+  text-decoration: none;
+  text-decoration-color: transparent;
+}
+
 .tool-card--link:focus-visible {
   outline: 2px solid var(--color-text);
   outline-offset: 4px;
@@ -620,6 +627,12 @@ section {
   border-radius: 2px;
 }
 
+.status--live {
+  color: var(--color-accent);
+  background-color: #0047AB;
+  box-shadow: 0 0 8px rgba(0, 71, 171, 0.35);
+}
+
 .tool-header {
   margin-bottom: var(--space-md);
 }
@@ -644,7 +657,7 @@ section {
   justify-content: center;
   width: 32px;
   height: 32px;
-  border: 1px solid var(--color-text);
+  border: none;
   border-radius: 999px;
   color: var(--color-text);
   text-decoration: none;
