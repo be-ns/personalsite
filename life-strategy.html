@@ -38,64 +38,60 @@
       <p class="location">Tool</p>
       <h1 id="life-strategy-heading">Life Strategy Matrix</h1>
       <div class="hero-content">
-        <p>Work through the core categories of your life, score each one, and see where to invest next. Print the matrix and keep it somewhere visible for the week ahead.</p>
+        <p>Score your life in two passes, see the matrix, and print a one-page plan you can act on this week.</p>
       </div>
     </section>
 
     <hr class="section-divider">
 
     <section class="tools" aria-labelledby="tools-heading">
-      <h2 id="tools-heading">Make your matrix</h2>
-      <p class="section-intro">Inspired by HBR's guide to living with strategic intent. Nothing saved. Just a single page you can print and revisit.</p>
+      <h2 id="tools-heading">Build your strategy</h2>
+      <p class="section-intro">Nothing saved. Work through the wizard, find the single focus point, and print a clean one-page summary.</p>
       <article class="tool-card tool-card--featured">
         <div class="tool-header">
           <div class="tool-header-row">
-            <h3>Life Strategy Matrix</h3>
+            <h3>Life Strategy Wizard</h3>
             <div class="tool-header-actions">
               <span class="status">Printable</span>
             </div>
           </div>
-          <p>Use the sliders to decide where you want to focus and take action.</p>
+          <p>Set importance, rate satisfaction, review your matrix, and print the plan.</p>
         </div>
         <div class="life-tool">
-          <form class="life-form" aria-describedby="matrix-overview">
-            <p class="form-intro">Score each category for importance and current performance. The plot updates automatically.</p>
-            <div class="category-list" id="category-list" aria-live="polite"></div>
-            <button type="button" class="button button--print">Print PDF</button>
-          </form>
-          <div class="matrix-panel" role="region" aria-live="polite">
-            <div class="matrix-grid">
-              <div class="matrix-cell" data-quadrant="maintain">
-                <h4>Maintain</h4>
-                <p>High importance, high performance. Keep doing what works.</p>
-                <p class="matrix-count" data-output="count-maintain">0 areas</p>
+          <div class="wizard" id="life-wizard">
+            <header class="wizard-header">
+              <div>
+                <p class="wizard-kicker">Score → Reveal → Print</p>
+                <h3 class="wizard-title" id="wizard-title">Step 1: Set importance</h3>
+                <p class="wizard-microcopy" id="wizard-microcopy">Score how much each category matters right now.</p>
               </div>
-              <div class="matrix-cell" data-quadrant="invest">
-                <h4>Invest</h4>
-                <p>High importance, low performance. Put time and energy here.</p>
-                <p class="matrix-count" data-output="count-invest">0 areas</p>
+              <div class="wizard-stepper" id="wizard-stepper" role="list" aria-label="Wizard steps">
+                <span class="wizard-step" data-step="1">1. Importance</span>
+                <span class="wizard-step" data-step="2">2. Satisfaction</span>
+                <span class="wizard-step" data-step="3">3. Matrix</span>
+                <span class="wizard-step" data-step="4">4. Print</span>
               </div>
-              <div class="matrix-cell" data-quadrant="rebalance">
-                <h4>Rebalance</h4>
-                <p>Low importance, high performance. Ease off if it’s crowding others.</p>
-                <p class="matrix-count" data-output="count-rebalance">0 areas</p>
-              </div>
-              <div class="matrix-cell" data-quadrant="release">
-                <h4>Release</h4>
-                <p>Low importance, low performance. Let it be for now.</p>
-                <p class="matrix-count" data-output="count-release">0 areas</p>
-              </div>
-              <div class="matrix-plot" aria-hidden="true"></div>
+            </header>
+
+            <div class="wizard-body">
+              <div class="wizard-card" id="wizard-step-content" aria-live="polite"></div>
             </div>
-            <div class="matrix-axes">
-              <span class="axis-label axis-label--vertical">Current performance</span>
-              <span class="axis-label axis-label--horizontal">Importance</span>
-            </div>
-            <div class="matrix-summary" id="matrix-overview">
-              <p class="summary-title">Overview</p>
-              <p class="summary-note">Each category is plotted on the matrix with a focus recommendation.</p>
-              <ul class="summary-list" data-output="summary"></ul>
-            </div>
+
+            <footer class="wizard-footer">
+              <div class="wizard-progress">
+                <span id="wizard-progress">Category 1 of 8</span>
+                <button class="button button--ghost" type="button" id="wizard-reset">Start over</button>
+              </div>
+              <div class="wizard-actions">
+                <button class="button button--secondary" type="button" id="wizard-back">Back</button>
+                <button class="button button--ghost" type="button" id="wizard-skip">Skip for now</button>
+                <button class="button" type="button" id="wizard-next">Next</button>
+              </div>
+              <div class="wizard-preview">
+                <button class="preview-link" type="button" id="wizard-preview" disabled>Preview results</button>
+                <p class="wizard-note" id="wizard-note" role="status" aria-live="polite"></p>
+              </div>
+            </footer>
           </div>
         </div>
       </article>
@@ -108,208 +104,712 @@
 
   <script>
     (function() {
-      var categoryList = document.getElementById('category-list');
-      var printButton = document.querySelector('.button--print');
-      var plot = document.querySelector('.matrix-plot');
-      var summaryList = document.querySelector('[data-output="summary"]');
+      var wizard = document.getElementById('life-wizard');
+      if (!wizard) return;
 
-      if (categoryList && plot) {
-        var categories = [
-          { key: 'health', name: 'Health' },
-          { key: 'work', name: 'Work' },
-          { key: 'family', name: 'Family' },
-          { key: 'spirituality', name: 'Spirituality' },
-          { key: 'creative', name: 'Creative' },
-          { key: 'relationships', name: 'Relationships' },
-          { key: 'financial', name: 'Financial' },
-          { key: 'rest', name: 'Rest' }
-        ];
+      var categorySource = [
+        { id: 'health', label: 'Health' },
+        { id: 'work', label: 'Work' },
+        { id: 'family', label: 'Family' },
+        { id: 'spirituality', label: 'Spirituality' },
+        { id: 'creative', label: 'Creative' },
+        { id: 'relationships', label: 'Relationships' },
+        { id: 'financial', label: 'Financial' },
+        { id: 'rest', label: 'Rest' }
+      ];
 
-        var countOutputs = {
-          maintain: document.querySelector('[data-output="count-maintain"]'),
-          invest: document.querySelector('[data-output="count-invest"]'),
-          rebalance: document.querySelector('[data-output="count-rebalance"]'),
-          release: document.querySelector('[data-output="count-release"]')
-        };
+      var quadrantMeta = {
+        maintain: {
+          label: 'Maintain',
+          note: 'Keep it steady.',
+          summary: 'High importance, high satisfaction.'
+        },
+        invest: {
+          label: 'Invest',
+          note: 'Put energy here.',
+          summary: 'High importance, low satisfaction.'
+        },
+        rebalance: {
+          label: 'Rebalance',
+          note: 'Ease off where needed.',
+          summary: 'Low importance, high satisfaction.'
+        },
+        release: {
+          label: 'Release',
+          note: 'Let it be for now.',
+          summary: 'Low importance, low satisfaction.'
+        }
+      };
 
-        var quadrants = {
-          maintain: {
-            label: 'Maintain',
-            note: 'Keep what’s working and protect the time you’ve already earned.'
-          },
-          invest: {
-            label: 'Invest',
-            note: 'This matters to you, but it’s lagging. Make a clear next move.'
-          },
-          rebalance: {
-            label: 'Rebalance',
-            note: 'You’re doing well in an area that may not need so much energy.'
-          },
-          release: {
-            label: 'Release',
-            note: 'Low stakes and low results. It’s okay to let this go for now.'
-          }
-        };
-
-        var state = categories.reduce(function(acc, category) {
-          acc[category.key] = {
-            name: category.name,
-            importance: 3,
-            performance: 3
+      var state = {
+        categories: categorySource.map(function(category) {
+          return {
+            id: category.id,
+            label: category.label,
+            importance: null,
+            satisfaction: null
           };
-          return acc;
-        }, {});
+        }),
+        currentStep: 1,
+        currentCategoryIndex: 0,
+        highlightedCategoryId: null
+      };
 
-        function getQuadrant(importance, performance) {
-          var isImportant = importance >= 3;
-          var isStrong = performance >= 3;
+      var elements = {
+        title: document.getElementById('wizard-title'),
+        microcopy: document.getElementById('wizard-microcopy'),
+        stepper: document.getElementById('wizard-stepper'),
+        progress: document.getElementById('wizard-progress'),
+        content: document.getElementById('wizard-step-content'),
+        back: document.getElementById('wizard-back'),
+        next: document.getElementById('wizard-next'),
+        skip: document.getElementById('wizard-skip'),
+        reset: document.getElementById('wizard-reset'),
+        preview: document.getElementById('wizard-preview'),
+        note: document.getElementById('wizard-note')
+      };
 
-          if (isImportant && isStrong) return 'maintain';
-          if (isImportant && !isStrong) return 'invest';
-          if (!isImportant && isStrong) return 'rebalance';
-          return 'release';
+      function getAverage(values) {
+        var total = 0;
+        var count = 0;
+        values.forEach(function(value) {
+          if (typeof value === 'number') {
+            total += value;
+            count += 1;
+          }
+        });
+        return count ? total / count : 3;
+      }
+
+      function getSplits() {
+        return {
+          xSplit: getAverage(state.categories.map(function(category) { return category.importance; })),
+          ySplit: getAverage(state.categories.map(function(category) { return category.satisfaction; }))
+        };
+      }
+
+      function isComplete() {
+        return state.categories.every(function(category) {
+          return typeof category.importance === 'number' && typeof category.satisfaction === 'number';
+        });
+      }
+
+      function getQuadrant(category, splits) {
+        var isHighImportance = category.importance >= splits.xSplit;
+        var isHighSatisfaction = category.satisfaction >= splits.ySplit;
+
+        if (isHighImportance && isHighSatisfaction) return 'maintain';
+        if (isHighImportance && !isHighSatisfaction) return 'invest';
+        if (!isHighImportance && isHighSatisfaction) return 'rebalance';
+        return 'release';
+      }
+
+      function getFocusNow(splits, quadrants) {
+        var investPool = quadrants.invest;
+        if (investPool.length) {
+          var bestInvest = investPool.slice().sort(function(a, b) {
+            return b.gapScore - a.gapScore;
+          })[0];
+          return {
+            category: bestInvest,
+            message: 'Focus now: ' + bestInvest.label + '. High importance, low satisfaction. Put real time here this month.'
+          };
         }
 
-        function buildCategoryCard(category) {
-          var card = document.createElement('div');
-          card.className = 'category-card';
-          card.innerHTML = '' +
-            '<div class="category-header">' +
-              '<h4>' + category.name + '</h4>' +
-              '<span class="category-focus" data-output="focus-' + category.key + '"></span>' +
-            '</div>' +
-            '<div class="field slider-field">' +
-              '<label for="importance-' + category.key + '">Importance</label>' +
-              '<div class="slider-row">' +
-                '<input type="range" id="importance-' + category.key + '" data-category="' + category.key + '" data-type="importance" min="1" max="5" value="3" step="1">' +
-                '<span class="slider-value" data-output="importance-' + category.key + '">3/5</span>' +
-              '</div>' +
-              '<div class="slider-scale">' +
-                '<span>Low</span>' +
-                '<span>High</span>' +
-              '</div>' +
-            '</div>' +
-            '<div class="field slider-field">' +
-              '<label for="performance-' + category.key + '">Current performance</label>' +
-              '<div class="slider-row">' +
-                '<input type="range" id="performance-' + category.key + '" data-category="' + category.key + '" data-type="performance" min="1" max="5" value="3" step="1">' +
-                '<span class="slider-value" data-output="performance-' + category.key + '">3/5</span>' +
-              '</div>' +
-              '<div class="slider-scale">' +
-                '<span>Low</span>' +
-                '<span>High</span>' +
-              '</div>' +
-            '</div>';
-          return card;
+        if (quadrants.rebalance.length) {
+          var easeOff = quadrants.rebalance.slice().sort(function(a, b) {
+            return b.satisfaction - a.satisfaction;
+          })[0];
+          return {
+            category: easeOff,
+            message: 'Focus now: ' + easeOff.label + '. High satisfaction, lower importance. Ease off first to make space.'
+          };
         }
 
-        categories.forEach(function(category) {
-          categoryList.appendChild(buildCategoryCard(category));
+        var farthest = state.categories.slice().sort(function(a, b) {
+          var distanceA = Math.abs(a.importance - splits.xSplit) + Math.abs(a.satisfaction - splits.ySplit);
+          var distanceB = Math.abs(b.importance - splits.xSplit) + Math.abs(b.satisfaction - splits.ySplit);
+          return distanceB - distanceA;
+        })[0];
+
+        return {
+          category: farthest,
+          message: 'Focus now: ' + farthest.label + '. Biggest gap from balance. Choose one small shift here this month.'
+        };
+      }
+
+      function getInitials(label) {
+        return label.split(' ').map(function(word) { return word[0]; }).join('').slice(0, 2).toUpperCase();
+      }
+
+      function getPointPosition(value) {
+        return ((value - 1) / 4) * 100;
+      }
+
+      function setHighlight(categoryId) {
+        state.highlightedCategoryId = categoryId;
+        updateHighlight();
+      }
+
+      function updateHighlight() {
+        var highlightId = state.highlightedCategoryId;
+        var listButtons = wizard.querySelectorAll('[data-category-button]');
+        var points = wizard.querySelectorAll('[data-category-point]');
+
+        listButtons.forEach(function(button) {
+          button.classList.toggle('is-active', button.dataset.categoryButton === highlightId);
         });
 
-        function getPointPosition(importance, performance) {
-          var x = ((importance - 1) / 4) * 100;
-          var y = (1 - (performance - 1) / 4) * 100;
-          return { x: x, y: y };
+        points.forEach(function(point) {
+          point.classList.toggle('is-active', point.dataset.categoryPoint === highlightId);
+        });
+
+        updateTooltip();
+      }
+
+      function updateTooltip() {
+        var tooltip = wizard.querySelector('.matrix-tooltip');
+        var activePoint = wizard.querySelector('[data-category-point].is-active');
+
+        if (!tooltip) return;
+        if (!activePoint) {
+          tooltip.classList.remove('is-visible');
+          return;
         }
 
-        function updateSummaryList(summaryData) {
-          if (!summaryList) return;
-          summaryList.innerHTML = '';
-          summaryData.forEach(function(item) {
-            var listItem = document.createElement('li');
-            listItem.innerHTML = '<span class="summary-name">' + item.name + '</span>' +
-              '<span class="summary-focus">' + item.focus + '</span>';
-            summaryList.appendChild(listItem);
+        var label = activePoint.getAttribute('data-label');
+        var importance = activePoint.getAttribute('data-importance');
+        var satisfaction = activePoint.getAttribute('data-satisfaction');
+        tooltip.innerHTML = '<strong>' + label + '</strong><span>' + importance + '/5 importance · ' + satisfaction + '/5 satisfaction</span>';
+
+        var container = activePoint.closest('.matrix-wrapper');
+        if (!container) return;
+        var containerRect = container.getBoundingClientRect();
+        var pointRect = activePoint.getBoundingClientRect();
+        tooltip.style.left = (pointRect.left - containerRect.left + pointRect.width / 2) + 'px';
+        tooltip.style.top = (pointRect.top - containerRect.top - 12) + 'px';
+        tooltip.classList.add('is-visible');
+      }
+
+      function buildMatrix(container, splits, options) {
+        var svgNS = 'http://www.w3.org/2000/svg';
+        var svg = document.createElementNS(svgNS, 'svg');
+        svg.setAttribute('viewBox', '0 0 100 100');
+        svg.setAttribute('role', 'img');
+        svg.setAttribute('aria-label', 'Life strategy matrix');
+        svg.classList.add('matrix-svg');
+
+        var rect = document.createElementNS(svgNS, 'rect');
+        rect.setAttribute('x', '0');
+        rect.setAttribute('y', '0');
+        rect.setAttribute('width', '100');
+        rect.setAttribute('height', '100');
+        rect.setAttribute('fill', 'none');
+        rect.setAttribute('stroke', 'currentColor');
+        rect.setAttribute('stroke-width', '0.8');
+        svg.appendChild(rect);
+
+        var xSplit = getPointPosition(splits.xSplit);
+        var ySplit = 100 - getPointPosition(splits.ySplit);
+
+        var xLine = document.createElementNS(svgNS, 'line');
+        xLine.setAttribute('x1', xSplit);
+        xLine.setAttribute('y1', '0');
+        xLine.setAttribute('x2', xSplit);
+        xLine.setAttribute('y2', '100');
+        xLine.setAttribute('stroke', 'currentColor');
+        xLine.setAttribute('stroke-width', '0.5');
+        xLine.setAttribute('stroke-dasharray', '2 2');
+        svg.appendChild(xLine);
+
+        var yLine = document.createElementNS(svgNS, 'line');
+        yLine.setAttribute('x1', '0');
+        yLine.setAttribute('y1', ySplit);
+        yLine.setAttribute('x2', '100');
+        yLine.setAttribute('y2', ySplit);
+        yLine.setAttribute('stroke', 'currentColor');
+        yLine.setAttribute('stroke-width', '0.5');
+        yLine.setAttribute('stroke-dasharray', '2 2');
+        svg.appendChild(yLine);
+
+        var labels = [
+          { text: quadrantMeta.rebalance.label, x: xSplit / 2, y: ySplit / 2 },
+          { text: quadrantMeta.maintain.label, x: xSplit + (100 - xSplit) / 2, y: ySplit / 2 },
+          { text: quadrantMeta.release.label, x: xSplit / 2, y: ySplit + (100 - ySplit) / 2 },
+          { text: quadrantMeta.invest.label, x: xSplit + (100 - xSplit) / 2, y: ySplit + (100 - ySplit) / 2 }
+        ];
+
+        labels.forEach(function(label) {
+          var text = document.createElementNS(svgNS, 'text');
+          text.setAttribute('x', label.x);
+          text.setAttribute('y', label.y);
+          text.setAttribute('text-anchor', 'middle');
+          text.setAttribute('dominant-baseline', 'middle');
+          text.classList.add('matrix-label');
+          text.textContent = label.text;
+          svg.appendChild(text);
+        });
+
+        state.categories.forEach(function(category) {
+          if (typeof category.importance !== 'number' || typeof category.satisfaction !== 'number') return;
+          var x = getPointPosition(category.importance);
+          var y = 100 - getPointPosition(category.satisfaction);
+          var group = document.createElementNS(svgNS, 'g');
+          group.classList.add('matrix-point');
+          group.setAttribute('data-category-point', category.id);
+          group.setAttribute('data-label', category.label);
+          group.setAttribute('data-importance', category.importance);
+          group.setAttribute('data-satisfaction', category.satisfaction);
+          group.setAttribute('tabindex', '0');
+
+          var circle = document.createElementNS(svgNS, 'circle');
+          circle.setAttribute('cx', x);
+          circle.setAttribute('cy', y);
+          circle.setAttribute('r', '2.5');
+          circle.setAttribute('class', 'matrix-point-dot');
+          group.appendChild(circle);
+
+          var text = document.createElementNS(svgNS, 'text');
+          text.setAttribute('x', x);
+          text.setAttribute('y', y - 4);
+          text.setAttribute('text-anchor', 'middle');
+          text.setAttribute('class', 'matrix-point-text');
+          text.textContent = getInitials(category.label);
+          group.appendChild(text);
+
+          var title = document.createElementNS(svgNS, 'title');
+          title.textContent = category.label + ': ' + category.importance + '/5 importance, ' + category.satisfaction + '/5 satisfaction';
+          group.appendChild(title);
+
+          group.addEventListener('mouseenter', function() {
+            setHighlight(category.id);
           });
+          group.addEventListener('focus', function() {
+            setHighlight(category.id);
+          });
+          group.addEventListener('click', function() {
+            setHighlight(category.id);
+          });
+
+          svg.appendChild(group);
+        });
+
+        container.innerHTML = '';
+        container.appendChild(svg);
+
+        if (options && options.showTooltip) {
+          var tooltip = document.createElement('div');
+          tooltip.className = 'matrix-tooltip';
+          container.appendChild(tooltip);
+        }
+      }
+
+      function renderStep() {
+        elements.preview.disabled = !isComplete();
+        elements.preview.classList.toggle('is-ready', isComplete());
+
+        var step = state.currentStep;
+        var category = state.categories[state.currentCategoryIndex];
+        var total = state.categories.length;
+
+        wizard.querySelectorAll('.wizard-step').forEach(function(stepEl) {
+          var stepNumber = Number(stepEl.dataset.step);
+          stepEl.classList.toggle('is-active', stepNumber === step);
+          stepEl.classList.toggle('is-complete', stepNumber < step);
+        });
+
+        if (step === 1 || step === 2) {
+          var isImportance = step === 1;
+          elements.title.textContent = isImportance ? 'Step 1: Set importance' : 'Step 2: Rate satisfaction';
+          elements.microcopy.textContent = isImportance
+            ? 'Score how much each category matters right now.'
+            : 'Score how satisfied you feel with each category today.';
+          elements.progress.textContent = 'Category ' + (state.currentCategoryIndex + 1) + ' of ' + total;
+          elements.skip.style.display = 'inline-flex';
+          elements.preview.style.display = 'inline-flex';
+
+          elements.back.disabled = step === 1 && state.currentCategoryIndex === 0;
+          elements.next.textContent = (step === 2 && state.currentCategoryIndex === total - 1) ? 'View matrix' : 'Next';
+
+          var value = isImportance ? category.importance : category.satisfaction;
+          var helper = isImportance
+            ? 'How important is ' + category.label + ' right now?'
+            : 'How satisfied are you with ' + category.label + ' right now?';
+
+          elements.content.innerHTML = '';
+          var card = document.createElement('div');
+          card.className = 'score-card';
+          card.innerHTML = '' +
+            '<p class="score-kicker">' + category.label + '</p>' +
+            '<p class="score-helper">' + helper + '</p>' +
+            '<div class="score-slider">' +
+            '  <label class="score-label" for="score-input">' + (isImportance ? 'Importance' : 'Satisfaction') + '</label>' +
+            '  <div class="slider-row">' +
+            '    <input id="score-input" type="range" min="1" max="5" step="1" value="' + (value || 3) + '" aria-valuemin="1" aria-valuemax="5" aria-valuenow="' + (value || 3) + '">' +
+            '    <span class="value-badge' + (value === null ? ' is-empty' : '') + '" id="score-output">' + (value === null ? '—/5' : value + '/5') + '</span>' +
+            '  </div>' +
+            '  <div class="slider-scale"><span>Low</span><span>High</span></div>' +
+            '</div>';
+
+          elements.content.appendChild(card);
+
+          var input = card.querySelector('input');
+          var output = card.querySelector('#score-output');
+
+          input.addEventListener('input', function() {
+            var newValue = Number(input.value);
+            if (isImportance) {
+              category.importance = newValue;
+            } else {
+              category.satisfaction = newValue;
+            }
+            input.setAttribute('aria-valuenow', String(newValue));
+            output.textContent = newValue + '/5';
+            output.classList.remove('is-empty');
+          });
+
+          return;
         }
 
-        function updateMatrix() {
-          var counts = {
-            maintain: 0,
-            invest: 0,
-            rebalance: 0,
-            release: 0
+        if (step === 3) {
+          elements.title.textContent = 'Step 3: Your matrix';
+          elements.microcopy.textContent = 'Review the 2x2 and tap a category to highlight its point.';
+          elements.progress.textContent = isComplete() ? 'All categories complete' : 'Finish scoring to continue.';
+          elements.skip.style.display = 'none';
+          elements.preview.style.display = 'none';
+          elements.back.disabled = false;
+          elements.next.textContent = 'Next';
+
+          elements.content.innerHTML = '';
+          var panel = document.createElement('div');
+          panel.className = 'results-panel';
+
+          if (!isComplete()) {
+            panel.innerHTML = '<p class="incomplete-message">Complete every category to view the matrix.</p>';
+            elements.content.appendChild(panel);
+            return;
+          }
+
+          var splits = getSplits();
+          var quadrantBuckets = {
+            maintain: [],
+            invest: [],
+            rebalance: [],
+            release: []
           };
-          var summaryData = [];
 
-          categories.forEach(function(category) {
-            var data = state[category.key];
-            var quadrantKey = getQuadrant(data.importance, data.performance);
-            var quadrantData = quadrants[quadrantKey];
-            var position = getPointPosition(data.importance, data.performance);
-            var point = plot.querySelector('[data-category="' + category.key + '"]');
-
-            counts[quadrantKey] += 1;
-
-            var importanceOutput = document.querySelector('[data-output="importance-' + category.key + '"]');
-            var performanceOutput = document.querySelector('[data-output="performance-' + category.key + '"]');
-            var focusOutput = document.querySelector('[data-output="focus-' + category.key + '"]');
-
-            if (importanceOutput) {
-              importanceOutput.textContent = data.importance + '/5';
-            }
-            if (performanceOutput) {
-              performanceOutput.textContent = data.performance + '/5';
-            }
-            if (focusOutput) {
-              focusOutput.textContent = quadrantData.label;
-            }
-
-            if (!point) {
-              point = document.createElement('div');
-              point.className = 'matrix-point';
-              point.setAttribute('data-category', category.key);
-              var label = document.createElement('span');
-              label.className = 'matrix-point-label';
-              label.textContent = category.name;
-              point.appendChild(label);
-              plot.appendChild(point);
-            }
-
-            point.style.left = position.x + '%';
-            point.style.top = position.y + '%';
-            point.setAttribute('data-quadrant', quadrantKey);
-
-            summaryData.push({
-              name: category.name,
-              focus: quadrantData.label
+          state.categories.forEach(function(categoryItem) {
+            var quadrantKey = getQuadrant(categoryItem, splits);
+            var gapScore = (categoryItem.importance - splits.xSplit) + (splits.ySplit - categoryItem.satisfaction);
+            quadrantBuckets[quadrantKey].push({
+              id: categoryItem.id,
+              label: categoryItem.label,
+              importance: categoryItem.importance,
+              satisfaction: categoryItem.satisfaction,
+              gapScore: gapScore,
+              quadrant: quadrantKey
             });
           });
 
-          Object.keys(counts).forEach(function(key) {
-            if (countOutputs[key]) {
-              countOutputs[key].textContent = counts[key] + ' areas';
-            }
+          var matrixWrap = document.createElement('div');
+          matrixWrap.className = 'matrix-wrapper';
+          buildMatrix(matrixWrap, splits, { showTooltip: true });
+
+          var counts = document.createElement('div');
+          counts.className = 'matrix-counts';
+          counts.innerHTML = '' +
+            '<span>' + quadrantMeta.maintain.label + ': ' + quadrantBuckets.maintain.length + '</span>' +
+            '<span>' + quadrantMeta.invest.label + ': ' + quadrantBuckets.invest.length + '</span>' +
+            '<span>' + quadrantMeta.rebalance.label + ': ' + quadrantBuckets.rebalance.length + '</span>' +
+            '<span>' + quadrantMeta.release.label + ': ' + quadrantBuckets.release.length + '</span>';
+
+          var axis = document.createElement('div');
+          axis.className = 'matrix-axes';
+          axis.innerHTML = '<span>Current satisfaction</span><span>Importance</span>';
+
+          var list = document.createElement('ul');
+          list.className = 'summary-list';
+          state.categories.forEach(function(categoryItem) {
+            var quadrantKey = getQuadrant(categoryItem, splits);
+            var item = document.createElement('li');
+            var button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'summary-button';
+            button.setAttribute('data-category-button', categoryItem.id);
+            button.innerHTML = '<span class="summary-name">' + categoryItem.label + '</span>' +
+              '<span class="summary-focus">' + quadrantMeta[quadrantKey].label + '</span>' +
+              '<span class="summary-note">' + quadrantMeta[quadrantKey].summary + '</span>';
+            button.addEventListener('click', function() {
+              setHighlight(categoryItem.id);
+            });
+            item.appendChild(button);
+            list.appendChild(item);
           });
 
-          document.querySelectorAll('.matrix-cell').forEach(function(cell) {
-            cell.classList.toggle('is-active', counts[cell.dataset.quadrant] > 0);
-          });
+          var focus = getFocusNow(splits, quadrantBuckets);
+          var focusCard = document.createElement('div');
+          focusCard.className = 'focus-card';
+          focusCard.innerHTML = '<p class="focus-title">Best focus now</p><p>' + focus.message + '</p>';
 
-          updateSummaryList(summaryData);
+          panel.appendChild(matrixWrap);
+          panel.appendChild(counts);
+          panel.appendChild(axis);
+          panel.appendChild(list);
+          panel.appendChild(focusCard);
+          elements.content.appendChild(panel);
+
+          if (!state.highlightedCategoryId && state.categories.length) {
+            setHighlight(state.categories[0].id);
+          } else {
+            updateHighlight();
+          }
+
+          return;
         }
 
-        categoryList.addEventListener('input', function(event) {
-          var target = event.target;
-          if (target && target.type === 'range') {
-            var categoryKey = target.dataset.category;
-            var type = target.dataset.type;
-            if (state[categoryKey]) {
-              state[categoryKey][type] = Number(target.value);
-              updateMatrix();
-            }
+        if (step === 4) {
+          elements.title.textContent = 'Step 4: Print life strategy';
+          elements.microcopy.textContent = 'Review the one-page plan, then print to PDF.';
+          elements.progress.textContent = 'Ready to print.';
+          elements.skip.style.display = 'none';
+          elements.preview.style.display = 'none';
+          elements.back.disabled = false;
+          elements.next.textContent = 'Finish';
+
+          elements.content.innerHTML = '';
+          var printLayout = document.createElement('div');
+          printLayout.className = 'print-layout';
+
+          if (!isComplete()) {
+            printLayout.innerHTML = '<p class="incomplete-message">Complete every category to unlock the print view.</p>';
+            elements.content.appendChild(printLayout);
+            return;
           }
-        });
 
-        updateMatrix();
+          var splitsPrint = getSplits();
+          var quadrantBucketsPrint = {
+            maintain: [],
+            invest: [],
+            rebalance: [],
+            release: []
+          };
+
+          state.categories.forEach(function(categoryItem) {
+            var quadrantKey = getQuadrant(categoryItem, splitsPrint);
+            quadrantBucketsPrint[quadrantKey].push(categoryItem);
+          });
+
+          var titleBlock = document.createElement('div');
+          titleBlock.className = 'print-title';
+          titleBlock.innerHTML = '<h3>Life Strategy Matrix</h3><p>One-page focus plan.</p>';
+
+          var dateRow = document.createElement('div');
+          dateRow.className = 'print-date';
+          dateRow.innerHTML = '<label for="print-date-input">Date (optional)</label>' +
+            '<input id="print-date-input" type="text" placeholder="Add a date">' +
+            '<span class="print-date-output" aria-hidden="true"></span>';
+
+          var matrixBlock = document.createElement('div');
+          matrixBlock.className = 'matrix-wrapper';
+          buildMatrix(matrixBlock, splitsPrint, { showTooltip: false });
+
+          var focusPrint = getFocusNow(splitsPrint, {
+            invest: quadrantBucketsPrint.invest.map(function(categoryItem) {
+              return {
+                label: categoryItem.label,
+                satisfaction: categoryItem.satisfaction,
+                gapScore: (categoryItem.importance - splitsPrint.xSplit) + (splitsPrint.ySplit - categoryItem.satisfaction)
+              };
+            }),
+            rebalance: quadrantBucketsPrint.rebalance.map(function(categoryItem) {
+              return {
+                label: categoryItem.label,
+                satisfaction: categoryItem.satisfaction
+              };
+            })
+          });
+
+          var focusPrintCard = document.createElement('div');
+          focusPrintCard.className = 'focus-card';
+          focusPrintCard.innerHTML = '<p class="focus-title">Focus now</p><p>' + focusPrint.message + '</p>';
+
+          var groupedList = document.createElement('div');
+          groupedList.className = 'grouped-list';
+          groupedList.innerHTML = '' +
+            buildGroupedList('Maintain', quadrantBucketsPrint.maintain) +
+            buildGroupedList('Invest', quadrantBucketsPrint.invest) +
+            buildGroupedList('Rebalance', quadrantBucketsPrint.rebalance) +
+            buildGroupedList('Release', quadrantBucketsPrint.release);
+
+          var table = document.createElement('table');
+          table.className = 'scores-table';
+          table.innerHTML = '<thead><tr><th>Category</th><th>Importance</th><th>Satisfaction</th></tr></thead>';
+          var tbody = document.createElement('tbody');
+          state.categories.forEach(function(categoryItem) {
+            var row = document.createElement('tr');
+            row.innerHTML = '<td>' + categoryItem.label + '</td><td>' + categoryItem.importance + '/5</td><td>' + categoryItem.satisfaction + '/5</td>';
+            tbody.appendChild(row);
+          });
+          table.appendChild(tbody);
+
+          var printButton = document.createElement('button');
+          printButton.type = 'button';
+          printButton.className = 'button button--print';
+          printButton.textContent = 'Print PDF';
+          printButton.addEventListener('click', function() {
+            window.print();
+          });
+
+          printLayout.appendChild(titleBlock);
+          printLayout.appendChild(dateRow);
+          printLayout.appendChild(matrixBlock);
+          printLayout.appendChild(groupedList);
+          printLayout.appendChild(focusPrintCard);
+          printLayout.appendChild(table);
+          printLayout.appendChild(printButton);
+          elements.content.appendChild(printLayout);
+
+          var dateInput = printLayout.querySelector('#print-date-input');
+          var dateOutput = printLayout.querySelector('.print-date-output');
+          dateInput.addEventListener('input', function() {
+            dateOutput.textContent = dateInput.value;
+          });
+
+          return;
+        }
       }
 
-      if (printButton) {
-        printButton.addEventListener('click', function() {
-          window.print();
-        });
+      function buildGroupedList(title, items) {
+        var listItems = items.map(function(item) {
+          return '<li>' + item.label + '</li>';
+        }).join('');
+        if (!listItems) {
+          listItems = '<li class="is-empty">None</li>';
+        }
+        return '<div class="grouped-list-block"><h4>' + title + ' (' + items.length + ')</h4><ul>' + listItems + '</ul></div>';
       }
+
+      function handleNext() {
+        var total = state.categories.length;
+        elements.note.textContent = '';
+        if (state.currentStep === 1) {
+          if (state.currentCategoryIndex < total - 1) {
+            state.currentCategoryIndex += 1;
+          } else {
+            state.currentStep = 2;
+            state.currentCategoryIndex = 0;
+          }
+          renderStep();
+          return;
+        }
+
+        if (state.currentStep === 2) {
+          if (state.currentCategoryIndex < total - 1) {
+            state.currentCategoryIndex += 1;
+          } else if (isComplete()) {
+            state.currentStep = 3;
+            state.currentCategoryIndex = 0;
+          } else {
+            renderStep();
+            elements.note.textContent = 'Complete remaining categories to unlock the matrix.';
+            return;
+          }
+          renderStep();
+          return;
+        }
+
+        if (state.currentStep === 3) {
+          state.currentStep = 4;
+          renderStep();
+          return;
+        }
+
+        if (state.currentStep === 4) {
+          state.currentStep = 1;
+          state.currentCategoryIndex = 0;
+          renderStep();
+        }
+      }
+
+      function handleBack() {
+        var total = state.categories.length;
+        elements.note.textContent = '';
+        if (state.currentStep === 1) {
+          if (state.currentCategoryIndex > 0) {
+            state.currentCategoryIndex -= 1;
+          }
+          renderStep();
+          return;
+        }
+
+        if (state.currentStep === 2) {
+          if (state.currentCategoryIndex > 0) {
+            state.currentCategoryIndex -= 1;
+          } else {
+            state.currentStep = 1;
+            state.currentCategoryIndex = total - 1;
+          }
+          renderStep();
+          return;
+        }
+
+        if (state.currentStep === 3) {
+          state.currentStep = 2;
+          state.currentCategoryIndex = total - 1;
+          renderStep();
+          return;
+        }
+
+        if (state.currentStep === 4) {
+          state.currentStep = 3;
+          renderStep();
+        }
+      }
+
+      function handleSkip() {
+        if (state.currentStep !== 1 && state.currentStep !== 2) return;
+        elements.note.textContent = '';
+        var total = state.categories.length;
+        var category = state.categories[state.currentCategoryIndex];
+        if (state.currentStep === 1) {
+          category.importance = null;
+        } else {
+          category.satisfaction = null;
+        }
+
+        if (state.currentCategoryIndex < total - 1) {
+          state.currentCategoryIndex += 1;
+        } else if (state.currentStep === 1) {
+          state.currentStep = 2;
+          state.currentCategoryIndex = 0;
+        }
+        renderStep();
+      }
+
+      function handleReset() {
+        elements.note.textContent = '';
+        state.categories.forEach(function(category) {
+          category.importance = null;
+          category.satisfaction = null;
+        });
+        state.currentStep = 1;
+        state.currentCategoryIndex = 0;
+        state.highlightedCategoryId = null;
+        renderStep();
+      }
+
+      elements.next.addEventListener('click', handleNext);
+      elements.back.addEventListener('click', handleBack);
+      elements.skip.addEventListener('click', handleSkip);
+      elements.reset.addEventListener('click', handleReset);
+      elements.preview.addEventListener('click', function() {
+        if (!isComplete()) return;
+        state.currentStep = 3;
+        renderStep();
+      });
+
+      renderStep();
+      window.addEventListener('resize', updateTooltip);
     })();
   </script>
 </body>
