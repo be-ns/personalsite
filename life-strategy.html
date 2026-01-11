@@ -60,17 +60,15 @@
         <div class="life-tool">
           <div class="wizard" id="life-wizard">
             <header class="wizard-header">
-              <div>
-                <p class="wizard-kicker">Score → Review → Print</p>
-<h3 class="wizard-title" id="wizard-title">Step 1: Set importance</h3>
-                <p class="wizard-microcopy" id="wizard-microcopy">First, let's figure out what matters most to you right now.</p>
+              <div class="wizard-progress-bar" id="wizard-progress-bar" role="progressbar" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1">
+                <div class="wizard-progress-fill"></div>
               </div>
-              <div class="wizard-stepper" id="wizard-stepper" role="list" aria-label="Wizard steps">
-                <span class="wizard-step" data-step="1">1. Importance</span>
-                <span class="wizard-step" data-step="2">2. Satisfaction</span>
-                <span class="wizard-step" data-step="3">3. Matrix</span>
-                <span class="wizard-step" data-step="4">4. Print</span>
+              <div class="wizard-step-indicator">
+                <span class="wizard-step-current" id="wizard-step-label">Step 1 of 4</span>
+                <span class="wizard-step-name" id="wizard-step-name">Importance</span>
               </div>
+              <h3 class="wizard-title" id="wizard-title">What matters most?</h3>
+              <p class="wizard-microcopy" id="wizard-microcopy">Rate how important each area is to you right now.</p>
             </header>
 
             <div class="wizard-body">
@@ -78,19 +76,25 @@
             </div>
 
             <footer class="wizard-footer">
-              <div class="wizard-progress">
-                <span id="wizard-progress">Category 1 of 8</span>
-                <button class="button button--ghost" type="button" id="wizard-reset">Start over</button>
+              <div class="wizard-nav">
+                <button class="wizard-nav-btn wizard-nav-btn--back" type="button" id="wizard-back" aria-label="Go back">
+                  <span class="wizard-nav-icon">←</span>
+                  <span class="wizard-nav-text">Back</span>
+                </button>
+                <div class="wizard-nav-center">
+                  <span class="wizard-category-progress" id="wizard-progress">1 of 8</span>
+                </div>
+                <button class="wizard-nav-btn wizard-nav-btn--next" type="button" id="wizard-next">
+                  <span class="wizard-nav-text">Next</span>
+                  <span class="wizard-nav-icon">→</span>
+                </button>
               </div>
-              <div class="wizard-actions">
-                <button class="button button--secondary" type="button" id="wizard-back">Back</button>
-                <button class="button button--ghost" type="button" id="wizard-skip">Skip for now</button>
-                <button class="button" type="button" id="wizard-next">Next</button>
+              <div class="wizard-secondary-actions">
+                <button class="wizard-link" type="button" id="wizard-skip">Skip this category</button>
+                <button class="wizard-link" type="button" id="wizard-reset">Start over</button>
               </div>
-              <div class="wizard-preview">
-                <button class="preview-link" type="button" id="wizard-preview" disabled>Preview results</button>
-                <p class="wizard-note" id="wizard-note" role="status" aria-live="polite"></p>
-              </div>
+              <p class="wizard-note" id="wizard-note" role="status" aria-live="polite"></p>
+              <button class="wizard-preview-btn" type="button" id="wizard-preview" disabled>Jump to results</button>
             </footer>
           </div>
         </div>
@@ -158,7 +162,9 @@
       var elements = {
         title: document.getElementById('wizard-title'),
         microcopy: document.getElementById('wizard-microcopy'),
-        stepper: document.getElementById('wizard-stepper'),
+        stepLabel: document.getElementById('wizard-step-label'),
+        stepName: document.getElementById('wizard-step-name'),
+        progressBar: document.getElementById('wizard-progress-bar'),
         progress: document.getElementById('wizard-progress'),
         content: document.getElementById('wizard-step-content'),
         back: document.getElementById('wizard-back'),
@@ -412,43 +418,50 @@
         var category = state.categories[state.currentCategoryIndex];
         var total = state.categories.length;
 
-        wizard.querySelectorAll('.wizard-step').forEach(function(stepEl) {
-          var stepNumber = Number(stepEl.dataset.step);
-          stepEl.classList.toggle('is-active', stepNumber === step);
-          stepEl.classList.toggle('is-complete', stepNumber < step);
-        });
+        // Update step indicator
+        var stepNames = ['Importance', 'Satisfaction', 'Review', 'Print'];
+        elements.stepLabel.textContent = 'Step ' + step + ' of 4';
+        elements.stepName.textContent = stepNames[step - 1];
+
+        // Update progress bar
+        var progressPercent = ((step - 1) / 3) * 100;
+        elements.progressBar.setAttribute('aria-valuenow', step);
+        elements.progressBar.querySelector('.wizard-progress-fill').style.width = progressPercent + '%';
 
         if (step === 1 || step === 2) {
           var isImportance = step === 1;
-          elements.title.textContent = isImportance ? 'Step 1: What matters most' : 'Step 2: How satisfied are you';
+          elements.title.textContent = isImportance ? 'What matters most?' : 'How satisfied are you?';
           elements.microcopy.textContent = isImportance
-            ? 'Rate how important each area is to you right now. There are no wrong answers—just go with your gut.'
-            : 'Now rate how satisfied you are with each area. Be honest with yourself.';
-          elements.progress.textContent = 'Category ' + (state.currentCategoryIndex + 1) + ' of ' + total;
-          elements.skip.style.display = 'inline-flex';
-          elements.preview.style.display = 'inline-flex';
+            ? 'Rate how important each area is to you right now.'
+            : 'Be honest—how satisfied are you with each area?';
+          elements.progress.textContent = (state.currentCategoryIndex + 1) + ' of ' + total;
+          elements.skip.style.display = 'inline';
+          elements.preview.style.display = isComplete() ? 'block' : 'none';
 
           elements.back.disabled = step === 1 && state.currentCategoryIndex === 0;
-          elements.next.textContent = (step === 2 && state.currentCategoryIndex === total - 1) ? 'View matrix' : 'Next';
+          elements.back.style.visibility = (step === 1 && state.currentCategoryIndex === 0) ? 'hidden' : 'visible';
+          var nextText = elements.next.querySelector('.wizard-nav-text');
+          if (nextText) nextText.textContent = (step === 2 && state.currentCategoryIndex === total - 1) ? 'Review' : 'Next';
 
           var value = isImportance ? category.importance : category.satisfaction;
-          var helper = isImportance
-            ? 'How important is ' + category.label.toLowerCase() + ' to you right now?'
-            : 'How satisfied do you feel with your ' + category.label.toLowerCase() + ' today?';
 
           elements.content.innerHTML = '';
           var card = document.createElement('div');
           card.className = 'score-card';
           card.innerHTML = '' +
-            '<p class="score-kicker">' + category.label + '</p>' +
-            '<p class="score-helper">' + helper + '</p>' +
+            '<div class="score-header">' +
+            '  <span class="score-category">' + category.label + '</span>' +
+            '</div>' +
             '<div class="score-slider">' +
-            '  <label class="score-label" for="score-input">' + (isImportance ? 'Importance' : 'Satisfaction') + '</label>' +
-            '  <div class="slider-row">' +
-            '    <input id="score-input" type="range" min="1" max="5" step="1" value="' + (value || 3) + '" aria-valuemin="1" aria-valuemax="5" aria-valuenow="' + (value || 3) + '">' +
-            '    <span class="value-badge' + (value === null ? ' is-empty' : '') + '" id="score-output">' + (value === null ? '—/5' : value + '/5') + '</span>' +
+            '  <div class="score-value-display">' +
+            '    <span class="score-value' + (value === null ? ' is-empty' : '') + '" id="score-output">' + (value === null ? '—' : value) + '</span>' +
+            '    <span class="score-max">/5</span>' +
             '  </div>' +
-            '  <div class="slider-scale"><span>Low</span><span>High</span></div>' +
+            '  <input id="score-input" type="range" min="1" max="5" step="1" value="' + (value || 3) + '" aria-label="' + (isImportance ? 'Importance' : 'Satisfaction') + ' rating for ' + category.label + '" aria-valuemin="1" aria-valuemax="5" aria-valuenow="' + (value || 3) + '">' +
+            '  <div class="slider-labels">' +
+            '    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>' +
+            '  </div>' +
+            '  <div class="slider-scale"><span>Not at all</span><span>Extremely</span></div>' +
             '</div>';
 
           elements.content.appendChild(card);
@@ -464,7 +477,7 @@
               category.satisfaction = newValue;
             }
             input.setAttribute('aria-valuenow', String(newValue));
-            output.textContent = newValue + '/5';
+            output.textContent = newValue;
             output.classList.remove('is-empty');
           });
 
@@ -472,13 +485,15 @@
         }
 
         if (step === 3) {
-          elements.title.textContent = 'Step 3: See where you stand';
-          elements.microcopy.textContent = 'Here's your full picture. Click any category below to see it highlighted on the matrix.';
-          elements.progress.textContent = isComplete() ? 'Your strategy is ready' : 'Complete all categories to see your matrix';
+          elements.title.textContent = 'Your strategy matrix';
+          elements.microcopy.textContent = 'Tap any category to highlight it on the matrix.';
+          elements.progress.textContent = 'Review';
           elements.skip.style.display = 'none';
           elements.preview.style.display = 'none';
           elements.back.disabled = false;
-          elements.next.textContent = 'Next';
+          elements.back.style.visibility = 'visible';
+          var nextText = elements.next.querySelector('.wizard-nav-text');
+          if (nextText) nextText.textContent = 'Print';
 
           elements.content.innerHTML = '';
           var panel = document.createElement('div');
@@ -568,13 +583,15 @@
         }
 
         if (step === 4) {
-          elements.title.textContent = 'Step 4: Print your plan';
-          elements.microcopy.textContent = 'Here's your one-page strategy. Review it, then print or save it as a PDF to reference all month.';
-          elements.progress.textContent = 'Your plan is ready';
+          elements.title.textContent = 'Your one-page plan';
+          elements.microcopy.textContent = 'Print or save as PDF to reference all month.';
+          elements.progress.textContent = 'Done';
           elements.skip.style.display = 'none';
           elements.preview.style.display = 'none';
           elements.back.disabled = false;
-          elements.next.textContent = 'Finish';
+          elements.back.style.visibility = 'visible';
+          var nextText = elements.next.querySelector('.wizard-nav-text');
+          if (nextText) nextText.textContent = 'Start over';
 
           elements.content.innerHTML = '';
           var printLayout = document.createElement('div');
