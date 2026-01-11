@@ -38,7 +38,7 @@
       <p class="location">Tool</p>
       <h1 id="life-strategy-heading">Life Strategy Matrix</h1>
       <div class="hero-content">
-        <p>Pick one area of your life, score it, and see where to invest next. Print the matrix and keep it somewhere visible for the week ahead.</p>
+        <p>Work through the core categories of your life, score each one, and see where to invest next. Print the matrix and keep it somewhere visible for the week ahead.</p>
       </div>
     </section>
 
@@ -59,52 +59,33 @@
         </div>
         <div class="life-tool">
           <form class="life-form" aria-describedby="matrix-overview">
-            <div class="field">
-              <label for="life-area">Area to assess</label>
-              <input type="text" id="life-area" name="life-area" placeholder="Example: health, relationships, work">
-            </div>
-            <div class="field slider-field">
-              <label for="importance-range">How much does this matter to you?</label>
-              <div class="slider-row">
-                <input type="range" id="importance-range" name="importance" min="1" max="5" value="3" step="1">
-                <span class="slider-value" data-output="importance">3/5</span>
-              </div>
-              <div class="slider-scale">
-                <span>Low</span>
-                <span>High</span>
-              </div>
-            </div>
-            <div class="field slider-field">
-              <label for="performance-range">How are you currently doing here?</label>
-              <div class="slider-row">
-                <input type="range" id="performance-range" name="performance" min="1" max="5" value="3" step="1">
-                <span class="slider-value" data-output="performance">3/5</span>
-              </div>
-              <div class="slider-scale">
-                <span>Low</span>
-                <span>High</span>
-              </div>
-            </div>
-            <button type="button" class="button button--print">Print matrix</button>
+            <p class="form-intro">Score each category for importance and current performance. The plot updates automatically.</p>
+            <div class="category-list" id="category-list" aria-live="polite"></div>
+            <button type="button" class="button button--print">Print PDF</button>
           </form>
           <div class="matrix-panel" role="region" aria-live="polite">
             <div class="matrix-grid">
               <div class="matrix-cell" data-quadrant="maintain">
                 <h4>Maintain</h4>
                 <p>High importance, high performance. Keep doing what works.</p>
+                <p class="matrix-count" data-output="count-maintain">0 areas</p>
               </div>
               <div class="matrix-cell" data-quadrant="invest">
                 <h4>Invest</h4>
                 <p>High importance, low performance. Put time and energy here.</p>
+                <p class="matrix-count" data-output="count-invest">0 areas</p>
               </div>
               <div class="matrix-cell" data-quadrant="rebalance">
                 <h4>Rebalance</h4>
                 <p>Low importance, high performance. Ease off if it’s crowding others.</p>
+                <p class="matrix-count" data-output="count-rebalance">0 areas</p>
               </div>
               <div class="matrix-cell" data-quadrant="release">
                 <h4>Release</h4>
                 <p>Low importance, low performance. Let it be for now.</p>
+                <p class="matrix-count" data-output="count-release">0 areas</p>
               </div>
+              <div class="matrix-plot" aria-hidden="true"></div>
             </div>
             <div class="matrix-axes">
               <span class="axis-label axis-label--vertical">Current performance</span>
@@ -112,9 +93,8 @@
             </div>
             <div class="matrix-summary" id="matrix-overview">
               <p class="summary-title">Overview</p>
-              <p><span class="summary-label">Area:</span> <span data-output="area">Life area</span></p>
-              <p><span class="summary-label">Focus:</span> <span data-output="focus">Maintain</span></p>
-              <p class="summary-note" data-output="note">Keep what’s working and protect the time you’ve already earned.</p>
+              <p class="summary-note">Each category is plotted on the matrix with a focus recommendation.</p>
+              <ul class="summary-list" data-output="summary"></ul>
             </div>
           </div>
         </div>
@@ -128,18 +108,28 @@
 
   <script>
     (function() {
-      var importanceRange = document.getElementById('importance-range');
-      var performanceRange = document.getElementById('performance-range');
-      var areaInput = document.getElementById('life-area');
+      var categoryList = document.getElementById('category-list');
       var printButton = document.querySelector('.button--print');
+      var plot = document.querySelector('.matrix-plot');
+      var summaryList = document.querySelector('[data-output="summary"]');
 
-      if (importanceRange && performanceRange && areaInput) {
-        var outputs = {
-          importance: document.querySelector('[data-output="importance"]'),
-          performance: document.querySelector('[data-output="performance"]'),
-          area: document.querySelector('[data-output="area"]'),
-          focus: document.querySelector('[data-output="focus"]'),
-          note: document.querySelector('[data-output="note"]')
+      if (categoryList && plot) {
+        var categories = [
+          { key: 'health', name: 'Health' },
+          { key: 'work', name: 'Work' },
+          { key: 'family', name: 'Family' },
+          { key: 'spirituality', name: 'Spirituality' },
+          { key: 'creative', name: 'Creative' },
+          { key: 'relationships', name: 'Relationships' },
+          { key: 'financial', name: 'Financial' },
+          { key: 'rest', name: 'Rest' }
+        ];
+
+        var countOutputs = {
+          maintain: document.querySelector('[data-output="count-maintain"]'),
+          invest: document.querySelector('[data-output="count-invest"]'),
+          rebalance: document.querySelector('[data-output="count-rebalance"]'),
+          release: document.querySelector('[data-output="count-release"]')
         };
 
         var quadrants = {
@@ -161,6 +151,15 @@
           }
         };
 
+        var state = categories.reduce(function(acc, category) {
+          acc[category.key] = {
+            name: category.name,
+            importance: 3,
+            performance: 3
+          };
+          return acc;
+        }, {});
+
         function getQuadrant(importance, performance) {
           var isImportant = importance >= 3;
           var isStrong = performance >= 3;
@@ -171,27 +170,138 @@
           return 'release';
         }
 
-        function updateMatrix() {
-          var importance = Number(importanceRange.value);
-          var performance = Number(performanceRange.value);
-          var areaValue = areaInput.value.trim() || 'Life area';
-          var quadrantKey = getQuadrant(importance, performance);
-          var quadrantData = quadrants[quadrantKey];
+        function buildCategoryCard(category) {
+          var card = document.createElement('div');
+          card.className = 'category-card';
+          card.innerHTML = '' +
+            '<div class="category-header">' +
+              '<h4>' + category.name + '</h4>' +
+              '<span class="category-focus" data-output="focus-' + category.key + '"></span>' +
+            '</div>' +
+            '<div class="field slider-field">' +
+              '<label for="importance-' + category.key + '">Importance</label>' +
+              '<div class="slider-row">' +
+                '<input type="range" id="importance-' + category.key + '" data-category="' + category.key + '" data-type="importance" min="1" max="5" value="3" step="1">' +
+                '<span class="slider-value" data-output="importance-' + category.key + '">3/5</span>' +
+              '</div>' +
+              '<div class="slider-scale">' +
+                '<span>Low</span>' +
+                '<span>High</span>' +
+              '</div>' +
+            '</div>' +
+            '<div class="field slider-field">' +
+              '<label for="performance-' + category.key + '">Current performance</label>' +
+              '<div class="slider-row">' +
+                '<input type="range" id="performance-' + category.key + '" data-category="' + category.key + '" data-type="performance" min="1" max="5" value="3" step="1">' +
+                '<span class="slider-value" data-output="performance-' + category.key + '">3/5</span>' +
+              '</div>' +
+              '<div class="slider-scale">' +
+                '<span>Low</span>' +
+                '<span>High</span>' +
+              '</div>' +
+            '</div>';
+          return card;
+        }
 
-          outputs.importance.textContent = importance + '/5';
-          outputs.performance.textContent = performance + '/5';
-          outputs.area.textContent = areaValue;
-          outputs.focus.textContent = quadrantData.label;
-          outputs.note.textContent = quadrantData.note;
+        categories.forEach(function(category) {
+          categoryList.appendChild(buildCategoryCard(category));
+        });
 
-          document.querySelectorAll('.matrix-cell').forEach(function(cell) {
-            cell.classList.toggle('is-active', cell.dataset.quadrant === quadrantKey);
+        function getPointPosition(importance, performance) {
+          var x = ((importance - 1) / 4) * 100;
+          var y = (1 - (performance - 1) / 4) * 100;
+          return { x: x, y: y };
+        }
+
+        function updateSummaryList(summaryData) {
+          if (!summaryList) return;
+          summaryList.innerHTML = '';
+          summaryData.forEach(function(item) {
+            var listItem = document.createElement('li');
+            listItem.innerHTML = '<span class="summary-name">' + item.name + '</span>' +
+              '<span class="summary-focus">' + item.focus + '</span>';
+            summaryList.appendChild(listItem);
           });
         }
 
-        importanceRange.addEventListener('input', updateMatrix);
-        performanceRange.addEventListener('input', updateMatrix);
-        areaInput.addEventListener('input', updateMatrix);
+        function updateMatrix() {
+          var counts = {
+            maintain: 0,
+            invest: 0,
+            rebalance: 0,
+            release: 0
+          };
+          var summaryData = [];
+
+          categories.forEach(function(category) {
+            var data = state[category.key];
+            var quadrantKey = getQuadrant(data.importance, data.performance);
+            var quadrantData = quadrants[quadrantKey];
+            var position = getPointPosition(data.importance, data.performance);
+            var point = plot.querySelector('[data-category="' + category.key + '"]');
+
+            counts[quadrantKey] += 1;
+
+            var importanceOutput = document.querySelector('[data-output="importance-' + category.key + '"]');
+            var performanceOutput = document.querySelector('[data-output="performance-' + category.key + '"]');
+            var focusOutput = document.querySelector('[data-output="focus-' + category.key + '"]');
+
+            if (importanceOutput) {
+              importanceOutput.textContent = data.importance + '/5';
+            }
+            if (performanceOutput) {
+              performanceOutput.textContent = data.performance + '/5';
+            }
+            if (focusOutput) {
+              focusOutput.textContent = quadrantData.label;
+            }
+
+            if (!point) {
+              point = document.createElement('div');
+              point.className = 'matrix-point';
+              point.setAttribute('data-category', category.key);
+              var label = document.createElement('span');
+              label.className = 'matrix-point-label';
+              label.textContent = category.name;
+              point.appendChild(label);
+              plot.appendChild(point);
+            }
+
+            point.style.left = position.x + '%';
+            point.style.top = position.y + '%';
+            point.setAttribute('data-quadrant', quadrantKey);
+
+            summaryData.push({
+              name: category.name,
+              focus: quadrantData.label
+            });
+          });
+
+          Object.keys(counts).forEach(function(key) {
+            if (countOutputs[key]) {
+              countOutputs[key].textContent = counts[key] + ' areas';
+            }
+          });
+
+          document.querySelectorAll('.matrix-cell').forEach(function(cell) {
+            cell.classList.toggle('is-active', counts[cell.dataset.quadrant] > 0);
+          });
+
+          updateSummaryList(summaryData);
+        }
+
+        categoryList.addEventListener('input', function(event) {
+          var target = event.target;
+          if (target && target.type === 'range') {
+            var categoryKey = target.dataset.category;
+            var type = target.dataset.type;
+            if (state[categoryKey]) {
+              state[categoryKey][type] = Number(target.value);
+              updateMatrix();
+            }
+          }
+        });
+
         updateMatrix();
       }
 

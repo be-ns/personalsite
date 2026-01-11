@@ -701,6 +701,46 @@ section {
   background-color: #FCFCFC;
 }
 
+.form-intro {
+  font-size: 0.95rem;
+  color: var(--color-muted);
+}
+
+.category-list {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.category-card {
+  padding: var(--space-sm);
+  border: 1px solid #E5E5E5;
+  border-radius: 4px;
+  background-color: #FFFFFF;
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-sm);
+}
+
+.category-header h4 {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.category-focus {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+}
+
 .field {
   display: grid;
   gap: var(--space-xs);
@@ -784,6 +824,7 @@ section {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   border: 1px solid #DADADA;
   margin-bottom: var(--space-xs);
+  position: relative;
 }
 
 .matrix-cell {
@@ -805,9 +846,57 @@ section {
   margin-bottom: 0;
 }
 
+.matrix-count {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: var(--space-xs);
+  color: var(--color-text);
+}
+
 .matrix-cell.is-active {
   border-color: var(--color-text);
   background-color: #F5F5F0;
+}
+
+.matrix-plot {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.matrix-point {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--color-text);
+  transform: translate(-50%, -50%);
+}
+
+.matrix-point::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid rgba(26, 26, 26, 0.3);
+}
+
+.matrix-point-label {
+  position: absolute;
+  top: -1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 0.15rem 0.35rem;
+  border-radius: 999px;
+  white-space: nowrap;
 }
 
 .matrix-axes {
@@ -849,6 +938,33 @@ section {
   color: var(--color-muted);
   font-size: 0.9rem;
   margin-bottom: 0;
+}
+
+.summary-list {
+  list-style: none;
+  display: grid;
+  gap: var(--space-xs);
+  margin-top: var(--space-sm);
+}
+
+.summary-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-sm);
+  font-size: 0.9rem;
+}
+
+.summary-name {
+  font-weight: 600;
+}
+
+.summary-focus {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
 }
 
 /* ==========================================================================
