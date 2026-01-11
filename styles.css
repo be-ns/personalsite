@@ -557,6 +557,18 @@ section {
               transform var(--transition-fast);
 }
 
+.tool-card--featured {
+  border-width: 1px;
+  border-color: #DADADA;
+  box-shadow: none;
+}
+
+.tool-card--featured:hover {
+  border-color: #DADADA;
+  box-shadow: none;
+  transform: none;
+}
+
 .tool-card:hover {
   border-color: var(--color-accent);
   box-shadow: 6px 6px 0 var(--color-accent);
@@ -582,6 +594,179 @@ section {
   background-color: var(--color-light);
   padding: 0.25rem 0.5rem;
   border-radius: 2px;
+}
+
+.tool-header {
+  margin-bottom: var(--space-md);
+}
+
+.tool-header p {
+  color: var(--color-muted);
+  font-size: 0.9375rem;
+}
+
+.life-tool {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.life-form {
+  display: grid;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  border: 1px solid #E0E0E0;
+  border-radius: 4px;
+  background-color: #FCFCFC;
+}
+
+.field {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.field label {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+
+.field input[type="text"] {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #DADADA;
+  border-radius: 4px;
+}
+
+.field input[type="text"]:focus {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+.slider-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.slider-field input[type="range"] {
+  width: 100%;
+  accent-color: var(--color-text);
+}
+
+.slider-value {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+.slider-scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+}
+
+.button {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.75rem 1.25rem;
+  border: 1px solid var(--color-text);
+  background-color: transparent;
+  cursor: pointer;
+  justify-self: start;
+}
+
+.button:hover,
+.button:focus {
+  background-color: var(--color-text);
+  color: var(--color-bg);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+.matrix-panel {
+  display: grid;
+  gap: var(--space-sm);
+  align-content: start;
+}
+
+.matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border: 1px solid #DADADA;
+  margin-bottom: var(--space-xs);
+}
+
+.matrix-cell {
+  padding: var(--space-md);
+  border: 1px solid #E5E5E5;
+  min-height: 140px;
+  background-color: #FFFFFF;
+}
+
+.matrix-cell h4 {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  margin-bottom: var(--space-xs);
+}
+
+.matrix-cell p {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  margin-bottom: 0;
+}
+
+.matrix-cell.is-active {
+  border-color: var(--color-text);
+  background-color: #F5F5F0;
+}
+
+.matrix-axes {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+  margin-bottom: var(--space-xs);
+}
+
+.matrix-summary {
+  padding: var(--space-md);
+  border: 1px solid #DADADA;
+  border-radius: 4px;
+  background-color: #F9F9F7;
+  margin-top: var(--space-xs);
+}
+
+.summary-title {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--space-xs);
+}
+
+.summary-label {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-muted);
+}
+
+.summary-note {
+  color: var(--color-muted);
+  font-size: 0.9rem;
+  margin-bottom: 0;
 }
 
 /* ==========================================================================
@@ -717,6 +902,11 @@ footer {
   .skills-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .life-tool {
+    grid-template-columns: 1fr 1.1fr;
+    align-items: start;
+  }
 }
 
 /* Desktop */
@@ -762,6 +952,41 @@ footer {
     content: " (" attr(href) ")";
     font-size: 0.875em;
     color: var(--color-muted);
+  }
+
+  .site-header,
+  .menu-panel,
+  .menu-overlay,
+  .hero,
+  .experience,
+  .skills,
+  .elsewhere,
+  .contact,
+  footer,
+  .tools-grid {
+    display: none !important;
+  }
+
+  .tools {
+    margin: 0;
+  }
+
+  .tool-card--featured {
+    border: none;
+    padding: 0;
+  }
+
+  .life-form {
+    border: 1px solid var(--color-text);
+    background-color: transparent;
+  }
+
+  .button--print {
+    display: none;
+  }
+
+  .matrix-cell.is-active {
+    background-color: #F0F0F0;
   }
 }
 
