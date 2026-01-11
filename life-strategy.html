@@ -38,7 +38,7 @@
       <p class="location">Tool</p>
       <h1 id="life-strategy-heading">Life Strategy Matrix</h1>
       <div class="hero-content">
-        <p>Score your life in two passes, see the matrix, and print a one-page plan you can act on this week.</p>
+        <p>Take 5 minutes to map out what matters. Score your life across key areas, see where you're out of balance, and get one clear focus to act on right now.</p>
       </div>
     </section>
 
@@ -46,7 +46,7 @@
 
     <section class="tools" aria-labelledby="tools-heading">
       <h2 id="tools-heading">Build your strategy</h2>
-      <p class="section-intro">Nothing saved. Work through the wizard, find the single focus point, and print a clean one-page summary.</p>
+      <p class="section-intro">This stays private—nothing is saved. Work through the guided steps below, identify your single most important focus, then print a one-page plan you can reference all month.</p>
       <article class="tool-card tool-card--featured">
         <div class="tool-header">
           <div class="tool-header-row">
@@ -61,9 +61,9 @@
           <div class="wizard" id="life-wizard">
             <header class="wizard-header">
               <div>
-                <p class="wizard-kicker">Score → Reveal → Print</p>
-                <h3 class="wizard-title" id="wizard-title">Step 1: Set importance</h3>
-                <p class="wizard-microcopy" id="wizard-microcopy">Score how much each category matters right now.</p>
+                <p class="wizard-kicker">Score → Review → Print</p>
+<h3 class="wizard-title" id="wizard-title">Step 1: Set importance</h3>
+                <p class="wizard-microcopy" id="wizard-microcopy">First, let's figure out what matters most to you right now.</p>
               </div>
               <div class="wizard-stepper" id="wizard-stepper" role="list" aria-label="Wizard steps">
                 <span class="wizard-step" data-step="1">1. Importance</span>
@@ -121,23 +121,23 @@
       var quadrantMeta = {
         maintain: {
           label: 'Maintain',
-          note: 'Keep it steady.',
-          summary: 'High importance, high satisfaction.'
+          note: 'Keep doing what you're doing.',
+          summary: 'Important to you and you're satisfied. Keep it up.'
         },
         invest: {
           label: 'Invest',
-          note: 'Put energy here.',
-          summary: 'High importance, low satisfaction.'
+          note: 'This deserves more of your time.',
+          summary: 'Important to you but you're not satisfied. Focus here.'
         },
         rebalance: {
           label: 'Rebalance',
-          note: 'Ease off where needed.',
-          summary: 'Low importance, high satisfaction.'
+          note: 'Consider easing back here.',
+          summary: 'You're satisfied but it's less important. Scale back if needed.'
         },
         release: {
           label: 'Release',
-          note: 'Let it be for now.',
-          summary: 'Low importance, low satisfaction.'
+          note: 'It's okay to let this coast.',
+          summary: 'Less important and you're not satisfied. Let it be for now.'
         }
       };
 
@@ -212,7 +212,7 @@
           })[0];
           return {
             category: bestInvest,
-            message: 'Focus now: ' + bestInvest.label + '. High importance, low satisfaction. Put real time here this month.'
+            message: 'Your priority: ' + bestInvest.label + '. It's important to you, but you're not satisfied. This is where to invest your energy this month. What's one concrete thing you can do this week to move the needle?'
           };
         }
 
@@ -222,7 +222,7 @@
           })[0];
           return {
             category: easeOff,
-            message: 'Focus now: ' + easeOff.label + '. High satisfaction, lower importance. Ease off first to make space.'
+            message: 'Your priority: ' + easeOff.label + '. You're putting time in here and it's going well, but it's less important right now. Can you ease back a bit to create space for what matters more?'
           };
         }
 
@@ -234,7 +234,7 @@
 
         return {
           category: farthest,
-          message: 'Focus now: ' + farthest.label + '. Biggest gap from balance. Choose one small shift here this month.'
+          message: 'Your priority: ' + farthest.label + '. This has the biggest gap from your ideal balance. Pick one small shift you can make this month to get closer to where you want to be.'
         };
       }
 
@@ -420,10 +420,10 @@
 
         if (step === 1 || step === 2) {
           var isImportance = step === 1;
-          elements.title.textContent = isImportance ? 'Step 1: Set importance' : 'Step 2: Rate satisfaction';
+          elements.title.textContent = isImportance ? 'Step 1: What matters most' : 'Step 2: How satisfied are you';
           elements.microcopy.textContent = isImportance
-            ? 'Score how much each category matters right now.'
-            : 'Score how satisfied you feel with each category today.';
+            ? 'Rate how important each area is to you right now. There are no wrong answers—just go with your gut.'
+            : 'Now rate how satisfied you are with each area. Be honest with yourself.';
           elements.progress.textContent = 'Category ' + (state.currentCategoryIndex + 1) + ' of ' + total;
           elements.skip.style.display = 'inline-flex';
           elements.preview.style.display = 'inline-flex';
@@ -433,8 +433,8 @@
 
           var value = isImportance ? category.importance : category.satisfaction;
           var helper = isImportance
-            ? 'How important is ' + category.label + ' right now?'
-            : 'How satisfied are you with ' + category.label + ' right now?';
+            ? 'How important is ' + category.label.toLowerCase() + ' to you right now?'
+            : 'How satisfied do you feel with your ' + category.label.toLowerCase() + ' today?';
 
           elements.content.innerHTML = '';
           var card = document.createElement('div');
@@ -472,9 +472,9 @@
         }
 
         if (step === 3) {
-          elements.title.textContent = 'Step 3: Your matrix';
-          elements.microcopy.textContent = 'Review the 2x2 and tap a category to highlight its point.';
-          elements.progress.textContent = isComplete() ? 'All categories complete' : 'Finish scoring to continue.';
+          elements.title.textContent = 'Step 3: See where you stand';
+          elements.microcopy.textContent = 'Here's your full picture. Click any category below to see it highlighted on the matrix.';
+          elements.progress.textContent = isComplete() ? 'Your strategy is ready' : 'Complete all categories to see your matrix';
           elements.skip.style.display = 'none';
           elements.preview.style.display = 'none';
           elements.back.disabled = false;
@@ -485,7 +485,7 @@
           panel.className = 'results-panel';
 
           if (!isComplete()) {
-            panel.innerHTML = '<p class="incomplete-message">Complete every category to view the matrix.</p>';
+            panel.innerHTML = '<p class="incomplete-message">You're almost there! Complete all categories to see your full strategy matrix.</p>';
             elements.content.appendChild(panel);
             return;
           }
@@ -549,7 +549,7 @@
           var focus = getFocusNow(splits, quadrantBuckets);
           var focusCard = document.createElement('div');
           focusCard.className = 'focus-card';
-          focusCard.innerHTML = '<p class="focus-title">Best focus now</p><p>' + focus.message + '</p>';
+          focusCard.innerHTML = '<p class="focus-title">Where to focus your energy</p><p>' + focus.message + '</p>';
 
           panel.appendChild(matrixWrap);
           panel.appendChild(counts);
@@ -568,9 +568,9 @@
         }
 
         if (step === 4) {
-          elements.title.textContent = 'Step 4: Print life strategy';
-          elements.microcopy.textContent = 'Review the one-page plan, then print to PDF.';
-          elements.progress.textContent = 'Ready to print.';
+          elements.title.textContent = 'Step 4: Print your plan';
+          elements.microcopy.textContent = 'Here's your one-page strategy. Review it, then print or save it as a PDF to reference all month.';
+          elements.progress.textContent = 'Your plan is ready';
           elements.skip.style.display = 'none';
           elements.preview.style.display = 'none';
           elements.back.disabled = false;
@@ -581,7 +581,7 @@
           printLayout.className = 'print-layout';
 
           if (!isComplete()) {
-            printLayout.innerHTML = '<p class="incomplete-message">Complete every category to unlock the print view.</p>';
+            printLayout.innerHTML = '<p class="incomplete-message">Complete all categories to generate your printable strategy plan.</p>';
             elements.content.appendChild(printLayout);
             return;
           }
@@ -601,7 +601,7 @@
 
           var titleBlock = document.createElement('div');
           titleBlock.className = 'print-title';
-          titleBlock.innerHTML = '<h3>Life Strategy Matrix</h3><p>One-page focus plan.</p>';
+          titleBlock.innerHTML = '<h3>Life Strategy Matrix</h3><p>Your personalized plan for where to invest your energy.</p>';
 
           var dateRow = document.createElement('div');
           dateRow.className = 'print-date';
@@ -631,7 +631,14 @@
 
           var focusPrintCard = document.createElement('div');
           focusPrintCard.className = 'focus-card';
-          focusPrintCard.innerHTML = '<p class="focus-title">Focus now</p><p>' + focusPrint.message + '</p>';
+          focusPrintCard.innerHTML = '<p class="focus-title">Your focus this month</p><p>' + focusPrint.message + '</p>';
+
+          var groupedSection = document.createElement('div');
+          groupedSection.className = 'grouped-section';
+
+          var groupedHeader = document.createElement('h4');
+          groupedHeader.className = 'grouped-section-title';
+          groupedHeader.textContent = 'Your categories by quadrant';
 
           var groupedList = document.createElement('div');
           groupedList.className = 'grouped-list';
@@ -640,6 +647,16 @@
             buildGroupedList('Invest', quadrantBucketsPrint.invest) +
             buildGroupedList('Rebalance', quadrantBucketsPrint.rebalance) +
             buildGroupedList('Release', quadrantBucketsPrint.release);
+
+          groupedSection.appendChild(groupedHeader);
+          groupedSection.appendChild(groupedList);
+
+          var tableSection = document.createElement('div');
+          tableSection.className = 'table-section';
+
+          var tableHeader = document.createElement('h4');
+          tableHeader.className = 'table-section-title';
+          tableHeader.textContent = 'Your scores';
 
           var table = document.createElement('table');
           table.className = 'scores-table';
@@ -652,6 +669,9 @@
           });
           table.appendChild(tbody);
 
+          tableSection.appendChild(tableHeader);
+          tableSection.appendChild(table);
+
           var printButton = document.createElement('button');
           printButton.type = 'button';
           printButton.className = 'button button--print';
@@ -663,9 +683,9 @@
           printLayout.appendChild(titleBlock);
           printLayout.appendChild(dateRow);
           printLayout.appendChild(matrixBlock);
-          printLayout.appendChild(groupedList);
           printLayout.appendChild(focusPrintCard);
-          printLayout.appendChild(table);
+          printLayout.appendChild(groupedSection);
+          printLayout.appendChild(tableSection);
           printLayout.appendChild(printButton);
           elements.content.appendChild(printLayout);
 
@@ -711,7 +731,7 @@
             state.currentCategoryIndex = 0;
           } else {
             renderStep();
-            elements.note.textContent = 'Complete remaining categories to unlock the matrix.';
+            elements.note.textContent = 'Finish scoring all categories to see your strategy matrix.';
             return;
           }
           renderStep();

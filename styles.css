@@ -735,6 +735,7 @@ section {
   border-radius: 999px;
   border: 1px solid #E0E0E0;
   color: var(--color-muted);
+  transition: all var(--transition-base);
 }
 
 .wizard-step.is-active {
@@ -805,6 +806,7 @@ section {
   color: var(--color-muted);
   cursor: not-allowed;
   padding: 0;
+  transition: color var(--transition-base);
 }
 
 .preview-link:disabled {
@@ -860,6 +862,7 @@ section {
   color: var(--color-text);
   min-width: 60px;
   text-align: center;
+  transition: all var(--transition-fast);
 }
 
 .value-badge.is-empty {
@@ -1078,6 +1081,17 @@ section {
   letter-spacing: 0;
 }
 
+.grouped-section {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.grouped-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
 .grouped-list {
   display: grid;
   gap: var(--space-sm);
@@ -1105,6 +1119,17 @@ section {
 
 .grouped-list-block .is-empty {
   color: var(--color-muted);
+}
+
+.table-section {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.table-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
 }
 
 .scores-table {
