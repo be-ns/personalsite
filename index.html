@@ -156,14 +156,75 @@
     <!-- Tools Section -->
     <section class="tools" aria-labelledby="tools-heading">
       <h2 id="tools-heading">Tools</h2>
-      <p class="section-intro">Free tools I've built. No accounts, no data storage. Just useful things you can use and leave.</p>
-      <div class="tools-grid">
-        <article class="tool-card">
+      <p class="section-intro">Free tools I've built. No accounts, no data storage. Just useful things you can use and leave. This one is inspired by HBR's guide to living with strategic intent.</p>
+      <article class="tool-card tool-card--featured" id="life-strategy-tool">
+        <div class="tool-header">
           <h3>Life Strategy Matrix</h3>
-          <p>Map where you're investing your life. Get a 2×2 to see what needs attention.</p>
-          <span class="status">Coming soon</span>
-        </article>
-
+          <p>Pick one area of your life, score it, and see where to invest next.</p>
+        </div>
+        <div class="life-tool">
+          <form class="life-form" aria-describedby="matrix-overview">
+            <div class="field">
+              <label for="life-area">Area to assess</label>
+              <input type="text" id="life-area" name="life-area" placeholder="Example: health, relationships, work">
+            </div>
+            <div class="field slider-field">
+              <label for="importance-range">How much does this matter to you?</label>
+              <div class="slider-row">
+                <input type="range" id="importance-range" name="importance" min="1" max="5" value="3" step="1">
+                <span class="slider-value" data-output="importance">3/5</span>
+              </div>
+              <div class="slider-scale">
+                <span>Low</span>
+                <span>High</span>
+              </div>
+            </div>
+            <div class="field slider-field">
+              <label for="performance-range">How are you currently doing here?</label>
+              <div class="slider-row">
+                <input type="range" id="performance-range" name="performance" min="1" max="5" value="3" step="1">
+                <span class="slider-value" data-output="performance">3/5</span>
+              </div>
+              <div class="slider-scale">
+                <span>Low</span>
+                <span>High</span>
+              </div>
+            </div>
+            <button type="button" class="button button--print">Print matrix</button>
+          </form>
+          <div class="matrix-panel" role="region" aria-live="polite">
+            <div class="matrix-grid">
+              <div class="matrix-cell" data-quadrant="maintain">
+                <h4>Maintain</h4>
+                <p>High importance, high performance. Keep doing what works.</p>
+              </div>
+              <div class="matrix-cell" data-quadrant="invest">
+                <h4>Invest</h4>
+                <p>High importance, low performance. Put time and energy here.</p>
+              </div>
+              <div class="matrix-cell" data-quadrant="rebalance">
+                <h4>Rebalance</h4>
+                <p>Low importance, high performance. Ease off if it’s crowding others.</p>
+              </div>
+              <div class="matrix-cell" data-quadrant="release">
+                <h4>Release</h4>
+                <p>Low importance, low performance. Let it be for now.</p>
+              </div>
+            </div>
+            <div class="matrix-axes">
+              <span class="axis-label axis-label--vertical">Current performance</span>
+              <span class="axis-label axis-label--horizontal">Importance</span>
+            </div>
+            <div class="matrix-summary" id="matrix-overview">
+              <p class="summary-title">Overview</p>
+              <p><span class="summary-label">Area:</span> <span data-output="area">Life area</span></p>
+              <p><span class="summary-label">Focus:</span> <span data-output="focus">Maintain</span></p>
+              <p class="summary-note" data-output="note">Keep what’s working and protect the time you’ve already earned.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+      <div class="tools-grid">
         <article class="tool-card">
           <h3>Memorial Pamphlet Creator</h3>
           <p>Create a simple, dignified pamphlet for a memorial service.</p>
@@ -331,6 +392,80 @@
 
       window.addEventListener('scroll', updateHeaderState, { passive: true });
       updateHeaderState();
+
+      // Life strategy matrix tool
+      var importanceRange = document.getElementById('importance-range');
+      var performanceRange = document.getElementById('performance-range');
+      var areaInput = document.getElementById('life-area');
+      var printButton = document.querySelector('.button--print');
+
+      if (importanceRange && performanceRange && areaInput) {
+        var outputs = {
+          importance: document.querySelector('[data-output="importance"]'),
+          performance: document.querySelector('[data-output="performance"]'),
+          area: document.querySelector('[data-output="area"]'),
+          focus: document.querySelector('[data-output="focus"]'),
+          note: document.querySelector('[data-output="note"]')
+        };
+
+        var quadrants = {
+          maintain: {
+            label: 'Maintain',
+            note: 'Keep what’s working and protect the time you’ve already earned.'
+          },
+          invest: {
+            label: 'Invest',
+            note: 'This matters to you, but it’s lagging. Make a clear next move.'
+          },
+          rebalance: {
+            label: 'Rebalance',
+            note: 'You’re doing well in an area that may not need so much energy.'
+          },
+          release: {
+            label: 'Release',
+            note: 'Low stakes and low results. It’s okay to let this go for now.'
+          }
+        };
+
+        function getQuadrant(importance, performance) {
+          var isImportant = importance >= 3;
+          var isStrong = performance >= 3;
+
+          if (isImportant && isStrong) return 'maintain';
+          if (isImportant && !isStrong) return 'invest';
+          if (!isImportant && isStrong) return 'rebalance';
+          return 'release';
+        }
+
+        function updateMatrix() {
+          var importance = Number(importanceRange.value);
+          var performance = Number(performanceRange.value);
+          var areaValue = areaInput.value.trim() || 'Life area';
+          var quadrantKey = getQuadrant(importance, performance);
+          var quadrantData = quadrants[quadrantKey];
+
+          outputs.importance.textContent = importance + '/5';
+          outputs.performance.textContent = performance + '/5';
+          outputs.area.textContent = areaValue;
+          outputs.focus.textContent = quadrantData.label;
+          outputs.note.textContent = quadrantData.note;
+
+          document.querySelectorAll('.matrix-cell').forEach(function(cell) {
+            cell.classList.toggle('is-active', cell.dataset.quadrant === quadrantKey);
+          });
+        }
+
+        importanceRange.addEventListener('input', updateMatrix);
+        performanceRange.addEventListener('input', updateMatrix);
+        areaInput.addEventListener('input', updateMatrix);
+        updateMatrix();
+      }
+
+      if (printButton) {
+        printButton.addEventListener('click', function() {
+          window.print();
+        });
+      }
     })();
   </script>
 </body>
