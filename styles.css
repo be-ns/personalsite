@@ -160,6 +160,19 @@ a:focus-visible {
   text-decoration: none;
 }
 
+.page-link {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+}
+
+.page-link:hover,
+.page-link:focus {
+  background-color: transparent;
+}
+
 .menu-toggle {
   font-family: var(--font-body);
   font-size: 0.875rem;
