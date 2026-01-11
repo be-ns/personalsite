@@ -570,6 +570,17 @@ section {
               transform var(--transition-fast);
 }
 
+.tool-card--link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.tool-card--link:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 4px;
+}
+
 .tool-card--featured {
   border-width: 1px;
   border-color: #DADADA;
@@ -643,6 +654,12 @@ section {
 
 .tool-action:hover,
 .tool-action:focus {
+  background-color: var(--color-text);
+  color: var(--color-bg);
+}
+
+.tool-card--link:hover .tool-action,
+.tool-card--link:focus-visible .tool-action {
   background-color: var(--color-text);
   color: var(--color-bg);
 }
