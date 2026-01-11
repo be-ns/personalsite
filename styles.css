@@ -1,0 +1,433 @@
+/* ==========================================================================
+   Design System
+   ========================================================================== */
+
+:root {
+  /* Colors */
+  --color-bg: #FFFFFF;
+  --color-text: #1A1A1A;
+  --color-accent: #FFE227;
+  --color-accent-hover: #FFD800;
+  --color-navy: #1E2A3A;
+  --color-light: #F5F5F5;
+  --color-muted: #666666;
+
+  /* Typography */
+  --font-heading: 'Zilla Slab', Georgia, serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Spacing */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2.5rem;
+  --space-xl: 4rem;
+  --space-2xl: 6rem;
+
+  /* Layout */
+  --max-width: 680px;
+  --padding-x: 1.5rem;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+}
+
+/* ==========================================================================
+   Reset & Base
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+/* ==========================================================================
+   Typography
+   ========================================================================== */
+
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  margin-bottom: var(--space-lg);
+}
+
+h2 {
+  font-size: clamp(1.5rem, 3.5vw, 1.875rem);
+  margin-bottom: var(--space-md);
+}
+
+h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+p {
+  margin-bottom: var(--space-sm);
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+/* ==========================================================================
+   Links
+   ========================================================================== */
+
+a {
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  transition: background-color var(--transition-fast),
+              text-decoration-color var(--transition-fast);
+}
+
+a:hover,
+a:focus {
+  background-color: var(--color-accent);
+  text-decoration-color: transparent;
+  outline: none;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Layout
+   ========================================================================== */
+
+main {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--space-2xl) var(--padding-x);
+}
+
+section {
+  margin-bottom: var(--space-xl);
+}
+
+/* Section Dividers */
+.section-divider {
+  border: none;
+  height: 4px;
+  background-color: var(--color-accent);
+  margin: var(--space-xl) 0;
+}
+
+/* ==========================================================================
+   Hero Section
+   ========================================================================== */
+
+.hero {
+  margin-bottom: var(--space-xl);
+}
+
+.hero h1 {
+  position: relative;
+}
+
+.hero-content {
+  max-width: 600px;
+}
+
+.hero-content p {
+  font-size: 1.0625rem;
+  color: var(--color-text);
+}
+
+/* ==========================================================================
+   Experience Section
+   ========================================================================== */
+
+.positions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.position {
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid #E5E5E5;
+}
+
+.position:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.position-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-xs);
+}
+
+.position h3 {
+  margin: 0;
+}
+
+.period {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+  letter-spacing: 0.02em;
+}
+
+.role {
+  font-weight: 500;
+  margin-bottom: var(--space-xs);
+}
+
+.context {
+  color: var(--color-muted);
+  font-size: 0.9375rem;
+}
+
+.cta-link {
+  display: inline-block;
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   Tools Section
+   ========================================================================== */
+
+.section-intro {
+  color: var(--color-muted);
+  margin-bottom: var(--space-lg);
+}
+
+.tools-grid {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.tool-card {
+  padding: var(--space-md);
+  border: 2px solid var(--color-text);
+  border-radius: 4px;
+  transition: border-color var(--transition-fast),
+              box-shadow var(--transition-fast);
+}
+
+.tool-card:hover {
+  border-color: var(--color-accent);
+  box-shadow: 4px 4px 0 var(--color-accent);
+}
+
+.tool-card h3 {
+  margin-bottom: var(--space-xs);
+}
+
+.tool-card p {
+  font-size: 0.9375rem;
+  color: var(--color-muted);
+  margin-bottom: var(--space-sm);
+}
+
+.status {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-muted);
+  background-color: var(--color-light);
+  padding: 0.25rem 0.5rem;
+  border-radius: 2px;
+}
+
+/* ==========================================================================
+   Elsewhere Section
+   ========================================================================== */
+
+.interests-list {
+  list-style: none;
+}
+
+.interests-list li {
+  position: relative;
+  padding-left: var(--space-md);
+  margin-bottom: var(--space-xs);
+}
+
+.interests-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+  width: 8px;
+  height: 4px;
+  background-color: var(--color-accent);
+}
+
+/* ==========================================================================
+   Contact Section
+   ========================================================================== */
+
+.contact {
+  margin-bottom: var(--space-lg);
+}
+
+.email-link {
+  display: inline-block;
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-bottom: var(--space-md);
+}
+
+.social-links {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.social-links a {
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+
+footer {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--space-lg) var(--padding-x) var(--space-2xl);
+  border-top: 1px solid #E5E5E5;
+}
+
+.copyright {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+}
+
+/* ==========================================================================
+   Responsive Design
+   ========================================================================== */
+
+/* Tablet and up */
+@media (min-width: 640px) {
+  :root {
+    --padding-x: 2rem;
+  }
+
+  main {
+    padding-top: var(--space-2xl);
+    padding-bottom: var(--space-2xl);
+  }
+
+  .tools-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Desktop */
+@media (min-width: 768px) {
+  :root {
+    --padding-x: 2.5rem;
+  }
+
+  body {
+    font-size: 1.125rem;
+  }
+
+  .hero-content p {
+    font-size: 1.125rem;
+  }
+}
+
+/* ==========================================================================
+   Print Styles
+   ========================================================================== */
+
+@media print {
+  body {
+    font-size: 12pt;
+    line-height: 1.5;
+  }
+
+  main {
+    max-width: none;
+    padding: 0;
+  }
+
+  .section-divider {
+    background-color: var(--color-text);
+    height: 2px;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.875em;
+    color: var(--color-muted);
+  }
+}
+
+/* ==========================================================================
+   Accessibility
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* High contrast mode adjustments */
+@media (prefers-contrast: high) {
+  :root {
+    --color-accent: #FFCC00;
+  }
+
+  .tool-card {
+    border-width: 3px;
+  }
+
+  .section-divider {
+    height: 5px;
+  }
+}
