@@ -307,7 +307,14 @@
       const menuLinks = document.querySelectorAll('.menu-links a');
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      function openMenu() {
+      // Guard against missing elements
+      if (!menuToggle || !menuPanel || !menuOverlay) {
+        console.error('Menu elements not found');
+        return;
+      }
+
+      function openMenu(e) {
+        if (e) e.preventDefault();
         menuPanel.classList.remove('is-closing');
         menuPanel.classList.add('is-open');
         menuOverlay.classList.add('is-visible');
@@ -319,12 +326,15 @@
         updateCurrentSection();
 
         // Focus close button after animation
-        setTimeout(function() {
-          menuClose.focus();
-        }, reduceMotion ? 0 : 100);
+        if (menuClose) {
+          setTimeout(function() {
+            menuClose.focus();
+          }, reduceMotion ? 0 : 100);
+        }
       }
 
-      function closeMenu() {
+      function closeMenu(e) {
+        if (e) e.preventDefault();
         menuPanel.classList.add('is-closing');
 
         // Wait for nav items to fade out before closing panel
@@ -370,8 +380,21 @@
         });
       }
 
+      // Use both click and touchend for reliable mobile support
       menuToggle.addEventListener('click', openMenu);
-      menuClose.addEventListener('click', closeMenu);
+      menuToggle.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        openMenu();
+      }, { passive: false });
+
+      if (menuClose) {
+        menuClose.addEventListener('click', closeMenu);
+        menuClose.addEventListener('touchend', function(e) {
+          e.preventDefault();
+          closeMenu();
+        }, { passive: false });
+      }
+
       menuOverlay.addEventListener('click', closeMenu);
 
       menuLinks.forEach(function(link) {
