@@ -261,18 +261,18 @@ a:focus-visible {
 /* Menu Panel - Floating modal card */
 .menu-panel {
   position: fixed;
-  top: var(--space-8);
-  left: 50%;
-  transform: translate(-50%, 0) translateY(10px) scale(0.985);
+  top: var(--space-sm);
+  left: var(--padding-x);
+  transform: translateY(10px) scale(0.985);
   z-index: 200;
-  width: min(420px, calc(100vw - var(--space-8)));
-  max-height: calc(100vh - (var(--space-8) * 2));
+  width: min(420px, calc(100vw - (var(--padding-x) * 2)));
+  max-height: calc(100vh - (var(--space-sm) * 2));
   background-color: rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--color-border);
   border-radius: 20px;
-  padding: var(--space-8);
+  padding: var(--space-sm) var(--padding-x);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -288,7 +288,7 @@ a:focus-visible {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  transform: translate(-50%, 0) translateY(0) scale(1);
+  transform: translateY(0) scale(1);
 }
 
 .menu-panel.is-closing {
@@ -307,7 +307,7 @@ a:focus-visible {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--space-sm);
 }
 
 .menu-brand {
@@ -363,7 +363,7 @@ a:focus-visible {
   background-color: rgba(248, 248, 246, 0.82);
   border: 1px solid var(--color-border);
   border-radius: 16px;
-  padding: var(--space-8);
+  padding: var(--space-sm);
 }
 
 /* Menu Links */
@@ -387,9 +387,9 @@ a:focus-visible {
   font-weight: var(--weight-medium);
   color: var(--color-text);
   text-decoration: none;
-  padding: 0.875rem var(--space-sm);
+  padding: 0.65rem var(--space-sm);
   border-radius: 12px;
-  min-height: 52px;
+  min-height: 44px;
   position: relative;
   transition:
     background-color var(--transition-fast),
@@ -2310,11 +2310,11 @@ footer {
 
   /* Menu reduced motion - fade only, no scale/translate/stagger */
   .menu-panel {
-    transform: translate(-50%, 0);
+    transform: none;
   }
 
   .menu-panel.is-open {
-    transform: translate(-50%, 0);
+    transform: none;
   }
 
   .menu-links li {
