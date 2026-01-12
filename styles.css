@@ -552,6 +552,10 @@ section {
   margin-top: var(--space-lg);
 }
 
+.hero-actions .cta-button {
+  flex: 1 1 0;
+}
+
 .cta-button {
   display: inline-flex;
   align-items: center;
