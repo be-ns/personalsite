@@ -271,8 +271,8 @@ a:focus-visible {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--color-border);
-  border-radius: 20px;
-  padding: var(--space-sm) var(--padding-x);
+  border-radius: 18px;
+  padding: var(--space-xs) var(--padding-x);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -307,16 +307,17 @@ a:focus-visible {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-sm);
+  margin-bottom: var(--space-xs);
 }
 
 .menu-brand {
-  font-family: var(--font-display);
-  font-size: var(--text-2xl);
-  font-weight: var(--weight-bold);
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
   color: var(--color-text);
   text-decoration: none;
   letter-spacing: -0.02em;
+  line-height: 1;
 }
 
 .menu-brand:hover,
@@ -362,8 +363,8 @@ a:focus-visible {
 .menu-nav-panel {
   background-color: rgba(248, 248, 246, 0.82);
   border: 1px solid var(--color-border);
-  border-radius: 16px;
-  padding: var(--space-sm);
+  border-radius: 14px;
+  padding: var(--space-xs);
 }
 
 /* Menu Links */
@@ -371,7 +372,7 @@ a:focus-visible {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: 0.25rem;
 }
 
 .menu-links li {
@@ -387,9 +388,9 @@ a:focus-visible {
   font-weight: var(--weight-medium);
   color: var(--color-text);
   text-decoration: none;
-  padding: 0.65rem var(--space-sm);
+  padding: 0.45rem 0.75rem;
   border-radius: 12px;
-  min-height: 44px;
+  min-height: 40px;
   position: relative;
   transition:
     background-color var(--transition-fast),
