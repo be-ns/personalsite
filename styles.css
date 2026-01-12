@@ -1578,31 +1578,28 @@ footer {
    ========================================================================== */
 
 @media print {
-  body {
-    font-size: 12pt;
-    line-height: 1.5;
+  /* Reset all colors to black/white for clean print */
+  :root {
+    --color-accent: #000000;
+    --color-text: #000000;
+    --color-muted: #444444;
   }
 
-  main {
-    max-width: none;
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  body {
+    font-size: 11pt;
+    line-height: 1.4;
+    background: white !important;
+    color: black !important;
+    margin: 0;
     padding: 0;
   }
 
-  .section-divider {
-    background-color: var(--color-text);
-    height: 2px;
-  }
-
-  a {
-    text-decoration: none;
-  }
-
-  a[href^="http"]::after {
-    content: " (" attr(href) ")";
-    font-size: 0.875em;
-    color: var(--color-muted);
-  }
-
+  /* Hide everything except the print layout */
   .site-header,
   .menu-panel,
   .menu-overlay,
@@ -1612,19 +1609,10 @@ footer {
   .elsewhere,
   .contact,
   footer,
-  .tools-grid {
-    display: none !important;
-  }
-
-  .tools {
-    margin: 0;
-  }
-
-  .tool-card--featured {
-    border: none;
-    padding: 0;
-  }
-
+  .tools-grid,
+  .section-divider,
+  .section-intro,
+  .tool-header,
   .wizard-header,
   .wizard-footer,
   .wizard-nav,
@@ -1636,34 +1624,246 @@ footer {
   .button,
   .button--print,
   input,
-  button {
+  button,
+  a[href^="http"]::after {
     display: none !important;
   }
 
+  main {
+    max-width: none;
+    padding: 0.5in;
+    margin: 0;
+  }
+
+  section {
+    margin: 0;
+  }
+
+  .tools {
+    margin: 0;
+  }
+
+  .tool-card,
+  .tool-card--featured {
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+  }
+
+  .life-tool {
+    gap: 0;
+  }
+
+  .wizard {
+    gap: 0;
+  }
+
   .wizard-body {
-    border: none;
-    padding: 0;
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
   }
 
+  /* Print Layout Styles */
   .print-layout {
-    gap: var(--space-sm);
+    display: block;
+    max-width: 6.5in;
+    margin: 0 auto;
   }
 
-  .matrix-wrapper {
-    border-color: var(--color-text);
+  .print-title {
+    text-align: center;
+    margin-bottom: 0.25in;
+    padding-bottom: 0.15in;
+    border-bottom: 2pt solid black;
+  }
+
+  .print-title h3 {
+    font-size: 18pt;
+    margin: 0 0 0.1in 0;
+  }
+
+  .print-title p {
+    font-size: 10pt;
+    color: #444;
+    margin: 0;
+  }
+
+  .print-date {
+    text-align: center;
+    margin-bottom: 0.2in;
+  }
+
+  .print-date label {
+    display: none;
+  }
+
+  .print-date input {
+    display: none !important;
+  }
+
+  .print-date-output {
+    display: block !important;
+    font-size: 10pt;
+    color: #444;
+  }
+
+  /* Matrix - centered and properly sized */
+  .print-layout .matrix-wrapper {
+    width: 3in;
+    max-width: 3in;
+    margin: 0.2in auto;
+    border: 1.5pt solid black !important;
+    border-radius: 0 !important;
+    padding: 0.1in !important;
+    background: white !important;
+    page-break-inside: avoid;
+  }
+
+  .matrix-svg {
+    width: 100%;
+    height: auto;
+  }
+
+  .matrix-label {
+    font-size: 2.5px !important;
+  }
+
+  .matrix-point-dot {
+    fill: black !important;
+  }
+
+  .matrix-point-text {
+    font-size: 2px !important;
+    fill: black !important;
+  }
+
+  .matrix-point.is-active .matrix-point-dot {
+    fill: black !important;
+  }
+
+  /* Focus card */
+  .focus-card {
+    margin: 0.2in 0;
+    padding: 0.15in;
+    border: 1pt solid #888;
+    border-radius: 0;
+    background: #f8f8f8 !important;
+    page-break-inside: avoid;
+  }
+
+  .focus-card .focus-title {
+    font-size: 10pt;
+    font-weight: 600;
+    margin-bottom: 0.05in;
+  }
+
+  .focus-card p {
+    font-size: 9pt;
+    line-height: 1.35;
+    margin: 0;
+  }
+
+  /* Grouped sections - compact 2x2 grid */
+  .grouped-section {
+    margin: 0.2in 0;
+    page-break-inside: avoid;
+  }
+
+  .grouped-section-title {
+    font-size: 11pt;
+    font-weight: 600;
+    margin-bottom: 0.1in;
+    text-align: center;
+  }
+
+  .grouped-list {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.1in;
+  }
+
+  .grouped-list-block {
+    padding: 0.08in;
+    border: 0.5pt solid #ccc;
+    background: #fafafa;
+  }
+
+  .grouped-list-block h4 {
+    font-size: 9pt;
+    font-weight: 600;
+    margin: 0 0 0.03in 0;
+  }
+
+  .grouped-list-block ul {
+    margin: 0;
+    padding-left: 0.15in;
+    font-size: 8pt;
+    line-height: 1.3;
+  }
+
+  .grouped-list-block li {
+    margin: 0;
+  }
+
+  .grouped-list-block li.is-empty {
+    color: #888;
+    font-style: italic;
+  }
+
+  /* Scores table - compact */
+  .table-section {
+    margin-top: 0.2in;
+    page-break-inside: avoid;
+  }
+
+  .table-section-title {
+    font-size: 11pt;
+    font-weight: 600;
+    margin-bottom: 0.08in;
+    text-align: center;
+  }
+
+  .scores-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8pt;
   }
 
   .scores-table th,
   .scores-table td {
-    border-color: var(--color-text);
+    border: 0.5pt solid black;
+    padding: 0.04in 0.08in;
+    text-align: left;
   }
 
-  .print-date-output {
-    display: block;
+  .scores-table th {
+    background: #f0f0f0 !important;
+    font-weight: 600;
   }
 
-  .print-date input {
-    display: none;
+  .scores-table td:nth-child(2),
+  .scores-table td:nth-child(3),
+  .scores-table th:nth-child(2),
+  .scores-table th:nth-child(3) {
+    text-align: center;
+    width: 1in;
+  }
+
+  /* Page break control */
+  h1, h2, h3, h4 {
+    page-break-after: avoid;
+  }
+
+  .print-layout > * {
+    page-break-inside: avoid;
+  }
+
+  /* Force single page if possible */
+  @page {
+    size: letter;
+    margin: 0.5in;
   }
 }
 
