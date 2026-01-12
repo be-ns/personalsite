@@ -245,9 +245,7 @@ a:focus-visible {
   position: fixed;
   inset: 0;
   z-index: 150;
-  background-color: rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(14px) saturate(95%);
-  -webkit-backdrop-filter: blur(14px) saturate(95%);
+  background-color: transparent;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -260,22 +258,15 @@ a:focus-visible {
   pointer-events: auto;
 }
 
-/* Fallback for browsers without backdrop-filter */
-@supports not (backdrop-filter: blur(14px)) {
-  .menu-overlay {
-    background-color: rgba(255, 255, 255, 0.85);
-  }
-}
-
-/* Menu Panel - Centered modal card */
+/* Menu Panel - Floating modal card */
 .menu-panel {
   position: fixed;
-  top: 50%;
+  top: var(--space-8);
   left: 50%;
-  transform: translate(-50%, -50%) translateY(10px) scale(0.985);
+  transform: translate(-50%, 0) translateY(10px) scale(0.985);
   z-index: 200;
-  width: min(520px, 92vw);
-  max-height: calc(100vh - var(--space-8));
+  width: min(420px, calc(100vw - var(--space-8)));
+  max-height: calc(100vh - (var(--space-8) * 2));
   background-color: rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -297,7 +288,7 @@ a:focus-visible {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  transform: translate(-50%, -50%) translateY(0) scale(1);
+  transform: translate(-50%, 0) translateY(0) scale(1);
 }
 
 .menu-panel.is-closing {
@@ -2319,11 +2310,11 @@ footer {
 
   /* Menu reduced motion - fade only, no scale/translate/stagger */
   .menu-panel {
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, 0);
   }
 
   .menu-panel.is-open {
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, 0);
   }
 
   .menu-links li {
