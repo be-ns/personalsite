@@ -541,16 +541,19 @@ section {
 
 .position-meta {
   display: grid;
-  grid-template-columns: auto minmax(32px, 1fr) auto;
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr) 1fr auto;
+  align-items: start;
   gap: var(--space-sm);
 }
 
 .leader-rule {
   height: 1px;
+  width: 100%;
   background-color: #D0D0D0;
   opacity: 0.6;
   min-width: 24px;
+  margin-top: 0.35em;
+  align-self: start;
 }
 
 .date-meta {
@@ -562,6 +565,8 @@ section {
   color: var(--color-muted);
   letter-spacing: 0.02em;
   justify-self: end;
+  white-space: nowrap;
+  margin-top: 0.35em;
 }
 
 .date-pill {
@@ -631,6 +636,7 @@ section {
 .role {
   font-weight: 500;
   margin: 0;
+  min-width: 0;
 }
 
 .context {
@@ -1650,17 +1656,7 @@ footer {
 /* Mobile - Timeline stacked layout */
 @media (max-width: 479px) {
   .position-meta {
-    grid-template-columns: auto minmax(24px, 1fr);
-    row-gap: var(--space-xs);
-  }
-
-  .leader-rule {
-    grid-column: 2;
-  }
-
-  .date-meta {
-    grid-column: 1 / -1;
-    justify-self: end;
+    gap: var(--space-xs);
   }
 
   .date-pill {
