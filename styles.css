@@ -546,6 +546,8 @@ section {
 .hero-actions {
   display: flex;
   flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
   gap: var(--space-sm);
   margin-top: var(--space-lg);
 }
@@ -566,11 +568,21 @@ section {
   border: 2px solid transparent;
   position: relative;
   overflow: hidden;
+  white-space: nowrap;
   transition: transform var(--transition-fast),
               box-shadow var(--transition-fast),
               background-color var(--transition-fast),
               color var(--transition-fast),
               border-color var(--transition-fast);
+}
+
+.cta-icon {
+  display: inline-flex;
+}
+
+.cta-icon svg {
+  width: 1rem;
+  height: 1rem;
 }
 
 .cta-button:hover,
@@ -1829,6 +1841,11 @@ footer {
 
   .date-pill {
     padding: 0.15rem 0.5rem;
+  }
+
+  .cta-button {
+    padding: 0.75rem 1.15rem;
+    font-size: 0.78rem;
   }
 }
 
