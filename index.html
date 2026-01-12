@@ -57,6 +57,60 @@
         <p>I build software that helps people manage the practical parts of life. Currently a PM at AppFolio, where I work on rental applications for property managers. Before that: startup life, data science, and a winding path through ecommerce and small business.</p>
         <p>I care about shipping things that actually work, staying close to my family, and building a few quiet tools that might outlast me. Proud future ancestor of the Choctaw Nation of Oklahoma. Probably the most optimistic person you'll meet.</p>
       </div>
+      <div class="hero-actions">
+        <a class="cta-button cta-button--primary" href="#experience-heading">Work I've done</a>
+        <a class="cta-button cta-button--secondary" href="#tools-heading">
+          Tools I built
+          <span class="cta-subtext">Free, no accounts</span>
+        </a>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- Tools Section -->
+    <section class="tools tools--shelf" aria-labelledby="tools-heading">
+      <div class="tools-shelf-header">
+        <h2 id="tools-heading">Tools</h2>
+        <p class="section-intro">Free tools. No accounts. Built to be useful.</p>
+      </div>
+      <div class="tools-grid">
+        <a class="tool-card tool-card--link" href="life-strategy.html">
+          <h3>Life Strategy Matrix</h3>
+          <div class="tool-header-actions">
+            <span class="status status--live"><strong>Live</strong></span>
+            <span class="tool-action" aria-hidden="true">→</span>
+          </div>
+          <p>Pick one area of your life, score it, and see where to invest next. Then print the matrix as a one-page guide.</p>
+        </a>
+
+        <a class="tool-card tool-card--link" href="memorial-pamphlet.html">
+          <h3>Memorial Pamphlet Creator</h3>
+          <div class="tool-header-actions">
+            <span class="status">Coming soon</span>
+            <span class="tool-action" aria-hidden="true">→</span>
+          </div>
+          <p>Create a simple, dignified pamphlet for a memorial service.</p>
+        </a>
+
+        <a class="tool-card tool-card--link" href="native-plant-finder.html">
+          <h3>Native Plant Finder</h3>
+          <div class="tool-header-actions">
+            <span class="status">Coming soon</span>
+            <span class="tool-action" aria-hidden="true">→</span>
+          </div>
+          <p>Enter your region. Get a list of native plants for your garden.</p>
+        </a>
+
+        <a class="tool-card tool-card--link" href="service-of-life.html">
+          <h3>Service of Life Builder</h3>
+          <div class="tool-header-actions">
+            <span class="status">Coming soon</span>
+            <span class="tool-action" aria-hidden="true">→</span>
+          </div>
+          <p>Build a liturgy for a memorial or celebration of life.</p>
+        </a>
+      </div>
     </section>
 
     <hr class="section-divider">
@@ -148,51 +202,6 @@
           <h3>Python & ML</h3>
           <p>From CNN/RNN model stacks to production APIs. Comfortable reading code, building prototypes, and speaking the language of engineers.</p>
         </article>
-      </div>
-    </section>
-
-    <hr class="section-divider">
-
-    <!-- Tools Section -->
-    <section class="tools" aria-labelledby="tools-heading">
-      <h2 id="tools-heading">Tools</h2>
-      <p class="section-intro">Free tools I've built. No accounts, no data storage. Just useful things you can use and leave.</p>
-      <div class="tools-grid">
-        <a class="tool-card tool-card--link" href="life-strategy.html">
-          <h3>Life Strategy Matrix</h3>
-          <div class="tool-header-actions">
-            <span class="status status--live"><strong>Live</strong></span>
-            <span class="tool-action" aria-hidden="true">→</span>
-          </div>
-          <p>Pick one area of your life, score it, and see where to invest next. Then print the matrix as a one-page guide.</p>
-        </a>
-
-        <a class="tool-card tool-card--link" href="memorial-pamphlet.html">
-          <h3>Memorial Pamphlet Creator</h3>
-          <div class="tool-header-actions">
-            <span class="status">Coming soon</span>
-            <span class="tool-action" aria-hidden="true">→</span>
-          </div>
-          <p>Create a simple, dignified pamphlet for a memorial service.</p>
-        </a>
-
-        <a class="tool-card tool-card--link" href="native-plant-finder.html">
-          <h3>Native Plant Finder</h3>
-          <div class="tool-header-actions">
-            <span class="status">Coming soon</span>
-            <span class="tool-action" aria-hidden="true">→</span>
-          </div>
-          <p>Enter your region. Get a list of native plants for your garden.</p>
-        </a>
-
-        <a class="tool-card tool-card--link" href="service-of-life.html">
-          <h3>Service of Life Builder</h3>
-          <div class="tool-header-actions">
-            <span class="status">Coming soon</span>
-            <span class="tool-action" aria-hidden="true">→</span>
-          </div>
-          <p>Build a liturgy for a memorial or celebration of life.</p>
-        </a>
       </div>
     </section>
 
@@ -328,6 +337,20 @@
         e.preventDefault();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
+
+      // CTA click animations
+      const ctaButtons = document.querySelectorAll('.cta-button');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (!reduceMotion) {
+        ctaButtons.forEach(function(button) {
+          button.addEventListener('click', function() {
+            button.classList.remove('is-pressed');
+            void button.offsetWidth;
+            button.classList.add('is-pressed');
+          });
+        });
+      }
 
       // Header scroll effect
       var header = document.querySelector('.site-header');
