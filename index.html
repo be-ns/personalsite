@@ -38,10 +38,6 @@
 
   <!-- Menu Panel -->
   <nav id="menu-panel" class="menu-panel" role="dialog" aria-modal="true" aria-label="Primary navigation" aria-hidden="true">
-    <div class="menu-header">
-      <span class="menu-brand" aria-hidden="true">BS.</span>
-      <button class="menu-close" aria-label="Close menu">Close</button>
-    </div>
     <div class="menu-nav-panel">
       <ul class="menu-links" role="list">
         <li>
@@ -308,10 +304,11 @@
     (function() {
       // Menu elements
       var menuToggle = document.querySelector('.menu-toggle');
-      var menuClose = document.querySelector('.menu-close');
+      var siteHeader = document.querySelector('.site-header');
       var menuPanel = document.querySelector('.menu-panel');
       var menuOverlay = document.querySelector('.menu-overlay');
       var menuLinks = document.querySelectorAll('.menu-links a');
+      var menuToggleDefaultLabel = menuToggle ? menuToggle.textContent.trim() : 'Menu';
 
       // Exit if essential elements missing
       if (!menuToggle || !menuPanel || !menuOverlay) {
@@ -326,13 +323,14 @@
 
         menuPanel.classList.add('is-open');
         menuOverlay.classList.add('is-visible');
+        if (siteHeader) {
+          siteHeader.classList.add('is-menu-open');
+        }
         menuToggle.setAttribute('aria-expanded', 'true');
+        menuToggle.setAttribute('aria-label', 'Close menu');
+        menuToggle.textContent = 'Close';
         menuPanel.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
-
-        if (menuClose) {
-          menuClose.focus();
-        }
       }
 
       function closeMenu() {
@@ -341,7 +339,12 @@
 
         menuPanel.classList.remove('is-open');
         menuOverlay.classList.remove('is-visible');
+        if (siteHeader) {
+          siteHeader.classList.remove('is-menu-open');
+        }
         menuToggle.setAttribute('aria-expanded', 'false');
+        menuToggle.setAttribute('aria-label', 'Open menu');
+        menuToggle.textContent = menuToggleDefaultLabel;
         menuPanel.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
         menuToggle.focus();
@@ -351,16 +354,12 @@
       menuToggle.onclick = function(e) {
         e.preventDefault();
         e.stopPropagation();
-        openMenu();
-      };
-
-      if (menuClose) {
-        menuClose.onclick = function(e) {
-          e.preventDefault();
-          e.stopPropagation();
+        if (isOpen) {
           closeMenu();
-        };
-      }
+        } else {
+          openMenu();
+        }
+      };
 
       menuOverlay.onclick = closeMenu;
 
