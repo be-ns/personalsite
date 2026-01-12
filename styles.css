@@ -1048,10 +1048,34 @@ section {
   display: block;
 }
 
+/* Quadrant backgrounds for visual contrast */
+.matrix-quadrant {
+  fill: transparent;
+}
+
+.quadrant-maintain {
+  fill: rgba(61, 90, 71, 0.06);
+}
+
+.quadrant-invest {
+  fill: rgba(255, 226, 39, 0.12);
+}
+
+.quadrant-rebalance {
+  fill: rgba(100, 116, 139, 0.05);
+}
+
+.quadrant-release {
+  fill: rgba(100, 116, 139, 0.03);
+}
+
 .matrix-label {
   font-family: var(--font-mono);
-  font-size: 3px;
+  font-size: 3.5px;
+  font-weight: 500;
   fill: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 .matrix-point {
@@ -1060,21 +1084,26 @@ section {
 
 .matrix-point-dot {
   fill: var(--color-text);
+  stroke: #FFFFFF;
+  stroke-width: 0.5;
 }
 
 .matrix-point-text {
   font-family: var(--font-mono);
-  font-size: 2.5px;
+  font-size: 2.8px;
+  font-weight: 600;
   fill: var(--color-text);
 }
 
 .matrix-point.is-active .matrix-point-dot {
   fill: var(--color-accent);
+  stroke: var(--color-text);
+  stroke-width: 0.8;
 }
 
 .matrix-point.is-active .matrix-point-text {
   fill: var(--color-text);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .matrix-tooltip {
@@ -1298,6 +1327,34 @@ section {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--color-muted);
+}
+
+.recommendation-cell {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.recommendation-invest {
+  color: #92400E;
+  background-color: rgba(255, 226, 39, 0.15);
+}
+
+.recommendation-maintain {
+  color: #3D5A47;
+  background-color: rgba(61, 90, 71, 0.1);
+}
+
+.recommendation-rebalance {
+  color: #475569;
+  background-color: rgba(100, 116, 139, 0.1);
+}
+
+.recommendation-release {
+  color: var(--color-muted);
+  background-color: rgba(100, 116, 139, 0.05);
 }
 
 .button {
@@ -1731,20 +1788,48 @@ footer {
   }
 
   .matrix-label {
-    font-size: 2.5px !important;
+    font-size: 3px !important;
+    font-weight: 600 !important;
+  }
+
+  /* Quadrant shading for print */
+  .matrix-quadrant {
+    fill: transparent !important;
+  }
+
+  .quadrant-invest {
+    fill: rgba(0, 0, 0, 0.08) !important;
+  }
+
+  .quadrant-maintain {
+    fill: rgba(0, 0, 0, 0.03) !important;
   }
 
   .matrix-point-dot {
     fill: black !important;
+    stroke: white !important;
+    stroke-width: 0.5 !important;
   }
 
   .matrix-point-text {
-    font-size: 2px !important;
+    font-size: 2.5px !important;
     fill: black !important;
+    font-weight: 700 !important;
   }
 
   .matrix-point.is-active .matrix-point-dot {
     fill: black !important;
+  }
+
+  /* Recommendation cell print styles */
+  .recommendation-cell {
+    font-weight: 600 !important;
+    background: transparent !important;
+  }
+
+  .recommendation-invest {
+    color: black !important;
+    font-weight: 700 !important;
   }
 
   /* Focus card */
@@ -1851,6 +1936,12 @@ footer {
   .scores-table td:nth-child(3),
   .scores-table th:nth-child(2),
   .scores-table th:nth-child(3) {
+    text-align: center;
+    width: 0.75in;
+  }
+
+  .scores-table td:nth-child(4),
+  .scores-table th:nth-child(4) {
     text-align: center;
     width: 1in;
   }

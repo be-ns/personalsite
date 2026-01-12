@@ -116,7 +116,7 @@
         { id: 'work', label: 'Work' },
         { id: 'family', label: 'Family' },
         { id: 'spirituality', label: 'Spirituality' },
-        { id: 'creative', label: 'Creative' },
+        { id: 'creativity', label: 'Creativity' },
         { id: 'relationships', label: 'Relationships' },
         { id: 'financial', label: 'Financial' },
         { id: 'rest', label: 'Rest' }
@@ -175,22 +175,11 @@
         note: document.getElementById('wizard-note')
       };
 
-      function getAverage(values) {
-        var total = 0;
-        var count = 0;
-        values.forEach(function(value) {
-          if (typeof value === 'number') {
-            total += value;
-            count += 1;
-          }
-        });
-        return count ? total / count : 3;
-      }
-
+      // Fixed center at 3.5 for equal quadrants (scale 1-6)
       function getSplits() {
         return {
-          xSplit: getAverage(state.categories.map(function(category) { return category.importance; })),
-          ySplit: getAverage(state.categories.map(function(category) { return category.satisfaction; }))
+          xSplit: 3.5,
+          ySplit: 3.5
         };
       }
 
@@ -248,8 +237,11 @@
         return label.split(' ').map(function(word) { return word[0]; }).join('').slice(0, 2).toUpperCase();
       }
 
+      // Scale 1-6 with padding (8% on each side, usable area 8-92%)
+      var CHART_PADDING = 8;
       function getPointPosition(value) {
-        return ((value - 1) / 4) * 100;
+        var normalized = (value - 1) / 5; // 1-6 scale -> 0-1
+        return CHART_PADDING + normalized * (100 - 2 * CHART_PADDING);
       }
 
       function setHighlight(categoryId) {
@@ -286,7 +278,7 @@
         var label = activePoint.getAttribute('data-label');
         var importance = activePoint.getAttribute('data-importance');
         var satisfaction = activePoint.getAttribute('data-satisfaction');
-        tooltip.innerHTML = '<strong>' + label + '</strong><span>' + importance + '/5 importance · ' + satisfaction + '/5 satisfaction</span>';
+        tooltip.innerHTML = '<strong>' + label + '</strong><span>' + importance + '/6 importance · ' + satisfaction + '/6 satisfaction</span>';
 
         var container = activePoint.closest('.matrix-wrapper');
         if (!container) return;
@@ -305,6 +297,29 @@
         svg.setAttribute('aria-label', 'Life strategy matrix');
         svg.classList.add('matrix-svg');
 
+        // Fixed center at 50% for equal quadrants
+        var xSplit = 50;
+        var ySplit = 50;
+
+        // Shaded quadrant backgrounds for visual contrast
+        var quadrantShades = [
+          { x: 0, y: 0, w: xSplit, h: ySplit, cls: 'quadrant-rebalance' },      // top-left
+          { x: xSplit, y: 0, w: 100 - xSplit, h: ySplit, cls: 'quadrant-maintain' }, // top-right
+          { x: 0, y: ySplit, w: xSplit, h: 100 - ySplit, cls: 'quadrant-release' },   // bottom-left
+          { x: xSplit, y: ySplit, w: 100 - xSplit, h: 100 - ySplit, cls: 'quadrant-invest' } // bottom-right
+        ];
+
+        quadrantShades.forEach(function(quad) {
+          var quadRect = document.createElementNS(svgNS, 'rect');
+          quadRect.setAttribute('x', quad.x);
+          quadRect.setAttribute('y', quad.y);
+          quadRect.setAttribute('width', quad.w);
+          quadRect.setAttribute('height', quad.h);
+          quadRect.classList.add('matrix-quadrant', quad.cls);
+          svg.appendChild(quadRect);
+        });
+
+        // Outer border
         var rect = document.createElementNS(svgNS, 'rect');
         rect.setAttribute('x', '0');
         rect.setAttribute('y', '0');
@@ -315,9 +330,7 @@
         rect.setAttribute('stroke-width', '0.8');
         svg.appendChild(rect);
 
-        var xSplit = getPointPosition(splits.xSplit);
-        var ySplit = 100 - getPointPosition(splits.ySplit);
-
+        // Center divider lines
         var xLine = document.createElementNS(svgNS, 'line');
         xLine.setAttribute('x1', xSplit);
         xLine.setAttribute('y1', '0');
@@ -325,7 +338,6 @@
         xLine.setAttribute('y2', '100');
         xLine.setAttribute('stroke', 'currentColor');
         xLine.setAttribute('stroke-width', '0.5');
-        xLine.setAttribute('stroke-dasharray', '2 2');
         svg.appendChild(xLine);
 
         var yLine = document.createElementNS(svgNS, 'line');
@@ -335,22 +347,23 @@
         yLine.setAttribute('y2', ySplit);
         yLine.setAttribute('stroke', 'currentColor');
         yLine.setAttribute('stroke-width', '0.5');
-        yLine.setAttribute('stroke-dasharray', '2 2');
         svg.appendChild(yLine);
 
+        // Quadrant labels positioned at far corners
+        var labelPadding = 4;
         var labels = [
-          { text: quadrantMeta.rebalance.label, x: xSplit / 2, y: ySplit / 2 },
-          { text: quadrantMeta.maintain.label, x: xSplit + (100 - xSplit) / 2, y: ySplit / 2 },
-          { text: quadrantMeta.release.label, x: xSplit / 2, y: ySplit + (100 - ySplit) / 2 },
-          { text: quadrantMeta.invest.label, x: xSplit + (100 - xSplit) / 2, y: ySplit + (100 - ySplit) / 2 }
+          { text: quadrantMeta.rebalance.label, x: labelPadding, y: labelPadding + 3, anchor: 'start', baseline: 'hanging' },          // top-left corner
+          { text: quadrantMeta.maintain.label, x: 100 - labelPadding, y: labelPadding + 3, anchor: 'end', baseline: 'hanging' },       // top-right corner
+          { text: quadrantMeta.release.label, x: labelPadding, y: 100 - labelPadding - 1, anchor: 'start', baseline: 'auto' },          // bottom-left corner
+          { text: quadrantMeta.invest.label, x: 100 - labelPadding, y: 100 - labelPadding - 1, anchor: 'end', baseline: 'auto' }        // bottom-right corner
         ];
 
         labels.forEach(function(label) {
           var text = document.createElementNS(svgNS, 'text');
           text.setAttribute('x', label.x);
           text.setAttribute('y', label.y);
-          text.setAttribute('text-anchor', 'middle');
-          text.setAttribute('dominant-baseline', 'middle');
+          text.setAttribute('text-anchor', label.anchor);
+          text.setAttribute('dominant-baseline', label.baseline);
           text.classList.add('matrix-label');
           text.textContent = label.text;
           svg.appendChild(text);
@@ -384,7 +397,7 @@
           group.appendChild(text);
 
           var title = document.createElementNS(svgNS, 'title');
-          title.textContent = category.label + ': ' + category.importance + '/5 importance, ' + category.satisfaction + '/5 satisfaction';
+          title.textContent = category.label + ': ' + category.importance + '/6 importance, ' + category.satisfaction + '/6 satisfaction';
           group.appendChild(title);
 
           group.addEventListener('mouseenter', function() {
@@ -455,11 +468,11 @@
             '<div class="score-slider">' +
             '  <div class="score-value-display">' +
             '    <span class="score-value' + (value === null ? ' is-empty' : '') + '" id="score-output">' + (value === null ? '—' : value) + '</span>' +
-            '    <span class="score-max">/5</span>' +
+            '    <span class="score-max">/6</span>' +
             '  </div>' +
-            '  <input id="score-input" type="range" min="1" max="5" step="1" value="' + (value || 3) + '" aria-label="' + (isImportance ? 'Importance' : 'Satisfaction') + ' rating for ' + category.label + '" aria-valuemin="1" aria-valuemax="5" aria-valuenow="' + (value || 3) + '">' +
+            '  <input id="score-input" type="range" min="1" max="6" step="1" value="' + (value || 3) + '" aria-label="' + (isImportance ? 'Importance' : 'Satisfaction') + ' rating for ' + category.label + '" aria-valuemin="1" aria-valuemax="6" aria-valuenow="' + (value || 3) + '">' +
             '  <div class="slider-labels">' +
-            '    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>' +
+            '    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span>' +
             '  </div>' +
             '  <div class="slider-scale"><span>Not at all</span><span>Extremely</span></div>' +
             '</div>';
@@ -542,25 +555,6 @@
           axis.className = 'matrix-axes';
           axis.innerHTML = '<span>Current satisfaction</span><span>Importance</span>';
 
-          var list = document.createElement('ul');
-          list.className = 'summary-list';
-          state.categories.forEach(function(categoryItem) {
-            var quadrantKey = getQuadrant(categoryItem, splits);
-            var item = document.createElement('li');
-            var button = document.createElement('button');
-            button.type = 'button';
-            button.className = 'summary-button';
-            button.setAttribute('data-category-button', categoryItem.id);
-            button.innerHTML = '<span class="summary-name">' + categoryItem.label + '</span>' +
-              '<span class="summary-focus">' + quadrantMeta[quadrantKey].label + '</span>' +
-              '<span class="summary-note">' + quadrantMeta[quadrantKey].summary + '</span>';
-            button.addEventListener('click', function() {
-              setHighlight(categoryItem.id);
-            });
-            item.appendChild(button);
-            list.appendChild(item);
-          });
-
           var focus = getFocusNow(splits, quadrantBuckets);
           var focusCard = document.createElement('div');
           focusCard.className = 'focus-card';
@@ -569,7 +563,6 @@
           panel.appendChild(matrixWrap);
           panel.appendChild(counts);
           panel.appendChild(axis);
-          panel.appendChild(list);
           panel.appendChild(focusCard);
           elements.content.appendChild(panel);
 
@@ -677,11 +670,12 @@
 
           var table = document.createElement('table');
           table.className = 'scores-table';
-          table.innerHTML = '<thead><tr><th>Category</th><th>Importance</th><th>Satisfaction</th></tr></thead>';
+          table.innerHTML = '<thead><tr><th>Category</th><th>Importance</th><th>Satisfaction</th><th>Recommendation</th></tr></thead>';
           var tbody = document.createElement('tbody');
           state.categories.forEach(function(categoryItem) {
+            var quadrantKey = getQuadrant(categoryItem, splitsPrint);
             var row = document.createElement('tr');
-            row.innerHTML = '<td>' + categoryItem.label + '</td><td>' + categoryItem.importance + '/5</td><td>' + categoryItem.satisfaction + '/5</td>';
+            row.innerHTML = '<td>' + categoryItem.label + '</td><td>' + categoryItem.importance + '/6</td><td>' + categoryItem.satisfaction + '/6</td><td class="recommendation-cell recommendation-' + quadrantKey + '">' + quadrantMeta[quadrantKey].label + '</td>';
             tbody.appendChild(row);
           });
           table.appendChild(tbody);
