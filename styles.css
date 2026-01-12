@@ -511,7 +511,7 @@ section {
 .positions {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-md);
   margin-bottom: var(--space-lg);
 }
 
@@ -530,36 +530,53 @@ section {
   padding-bottom: 0;
 }
 
-.position-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--space-xs);
+.position-company {
   margin-bottom: var(--space-xs);
 }
 
 .position h3 {
   margin: 0;
-  flex-shrink: 0;
+  font-weight: 600;
 }
 
-/* Timeline connector line */
-.position-header::after {
-  content: '';
-  flex: 1;
+.position-meta {
+  display: grid;
+  grid-template-columns: auto minmax(32px, 1fr) auto;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.leader-rule {
   height: 1px;
   background-color: #D0D0D0;
-  margin: 0 var(--space-sm);
-  min-width: 20px;
-  align-self: center;
+  opacity: 0.6;
+  min-width: 24px;
 }
 
-.period {
+.date-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
   font-family: var(--font-mono);
   font-size: 0.8125rem;
   color: var(--color-muted);
   letter-spacing: 0.02em;
-  flex-shrink: 0;
+  justify-self: end;
+}
+
+.date-pill {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid #D0D0D0;
+  color: var(--color-text);
+}
+
+.today-status {
+  color: var(--color-text);
+}
+
+.date-meta .current-indicator {
+  margin-right: 0;
 }
 
 /* Current Position Indicator */
@@ -613,12 +630,13 @@ section {
 
 .role {
   font-weight: 500;
-  margin-bottom: var(--space-xs);
+  margin: 0;
 }
 
 .context {
   color: var(--color-muted);
   font-size: 0.9375rem;
+  margin-top: var(--space-xs);
 }
 
 .cta-link {
@@ -1631,35 +1649,22 @@ footer {
 
 /* Mobile - Timeline stacked layout */
 @media (max-width: 479px) {
-  .position-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0;
+  .position-meta {
+    grid-template-columns: auto minmax(24px, 1fr);
+    row-gap: var(--space-xs);
   }
 
-  .position-header::after {
-    display: none;
+  .leader-rule {
+    grid-column: 2;
   }
 
-  .position--current .position-header {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
+  .date-meta {
+    grid-column: 1 / -1;
+    justify-self: end;
   }
 
-  .current-indicator {
-    order: -1;
-  }
-
-  .period {
-    width: 100%;
-    margin-top: var(--space-xs);
-  }
-
-  .position--current .period {
-    width: auto;
-    margin-top: 0;
-    margin-left: auto;
+  .date-pill {
+    padding: 0.15rem 0.5rem;
   }
 }
 
