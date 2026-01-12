@@ -711,29 +711,12 @@ section {
 }
 
 .position-company {
-  margin-bottom: var(--space-xs);
+  margin-bottom: 0;
 }
 
 .position h3 {
   margin: 0;
   font-weight: 600;
-}
-
-.position-meta {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 1fr auto;
-  align-items: start;
-  gap: var(--space-sm);
-}
-
-.leader-rule {
-  height: 1px;
-  width: 100%;
-  background-color: #D0D0D0;
-  opacity: 0.6;
-  min-width: 24px;
-  margin-top: 0.35em;
-  align-self: start;
 }
 
 .date-meta {
@@ -744,9 +727,9 @@ section {
   font-size: 0.8125rem;
   color: var(--color-muted);
   letter-spacing: 0.02em;
-  justify-self: end;
   white-space: nowrap;
-  margin-top: 0.35em;
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
 .date-pill {
@@ -815,14 +798,14 @@ section {
 
 .role {
   font-weight: 500;
-  margin: 0;
+  margin: 0.5rem 0 0 0;
   min-width: 0;
 }
 
 .context {
   color: var(--color-muted);
   font-size: 0.9375rem;
-  margin-top: var(--space-xs);
+  margin-top: 0;
 }
 
 .cta-link {
