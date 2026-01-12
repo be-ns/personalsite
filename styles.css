@@ -203,8 +203,13 @@ a:focus-visible {
   background: none;
   border: none;
   cursor: pointer;
-  padding: var(--space-xs) 0;
+  padding: 0.75rem 0.5rem;
+  min-height: 44px;
+  min-width: 44px;
   position: relative;
+  z-index: 101;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .menu-toggle::after {
