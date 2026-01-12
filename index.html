@@ -315,151 +315,77 @@
 
   <script>
     (function() {
-      // Menu toggle functionality
-      const menuToggle = document.querySelector('.menu-toggle');
-      const menuClose = document.querySelector('.menu-close');
-      const menuPanel = document.querySelector('.menu-panel');
-      const menuOverlay = document.querySelector('.menu-overlay');
-      const menuLinks = document.querySelectorAll('.menu-links a');
-      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      // Menu elements
+      var menuToggle = document.querySelector('.menu-toggle');
+      var menuClose = document.querySelector('.menu-close');
+      var menuPanel = document.querySelector('.menu-panel');
+      var menuOverlay = document.querySelector('.menu-overlay');
+      var menuLinks = document.querySelectorAll('.menu-links a');
 
-      // Guard against missing elements
+      // Exit if essential elements missing
       if (!menuToggle || !menuPanel || !menuOverlay) {
-        console.error('Menu elements not found');
         return;
       }
 
-      function openMenu(e) {
-        if (e) e.preventDefault();
-        menuPanel.classList.remove('is-closing');
+      var isOpen = false;
+
+      function openMenu() {
+        if (isOpen) return;
+        isOpen = true;
+
         menuPanel.classList.add('is-open');
         menuOverlay.classList.add('is-visible');
         menuToggle.setAttribute('aria-expanded', 'true');
         menuPanel.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
 
-        // Update current section indicator
-        updateCurrentSection();
-
-        // Focus close button after animation
         if (menuClose) {
-          setTimeout(function() {
-            menuClose.focus();
-          }, reduceMotion ? 0 : 100);
+          menuClose.focus();
         }
       }
 
-      function closeMenu(e) {
-        if (e) e.preventDefault();
-        menuPanel.classList.add('is-closing');
+      function closeMenu() {
+        if (!isOpen) return;
+        isOpen = false;
 
-        // Wait for nav items to fade out before closing panel
-        var closeDuration = reduceMotion ? 0 : 180;
-
-        setTimeout(function() {
-          menuPanel.classList.remove('is-open');
-          menuPanel.classList.remove('is-closing');
-          menuOverlay.classList.remove('is-visible');
-          menuToggle.setAttribute('aria-expanded', 'false');
-          menuPanel.setAttribute('aria-hidden', 'true');
-          document.body.style.overflow = '';
-          menuToggle.focus();
-        }, closeDuration);
+        menuPanel.classList.remove('is-open');
+        menuOverlay.classList.remove('is-visible');
+        menuToggle.setAttribute('aria-expanded', 'false');
+        menuPanel.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        menuToggle.focus();
       }
 
-      // Update current section indicator based on scroll position
-      function updateCurrentSection() {
-        var sections = ['hero-heading', 'experience-heading', 'tools-heading', 'skills-heading', 'contact-heading'];
-        var currentSection = null;
-        var scrollY = window.scrollY + 150;
-
-        for (var i = sections.length - 1; i >= 0; i--) {
-          var section = document.getElementById(sections[i]);
-          if (section && section.offsetTop <= scrollY) {
-            currentSection = sections[i];
-            break;
-          }
-        }
-
-        // Default to first section if at top
-        if (!currentSection && window.scrollY < 200) {
-          currentSection = 'hero-heading';
-        }
-
-        menuLinks.forEach(function(link) {
-          var linkSection = link.getAttribute('data-section');
-          if (linkSection === currentSection) {
-            link.classList.add('is-current');
-          } else {
-            link.classList.remove('is-current');
-          }
-        });
-      }
-
-      // Use both click and touchend for reliable mobile support
-      menuToggle.addEventListener('click', openMenu);
-      menuToggle.addEventListener('touchend', function(e) {
+      // Click handlers
+      menuToggle.onclick = function(e) {
         e.preventDefault();
+        e.stopPropagation();
         openMenu();
-      }, { passive: false });
+      };
 
       if (menuClose) {
-        menuClose.addEventListener('click', closeMenu);
-        menuClose.addEventListener('touchend', function(e) {
+        menuClose.onclick = function(e) {
           e.preventDefault();
+          e.stopPropagation();
           closeMenu();
-        }, { passive: false });
+        };
       }
 
-      menuOverlay.addEventListener('click', closeMenu);
+      menuOverlay.onclick = closeMenu;
 
-      menuLinks.forEach(function(link) {
-        link.addEventListener('click', function() {
+      // Close on nav link click
+      for (var i = 0; i < menuLinks.length; i++) {
+        menuLinks[i].onclick = function() {
           closeMenu();
-        });
-      });
+        };
+      }
 
-      // Close on Escape key
-      document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && menuPanel.classList.contains('is-open')) {
-          closeMenu();
-        }
-      });
-
-      // Trap focus within menu when open
-      menuPanel.addEventListener('keydown', function(e) {
-        if (e.key !== 'Tab') return;
-
-        const focusable = menuPanel.querySelectorAll('button, a');
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      });
-
-      // Swipe down to close on mobile
-      var touchStartY = 0;
-      var touchEndY = 0;
-
-      menuPanel.addEventListener('touchstart', function(e) {
-        touchStartY = e.changedTouches[0].screenY;
-      }, { passive: true });
-
-      menuPanel.addEventListener('touchend', function(e) {
-        touchEndY = e.changedTouches[0].screenY;
-        var swipeDistance = touchEndY - touchStartY;
-
-        // Close if swiped down more than 80px
-        if (swipeDistance > 80 && menuPanel.classList.contains('is-open')) {
+      // Close on Escape
+      document.onkeydown = function(e) {
+        if (e.key === 'Escape' && isOpen) {
           closeMenu();
         }
-      }, { passive: true });
+      };
 
       // Scroll animations with Intersection Observer
       if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
