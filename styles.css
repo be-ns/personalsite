@@ -245,12 +245,14 @@ a:focus-visible {
   -webkit-backdrop-filter: blur(14px) saturate(95%);
   opacity: 0;
   visibility: hidden;
+  pointer-events: none;
   transition: opacity var(--transition-menu-open), visibility var(--transition-menu-open);
 }
 
 .menu-overlay.is-visible {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
 }
 
 /* Fallback for browsers without backdrop-filter */
@@ -277,6 +279,7 @@ a:focus-visible {
   padding: var(--space-8);
   opacity: 0;
   visibility: hidden;
+  pointer-events: none;
   transition:
     opacity var(--transition-menu-open),
     visibility var(--transition-menu-open),
@@ -288,6 +291,7 @@ a:focus-visible {
 .menu-panel.is-open {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
   transform: translate(-50%, -50%) translateY(0) scale(1);
 }
 
