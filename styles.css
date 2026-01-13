@@ -168,11 +168,7 @@ a:focus-visible {
   padding: calc(var(--space-edge) + env(safe-area-inset-top)) var(--space-edge) var(--space-edge);
   background-color: var(--color-bg);
   border-bottom: 1px solid transparent;
-  transition: border-color var(--transition-base), box-shadow var(--transition-base), gap 220ms ease;
-}
-
-.site-header.is-menu-open {
-  gap: var(--menu-gap-expanded);
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
 }
 
 .site-header.is-scrolled {
@@ -222,9 +218,17 @@ a:focus-visible {
   min-height: 44px;
   min-width: 44px;
   position: relative;
-  z-index: 101;
+  z-index: calc(var(--z-overlay) + 2);
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+  transition: right var(--transition-menu-open), left var(--transition-menu-open);
+}
+
+/* When menu is open, position "Close" to the right of the menu panel */
+.site-header.is-menu-open .menu-toggle {
+  position: fixed;
+  right: var(--space-edge);
+  left: auto;
 }
 
 .menu-toggle::after {
@@ -277,7 +281,7 @@ a:focus-visible {
 /* Menu Panel - Floating modal card */
 .menu-panel {
   position: fixed;
-  top: calc(var(--header-height) + var(--space-edge) + env(safe-area-inset-top));
+  top: calc(var(--header-height) + var(--space-edge) + env(safe-area-inset-top) + 0.75rem);
   left: var(--space-edge);
   right: var(--space-edge);
   transform: translateY(10px) scale(0.985);
