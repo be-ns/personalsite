@@ -224,11 +224,43 @@ a:focus-visible {
   transition: right var(--transition-menu-open), left var(--transition-menu-open);
 }
 
-/* When menu is open, position "Close" to the right of the menu panel */
+/* When menu is opening, animate to cobalt and slide right */
 .site-header.is-menu-open .menu-toggle {
   position: fixed;
   right: var(--space-edge);
   left: auto;
+  animation: menu-toggle-open var(--transition-menu-open) ease forwards;
+}
+
+/* When menu is closing, animate to teal and slide left */
+.site-header:not(.is-menu-open) .menu-toggle {
+  animation: menu-toggle-close var(--transition-menu-close) ease forwards;
+}
+
+@keyframes menu-toggle-open {
+  0% {
+    color: var(--color-text);
+    opacity: 0.7;
+  }
+  100% {
+    color: var(--color-cobalt);
+    opacity: 1;
+  }
+}
+
+@keyframes menu-toggle-close {
+  0% {
+    color: var(--color-cobalt);
+    opacity: 0.7;
+  }
+  50% {
+    color: var(--color-teal);
+    opacity: 0.85;
+  }
+  100% {
+    color: var(--color-text);
+    opacity: 1;
+  }
 }
 
 .menu-toggle::after {
