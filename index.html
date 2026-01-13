@@ -293,7 +293,10 @@
     <!-- Contact Section -->
     <section class="contact" aria-labelledby="contact-heading">
       <h2 id="contact-heading">Contact</h2>
-      <a href="mailto:ben@benjaminsiverly.ly" class="email-link">ben@benjaminsiverly.ly</a>
+      <button class="email-copy" type="button" data-email-copy="YmVuamFtaW5zaXZlcmx5QGdtYWlsLmNvbQ==">
+        Copy email
+      </button>
+      <span class="email-copy-status" role="status" aria-live="polite"></span>
       <div class="social-links">
         <a href="https://www.linkedin.com/in/be-ns/" target="_blank" rel="noopener">LinkedIn</a>
         <a href="https://github.com/be-ns" target="_blank" rel="noopener">GitHub</a>
@@ -494,6 +497,64 @@
       window.addEventListener('scroll', updateHeaderState, { passive: true });
       updateHeaderState();
 
+      // Copy email address
+      var emailButton = document.querySelector('[data-email-copy]');
+      var emailStatus = document.querySelector('.email-copy-status');
+
+      function setEmailStatus(message) {
+        if (!emailStatus) return;
+        emailStatus.textContent = message;
+        clearTimeout(emailStatus._resetTimer);
+        emailStatus._resetTimer = setTimeout(function() {
+          emailStatus.textContent = '';
+        }, 2000);
+      }
+
+      function decodeEmail(value) {
+        try {
+          return atob(value);
+        } catch (err) {
+          return '';
+        }
+      }
+
+      function copyEmailToClipboard(email) {
+        if (!email) return Promise.reject();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(email);
+        }
+
+        return new Promise(function(resolve, reject) {
+          var helper = document.createElement('textarea');
+          helper.value = email;
+          helper.setAttribute('readonly', '');
+          helper.style.position = 'absolute';
+          helper.style.left = '-9999px';
+          document.body.appendChild(helper);
+          helper.select();
+          try {
+            var success = document.execCommand('copy');
+            document.body.removeChild(helper);
+            success ? resolve() : reject();
+          } catch (err) {
+            document.body.removeChild(helper);
+            reject(err);
+          }
+        });
+      }
+
+      if (emailButton) {
+        emailButton.addEventListener('click', function() {
+          var email = decodeEmail(emailButton.getAttribute('data-email-copy') || '');
+          copyEmailToClipboard(email)
+            .then(function() {
+              setEmailStatus('Copied!');
+            })
+            .catch(function() {
+              setEmailStatus('Copy failed');
+            });
+        });
+      }
     })();
   </script>
 </body>
