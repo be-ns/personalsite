@@ -28,6 +28,11 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <!-- Page Loader -->
+  <div class="page-loader" aria-hidden="true">
+    <div class="page-loader__dot"></div>
+  </div>
+
   <!-- Navigation -->
   <header class="site-header">
     <a href="#" class="site-brand" aria-label="Return to top">BS.</a>
@@ -301,6 +306,46 @@
   </footer>
 
   <script>
+    // Page Loader
+    (function() {
+      var loader = document.querySelector('.page-loader');
+      if (!loader) return;
+
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Timing: 80ms fade in + 520ms dot cycle + 200ms fade out = 800ms total
+      // For reduced motion: 150ms static + 150ms fade = 300ms total
+      var animationDuration = reduceMotion ? 150 : 600; // Time before starting fade out
+      var fadeOutDuration = reduceMotion ? 150 : 200;
+      var maxTimeout = 900; // Safety cap under 1 second
+
+      // Prevent scroll during loader
+      document.body.style.overflow = 'hidden';
+
+      function removeLoader() {
+        loader.classList.add('is-fading');
+        setTimeout(function() {
+          if (loader && loader.parentNode) {
+            loader.parentNode.removeChild(loader);
+          }
+          document.body.style.overflow = '';
+        }, fadeOutDuration);
+      }
+
+      // Start fade out after animation completes
+      var animationTimer = setTimeout(removeLoader, animationDuration);
+
+      // Safety fallback: remove loader no matter what after max timeout
+      setTimeout(function() {
+        clearTimeout(animationTimer);
+        if (loader && loader.parentNode) {
+          loader.style.display = 'none';
+          loader.parentNode.removeChild(loader);
+          document.body.style.overflow = '';
+        }
+      }, maxTimeout);
+    })();
+
     (function() {
       // Menu elements
       var menuToggle = document.querySelector('.menu-toggle');

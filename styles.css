@@ -11,6 +11,7 @@
   --color-accent-light: rgba(255, 226, 39, 0.35);
   --color-cobalt: #0047AB;
   --color-cobalt-hover: #003B90;
+  --color-teal: #0D7377;
   --color-navy: #1E2A3A;
   --color-light: #F5F5F5;
   --color-bg-alt: #F8F8F6;
@@ -53,6 +54,7 @@
   --radius-lg: 18px;
   --z-header: 1000;
   --z-overlay: 900;
+  --z-loader: 9999;
 
   /* Transitions */
   --transition-fast: 150ms ease;
@@ -2227,6 +2229,110 @@ footer {
 }
 
 /* ==========================================================================
+   Page Loader
+   ========================================================================== */
+
+.page-loader {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-loader);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: all;
+  opacity: 0;
+  animation: loader-overlay-in 80ms linear forwards;
+}
+
+.page-loader::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: #FAF9F7;
+  opacity: 0.65;
+}
+
+/* Subtle noise texture for vellum effect */
+.page-loader::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.page-loader__dot {
+  position: relative;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  z-index: 1;
+  animation: loader-dot-color 520ms steps(4, end) forwards 80ms;
+}
+
+/* Subtle rotating halo around the dot */
+.page-loader__dot::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(0, 0, 0, 0.08) 90deg,
+    transparent 180deg
+  );
+  animation: loader-dot-rotate 520ms linear forwards 80ms;
+}
+
+/* Fade out animation */
+.page-loader.is-fading {
+  animation: loader-overlay-out 200ms linear forwards;
+}
+
+.page-loader.is-fading .page-loader__dot {
+  animation: loader-dot-fade 200ms linear forwards;
+}
+
+.page-loader.is-fading .page-loader__dot::before {
+  animation: loader-dot-fade 200ms linear forwards;
+}
+
+/* Keyframe animations */
+@keyframes loader-overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes loader-overlay-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes loader-dot-color {
+  0% { background-color: var(--color-accent); }
+  25% { background-color: var(--color-text); }
+  50% { background-color: var(--color-cobalt); }
+  75% { background-color: var(--color-teal); }
+  100% { background-color: var(--color-teal); }
+}
+
+@keyframes loader-dot-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes loader-dot-fade {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* ==========================================================================
    Accessibility
    ========================================================================== */
 
@@ -2291,6 +2397,30 @@ footer {
 
   .menu-links a:active {
     transform: none;
+  }
+
+  /* Page loader: show static dot briefly, then fade */
+  .page-loader {
+    animation: none;
+    opacity: 1;
+  }
+
+  .page-loader__dot {
+    animation: none;
+    background-color: var(--color-accent);
+  }
+
+  .page-loader__dot::before {
+    animation: none;
+    display: none;
+  }
+
+  .page-loader.is-fading {
+    animation: loader-overlay-out 150ms linear forwards;
+  }
+
+  .page-loader.is-fading .page-loader__dot {
+    animation: loader-dot-fade 150ms linear forwards;
   }
 }
 
