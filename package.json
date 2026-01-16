@@ -1,0 +1,11 @@
+{
+  "name": "personalsite-og-images",
+  "version": "1.0.0",
+  "description": "Generate OG images for bensiverly.com",
+  "scripts": {
+    "generate-og": "node generate-og-images.js"
+  },
+  "dependencies": {
+    "canvas": "^2.11.2"
+  }
+}
