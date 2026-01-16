@@ -733,6 +733,24 @@ section:last-of-type {
   font-size: clamp(1.25rem, 3vw, 1.5rem);
   font-weight: 600;
   margin-bottom: var(--space-md);
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.contact-email:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+
+.contact-email-status {
+  display: block;
+  min-height: 1.25rem;
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  margin-bottom: var(--space-md);
 }
 
 .contact-social {
