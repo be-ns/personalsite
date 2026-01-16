@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Life Strategy Matrix — Ben Siverly</title>
-  <meta name="description" content="Make and print a life strategy matrix to focus your energy on what matters most.">
+  <meta name="description" content="Score 8 life areas on importance and satisfaction. See where to invest your energy. Print a one-page plan.">
 
   <!-- Open Graph -->
   <meta property="og:title" content="Life Strategy Matrix — Ben Siverly">
-  <meta property="og:description" content="Make and print a life strategy matrix to focus your energy on what matters most.">
+  <meta property="og:description" content="Score 8 life areas on importance and satisfaction. See where to invest your energy.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://bensiverly.com/life-strategy.html">
 
@@ -18,134 +18,1109 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Zilla+Slab:wght@600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Zilla+Slab:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ==========================================================================
+       CSS Variables
+       ========================================================================== */
+    :root {
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #F8F8F6;
+      --color-text: #1A1A1A;
+      --color-accent: #FFE227;
+      --color-accent-hover: #FFD800;
+      --color-muted: #666666;
+      --color-border: #E5E5E5;
+
+      --font-heading: 'Zilla Slab', Georgia, serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+      --space-xs: 0.5rem;
+      --space-sm: 1rem;
+      --space-md: 1.5rem;
+      --space-lg: 2.5rem;
+      --space-xl: 4rem;
+
+      --radius-sm: 4px;
+      --radius-md: 8px;
+
+      --transition-fast: 150ms ease;
+      --transition-base: 250ms ease;
+    }
+
+    /* ==========================================================================
+       Base Styles
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ==========================================================================
+       Header - Minimal
+       ========================================================================== */
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-sm) var(--space-md);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .site-brand {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--color-text);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+
+    .site-brand:hover {
+      color: var(--color-muted);
+    }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .tool-label {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+    }
+
+    .reset-link {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius-sm);
+      transition: color var(--transition-fast), background-color var(--transition-fast);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .reset-link.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .reset-link:hover {
+      color: var(--color-text);
+      background-color: var(--color-bg-alt);
+    }
+
+    /* ==========================================================================
+       Main Container
+       ========================================================================== */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 560px;
+      width: 100%;
+      margin: 0 auto;
+      padding: var(--space-lg) var(--space-md);
+    }
+
+    /* ==========================================================================
+       Tool Container
+       ========================================================================== */
+    .tool {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Progress indicator - subtle, single line */
+    .progress {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+      margin-bottom: var(--space-md);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .progress-phase {
+      color: var(--color-text);
+      font-weight: 500;
+    }
+
+    .progress-count {
+      color: var(--color-muted);
+    }
+
+    .progress-count::before {
+      content: '·';
+      margin-right: 0.5rem;
+    }
+
+    /* ==========================================================================
+       Score Card - The hero of each scoring step
+       ========================================================================== */
+    .score-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: var(--space-lg) 0;
+      opacity: 1;
+      transition: opacity var(--transition-fast);
+    }
+
+    .score-card.is-transitioning {
+      opacity: 0;
+    }
+
+    .category-name {
+      font-family: var(--font-heading);
+      font-size: clamp(2.5rem, 8vw, 3.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin: 0 0 var(--space-lg) 0;
+      color: var(--color-text);
+    }
+
+    /* Slider */
+    .slider-container {
+      width: 100%;
+      max-width: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .slider-value {
+      font-family: var(--font-heading);
+      font-size: 2.5rem;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--color-text);
+      min-height: 2.5rem;
+    }
+
+    .slider-value.is-unset {
+      color: var(--color-border);
+    }
+
+    .slider-track {
+      position: relative;
+      width: 100%;
+      padding: 0.75rem 0;
+    }
+
+    .slider-input {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: var(--color-border);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .slider-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 32px;
+      height: 32px;
+      background: var(--color-text);
+      border-radius: 50%;
+      cursor: grab;
+      border: 3px solid var(--color-bg);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .slider-input::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .slider-input::-webkit-slider-thumb:active {
+      cursor: grabbing;
+      transform: scale(1.05);
+    }
+
+    .slider-input::-moz-range-thumb {
+      width: 32px;
+      height: 32px;
+      background: var(--color-text);
+      border-radius: 50%;
+      cursor: grab;
+      border: 3px solid var(--color-bg);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .slider-input:focus-visible {
+      outline: none;
+    }
+
+    .slider-input:focus-visible::-webkit-slider-thumb {
+      box-shadow: 0 0 0 3px var(--color-accent);
+    }
+
+    .slider-ticks {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 2px;
+    }
+
+    .slider-tick {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--color-muted);
+      width: 20px;
+      text-align: center;
+      cursor: pointer;
+      padding: 0.25rem;
+      border-radius: var(--radius-sm);
+      transition: color var(--transition-fast), background-color var(--transition-fast);
+    }
+
+    .slider-tick:hover {
+      color: var(--color-text);
+      background-color: var(--color-bg-alt);
+    }
+
+    .slider-tick.is-active {
+      color: var(--color-text);
+      font-weight: 500;
+    }
+
+    /* ==========================================================================
+       Navigation
+       ========================================================================== */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: var(--space-md);
+      margin-top: auto;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.875rem 1.25rem;
+      border: 2px solid var(--color-text);
+      background-color: transparent;
+      color: var(--color-text);
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      transition: all var(--transition-fast);
+    }
+
+    .nav-btn:hover,
+    .nav-btn:focus {
+      background-color: var(--color-text);
+      color: var(--color-bg);
+    }
+
+    .nav-btn:focus-visible {
+      outline: 2px solid var(--color-text);
+      outline-offset: 2px;
+    }
+
+    .nav-btn--back {
+      border-color: var(--color-border);
+      color: var(--color-muted);
+      padding: 0.875rem 1rem;
+    }
+
+    .nav-btn--back:hover,
+    .nav-btn--back:focus {
+      border-color: var(--color-text);
+      background-color: transparent;
+      color: var(--color-text);
+    }
+
+    .nav-btn--back.is-hidden {
+      visibility: hidden;
+    }
+
+    .nav-btn--next {
+      background-color: var(--color-text);
+      color: var(--color-bg);
+    }
+
+    .nav-btn--next:hover,
+    .nav-btn--next:focus {
+      background-color: var(--color-accent);
+      border-color: var(--color-accent);
+      color: var(--color-text);
+    }
+
+    .nav-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .skip-btn {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.375rem 0.5rem;
+      border-radius: var(--radius-sm);
+      transition: color var(--transition-fast), background-color var(--transition-fast);
+      opacity: 0.7;
+    }
+
+    .skip-btn:hover {
+      color: var(--color-text);
+      background-color: var(--color-bg-alt);
+      opacity: 1;
+    }
+
+    .skip-btn.is-hidden {
+      display: none;
+    }
+
+    /* ==========================================================================
+       Results Panel
+       ========================================================================== */
+    .results {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+      opacity: 1;
+      transition: opacity var(--transition-base);
+    }
+
+    .results.is-transitioning {
+      opacity: 0;
+    }
+
+    .results-header {
+      text-align: center;
+    }
+
+    .results-title {
+      font-family: var(--font-heading);
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 0 0 var(--space-xs) 0;
+    }
+
+    .results-subtitle {
+      font-size: 0.9375rem;
+      color: var(--color-muted);
+      margin: 0;
+    }
+
+    /* Matrix */
+    .matrix-container {
+      position: relative;
+      background-color: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-sm);
+    }
+
+    .matrix-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .matrix-quadrant {
+      fill: transparent;
+    }
+
+    .quadrant-maintain {
+      fill: rgba(61, 90, 71, 0.06);
+    }
+
+    .quadrant-invest {
+      fill: rgba(255, 226, 39, 0.15);
+    }
+
+    .quadrant-rebalance {
+      fill: rgba(100, 116, 139, 0.04);
+    }
+
+    .quadrant-release {
+      fill: rgba(100, 116, 139, 0.02);
+    }
+
+    .matrix-label {
+      font-family: var(--font-mono);
+      font-size: 3px;
+      font-weight: 500;
+      fill: var(--color-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .matrix-point {
+      cursor: pointer;
+      transition: transform var(--transition-fast);
+    }
+
+    .matrix-point:hover {
+      transform: scale(1.15);
+    }
+
+    .matrix-point-dot {
+      fill: var(--color-text);
+      stroke: var(--color-bg);
+      stroke-width: 0.5;
+      transition: fill var(--transition-fast), stroke var(--transition-fast);
+    }
+
+    .matrix-point-text {
+      font-family: var(--font-mono);
+      font-size: 2.5px;
+      font-weight: 600;
+      fill: var(--color-text);
+    }
+
+    .matrix-point.is-active .matrix-point-dot {
+      fill: var(--color-accent);
+      stroke: var(--color-text);
+      stroke-width: 0.8;
+    }
+
+    .matrix-tooltip {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      background-color: var(--color-bg);
+      border: 1px solid var(--color-text);
+      border-radius: var(--radius-sm);
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--color-text);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition-fast);
+      white-space: nowrap;
+      z-index: 10;
+    }
+
+    .matrix-tooltip.is-visible {
+      opacity: 1;
+    }
+
+    .matrix-tooltip strong {
+      display: block;
+      font-weight: 600;
+    }
+
+    .matrix-tooltip span {
+      font-size: 0.75rem;
+      color: var(--color-muted);
+    }
+
+    .matrix-axes {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-muted);
+      padding: var(--space-xs) 0 0 0;
+    }
+
+    /* Focus Card */
+    .focus-card {
+      background-color: var(--color-accent);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+    }
+
+    .focus-label {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-text);
+      opacity: 0.7;
+      margin: 0 0 var(--space-xs) 0;
+    }
+
+    .focus-category {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 0 0 var(--space-xs) 0;
+    }
+
+    .focus-message {
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      margin: 0;
+      color: var(--color-text);
+      opacity: 0.85;
+    }
+
+    /* Quadrant Summary */
+    .quadrant-summary {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-xs);
+    }
+
+    .quadrant-block {
+      padding: var(--space-sm);
+      background-color: var(--color-bg-alt);
+      border-radius: var(--radius-sm);
+    }
+
+    .quadrant-block-title {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+      margin: 0 0 0.375rem 0;
+    }
+
+    .quadrant-block-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-size: 0.875rem;
+    }
+
+    .quadrant-block-list li {
+      padding: 0.125rem 0;
+    }
+
+    .quadrant-block-list .is-empty {
+      color: var(--color-muted);
+      font-style: italic;
+    }
+
+    /* Results Navigation */
+    .results-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: var(--space-md);
+      margin-top: auto;
+      border-top: 1px solid var(--color-border);
+    }
+
+    /* ==========================================================================
+       Print Layout
+       ========================================================================== */
+    .print-view {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .print-header {
+      text-align: center;
+      padding-bottom: var(--space-sm);
+      border-bottom: 2px solid var(--color-text);
+    }
+
+    .print-title {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 0 0 var(--space-xs) 0;
+    }
+
+    .print-tagline {
+      font-size: 0.9375rem;
+      color: var(--color-muted);
+      margin: 0;
+    }
+
+    .print-date-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-xs);
+    }
+
+    .print-date-label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+    }
+
+    .print-date-input {
+      font-family: var(--font-body);
+      font-size: 0.9375rem;
+      padding: 0.375rem 0.5rem;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      width: 140px;
+    }
+
+    .print-date-output {
+      display: none;
+    }
+
+    /* Scores Table */
+    .scores-table-section {
+      margin-top: var(--space-sm);
+    }
+
+    .scores-table-title {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+      margin: 0 0 var(--space-xs) 0;
+    }
+
+    .scores-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+
+    .scores-table th,
+    .scores-table td {
+      padding: 0.5rem 0.625rem;
+      border: 1px solid var(--color-border);
+      text-align: left;
+    }
+
+    .scores-table th {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-muted);
+      font-weight: 500;
+      background-color: var(--color-bg-alt);
+    }
+
+    .scores-table td:nth-child(2),
+    .scores-table td:nth-child(3) {
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+    }
+
+    .recommendation-cell {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .recommendation-invest {
+      color: #92400E;
+      background-color: rgba(255, 226, 39, 0.2);
+    }
+
+    .recommendation-maintain {
+      color: #3D5A47;
+      background-color: rgba(61, 90, 71, 0.1);
+    }
+
+    .recommendation-rebalance {
+      color: #475569;
+      background-color: rgba(100, 116, 139, 0.1);
+    }
+
+    .recommendation-release {
+      color: var(--color-muted);
+      background-color: rgba(100, 116, 139, 0.05);
+    }
+
+    .print-actions {
+      display: flex;
+      gap: var(--space-sm);
+      padding-top: var(--space-md);
+      margin-top: auto;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .print-btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.875rem 1.25rem;
+      border: 2px solid var(--color-text);
+      background-color: var(--color-text);
+      color: var(--color-bg);
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      transition: all var(--transition-fast);
+    }
+
+    .print-btn:hover {
+      background-color: var(--color-accent);
+      border-color: var(--color-accent);
+      color: var(--color-text);
+    }
+
+    /* ==========================================================================
+       Footer - Minimal
+       ========================================================================== */
+    .site-footer {
+      padding: var(--space-sm) var(--space-md);
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--color-muted);
+    }
+
+    .privacy-note {
+      margin: 0;
+    }
+
+    /* ==========================================================================
+       Responsive Adjustments
+       ========================================================================== */
+    @media (max-width: 480px) {
+      .site-header {
+        padding: var(--space-xs) var(--space-sm);
+      }
+
+      main {
+        padding: var(--space-md) var(--space-sm);
+      }
+
+      .category-name {
+        font-size: 2rem;
+      }
+
+      .slider-container {
+        max-width: 280px;
+      }
+
+      .nav-btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.75rem;
+      }
+
+      .nav-btn--back {
+        padding: 0.75rem 0.875rem;
+      }
+
+      .quadrant-summary {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ==========================================================================
+       Reduced Motion
+       ========================================================================== */
+    @media (prefers-reduced-motion: reduce) {
+      .score-card,
+      .results,
+      .matrix-point,
+      .slider-input::-webkit-slider-thumb {
+        transition: none;
+      }
+    }
+
+    /* ==========================================================================
+       Print Styles
+       ========================================================================== */
+    @media print {
+      body {
+        background: white;
+        font-size: 10pt;
+      }
+
+      .site-header,
+      .site-footer,
+      .nav,
+      .results-nav,
+      .print-actions,
+      .print-date-input,
+      .skip-btn,
+      .reset-link,
+      button {
+        display: none !important;
+      }
+
+      main {
+        max-width: 6.5in;
+        padding: 0;
+        margin: 0 auto;
+      }
+
+      .print-view {
+        gap: 0.15in;
+      }
+
+      .print-header {
+        text-align: center;
+        padding-bottom: 0.1in;
+        margin-bottom: 0.1in;
+        border-bottom: 1.5pt solid black;
+      }
+
+      .print-title {
+        font-size: 16pt;
+        margin: 0 0 0.05in 0;
+      }
+
+      .print-tagline {
+        font-size: 9pt;
+        color: #444;
+        margin: 0;
+      }
+
+      .print-date-row {
+        margin: 0.1in 0;
+      }
+
+      .print-date-output {
+        display: inline !important;
+        font-size: 9pt;
+      }
+
+      .print-date-label {
+        display: none;
+      }
+
+      .matrix-container {
+        width: 2.75in;
+        max-width: 2.75in;
+        margin: 0.1in auto;
+        border: 1pt solid black !important;
+        border-radius: 0 !important;
+        padding: 0.1in !important;
+        page-break-inside: avoid;
+      }
+
+      .matrix-quadrant {
+        fill: transparent !important;
+      }
+
+      .quadrant-invest {
+        fill: rgba(0, 0, 0, 0.08) !important;
+      }
+
+      .quadrant-maintain {
+        fill: rgba(0, 0, 0, 0.03) !important;
+      }
+
+      .matrix-label {
+        font-size: 2.5px !important;
+        font-weight: 600 !important;
+        fill: #333 !important;
+      }
+
+      .matrix-point-dot {
+        fill: black !important;
+        stroke: white !important;
+      }
+
+      .matrix-point-text {
+        font-size: 2.2px !important;
+        fill: black !important;
+        font-weight: 700 !important;
+      }
+
+      .matrix-axes {
+        display: none;
+      }
+
+      .matrix-tooltip {
+        display: none !important;
+      }
+
+      .focus-card {
+        margin: 0.1in 0;
+        padding: 0.12in;
+        background: #FFFBEB !important;
+        border: 1pt solid #D4A00A;
+        border-radius: 0;
+        page-break-inside: avoid;
+      }
+
+      .focus-label {
+        font-size: 8pt;
+        margin-bottom: 0.03in;
+      }
+
+      .focus-category {
+        font-size: 12pt;
+        margin-bottom: 0.03in;
+      }
+
+      .focus-message {
+        font-size: 9pt;
+        line-height: 1.35;
+      }
+
+      .quadrant-summary {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.08in;
+        margin: 0.1in 0;
+        page-break-inside: avoid;
+      }
+
+      .quadrant-block {
+        padding: 0.06in;
+        border: 0.5pt solid #ccc;
+        background: #fafafa !important;
+        border-radius: 0;
+      }
+
+      .quadrant-block-title {
+        font-size: 8pt;
+        font-weight: 600;
+        margin-bottom: 0.02in;
+      }
+
+      .quadrant-block-list {
+        font-size: 8pt;
+        line-height: 1.25;
+      }
+
+      .scores-table-section {
+        margin-top: 0.1in;
+        page-break-inside: avoid;
+      }
+
+      .scores-table-title {
+        font-size: 9pt;
+        font-weight: 600;
+        margin-bottom: 0.05in;
+        text-align: center;
+      }
+
+      .scores-table {
+        font-size: 8pt;
+      }
+
+      .scores-table th,
+      .scores-table td {
+        border: 0.5pt solid black;
+        padding: 0.04in 0.06in;
+      }
+
+      .scores-table th {
+        background: #f0f0f0 !important;
+        font-weight: 600;
+        font-size: 7pt;
+      }
+
+      .scores-table td:nth-child(2),
+      .scores-table td:nth-child(3) {
+        width: 0.6in;
+      }
+
+      .scores-table td:nth-child(4) {
+        width: 0.9in;
+        text-align: center;
+      }
+
+      .recommendation-cell {
+        background: transparent !important;
+        font-weight: 600 !important;
+      }
+
+      .recommendation-invest {
+        color: black !important;
+        font-weight: 700 !important;
+      }
+
+      h1, h2, h3, h4 {
+        page-break-after: avoid;
+      }
+
+      @page {
+        margin: 0.5in;
+        size: letter portrait;
+      }
+    }
+  </style>
 </head>
-<body class="life-strategy-page">
-  <!-- Page Loader -->
-  <div class="page-loader" aria-hidden="true">
-    <div class="page-loader__dot"></div>
-  </div>
-
+<body>
   <header class="site-header">
     <a href="index.html" class="site-brand" aria-label="Return to home">BS.</a>
-    <a class="page-link" href="index.html">Back to home</a>
+    <div class="header-meta">
+      <span class="tool-label">Life Strategy Matrix</span>
+      <button class="reset-link" id="header-reset" type="button">Start over</button>
+    </div>
   </header>
 
   <main>
-    <section class="hero" aria-labelledby="life-strategy-heading">
-      <p class="location">Tool</p>
-      <h1 id="life-strategy-heading">Life Strategy Matrix</h1>
-      <div class="hero-content">
-        <p>Take 5 minutes to map out what matters. Score your life across key areas, see where you're out of balance, and get one clear focus to act on right now.</p>
-      </div>
-    </section>
-
-    <hr class="section-divider">
-
-    <section class="tools" aria-labelledby="tools-heading">
-      <h2 id="tools-heading">Build your strategy</h2>
-      <p class="section-intro">This stays private—nothing is saved. Work through the guided steps below, identify your single most important focus, then print a one-page plan you can reference all month.</p>
-      <article class="tool-card tool-card--featured">
-        <div class="tool-header">
-          <div class="tool-header-row">
-            <h3>Life Strategy Wizard</h3>
-            <div class="tool-header-actions">
-              <span class="status">Printable</span>
-            </div>
-          </div>
-          <p>Set importance, rate satisfaction, review your matrix, and print the plan.</p>
-        </div>
-        <div class="life-tool">
-          <div class="wizard" id="life-wizard">
-            <header class="wizard-header">
-              <div class="wizard-progress-bar" id="wizard-progress-bar" role="progressbar" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1">
-                <div class="wizard-progress-fill"></div>
-              </div>
-              <div class="wizard-step-indicator">
-                <span class="wizard-step-current" id="wizard-step-label">Step 1 of 4</span>
-                <span class="wizard-step-name" id="wizard-step-name">Importance</span>
-              </div>
-              <h3 class="wizard-title" id="wizard-title">What matters most?</h3>
-              <p class="wizard-microcopy" id="wizard-microcopy">Rate how important each area is to you right now.</p>
-            </header>
-
-            <div class="wizard-body">
-              <div class="wizard-card" id="wizard-step-content" aria-live="polite"></div>
-            </div>
-
-            <footer class="wizard-footer">
-              <div class="wizard-nav">
-                <button class="wizard-nav-btn wizard-nav-btn--back" type="button" id="wizard-back" aria-label="Go back">
-                  <span class="wizard-nav-icon">←</span>
-                  <span class="wizard-nav-text">Back</span>
-                </button>
-                <div class="wizard-nav-center">
-                  <span class="wizard-category-progress" id="wizard-progress">1 of 8</span>
-                </div>
-                <button class="wizard-nav-btn wizard-nav-btn--next" type="button" id="wizard-next">
-                  <span class="wizard-nav-text">Next</span>
-                  <span class="wizard-nav-icon">→</span>
-                </button>
-              </div>
-              <div class="wizard-secondary-actions">
-                <button class="wizard-link" type="button" id="wizard-skip">Skip this category</button>
-                <button class="wizard-link" type="button" id="wizard-reset">Start over</button>
-              </div>
-              <p class="wizard-note" id="wizard-note" role="status" aria-live="polite"></p>
-              <button class="wizard-preview-btn" type="button" id="wizard-preview" disabled>Jump to results</button>
-            </footer>
-          </div>
-        </div>
-      </article>
-    </section>
+    <div class="tool" id="tool" role="application" aria-label="Life Strategy Matrix tool">
+      <!-- Content rendered by JavaScript -->
+    </div>
   </main>
 
-  <footer>
-    <p class="copyright">© 2026 Ben Siverly</p>
+  <footer class="site-footer">
+    <p class="privacy-note">Nothing is saved. All data stays in your browser.</p>
   </footer>
 
   <script>
-    // Page Loader
     (function() {
-      var loader = document.querySelector('.page-loader');
-      if (!loader) return;
+      var tool = document.getElementById('tool');
+      var headerReset = document.getElementById('header-reset');
+      if (!tool) return;
 
-      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      var animationDuration = reduceMotion ? 150 : 600;
-      var fadeOutDuration = reduceMotion ? 150 : 200;
-      var maxTimeout = 900;
-
-      document.body.style.overflow = 'hidden';
-
-      function removeLoader() {
-        loader.classList.add('is-fading');
-        setTimeout(function() {
-          if (loader && loader.parentNode) {
-            loader.parentNode.removeChild(loader);
-          }
-          document.body.style.overflow = '';
-        }, fadeOutDuration);
-      }
-
-      var animationTimer = setTimeout(removeLoader, animationDuration);
-
-      setTimeout(function() {
-        clearTimeout(animationTimer);
-        if (loader && loader.parentNode) {
-          loader.style.display = 'none';
-          loader.parentNode.removeChild(loader);
-          document.body.style.overflow = '';
-        }
-      }, maxTimeout);
-    })();
-
-    (function() {
-      var wizard = document.getElementById('life-wizard');
-      if (!wizard) return;
-
-      var categorySource = [
+      // Categories
+      var categories = [
         { id: 'health', label: 'Health' },
         { id: 'work', label: 'Work' },
         { id: 'family', label: 'Family' },
@@ -156,293 +1131,471 @@
         { id: 'rest', label: 'Rest' }
       ];
 
-      var quadrantMeta = {
+      // Quadrant definitions
+      var quadrants = {
         maintain: {
           label: 'Maintain',
-          note: "Keep doing what you're doing.",
-          summary: "Important to you and you're satisfied. Keep it up."
+          note: "Keep doing what you're doing."
         },
         invest: {
           label: 'Invest',
-          note: 'This deserves more of your time.',
-          summary: "Important to you but you're not satisfied. Focus here."
+          note: 'This deserves more of your time.'
         },
         rebalance: {
           label: 'Rebalance',
-          note: 'Consider easing back here.',
-          summary: "You're satisfied but it's less important. Scale back if needed."
+          note: 'Consider easing back here.'
         },
         release: {
           label: 'Release',
-          note: "It's okay to let this coast.",
-          summary: "Less important and you're not satisfied. Let it be for now."
+          note: "It's okay to let this coast."
         }
       };
 
+      // State
       var state = {
-        categories: categorySource.map(function(category) {
-          return {
-            id: category.id,
-            label: category.label,
-            importance: null,
-            satisfaction: null
-          };
+        step: 'importance', // 'importance', 'satisfaction', 'results', 'print'
+        categoryIndex: 0,
+        scores: categories.map(function(c) {
+          return { id: c.id, label: c.label, importance: null, satisfaction: null };
         }),
-        currentStep: 1,
-        currentCategoryIndex: 0,
-        highlightedCategoryId: null
+        highlightedId: null
       };
 
-      var elements = {
-        title: document.getElementById('wizard-title'),
-        microcopy: document.getElementById('wizard-microcopy'),
-        stepLabel: document.getElementById('wizard-step-label'),
-        stepName: document.getElementById('wizard-step-name'),
-        progressBar: document.getElementById('wizard-progress-bar'),
-        progress: document.getElementById('wizard-progress'),
-        content: document.getElementById('wizard-step-content'),
-        back: document.getElementById('wizard-back'),
-        next: document.getElementById('wizard-next'),
-        skip: document.getElementById('wizard-skip'),
-        reset: document.getElementById('wizard-reset'),
-        preview: document.getElementById('wizard-preview'),
-        note: document.getElementById('wizard-note')
-      };
-
-      // Fixed center at 3.5 for equal quadrants (scale 1-6)
-      function getSplits() {
-        return {
-          xSplit: 3.5,
-          ySplit: 3.5
-        };
-      }
-
+      // Helpers
       function isComplete() {
-        return state.categories.every(function(category) {
-          return typeof category.importance === 'number' && typeof category.satisfaction === 'number';
+        return state.scores.every(function(s) {
+          return s.importance !== null && s.satisfaction !== null;
         });
       }
 
-      function getQuadrant(category, splits) {
-        var isHighImportance = category.importance >= splits.xSplit;
-        var isHighSatisfaction = category.satisfaction >= splits.ySplit;
-
-        if (isHighImportance && isHighSatisfaction) return 'maintain';
-        if (isHighImportance && !isHighSatisfaction) return 'invest';
-        if (!isHighImportance && isHighSatisfaction) return 'rebalance';
+      function getQuadrant(score) {
+        var midpoint = 3.5;
+        var highImp = score.importance >= midpoint;
+        var highSat = score.satisfaction >= midpoint;
+        if (highImp && highSat) return 'maintain';
+        if (highImp && !highSat) return 'invest';
+        if (!highImp && highSat) return 'rebalance';
         return 'release';
       }
 
-      function getFocusNow(splits, quadrants) {
-        var investPool = quadrants.invest;
-        if (investPool.length) {
-          var bestInvest = investPool.slice().sort(function(a, b) {
-            return b.gapScore - a.gapScore;
-          })[0];
-          return {
-            category: bestInvest,
-            message: 'Your priority: ' + bestInvest.label + ". It's important to you, but you're not satisfied. This is where to invest your energy this month. What's one concrete thing you can do this week to move the needle?"
-          };
-        }
-
-        if (quadrants.rebalance.length) {
-          var easeOff = quadrants.rebalance.slice().sort(function(a, b) {
-            return b.satisfaction - a.satisfaction;
-          })[0];
-          return {
-            category: easeOff,
-            message: 'Your priority: ' + easeOff.label + ". You're putting time in here and it's going well, but it's less important right now. Can you ease back a bit to create space for what matters more?"
-          };
-        }
-
-        var farthest = state.categories.slice().sort(function(a, b) {
-          var distanceA = Math.abs(a.importance - splits.xSplit) + Math.abs(a.satisfaction - splits.ySplit);
-          var distanceB = Math.abs(b.importance - splits.xSplit) + Math.abs(b.satisfaction - splits.ySplit);
-          return distanceB - distanceA;
-        })[0];
-
-        return {
-          category: farthest,
-          message: 'Your priority: ' + farthest.label + '. This has the biggest gap from your ideal balance. Pick one small shift you can make this month to get closer to where you want to be.'
-        };
-      }
-
       function getInitials(label) {
-        return label.split(' ').map(function(word) { return word[0]; }).join('').slice(0, 2).toUpperCase();
+        return label.split(' ').map(function(w) { return w[0]; }).join('').slice(0, 2).toUpperCase();
       }
 
-      // Scale 1-6 with padding (8% on each side, usable area 8-92%)
-      var CHART_PADDING = 8;
       function getPointPosition(value) {
-        var normalized = (value - 1) / 5; // 1-6 scale -> 0-1
-        return CHART_PADDING + normalized * (100 - 2 * CHART_PADDING);
+        var padding = 10;
+        var normalized = (value - 1) / 5;
+        return padding + normalized * (100 - 2 * padding);
       }
 
-      function setHighlight(categoryId) {
-        state.highlightedCategoryId = categoryId;
-        updateHighlight();
-      }
-
-      function updateHighlight() {
-        var highlightId = state.highlightedCategoryId;
-        var listButtons = wizard.querySelectorAll('[data-category-button]');
-        var points = wizard.querySelectorAll('[data-category-point]');
-
-        listButtons.forEach(function(button) {
-          button.classList.toggle('is-active', button.dataset.categoryButton === highlightId);
+      function getFocus() {
+        var buckets = { maintain: [], invest: [], rebalance: [], release: [] };
+        state.scores.forEach(function(s) {
+          if (s.importance === null || s.satisfaction === null) return;
+          var q = getQuadrant(s);
+          var gap = (s.importance - 3.5) + (3.5 - s.satisfaction);
+          buckets[q].push({ score: s, gap: gap });
         });
 
-        points.forEach(function(point) {
-          point.classList.toggle('is-active', point.dataset.categoryPoint === highlightId);
-        });
-
-        updateTooltip();
-      }
-
-      function updateTooltip() {
-        var tooltip = wizard.querySelector('.matrix-tooltip');
-        var activePoint = wizard.querySelector('[data-category-point].is-active');
-
-        if (!tooltip) return;
-        if (!activePoint) {
-          tooltip.classList.remove('is-visible');
-          return;
+        if (buckets.invest.length) {
+          buckets.invest.sort(function(a, b) { return b.gap - a.gap; });
+          var focus = buckets.invest[0].score;
+          return {
+            category: focus.label,
+            message: "It's important to you but you're not satisfied. This is where to invest energy. What's one thing you can do this week?"
+          };
         }
 
-        var label = activePoint.getAttribute('data-label');
-        var importance = activePoint.getAttribute('data-importance');
-        var satisfaction = activePoint.getAttribute('data-satisfaction');
-        tooltip.innerHTML = '<strong>' + label + '</strong><span>' + importance + '/6 importance · ' + satisfaction + '/6 satisfaction</span>';
+        if (buckets.rebalance.length) {
+          buckets.rebalance.sort(function(a, b) { return b.score.satisfaction - a.score.satisfaction; });
+          var focus = buckets.rebalance[0].score;
+          return {
+            category: focus.label,
+            message: "You're putting time in and it's going well, but it's less important right now. Can you ease back to make space for what matters more?"
+          };
+        }
 
-        var container = activePoint.closest('.matrix-wrapper');
-        if (!container) return;
-        var containerRect = container.getBoundingClientRect();
-        var pointRect = activePoint.getBoundingClientRect();
-        tooltip.style.left = (pointRect.left - containerRect.left + pointRect.width / 2) + 'px';
-        tooltip.style.top = (pointRect.top - containerRect.top - 12) + 'px';
-        tooltip.classList.add('is-visible');
+        // Fallback: category furthest from center
+        var sorted = state.scores.slice().filter(function(s) {
+          return s.importance !== null && s.satisfaction !== null;
+        }).sort(function(a, b) {
+          var distA = Math.abs(a.importance - 3.5) + Math.abs(a.satisfaction - 3.5);
+          var distB = Math.abs(b.importance - 3.5) + Math.abs(b.satisfaction - 3.5);
+          return distB - distA;
+        });
+
+        if (sorted.length) {
+          return {
+            category: sorted[0].label,
+            message: "This has the biggest gap from balance. Pick one small shift to get closer to where you want to be."
+          };
+        }
+
+        return { category: 'None', message: 'Complete all categories to see your focus.' };
       }
 
-      function buildMatrix(container, splits, options) {
+      // Render
+      function render() {
+        // Update header reset visibility
+        var hasAnyScore = state.scores.some(function(s) {
+          return s.importance !== null || s.satisfaction !== null;
+        });
+        headerReset.classList.toggle('is-visible', hasAnyScore || state.step === 'results' || state.step === 'print');
+
+        if (state.step === 'importance' || state.step === 'satisfaction') {
+          renderScoring();
+        } else if (state.step === 'results') {
+          renderResults();
+        } else if (state.step === 'print') {
+          renderPrint();
+        }
+      }
+
+      function renderScoring() {
+        var isImportance = state.step === 'importance';
+        var category = state.scores[state.categoryIndex];
+        var currentValue = isImportance ? category.importance : category.satisfaction;
+        var displayValue = currentValue !== null ? currentValue : '—';
+        var isUnset = currentValue === null;
+
+        var phase = isImportance ? 'Importance' : 'Satisfaction';
+        var count = (state.categoryIndex + 1) + ' of ' + categories.length;
+
+        var isFirstCategory = state.step === 'importance' && state.categoryIndex === 0;
+        var isLastCategory = state.step === 'satisfaction' && state.categoryIndex === categories.length - 1;
+        var nextLabel = isLastCategory ? 'See results' : 'Next →';
+
+        var html = '' +
+          '<div class="progress">' +
+            '<span class="progress-phase">' + phase + '</span>' +
+            '<span class="progress-count">' + count + '</span>' +
+          '</div>' +
+          '<div class="score-card" id="score-card">' +
+            '<h1 class="category-name">' + category.label + '</h1>' +
+            '<div class="slider-container">' +
+              '<div class="slider-value' + (isUnset ? ' is-unset' : '') + '" id="slider-value">' + displayValue + '</div>' +
+              '<div class="slider-track">' +
+                '<input type="range" class="slider-input" id="slider-input" min="1" max="6" step="1" value="' + (currentValue || 3) + '" ' +
+                  'aria-label="' + phase + ' rating for ' + category.label + '" ' +
+                  'aria-valuemin="1" aria-valuemax="6" aria-valuenow="' + (currentValue || 3) + '">' +
+              '</div>' +
+              '<div class="slider-ticks" id="slider-ticks">' +
+                '<span class="slider-tick' + (currentValue === 1 ? ' is-active' : '') + '" data-value="1">1</span>' +
+                '<span class="slider-tick' + (currentValue === 2 ? ' is-active' : '') + '" data-value="2">2</span>' +
+                '<span class="slider-tick' + (currentValue === 3 ? ' is-active' : '') + '" data-value="3">3</span>' +
+                '<span class="slider-tick' + (currentValue === 4 ? ' is-active' : '') + '" data-value="4">4</span>' +
+                '<span class="slider-tick' + (currentValue === 5 ? ' is-active' : '') + '" data-value="5">5</span>' +
+                '<span class="slider-tick' + (currentValue === 6 ? ' is-active' : '') + '" data-value="6">6</span>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<nav class="nav">' +
+            '<button type="button" class="nav-btn nav-btn--back' + (isFirstCategory ? ' is-hidden' : '') + '" id="nav-back">← Back</button>' +
+            '<div class="nav-center">' +
+              '<button type="button" class="skip-btn" id="nav-skip">Skip</button>' +
+            '</div>' +
+            '<button type="button" class="nav-btn nav-btn--next" id="nav-next">' + nextLabel + '</button>' +
+          '</nav>';
+
+        tool.innerHTML = html;
+        attachScoringListeners();
+      }
+
+      function attachScoringListeners() {
+        var slider = document.getElementById('slider-input');
+        var valueDisplay = document.getElementById('slider-value');
+        var ticks = document.getElementById('slider-ticks');
+        var card = document.getElementById('score-card');
+        var isImportance = state.step === 'importance';
+        var category = state.scores[state.categoryIndex];
+
+        function updateValue(val) {
+          var num = Number(val);
+          if (isImportance) {
+            category.importance = num;
+          } else {
+            category.satisfaction = num;
+          }
+          valueDisplay.textContent = num;
+          valueDisplay.classList.remove('is-unset');
+          slider.setAttribute('aria-valuenow', num);
+
+          // Update tick highlights
+          var tickEls = ticks.querySelectorAll('.slider-tick');
+          tickEls.forEach(function(t) {
+            t.classList.toggle('is-active', Number(t.dataset.value) === num);
+          });
+        }
+
+        slider.addEventListener('input', function() {
+          updateValue(slider.value);
+        });
+
+        ticks.addEventListener('click', function(e) {
+          if (e.target.classList.contains('slider-tick')) {
+            var val = e.target.dataset.value;
+            slider.value = val;
+            updateValue(val);
+          }
+        });
+
+        document.getElementById('nav-back').addEventListener('click', function() {
+          goBack();
+        });
+
+        document.getElementById('nav-next').addEventListener('click', function() {
+          // Save current value if not set
+          var currentValue = isImportance ? category.importance : category.satisfaction;
+          if (currentValue === null) {
+            updateValue(slider.value);
+          }
+          goNext();
+        });
+
+        document.getElementById('nav-skip').addEventListener('click', function() {
+          if (isImportance) {
+            category.importance = null;
+          } else {
+            category.satisfaction = null;
+          }
+          goNext();
+        });
+      }
+
+      function goBack() {
+        if (state.step === 'importance') {
+          if (state.categoryIndex > 0) {
+            state.categoryIndex--;
+            transitionTo('importance');
+          }
+        } else if (state.step === 'satisfaction') {
+          if (state.categoryIndex > 0) {
+            state.categoryIndex--;
+            transitionTo('satisfaction');
+          } else {
+            state.categoryIndex = categories.length - 1;
+            transitionTo('importance');
+          }
+        } else if (state.step === 'results') {
+          state.categoryIndex = categories.length - 1;
+          transitionTo('satisfaction');
+        } else if (state.step === 'print') {
+          transitionTo('results');
+        }
+      }
+
+      function goNext() {
+        if (state.step === 'importance') {
+          if (state.categoryIndex < categories.length - 1) {
+            state.categoryIndex++;
+            transitionTo('importance');
+          } else {
+            state.categoryIndex = 0;
+            transitionTo('satisfaction');
+          }
+        } else if (state.step === 'satisfaction') {
+          if (state.categoryIndex < categories.length - 1) {
+            state.categoryIndex++;
+            transitionTo('satisfaction');
+          } else if (isComplete()) {
+            transitionTo('results');
+          } else {
+            // Find first incomplete
+            for (var i = 0; i < state.scores.length; i++) {
+              if (state.scores[i].importance === null) {
+                state.categoryIndex = i;
+                transitionTo('importance');
+                return;
+              }
+              if (state.scores[i].satisfaction === null) {
+                state.categoryIndex = i;
+                transitionTo('satisfaction');
+                return;
+              }
+            }
+          }
+        }
+      }
+
+      function transitionTo(step) {
+        var card = document.getElementById('score-card');
+        var results = document.querySelector('.results');
+        var target = card || results;
+
+        if (target && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          target.classList.add('is-transitioning');
+          setTimeout(function() {
+            state.step = step;
+            render();
+          }, 150);
+        } else {
+          state.step = step;
+          render();
+        }
+      }
+
+      function renderResults() {
+        var focus = getFocus();
+        var buckets = { maintain: [], invest: [], rebalance: [], release: [] };
+        state.scores.forEach(function(s) {
+          if (s.importance !== null && s.satisfaction !== null) {
+            buckets[getQuadrant(s)].push(s.label);
+          }
+        });
+
+        var html = '' +
+          '<div class="progress">' +
+            '<span class="progress-phase">Your Matrix</span>' +
+          '</div>' +
+          '<div class="results" id="results">' +
+            '<div class="results-header">' +
+              '<h1 class="results-title">Where to focus</h1>' +
+              '<p class="results-subtitle">Tap any point to see details</p>' +
+            '</div>' +
+            '<div class="matrix-container" id="matrix-container"></div>' +
+            '<div class="matrix-axes">' +
+              '<span>↑ Satisfaction</span>' +
+              '<span>Importance →</span>' +
+            '</div>' +
+            '<div class="focus-card">' +
+              '<p class="focus-label">Your priority</p>' +
+              '<h2 class="focus-category">' + focus.category + '</h2>' +
+              '<p class="focus-message">' + focus.message + '</p>' +
+            '</div>' +
+            '<div class="quadrant-summary">' +
+              buildQuadrantBlock('Maintain', buckets.maintain) +
+              buildQuadrantBlock('Invest', buckets.invest) +
+              buildQuadrantBlock('Rebalance', buckets.rebalance) +
+              buildQuadrantBlock('Release', buckets.release) +
+            '</div>' +
+          '</div>' +
+          '<nav class="results-nav">' +
+            '<button type="button" class="nav-btn nav-btn--back" id="nav-back">← Edit scores</button>' +
+            '<button type="button" class="nav-btn nav-btn--next" id="nav-print">Print plan →</button>' +
+          '</nav>';
+
+        tool.innerHTML = html;
+        buildMatrix(document.getElementById('matrix-container'), true);
+        attachResultsListeners();
+      }
+
+      function buildQuadrantBlock(title, items) {
+        var list = items.length ? items.map(function(i) {
+          return '<li>' + i + '</li>';
+        }).join('') : '<li class="is-empty">None</li>';
+        return '' +
+          '<div class="quadrant-block">' +
+            '<h3 class="quadrant-block-title">' + title + '</h3>' +
+            '<ul class="quadrant-block-list">' + list + '</ul>' +
+          '</div>';
+      }
+
+      function buildMatrix(container, showTooltip) {
         var svgNS = 'http://www.w3.org/2000/svg';
         var svg = document.createElementNS(svgNS, 'svg');
         svg.setAttribute('viewBox', '0 0 100 100');
         svg.setAttribute('role', 'img');
-        svg.setAttribute('aria-label', 'Life strategy matrix');
+        svg.setAttribute('aria-label', 'Life strategy matrix showing your scores');
         svg.classList.add('matrix-svg');
 
-        // Fixed center at 50% for equal quadrants
-        var xSplit = 50;
-        var ySplit = 50;
-
-        // Shaded quadrant backgrounds for visual contrast
-        var quadrantShades = [
-          { x: 0, y: 0, w: xSplit, h: ySplit, cls: 'quadrant-rebalance' },      // top-left
-          { x: xSplit, y: 0, w: 100 - xSplit, h: ySplit, cls: 'quadrant-maintain' }, // top-right
-          { x: 0, y: ySplit, w: xSplit, h: 100 - ySplit, cls: 'quadrant-release' },   // bottom-left
-          { x: xSplit, y: ySplit, w: 100 - xSplit, h: 100 - ySplit, cls: 'quadrant-invest' } // bottom-right
+        // Quadrant backgrounds
+        var quads = [
+          { x: 0, y: 0, w: 50, h: 50, cls: 'quadrant-rebalance' },
+          { x: 50, y: 0, w: 50, h: 50, cls: 'quadrant-maintain' },
+          { x: 0, y: 50, w: 50, h: 50, cls: 'quadrant-release' },
+          { x: 50, y: 50, w: 50, h: 50, cls: 'quadrant-invest' }
         ];
 
-        quadrantShades.forEach(function(quad) {
-          var quadRect = document.createElementNS(svgNS, 'rect');
-          quadRect.setAttribute('x', quad.x);
-          quadRect.setAttribute('y', quad.y);
-          quadRect.setAttribute('width', quad.w);
-          quadRect.setAttribute('height', quad.h);
-          quadRect.classList.add('matrix-quadrant', quad.cls);
-          svg.appendChild(quadRect);
+        quads.forEach(function(q) {
+          var rect = document.createElementNS(svgNS, 'rect');
+          rect.setAttribute('x', q.x);
+          rect.setAttribute('y', q.y);
+          rect.setAttribute('width', q.w);
+          rect.setAttribute('height', q.h);
+          rect.classList.add('matrix-quadrant', q.cls);
+          svg.appendChild(rect);
         });
 
-        // Outer border
-        var rect = document.createElementNS(svgNS, 'rect');
-        rect.setAttribute('x', '0');
-        rect.setAttribute('y', '0');
-        rect.setAttribute('width', '100');
-        rect.setAttribute('height', '100');
-        rect.setAttribute('fill', 'none');
-        rect.setAttribute('stroke', 'currentColor');
-        rect.setAttribute('stroke-width', '0.8');
-        svg.appendChild(rect);
+        // Border
+        var border = document.createElementNS(svgNS, 'rect');
+        border.setAttribute('x', 0);
+        border.setAttribute('y', 0);
+        border.setAttribute('width', 100);
+        border.setAttribute('height', 100);
+        border.setAttribute('fill', 'none');
+        border.setAttribute('stroke', 'currentColor');
+        border.setAttribute('stroke-width', '0.6');
+        svg.appendChild(border);
 
-        // Center divider lines
-        var xLine = document.createElementNS(svgNS, 'line');
-        xLine.setAttribute('x1', xSplit);
-        xLine.setAttribute('y1', '0');
-        xLine.setAttribute('x2', xSplit);
-        xLine.setAttribute('y2', '100');
-        xLine.setAttribute('stroke', 'currentColor');
-        xLine.setAttribute('stroke-width', '0.5');
-        svg.appendChild(xLine);
+        // Center lines
+        var vLine = document.createElementNS(svgNS, 'line');
+        vLine.setAttribute('x1', 50);
+        vLine.setAttribute('y1', 0);
+        vLine.setAttribute('x2', 50);
+        vLine.setAttribute('y2', 100);
+        vLine.setAttribute('stroke', 'currentColor');
+        vLine.setAttribute('stroke-width', '0.4');
+        vLine.setAttribute('stroke-dasharray', '2,2');
+        svg.appendChild(vLine);
 
-        var yLine = document.createElementNS(svgNS, 'line');
-        yLine.setAttribute('x1', '0');
-        yLine.setAttribute('y1', ySplit);
-        yLine.setAttribute('x2', '100');
-        yLine.setAttribute('y2', ySplit);
-        yLine.setAttribute('stroke', 'currentColor');
-        yLine.setAttribute('stroke-width', '0.5');
-        svg.appendChild(yLine);
+        var hLine = document.createElementNS(svgNS, 'line');
+        hLine.setAttribute('x1', 0);
+        hLine.setAttribute('y1', 50);
+        hLine.setAttribute('x2', 100);
+        hLine.setAttribute('y2', 50);
+        hLine.setAttribute('stroke', 'currentColor');
+        hLine.setAttribute('stroke-width', '0.4');
+        hLine.setAttribute('stroke-dasharray', '2,2');
+        svg.appendChild(hLine);
 
-        // Quadrant labels positioned at far corners
-        var labelPadding = 4;
+        // Labels
         var labels = [
-          { text: quadrantMeta.rebalance.label, x: labelPadding, y: labelPadding + 3, anchor: 'start', baseline: 'hanging' },          // top-left corner
-          { text: quadrantMeta.maintain.label, x: 100 - labelPadding, y: labelPadding + 3, anchor: 'end', baseline: 'hanging' },       // top-right corner
-          { text: quadrantMeta.release.label, x: labelPadding, y: 100 - labelPadding - 1, anchor: 'start', baseline: 'auto' },          // bottom-left corner
-          { text: quadrantMeta.invest.label, x: 100 - labelPadding, y: 100 - labelPadding - 1, anchor: 'end', baseline: 'auto' }        // bottom-right corner
+          { text: 'Rebalance', x: 4, y: 6, anchor: 'start' },
+          { text: 'Maintain', x: 96, y: 6, anchor: 'end' },
+          { text: 'Release', x: 4, y: 97, anchor: 'start' },
+          { text: 'Invest', x: 96, y: 97, anchor: 'end' }
         ];
 
-        labels.forEach(function(label) {
+        labels.forEach(function(l) {
           var text = document.createElementNS(svgNS, 'text');
-          text.setAttribute('x', label.x);
-          text.setAttribute('y', label.y);
-          text.setAttribute('text-anchor', label.anchor);
-          text.setAttribute('dominant-baseline', label.baseline);
+          text.setAttribute('x', l.x);
+          text.setAttribute('y', l.y);
+          text.setAttribute('text-anchor', l.anchor);
           text.classList.add('matrix-label');
-          text.textContent = label.text;
+          text.textContent = l.text;
           svg.appendChild(text);
         });
 
-        state.categories.forEach(function(category) {
-          if (typeof category.importance !== 'number' || typeof category.satisfaction !== 'number') return;
-          var x = getPointPosition(category.importance);
-          var y = 100 - getPointPosition(category.satisfaction);
+        // Points
+        state.scores.forEach(function(s) {
+          if (s.importance === null || s.satisfaction === null) return;
+          var x = getPointPosition(s.importance);
+          var y = 100 - getPointPosition(s.satisfaction);
+
           var group = document.createElementNS(svgNS, 'g');
           group.classList.add('matrix-point');
-          group.setAttribute('data-category-point', category.id);
-          group.setAttribute('data-label', category.label);
-          group.setAttribute('data-importance', category.importance);
-          group.setAttribute('data-satisfaction', category.satisfaction);
+          group.setAttribute('data-id', s.id);
+          group.setAttribute('data-label', s.label);
+          group.setAttribute('data-importance', s.importance);
+          group.setAttribute('data-satisfaction', s.satisfaction);
           group.setAttribute('tabindex', '0');
+          group.setAttribute('role', 'button');
+          group.setAttribute('aria-label', s.label + ': ' + s.importance + ' importance, ' + s.satisfaction + ' satisfaction');
 
           var circle = document.createElementNS(svgNS, 'circle');
           circle.setAttribute('cx', x);
           circle.setAttribute('cy', y);
-          circle.setAttribute('r', '2.5');
-          circle.setAttribute('class', 'matrix-point-dot');
+          circle.setAttribute('r', '3');
+          circle.classList.add('matrix-point-dot');
           group.appendChild(circle);
 
           var text = document.createElementNS(svgNS, 'text');
           text.setAttribute('x', x);
-          text.setAttribute('y', y - 4);
+          text.setAttribute('y', y - 5);
           text.setAttribute('text-anchor', 'middle');
-          text.setAttribute('class', 'matrix-point-text');
-          text.textContent = getInitials(category.label);
+          text.classList.add('matrix-point-text');
+          text.textContent = getInitials(s.label);
           group.appendChild(text);
-
-          var title = document.createElementNS(svgNS, 'title');
-          title.textContent = category.label + ': ' + category.importance + '/6 importance, ' + category.satisfaction + '/6 satisfaction';
-          group.appendChild(title);
-
-          group.addEventListener('mouseenter', function() {
-            setHighlight(category.id);
-          });
-          group.addEventListener('focus', function() {
-            setHighlight(category.id);
-          });
-          group.addEventListener('click', function() {
-            setHighlight(category.id);
-          });
 
           svg.appendChild(group);
         });
@@ -450,449 +1603,174 @@
         container.innerHTML = '';
         container.appendChild(svg);
 
-        if (options && options.showTooltip) {
+        if (showTooltip) {
           var tooltip = document.createElement('div');
           tooltip.className = 'matrix-tooltip';
           container.appendChild(tooltip);
-        }
-      }
 
-      function renderStep() {
-        elements.preview.disabled = !isComplete();
-        elements.preview.classList.toggle('is-ready', isComplete());
+          // Event listeners for tooltips
+          var points = container.querySelectorAll('.matrix-point');
+          points.forEach(function(point) {
+            function showTip() {
+              state.highlightedId = point.dataset.id;
+              updateMatrixHighlight(container);
 
-        var step = state.currentStep;
-        var category = state.categories[state.currentCategoryIndex];
-        var total = state.categories.length;
+              var label = point.dataset.label;
+              var imp = point.dataset.importance;
+              var sat = point.dataset.satisfaction;
+              tooltip.innerHTML = '<strong>' + label + '</strong><span>' + imp + '/6 importance · ' + sat + '/6 satisfaction</span>';
 
-        // Update step indicator
-        var stepNames = ['Importance', 'Satisfaction', 'Review', 'Print'];
-        elements.stepLabel.textContent = 'Step ' + step + ' of 4';
-        elements.stepName.textContent = stepNames[step - 1];
-
-        // Update progress bar
-        var progressPercent = ((step - 1) / 3) * 100;
-        elements.progressBar.setAttribute('aria-valuenow', step);
-        elements.progressBar.querySelector('.wizard-progress-fill').style.width = progressPercent + '%';
-
-        if (step === 1 || step === 2) {
-          var isImportance = step === 1;
-          elements.title.textContent = isImportance ? 'What matters most?' : 'How satisfied are you?';
-          elements.microcopy.textContent = isImportance
-            ? 'Rate how important each area is to you right now.'
-            : 'Be honest—how satisfied are you with each area?';
-          elements.progress.textContent = (state.currentCategoryIndex + 1) + ' of ' + total;
-          elements.skip.style.display = 'inline';
-          elements.preview.style.display = isComplete() ? 'block' : 'none';
-
-          elements.back.disabled = step === 1 && state.currentCategoryIndex === 0;
-          elements.back.style.visibility = (step === 1 && state.currentCategoryIndex === 0) ? 'hidden' : 'visible';
-          var nextText = elements.next.querySelector('.wizard-nav-text');
-          if (nextText) nextText.textContent = (step === 2 && state.currentCategoryIndex === total - 1) ? 'Review' : 'Next';
-
-          var value = isImportance ? category.importance : category.satisfaction;
-
-          elements.content.innerHTML = '';
-          var card = document.createElement('div');
-          card.className = 'score-card';
-          card.innerHTML = '' +
-            '<div class="score-header">' +
-            '  <span class="score-category">' + category.label + '</span>' +
-            '</div>' +
-            '<div class="score-slider">' +
-            '  <div class="score-value-display">' +
-            '    <span class="score-value' + (value === null ? ' is-empty' : '') + '" id="score-output">' + (value === null ? '—' : value) + '</span>' +
-            '    <span class="score-max">/6</span>' +
-            '  </div>' +
-            '  <input id="score-input" type="range" min="1" max="6" step="1" value="' + (value || 3) + '" aria-label="' + (isImportance ? 'Importance' : 'Satisfaction') + ' rating for ' + category.label + '" aria-valuemin="1" aria-valuemax="6" aria-valuenow="' + (value || 3) + '">' +
-            '  <div class="slider-labels">' +
-            '    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span>' +
-            '  </div>' +
-            '  <div class="slider-scale"><span>Not at all</span><span>Extremely</span></div>' +
-            '</div>';
-
-          elements.content.appendChild(card);
-
-          var input = card.querySelector('input');
-          var output = card.querySelector('#score-output');
-
-          input.addEventListener('input', function() {
-            var newValue = Number(input.value);
-            if (isImportance) {
-              category.importance = newValue;
-            } else {
-              category.satisfaction = newValue;
+              var rect = point.getBoundingClientRect();
+              var containerRect = container.getBoundingClientRect();
+              tooltip.style.left = (rect.left - containerRect.left + rect.width / 2) + 'px';
+              tooltip.style.top = (rect.top - containerRect.top - 8) + 'px';
+              tooltip.classList.add('is-visible');
             }
-            input.setAttribute('aria-valuenow', String(newValue));
-            output.textContent = newValue;
-            output.classList.remove('is-empty');
+
+            point.addEventListener('mouseenter', showTip);
+            point.addEventListener('focus', showTip);
+            point.addEventListener('click', showTip);
           });
 
-          return;
-        }
-
-        if (step === 3) {
-          elements.title.textContent = 'Your strategy matrix';
-          elements.microcopy.textContent = 'Tap any category to highlight it on the matrix.';
-          elements.progress.textContent = 'Review';
-          elements.skip.style.display = 'none';
-          elements.preview.style.display = 'none';
-          elements.back.disabled = false;
-          elements.back.style.visibility = 'visible';
-          var nextText = elements.next.querySelector('.wizard-nav-text');
-          if (nextText) nextText.textContent = 'Print';
-
-          elements.content.innerHTML = '';
-          var panel = document.createElement('div');
-          panel.className = 'results-panel';
-
-          if (!isComplete()) {
-            panel.innerHTML = '<p class="incomplete-message">Almost there! Complete all categories to see your full strategy matrix.</p>';
-            elements.content.appendChild(panel);
-            return;
-          }
-
-          var splits = getSplits();
-          var quadrantBuckets = {
-            maintain: [],
-            invest: [],
-            rebalance: [],
-            release: []
-          };
-
-          state.categories.forEach(function(categoryItem) {
-            var quadrantKey = getQuadrant(categoryItem, splits);
-            var gapScore = (categoryItem.importance - splits.xSplit) + (splits.ySplit - categoryItem.satisfaction);
-            quadrantBuckets[quadrantKey].push({
-              id: categoryItem.id,
-              label: categoryItem.label,
-              importance: categoryItem.importance,
-              satisfaction: categoryItem.satisfaction,
-              gapScore: gapScore,
-              quadrant: quadrantKey
-            });
+          container.addEventListener('mouseleave', function() {
+            tooltip.classList.remove('is-visible');
           });
-
-          var matrixWrap = document.createElement('div');
-          matrixWrap.className = 'matrix-wrapper';
-          buildMatrix(matrixWrap, splits, { showTooltip: true });
-
-          var counts = document.createElement('div');
-          counts.className = 'matrix-counts';
-          counts.innerHTML = '' +
-            '<span>' + quadrantMeta.maintain.label + ': ' + quadrantBuckets.maintain.length + '</span>' +
-            '<span>' + quadrantMeta.invest.label + ': ' + quadrantBuckets.invest.length + '</span>' +
-            '<span>' + quadrantMeta.rebalance.label + ': ' + quadrantBuckets.rebalance.length + '</span>' +
-            '<span>' + quadrantMeta.release.label + ': ' + quadrantBuckets.release.length + '</span>';
-
-          var axis = document.createElement('div');
-          axis.className = 'matrix-axes';
-          axis.innerHTML = '<span>Current satisfaction</span><span>Importance</span>';
-
-          var focus = getFocusNow(splits, quadrantBuckets);
-          var focusCard = document.createElement('div');
-          focusCard.className = 'focus-card';
-          focusCard.innerHTML = '<p class="focus-title">Where to focus your energy</p><p>' + focus.message + '</p>';
-
-          panel.appendChild(matrixWrap);
-          panel.appendChild(counts);
-          panel.appendChild(axis);
-          panel.appendChild(focusCard);
-          elements.content.appendChild(panel);
-
-          if (!state.highlightedCategoryId && state.categories.length) {
-            setHighlight(state.categories[0].id);
-          } else {
-            updateHighlight();
-          }
-
-          return;
-        }
-
-        if (step === 4) {
-          elements.title.textContent = 'Your one-page plan';
-          elements.microcopy.textContent = 'Print or save as PDF to reference all month.';
-          elements.progress.textContent = 'Done';
-          elements.skip.style.display = 'none';
-          elements.preview.style.display = 'none';
-          elements.back.disabled = false;
-          elements.back.style.visibility = 'visible';
-          var nextText = elements.next.querySelector('.wizard-nav-text');
-          if (nextText) nextText.textContent = 'Start over';
-
-          elements.content.innerHTML = '';
-          var printLayout = document.createElement('div');
-          printLayout.className = 'print-layout';
-
-          if (!isComplete()) {
-            printLayout.innerHTML = '<p class="incomplete-message">Complete all categories to generate your printable strategy plan.</p>';
-            elements.content.appendChild(printLayout);
-            return;
-          }
-
-          var splitsPrint = getSplits();
-          var quadrantBucketsPrint = {
-            maintain: [],
-            invest: [],
-            rebalance: [],
-            release: []
-          };
-
-          state.categories.forEach(function(categoryItem) {
-            var quadrantKey = getQuadrant(categoryItem, splitsPrint);
-            quadrantBucketsPrint[quadrantKey].push(categoryItem);
-          });
-
-          var titleBlock = document.createElement('div');
-          titleBlock.className = 'print-title';
-          titleBlock.innerHTML = '<h3>Life Strategy Matrix</h3><p>Your personalized plan for where to invest your energy.</p>';
-
-          var dateRow = document.createElement('div');
-          dateRow.className = 'print-date';
-          dateRow.innerHTML = '<label for="print-date-input">Date (optional)</label>' +
-            '<input id="print-date-input" type="text" placeholder="Add a date">' +
-            '<span class="print-date-output" aria-hidden="true"></span>';
-
-          var matrixBlock = document.createElement('div');
-          matrixBlock.className = 'matrix-wrapper';
-          buildMatrix(matrixBlock, splitsPrint, { showTooltip: false });
-
-          var focusPrint = getFocusNow(splitsPrint, {
-            invest: quadrantBucketsPrint.invest.map(function(categoryItem) {
-              return {
-                label: categoryItem.label,
-                satisfaction: categoryItem.satisfaction,
-                gapScore: (categoryItem.importance - splitsPrint.xSplit) + (splitsPrint.ySplit - categoryItem.satisfaction)
-              };
-            }),
-            rebalance: quadrantBucketsPrint.rebalance.map(function(categoryItem) {
-              return {
-                label: categoryItem.label,
-                satisfaction: categoryItem.satisfaction
-              };
-            })
-          });
-
-          var focusPrintCard = document.createElement('div');
-          focusPrintCard.className = 'focus-card';
-          focusPrintCard.innerHTML = '<p class="focus-title">Your focus this month</p><p>' + focusPrint.message + '</p>';
-
-          var groupedSection = document.createElement('div');
-          groupedSection.className = 'grouped-section';
-
-          var groupedHeader = document.createElement('h4');
-          groupedHeader.className = 'grouped-section-title';
-          groupedHeader.textContent = 'Your categories by quadrant';
-
-          var groupedList = document.createElement('div');
-          groupedList.className = 'grouped-list';
-          groupedList.innerHTML = '' +
-            buildGroupedList('Maintain', quadrantBucketsPrint.maintain) +
-            buildGroupedList('Invest', quadrantBucketsPrint.invest) +
-            buildGroupedList('Rebalance', quadrantBucketsPrint.rebalance) +
-            buildGroupedList('Release', quadrantBucketsPrint.release);
-
-          groupedSection.appendChild(groupedHeader);
-          groupedSection.appendChild(groupedList);
-
-          var tableSection = document.createElement('div');
-          tableSection.className = 'table-section';
-
-          var tableHeader = document.createElement('h4');
-          tableHeader.className = 'table-section-title';
-          tableHeader.textContent = 'Your scores';
-
-          var table = document.createElement('table');
-          table.className = 'scores-table';
-          table.innerHTML = '<thead><tr><th>Category</th><th>Importance</th><th>Satisfaction</th><th>Recommendation</th></tr></thead>';
-          var tbody = document.createElement('tbody');
-          state.categories.forEach(function(categoryItem) {
-            var quadrantKey = getQuadrant(categoryItem, splitsPrint);
-            var row = document.createElement('tr');
-            row.innerHTML = '<td>' + categoryItem.label + '</td><td>' + categoryItem.importance + '/6</td><td>' + categoryItem.satisfaction + '/6</td><td class="recommendation-cell recommendation-' + quadrantKey + '">' + quadrantMeta[quadrantKey].label + '</td>';
-            tbody.appendChild(row);
-          });
-          table.appendChild(tbody);
-
-          tableSection.appendChild(tableHeader);
-          tableSection.appendChild(table);
-
-          var printButton = document.createElement('button');
-          printButton.type = 'button';
-          printButton.className = 'button button--print';
-          printButton.textContent = 'Print PDF';
-          printButton.addEventListener('click', function() {
-            window.print();
-          });
-
-          printLayout.appendChild(titleBlock);
-          printLayout.appendChild(dateRow);
-          printLayout.appendChild(matrixBlock);
-          printLayout.appendChild(focusPrintCard);
-          printLayout.appendChild(groupedSection);
-          printLayout.appendChild(tableSection);
-          printLayout.appendChild(printButton);
-          elements.content.appendChild(printLayout);
-
-          var dateInput = printLayout.querySelector('#print-date-input');
-          var dateOutput = printLayout.querySelector('.print-date-output');
-          dateInput.addEventListener('input', function() {
-            dateOutput.textContent = dateInput.value;
-          });
-
-          return;
         }
       }
 
-      function buildGroupedList(title, items) {
-        var listItems = items.map(function(item) {
-          return '<li>' + item.label + '</li>';
-        }).join('');
-        if (!listItems) {
-          listItems = '<li class="is-empty">None</li>';
-        }
-        return '<div class="grouped-list-block"><h4>' + title + ' (' + items.length + ')</h4><ul>' + listItems + '</ul></div>';
-      }
-
-      function saveCurrentValue() {
-        var input = document.getElementById('score-input');
-        if (!input) return;
-        var category = state.categories[state.currentCategoryIndex];
-        var value = Number(input.value);
-        if (state.currentStep === 1) {
-          category.importance = value;
-        } else if (state.currentStep === 2) {
-          category.satisfaction = value;
-        }
-      }
-
-      function handleNext() {
-        var total = state.categories.length;
-        elements.note.textContent = '';
-
-        // Save the current slider value before advancing
-        if (state.currentStep === 1 || state.currentStep === 2) {
-          saveCurrentValue();
-        }
-
-        if (state.currentStep === 1) {
-          if (state.currentCategoryIndex < total - 1) {
-            state.currentCategoryIndex += 1;
-          } else {
-            state.currentStep = 2;
-            state.currentCategoryIndex = 0;
-          }
-          renderStep();
-          return;
-        }
-
-        if (state.currentStep === 2) {
-          if (state.currentCategoryIndex < total - 1) {
-            state.currentCategoryIndex += 1;
-          } else if (isComplete()) {
-            state.currentStep = 3;
-            state.currentCategoryIndex = 0;
-          } else {
-            renderStep();
-            elements.note.textContent = 'Finish scoring all categories to see your strategy matrix.';
-            return;
-          }
-          renderStep();
-          return;
-        }
-
-        if (state.currentStep === 3) {
-          state.currentStep = 4;
-          renderStep();
-          return;
-        }
-
-        if (state.currentStep === 4) {
-          state.currentStep = 1;
-          state.currentCategoryIndex = 0;
-          renderStep();
-        }
-      }
-
-      function handleBack() {
-        var total = state.categories.length;
-        elements.note.textContent = '';
-        if (state.currentStep === 1) {
-          if (state.currentCategoryIndex > 0) {
-            state.currentCategoryIndex -= 1;
-          }
-          renderStep();
-          return;
-        }
-
-        if (state.currentStep === 2) {
-          if (state.currentCategoryIndex > 0) {
-            state.currentCategoryIndex -= 1;
-          } else {
-            state.currentStep = 1;
-            state.currentCategoryIndex = total - 1;
-          }
-          renderStep();
-          return;
-        }
-
-        if (state.currentStep === 3) {
-          state.currentStep = 2;
-          state.currentCategoryIndex = total - 1;
-          renderStep();
-          return;
-        }
-
-        if (state.currentStep === 4) {
-          state.currentStep = 3;
-          renderStep();
-        }
-      }
-
-      function handleSkip() {
-        if (state.currentStep !== 1 && state.currentStep !== 2) return;
-        elements.note.textContent = '';
-        var total = state.categories.length;
-        var category = state.categories[state.currentCategoryIndex];
-        if (state.currentStep === 1) {
-          category.importance = null;
-        } else {
-          category.satisfaction = null;
-        }
-
-        if (state.currentCategoryIndex < total - 1) {
-          state.currentCategoryIndex += 1;
-        } else if (state.currentStep === 1) {
-          state.currentStep = 2;
-          state.currentCategoryIndex = 0;
-        }
-        renderStep();
-      }
-
-      function handleReset() {
-        elements.note.textContent = '';
-        state.categories.forEach(function(category) {
-          category.importance = null;
-          category.satisfaction = null;
+      function updateMatrixHighlight(container) {
+        var points = container.querySelectorAll('.matrix-point');
+        points.forEach(function(point) {
+          point.classList.toggle('is-active', point.dataset.id === state.highlightedId);
         });
-        state.currentStep = 1;
-        state.currentCategoryIndex = 0;
-        state.highlightedCategoryId = null;
-        renderStep();
       }
 
-      elements.next.addEventListener('click', handleNext);
-      elements.back.addEventListener('click', handleBack);
-      elements.skip.addEventListener('click', handleSkip);
-      elements.reset.addEventListener('click', handleReset);
-      elements.preview.addEventListener('click', function() {
-        if (!isComplete()) return;
-        state.currentStep = 3;
-        renderStep();
+      function attachResultsListeners() {
+        document.getElementById('nav-back').addEventListener('click', function() {
+          state.categoryIndex = categories.length - 1;
+          transitionTo('satisfaction');
+        });
+
+        document.getElementById('nav-print').addEventListener('click', function() {
+          state.step = 'print';
+          render();
+        });
+      }
+
+      function renderPrint() {
+        var focus = getFocus();
+        var buckets = { maintain: [], invest: [], rebalance: [], release: [] };
+        state.scores.forEach(function(s) {
+          if (s.importance !== null && s.satisfaction !== null) {
+            buckets[getQuadrant(s)].push(s.label);
+          }
+        });
+
+        var tableRows = state.scores.map(function(s) {
+          var q = getQuadrant(s);
+          return '' +
+            '<tr>' +
+              '<td>' + s.label + '</td>' +
+              '<td>' + (s.importance || '—') + '/6</td>' +
+              '<td>' + (s.satisfaction || '—') + '/6</td>' +
+              '<td class="recommendation-cell recommendation-' + q + '">' + quadrants[q].label + '</td>' +
+            '</tr>';
+        }).join('');
+
+        var html = '' +
+          '<div class="print-view">' +
+            '<div class="print-header">' +
+              '<h1 class="print-title">Life Strategy Matrix</h1>' +
+              '<p class="print-tagline">Where to invest your energy</p>' +
+            '</div>' +
+            '<div class="print-date-row">' +
+              '<label class="print-date-label" for="print-date">Date:</label>' +
+              '<input type="text" class="print-date-input" id="print-date" placeholder="Today\'s date">' +
+              '<span class="print-date-output" id="print-date-output"></span>' +
+            '</div>' +
+            '<div class="matrix-container" id="matrix-container"></div>' +
+            '<div class="focus-card">' +
+              '<p class="focus-label">Your priority this month</p>' +
+              '<h2 class="focus-category">' + focus.category + '</h2>' +
+              '<p class="focus-message">' + focus.message + '</p>' +
+            '</div>' +
+            '<div class="quadrant-summary">' +
+              buildQuadrantBlock('Maintain', buckets.maintain) +
+              buildQuadrantBlock('Invest', buckets.invest) +
+              buildQuadrantBlock('Rebalance', buckets.rebalance) +
+              buildQuadrantBlock('Release', buckets.release) +
+            '</div>' +
+            '<div class="scores-table-section">' +
+              '<h3 class="scores-table-title">Your Scores</h3>' +
+              '<table class="scores-table">' +
+                '<thead>' +
+                  '<tr>' +
+                    '<th>Category</th>' +
+                    '<th>Importance</th>' +
+                    '<th>Satisfaction</th>' +
+                    '<th>Action</th>' +
+                  '</tr>' +
+                '</thead>' +
+                '<tbody>' + tableRows + '</tbody>' +
+              '</table>' +
+            '</div>' +
+          '</div>' +
+          '<div class="print-actions">' +
+            '<button type="button" class="nav-btn nav-btn--back" id="nav-back">← Back</button>' +
+            '<button type="button" class="print-btn" id="print-btn">Print PDF</button>' +
+          '</div>';
+
+        tool.innerHTML = html;
+        buildMatrix(document.getElementById('matrix-container'), false);
+        attachPrintListeners();
+      }
+
+      function attachPrintListeners() {
+        document.getElementById('nav-back').addEventListener('click', function() {
+          state.step = 'results';
+          render();
+        });
+
+        document.getElementById('print-btn').addEventListener('click', function() {
+          window.print();
+        });
+
+        var dateInput = document.getElementById('print-date');
+        var dateOutput = document.getElementById('print-date-output');
+        dateInput.addEventListener('input', function() {
+          dateOutput.textContent = dateInput.value;
+        });
+      }
+
+      function resetTool() {
+        state.step = 'importance';
+        state.categoryIndex = 0;
+        state.scores = categories.map(function(c) {
+          return { id: c.id, label: c.label, importance: null, satisfaction: null };
+        });
+        state.highlightedId = null;
+        render();
+      }
+
+      // Header reset button
+      headerReset.addEventListener('click', function() {
+        if (confirm('Start over? This will clear all your scores.')) {
+          resetTool();
+        }
       });
 
-      renderStep();
-      window.addEventListener('resize', updateTooltip);
+      // Keyboard navigation
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && (state.step === 'importance' || state.step === 'satisfaction')) {
+          var nextBtn = document.getElementById('nav-next');
+          if (nextBtn && document.activeElement !== nextBtn) {
+            nextBtn.click();
+          }
+        }
+      });
+
+      // Initial render
+      render();
     })();
   </script>
 </body>
