@@ -227,7 +227,10 @@
         <p class="section-tagline">I'm always happy to talk about product, tools, or gardening.</p>
       </header>
 
-      <a href="mailto:benjaminsiverly@gmail.com" class="contact-email">benjaminsiverly@gmail.com</a>
+      <button class="contact-email" type="button" data-email="YmVuamFtaW5zaXZlcmx5QGdtYWlsLmNvbQ==">
+        Copy email
+      </button>
+      <span class="contact-email-status" aria-live="polite"></span>
 
       <div class="contact-social">
         <a href="https://www.linkedin.com/in/be-ns/" target="_blank" rel="noopener">LinkedIn</a>
@@ -365,6 +368,63 @@
         });
 
         animateElements.forEach(function(el) { observer.observe(el); });
+      }
+
+      // Copy email button
+      var emailButton = document.querySelector('.contact-email');
+      if (emailButton) {
+        var emailStatus = document.querySelector('.contact-email-status');
+        var encodedEmail = emailButton.getAttribute('data-email');
+
+        function setEmailStatus(message) {
+          if (emailStatus) {
+            emailStatus.textContent = message;
+          }
+        }
+
+        function decodeEmail() {
+          try {
+            return atob(encodedEmail || '');
+          } catch (err) {
+            return '';
+          }
+        }
+
+        function copyEmail() {
+          var email = decodeEmail();
+          if (!email) {
+            setEmailStatus('Email unavailable');
+            return;
+          }
+
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(email).then(function() {
+              setEmailStatus('Email copied');
+            }).catch(function() {
+              setEmailStatus('Unable to copy email');
+            });
+            return;
+          }
+
+          var tempInput = document.createElement('textarea');
+          tempInput.value = email;
+          tempInput.setAttribute('readonly', '');
+          tempInput.style.position = 'absolute';
+          tempInput.style.left = '-9999px';
+          document.body.appendChild(tempInput);
+          tempInput.select();
+
+          try {
+            document.execCommand('copy');
+            setEmailStatus('Email copied');
+          } catch (err) {
+            setEmailStatus('Unable to copy email');
+          }
+
+          document.body.removeChild(tempInput);
+        }
+
+        emailButton.addEventListener('click', copyEmail);
       }
 
       // Smooth scroll for brand link
