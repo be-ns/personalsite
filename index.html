@@ -43,241 +43,207 @@
 
   <!-- Menu Panel -->
   <nav id="menu-panel" class="menu-panel" role="dialog" aria-modal="true" aria-label="Primary navigation" aria-hidden="true">
-    <div class="menu-nav-panel">
-      <ul class="menu-links" role="list">
-        <li>
-          <a href="#hero-heading" data-section="hero-heading">
-            <span class="nav-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                <polyline points="9 22 9 12 15 12 15 22"></polyline>
-              </svg>
-            </span>
-            Intro
-          </a>
-        </li>
-        <li>
-          <a href="#work-heading" data-section="work-heading">
-            <span class="nav-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-              </svg>
-            </span>
-            Work
-          </a>
-        </li>
-        <li>
-          <a href="#tools-heading" data-section="tools-heading">
-            <span class="nav-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
-              </svg>
-            </span>
-            Tools
-          </a>
-        </li>
-        <li>
-          <a href="#skills-heading" data-section="skills-heading">
-            <span class="nav-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-              </svg>
-            </span>
-            Skills
-          </a>
-        </li>
-        <li>
-          <a href="#contact-heading" data-section="contact-heading">
-            <span class="nav-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                <polyline points="22,6 12,13 2,6"></polyline>
-              </svg>
-            </span>
-            Contact
-          </a>
-        </li>
-      </ul>
-    </div>
+    <ul class="menu-links" role="list">
+      <li><a href="#hero-heading" data-section="hero-heading">Intro</a></li>
+      <li><a href="#work-heading" data-section="work-heading">Work</a></li>
+      <li><a href="#tools-heading" data-section="tools-heading">Tools</a></li>
+      <li><a href="#skills-heading" data-section="skills-heading">Skills</a></li>
+      <li><a href="#elsewhere-heading" data-section="elsewhere-heading">Elsewhere</a></li>
+      <li><a href="#contact-heading" data-section="contact-heading">Contact</a></li>
+    </ul>
   </nav>
   <div class="menu-overlay" aria-hidden="true"></div>
 
   <main>
     <!-- Hero Section -->
     <section class="hero" aria-labelledby="hero-heading">
-      <h1 id="hero-heading">Product manager. Builder. Gardener.</h1>
+      <h1 id="hero-heading" class="hero-headline">Product manager.<br>Builder. Gardener.</h1>
       <div class="hero-content">
         <p>I build software that helps people manage the practical parts of life. Currently a PM at AppFolio, where I work on rental applications for property managers. Before that: startup life, data science, and a winding path through ecommerce and small business.</p>
         <p>I care about shipping things that actually work, staying close to my family, and building a few quiet tools that might outlast me. Proud future ancestor of the Choctaw Nation of Oklahoma. Probably the most optimistic person you'll meet.</p>
       </div>
-      <div class="hero-actions">
-        <a class="cta-button cta-button--primary" href="#work-heading">
-          <span class="cta-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 7h16c1.1 0 2 .9 2 2v9c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V9c0-1.1.9-2 2-2z"></path>
-              <path d="M8 7V5c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2v2"></path>
-              <path d="M2 12h20"></path>
-            </svg>
-          </span>
-          <span class="cta-label">Work</span>
+      <nav class="hero-nav" aria-label="Quick navigation">
+        <a class="hero-link" href="#work-heading">
+          <span>See my work</span>
+          <span class="hero-link-arrow" aria-hidden="true">&rarr;</span>
         </a>
-        <a class="cta-button cta-button--secondary" href="#tools-heading">
-          <span class="cta-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14.7 6.3a5 5 0 0 0-6.6 6.6L3 18v3h3l5.1-5.1a5 5 0 0 0 6.6-6.6l-3 3-3-3 3-3z"></path>
-            </svg>
-          </span>
-          <span class="cta-label">Tools</span>
+        <a class="hero-link" href="#tools-heading">
+          <span>Browse tools I've built</span>
+          <span class="hero-link-arrow" aria-hidden="true">&rarr;</span>
         </a>
-      </div>
+      </nav>
     </section>
-
-    <hr class="section-divider">
-
-    <!-- Tools Section -->
-    <section class="tools tools--shelf" aria-labelledby="tools-heading">
-      <div class="tools-shelf-header">
-        <h2 id="tools-heading">Tools</h2>
-        <p class="section-intro">Free tools. No accounts. Built to be useful.</p>
-      </div>
-      <div class="tools-grid">
-        <a class="tool-card tool-card--link" href="life-strategy.html">
-          <h3>Life Strategy Matrix</h3>
-          <div class="tool-header-actions">
-            <span class="status status--live"><strong>Live</strong></span>
-            <span class="tool-action" aria-hidden="true">→</span>
-          </div>
-          <p>Pick one area of your life, score it, and see where to invest next. Then print the matrix as a one-page guide.</p>
-        </a>
-
-        <a class="tool-card tool-card--link" href="memorial-pamphlet.html">
-          <h3>Memorial Pamphlet Creator</h3>
-          <div class="tool-header-actions">
-            <span class="status">Coming soon</span>
-            <span class="tool-action" aria-hidden="true">→</span>
-          </div>
-          <p>Create a simple, dignified pamphlet for a memorial service.</p>
-        </a>
-
-        <a class="tool-card tool-card--link" href="native-plant-finder.html">
-          <h3>Native Plant Finder</h3>
-          <div class="tool-header-actions">
-            <span class="status">Coming soon</span>
-            <span class="tool-action" aria-hidden="true">→</span>
-          </div>
-          <p>Enter your region. Get a list of native plants for your garden.</p>
-        </a>
-
-        <a class="tool-card tool-card--link" href="service-of-life.html">
-          <h3>Service of Life Builder</h3>
-          <div class="tool-header-actions">
-            <span class="status">Coming soon</span>
-            <span class="tool-action" aria-hidden="true">→</span>
-          </div>
-          <p>Build a liturgy for a memorial or celebration of life.</p>
-        </a>
-      </div>
-    </section>
-
-    <hr class="section-divider">
 
     <!-- Work Section -->
-    <section class="experience" aria-labelledby="work-heading">
-      <h2 id="work-heading">Work</h2>
-      <div class="positions">
-        <article class="position position--current">
-          <div class="position-company">
-            <h3>AppFolio</h3>
-          </div>
-          <p class="role">Product Manager, Rental Applications</p>
-          <div class="date-meta today-status" aria-label="Current position">
-            <span class="current-indicator" aria-hidden="true"></span>
-            <span>Today</span>
-          </div>
-          <p class="context">I build rental applications and the front half of tenant screening: data ingest, document upload, and the workflows property managers use to configure and review them. We do $15M+/year through this product line, and I’m steadily turning a one-shot form into something account-based, saveable, cross-device, and increasingly AI-assisted where it actually helps.</p>
+    <section class="work" aria-labelledby="work-heading">
+      <header class="section-header">
+        <h2 id="work-heading" class="section-title">Work</h2>
+      </header>
+
+      <div class="work-positions">
+        <article class="work-position work-position--current">
+          <header class="work-position-header">
+            <h3 class="work-company">AppFolio</h3>
+            <span class="work-status">
+              <span class="work-status-dot" aria-hidden="true"></span>
+              <span>Now</span>
+            </span>
+          </header>
+          <p class="work-role">Product Manager, Rental Applications</p>
+          <p class="work-description">I build rental applications and the front half of tenant screening: data ingest, document upload, and the workflows property managers use to configure and review them. We do $15M+/year through this product line, and I'm steadily turning a one-shot form into something account-based, saveable, cross-device, and increasingly AI-assisted where it actually helps.</p>
         </article>
 
-        <article class="position">
-          <div class="position-company">
-            <h3>Lively</h3>
-          </div>
-          <p class="role">Product Manager ← Data Scientist</p>
-          <div class="date-meta date-pill">Nov 2019 – Dec 2022</div>
-          <p class="context">Grew from data scientist to PM at this Forbes Fintech 50 HSA startup. Migrated $50M+ in assets, created 16k+ HSA accounts, and built real-time balance APIs for financial institution partners.</p>
+        <article class="work-position">
+          <header class="work-position-header">
+            <h3 class="work-company">Lively</h3>
+            <span class="work-date">Nov 2019 &ndash; Dec 2022</span>
+          </header>
+          <p class="work-role">Product Manager &larr; Data Scientist</p>
+          <p class="work-description">Grew from data scientist to PM at this Forbes Fintech 50 HSA startup. Migrated $50M+ in assets, created 16k+ HSA accounts, and built real-time balance APIs for financial institution partners.</p>
         </article>
 
-        <article class="position">
-          <div class="position-company">
-            <h3>Oracle</h3>
-          </div>
-          <p class="role">Data Scientist, Applied Research</p>
-          <div class="date-meta date-pill">Sep 2017 – Sep 2019</div>
-          <p class="context">Built ML models using CNN/RNN/Gradient Boosted stacks for CPG taxonomy classification. Ran A/B tests and research to improve standard ML practices.</p>
+        <article class="work-position">
+          <header class="work-position-header">
+            <h3 class="work-company">Oracle</h3>
+            <span class="work-date">Sep 2017 &ndash; Sep 2019</span>
+          </header>
+          <p class="work-role">Data Scientist, Applied Research</p>
+          <p class="work-description">Built ML models using CNN/RNN/Gradient Boosted stacks for CPG taxonomy classification. Ran A/B tests and research to improve standard ML practices.</p>
         </article>
       </div>
-      <a href="https://www.linkedin.com/in/be-ns/" class="cta-link" target="_blank" rel="noopener">View on LinkedIn →</a>
+
+      <a href="https://www.linkedin.com/in/be-ns/" class="work-linkedin" target="_blank" rel="noopener">
+        <span>Full history on LinkedIn</span>
+        <span aria-hidden="true">&rarr;</span>
+      </a>
     </section>
 
-    <hr class="section-divider">
+    <!-- Tools Section -->
+    <section class="tools" aria-labelledby="tools-heading">
+      <header class="section-header">
+        <h2 id="tools-heading" class="section-title">Tools</h2>
+        <p class="section-tagline">Free tools. No accounts. Built to be useful.</p>
+      </header>
+
+      <div class="tools-bento">
+        <!-- Featured Tool -->
+        <a class="tool-featured" href="life-strategy.html">
+          <div class="tool-featured-content">
+            <div class="tool-featured-header">
+              <h3 class="tool-featured-title">Life Strategy Matrix</h3>
+              <span class="tool-badge tool-badge--live">Live</span>
+            </div>
+            <p class="tool-featured-description">Pick one area of your life, score it, and see where to invest next. Then print the matrix as a one-page guide.</p>
+            <span class="tool-featured-cta">
+              <span>Try it</span>
+              <span aria-hidden="true">&rarr;</span>
+            </span>
+          </div>
+        </a>
+
+        <!-- Coming Soon Tools -->
+        <div class="tools-upcoming">
+          <p class="tools-upcoming-label">In progress</p>
+          <ul class="tools-upcoming-list">
+            <li>
+              <a href="memorial-pamphlet.html" class="tool-upcoming">
+                <span class="tool-upcoming-name">Memorial Pamphlet Creator</span>
+                <span class="tool-upcoming-desc">Create a simple, dignified pamphlet for a memorial service.</span>
+              </a>
+            </li>
+            <li>
+              <a href="native-plant-finder.html" class="tool-upcoming">
+                <span class="tool-upcoming-name">Native Plant Finder</span>
+                <span class="tool-upcoming-desc">Enter your region. Get a list of native plants for your garden.</span>
+              </a>
+            </li>
+            <li>
+              <a href="service-of-life.html" class="tool-upcoming">
+                <span class="tool-upcoming-name">Service of Life Builder</span>
+                <span class="tool-upcoming-desc">Build a liturgy for a memorial or celebration of life.</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
 
     <!-- Skills Section -->
     <section class="skills" aria-labelledby="skills-heading">
-      <h2 id="skills-heading">How I Work</h2>
-      <p class="section-intro">Where I dig in and get my hands dirty.</p>
+      <header class="section-header">
+        <h2 id="skills-heading" class="section-title">How I Work</h2>
+        <p class="section-tagline">Where I dig in and get my hands dirty.</p>
+      </header>
 
       <div class="capabilities">
         <article class="capability">
-          <h3 class="capability-headline">Translating ambiguity into shipped products</h3>
-          <p class="capability-description">Taking unclear requirements, competing stakeholder needs, and technical constraints and turning them into products that actually ship and drive outcomes. The core PM work, done well.</p>
+          <h3 class="capability-lead">Translating ambiguity into shipped products</h3>
+          <p class="capability-body">Taking unclear requirements, competing stakeholder needs, and technical constraints and turning them into products that actually ship and drive outcomes. The core PM work, done well.</p>
         </article>
 
         <article class="capability">
-          <h3 class="capability-headline">Prompt-as-specification</h3>
-          <p class="capability-description">Writing prompts that function like detailed PRDs, not copy-paste templates. The skill gap right now: most people prompt like they're googling. Effective prompts read like engineering specs&mdash;precise inputs, clear constraints, defined outputs.</p>
+          <h3 class="capability-lead">Prompt-as-specification</h3>
+          <p class="capability-body">Writing prompts that function like detailed PRDs, not copy-paste templates. The skill gap right now: most people prompt like they're googling. Effective prompts read like engineering specs&mdash;precise inputs, clear constraints, defined outputs.</p>
         </article>
 
         <article class="capability">
-          <h3 class="capability-headline">Rapid analytical validation</h3>
-          <p class="capability-description">Problems that used to require a data scientist and a sprint can now be scoped, analyzed, and validated in hours. Knowing what question to ask, which tool to reach for, and how to interpret the output without getting lost in methodology theater.</p>
+          <h3 class="capability-lead">Rapid analytical validation</h3>
+          <p class="capability-body">Problems that used to require a data scientist and a sprint can now be scoped, analyzed, and validated in hours. Knowing what question to ask, which tool to reach for, and how to interpret the output without getting lost in methodology theater.</p>
         </article>
 
         <article class="capability">
-          <h3 class="capability-headline">Technical bilingualism</h3>
-          <p class="capability-description">Fluent enough to read code, prototype solutions, and have real conversations with engineers. Experienced enough to know when not to build. The value isn't in writing production code&mdash;it's in collapsing the translation layer between product thinking and technical execution.</p>
+          <h3 class="capability-lead">Technical bilingualism</h3>
+          <p class="capability-body">Fluent enough to read code, prototype solutions, and have real conversations with engineers. Experienced enough to know when not to build. The value isn't in writing production code&mdash;it's in collapsing the translation layer between product thinking and technical execution.</p>
         </article>
       </div>
     </section>
 
-    <hr class="section-divider">
-
     <!-- Elsewhere Section -->
     <section class="elsewhere" aria-labelledby="elsewhere-heading">
-      <h2 id="elsewhere-heading">Elsewhere</h2>
-      <p class="section-intro">What I'm thinking about outside of work.</p>
-      <ul class="interests-list">
-        <li>Native gardening in the Bay Area</li>
-        <li>Longevity science and preventive health</li>
-        <li>Liturgical practice and spiritual formation</li>
-        <li>Raising kids who are kind and grounded</li>
+      <header class="section-header">
+        <h2 id="elsewhere-heading" class="section-title">Elsewhere</h2>
+        <p class="section-tagline">What I'm thinking about outside of work.</p>
+      </header>
+
+      <ul class="elsewhere-list">
+        <li class="elsewhere-item">
+          <span class="elsewhere-marker" aria-hidden="true">01</span>
+          <span class="elsewhere-text">Native gardening in the Bay Area</span>
+        </li>
+        <li class="elsewhere-item">
+          <span class="elsewhere-marker" aria-hidden="true">02</span>
+          <span class="elsewhere-text">Longevity science and preventive health</span>
+        </li>
+        <li class="elsewhere-item">
+          <span class="elsewhere-marker" aria-hidden="true">03</span>
+          <span class="elsewhere-text">Liturgical practice and spiritual formation</span>
+        </li>
+        <li class="elsewhere-item">
+          <span class="elsewhere-marker" aria-hidden="true">04</span>
+          <span class="elsewhere-text">Raising kids who are kind and grounded</span>
+        </li>
       </ul>
     </section>
 
-    <hr class="section-divider">
-
     <!-- Contact Section -->
     <section class="contact" aria-labelledby="contact-heading">
-      <h2 id="contact-heading">Contact</h2>
-      <a href="mailto:ben@benjaminsiverly.ly" class="email-link">ben@benjaminsiverly.ly</a>
-      <div class="social-links">
+      <header class="section-header">
+        <h2 id="contact-heading" class="section-title">Contact</h2>
+        <p class="section-tagline">I'm always happy to talk about product, tools, or gardening.</p>
+      </header>
+
+      <a href="mailto:ben@benjaminsiverly.ly" class="contact-email">ben@benjaminsiverly.ly</a>
+
+      <div class="contact-social">
         <a href="https://www.linkedin.com/in/be-ns/" target="_blank" rel="noopener">LinkedIn</a>
+        <span class="contact-divider" aria-hidden="true">/</span>
         <a href="https://github.com/be-ns" target="_blank" rel="noopener">GitHub</a>
       </div>
     </section>
   </main>
 
   <footer>
-    <p class="copyright">© 2026 Ben Siverly</p>
+    <p class="copyright">&copy; 2026 Ben Siverly</p>
   </footer>
 
   <script>
@@ -287,14 +253,10 @@
       if (!loader) return;
 
       var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-      // Timing: 80ms fade in + 520ms dot cycle + 200ms fade out = 800ms total
-      // For reduced motion: 150ms static + 150ms fade = 300ms total
-      var animationDuration = reduceMotion ? 150 : 600; // Time before starting fade out
+      var animationDuration = reduceMotion ? 150 : 600;
       var fadeOutDuration = reduceMotion ? 150 : 200;
-      var maxTimeout = 900; // Safety cap under 1 second
+      var maxTimeout = 900;
 
-      // Prevent scroll during loader
       document.body.style.overflow = 'hidden';
 
       function removeLoader() {
@@ -307,10 +269,8 @@
         }, fadeOutDuration);
       }
 
-      // Start fade out after animation completes
       var animationTimer = setTimeout(removeLoader, animationDuration);
 
-      // Safety fallback: remove loader no matter what after max timeout
       setTimeout(function() {
         clearTimeout(animationTimer);
         if (loader && loader.parentNode) {
@@ -330,10 +290,7 @@
       var menuLinks = document.querySelectorAll('.menu-links a');
       var menuToggleDefaultLabel = menuToggle ? menuToggle.textContent.trim() : 'Menu';
 
-      // Exit if essential elements missing
-      if (!menuToggle || !menuPanel || !menuOverlay) {
-        return;
-      }
+      if (!menuToggle || !menuPanel || !menuOverlay) return;
 
       var isOpen = false;
 
@@ -343,9 +300,7 @@
 
         menuPanel.classList.add('is-open');
         menuOverlay.classList.add('is-visible');
-        if (siteHeader) {
-          siteHeader.classList.add('is-menu-open');
-        }
+        if (siteHeader) siteHeader.classList.add('is-menu-open');
         menuToggle.setAttribute('aria-expanded', 'true');
         menuToggle.setAttribute('aria-label', 'Close menu');
         menuToggle.textContent = 'Close';
@@ -359,9 +314,7 @@
 
         menuPanel.classList.remove('is-open');
         menuOverlay.classList.remove('is-visible');
-        if (siteHeader) {
-          siteHeader.classList.remove('is-menu-open');
-        }
+        if (siteHeader) siteHeader.classList.remove('is-menu-open');
         menuToggle.setAttribute('aria-expanded', 'false');
         menuToggle.setAttribute('aria-label', 'Open menu');
         menuToggle.textContent = menuToggleDefaultLabel;
@@ -370,51 +323,38 @@
         menuToggle.focus();
       }
 
-      // Click handlers
       menuToggle.onclick = function(e) {
         e.preventDefault();
         e.stopPropagation();
-        if (isOpen) {
-          closeMenu();
-        } else {
-          openMenu();
-        }
+        if (isOpen) closeMenu();
+        else openMenu();
       };
 
       menuOverlay.onclick = closeMenu;
 
-      // Close on nav link click
       for (var i = 0; i < menuLinks.length; i++) {
-        menuLinks[i].onclick = function() {
-          closeMenu();
-        };
+        menuLinks[i].onclick = function() { closeMenu(); };
       }
 
-      // Close on Escape
       document.onkeydown = function(e) {
-        if (e.key === 'Escape' && isOpen) {
-          closeMenu();
-        }
+        if (e.key === 'Escape' && isOpen) closeMenu();
       };
 
-      // Scroll animations with Intersection Observer
+      // Scroll animations
       if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        const animateElements = document.querySelectorAll('.position, .tool-card, .capability, .interests-list li, section > h2, .section-intro');
+        var animateElements = document.querySelectorAll('.work-position, .tool-featured, .tool-upcoming, .capability, .elsewhere-item, section > .section-header');
 
         animateElements.forEach(function(el) {
           el.classList.add('animate-on-scroll');
         });
 
-        const observer = new IntersectionObserver(function(entries) {
-          entries.forEach(function(entry, index) {
+        var observer = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
             if (entry.isIntersecting) {
-              // Stagger animation for items within same parent
-              const siblings = entry.target.parentElement.querySelectorAll('.animate-on-scroll');
-              let delay = 0;
+              var siblings = entry.target.parentElement.querySelectorAll('.animate-on-scroll');
+              var delay = 0;
               siblings.forEach(function(sibling, i) {
-                if (sibling === entry.target) {
-                  delay = i * 75;
-                }
+                if (sibling === entry.target) delay = i * 75;
               });
 
               setTimeout(function() {
@@ -425,13 +365,11 @@
             }
           });
         }, {
-          threshold: 0.2,
-          rootMargin: '0px 0px -50px 0px'
+          threshold: 0.15,
+          rootMargin: '0px 0px -40px 0px'
         });
 
-        animateElements.forEach(function(el) {
-          observer.observe(el);
-        });
+        animateElements.forEach(function(el) { observer.observe(el); });
       }
 
       // Smooth scroll for brand link
@@ -439,20 +377,6 @@
         e.preventDefault();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
-
-      // CTA click animations
-      const ctaButtons = document.querySelectorAll('.cta-button');
-      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-      if (!reduceMotion) {
-        ctaButtons.forEach(function(button) {
-          button.addEventListener('click', function() {
-            button.classList.remove('is-pressed');
-            void button.offsetWidth;
-            button.classList.add('is-pressed');
-          });
-        });
-      }
 
       // Header scroll effect
       var header = document.querySelector('.site-header');
