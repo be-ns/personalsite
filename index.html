@@ -293,7 +293,7 @@
     <!-- Contact Section -->
     <section class="contact" aria-labelledby="contact-heading">
       <h2 id="contact-heading">Contact</h2>
-      <button class="email-copy" type="button" data-email-copy="YmVuamFtaW5zaXZlcmx5QGdtYWlsLmNvbQ==">
+      <button class="email-copy" type="button">
         Copy email
       </button>
       <span class="email-copy-status" role="status" aria-live="polite"></span>
@@ -498,7 +498,7 @@
       updateHeaderState();
 
       // Copy email address
-      var emailButton = document.querySelector('[data-email-copy]');
+      var emailButton = document.querySelector('.email-copy');
       var emailStatus = document.querySelector('.email-copy-status');
 
       function setEmailStatus(message) {
@@ -510,12 +510,12 @@
         }, 2000);
       }
 
-      function decodeEmail(value) {
-        try {
-          return atob(value);
-        } catch (err) {
-          return '';
-        }
+      function getEmailAddress() {
+        var emailChars = [
+          98, 101, 110, 106, 97, 109, 105, 110, 115, 105, 118, 101, 114, 108,
+          121, 64, 103, 109, 97, 105, 108, 46, 99, 111, 109
+        ];
+        return String.fromCharCode.apply(null, emailChars);
       }
 
       function copyEmailToClipboard(email) {
@@ -545,7 +545,7 @@
 
       if (emailButton) {
         emailButton.addEventListener('click', function() {
-          var email = decodeEmail(emailButton.getAttribute('data-email-copy') || '');
+          var email = getEmailAddress();
           copyEmailToClipboard(email)
             .then(function() {
               setEmailStatus('Copied!');
