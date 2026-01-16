@@ -28,33 +28,63 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Zilla+Slab:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- jsPDF for PDF export -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
     /* ==========================================================================
-       CSS Variables
+       CSS Variables - California Native Palette
        ========================================================================== */
     :root {
-      --color-bg: #FFFFFF;
-      --color-bg-alt: #F8F8F6;
-      --color-text: #1A1A1A;
-      --color-accent: #FFE227;
-      --color-accent-hover: #FFD800;
-      --color-muted: #666666;
-      --color-border: #E5E5E5;
+      /* Primary colors - drawn from California native plants */
+      --color-sage: #7C9082;
+      --color-cream: #F5F2EB;
+      --color-earth: #8B7355;
 
-      --color-canopy: #2D5A3D;
-      --color-small-tree: #3D7A4D;
-      --color-tall-shrub: #4D9A5D;
-      --color-low-shrub: #6DB66D;
-      --color-ground: #8DD68D;
+      /* Accent colors */
+      --color-poppy: #E8A849;
+      --color-manzanita: #C4A4A4;
+      --color-bay-deep: #2D4739;
 
-      --font-heading: 'Zilla Slab', Georgia, serif;
+      /* Neutrals */
+      --color-charcoal: #3A3A3A;
+      --color-stone: #B8B2A7;
+      --color-off-white: #FAFAF8;
+
+      /* Semantic mappings */
+      --color-bg: var(--color-off-white);
+      --color-bg-alt: var(--color-cream);
+      --color-text: var(--color-charcoal);
+      --color-accent: var(--color-poppy);
+      --color-accent-hover: #D4952F;
+      --color-muted: #6B6560;
+      --color-border: #DDD8D0;
+
+      /* Plant layer colors - nature-inspired */
+      --color-canopy: #2D4739;
+      --color-small-tree: #3D6349;
+      --color-tall-shrub: #4D7A59;
+      --color-low-shrub: #6B9472;
+      --color-ground: #89AE8E;
+
+      /* Water level colors */
+      --color-water-very-low: #B4D4E7;
+      --color-water-low: #7BB8D6;
+      --color-water-moderate: #4A9BC5;
+
+      /* Wildlife tag colors */
+      --color-wildlife: #D4A76A;
+      --color-wildlife-subtle: #F5EBD9;
+
+      /* Care level colors */
+      --color-easy: #7C9082;
+      --color-moderate-care: #B8B2A7;
+
+      --font-heading: 'Fraunces', Georgia, serif;
       --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+      --font-mono: 'Inter', -apple-system, sans-serif;
 
       --space-xs: 0.5rem;
       --space-sm: 1rem;
@@ -62,11 +92,19 @@
       --space-lg: 2.5rem;
       --space-xl: 4rem;
 
-      --radius-sm: 4px;
-      --radius-md: 8px;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
 
       --transition-fast: 150ms ease;
       --transition-base: 250ms ease;
+      --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+
+      /* Shadows */
+      --shadow-sm: 0 1px 3px rgba(59, 56, 51, 0.08);
+      --shadow-md: 0 4px 12px rgba(59, 56, 51, 0.1);
+      --shadow-lg: 0 8px 24px rgba(59, 56, 51, 0.12);
+      --shadow-lift: 0 8px 24px rgba(59, 56, 51, 0.15);
     }
 
     /* ==========================================================================
@@ -85,12 +123,28 @@
       margin: 0;
       font-family: var(--font-body);
       font-size: 1rem;
-      line-height: 1.6;
+      line-height: 1.7;
       color: var(--color-text);
       background-color: var(--color-bg);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      /* Subtle paper texture */
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-blend-mode: overlay;
+      background-size: 200px 200px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(180deg, rgba(245, 242, 235, 0.3) 0%, rgba(250, 250, 248, 0) 50%);
+      pointer-events: none;
+      z-index: -1;
     }
 
     /* ==========================================================================
@@ -102,19 +156,25 @@
       justify-content: space-between;
       padding: var(--space-sm) var(--space-md);
       border-bottom: 1px solid var(--color-border);
+      background: rgba(250, 250, 248, 0.8);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
     .site-brand {
       font-family: var(--font-heading);
       font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--color-text);
+      font-weight: 600;
+      color: var(--color-bay-deep);
       text-decoration: none;
       transition: color var(--transition-fast);
     }
 
     .site-brand:hover {
-      color: var(--color-muted);
+      color: var(--color-sage);
     }
 
     .header-meta {
@@ -124,25 +184,24 @@
     }
 
     .tool-label {
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--color-muted);
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: var(--color-sage);
     }
 
     .reset-link {
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      font-weight: 500;
       color: var(--color-muted);
       background: none;
       border: none;
       cursor: pointer;
-      padding: 0.25rem 0.5rem;
+      padding: 0.375rem 0.75rem;
       border-radius: var(--radius-sm);
-      transition: color var(--transition-fast), background-color var(--transition-fast);
+      transition: all var(--transition-fast);
       opacity: 0;
       pointer-events: none;
     }
@@ -184,25 +243,48 @@
        ========================================================================== */
     .input-section {
       margin-bottom: var(--space-lg);
+      text-align: center;
+      padding: var(--space-lg) 0;
+    }
+
+    .input-header {
+      margin-bottom: var(--space-lg);
     }
 
     .input-title {
       font-family: var(--font-heading);
-      font-size: 1.75rem;
-      font-weight: 700;
+      font-size: 2.25rem;
+      font-weight: 600;
       margin: 0 0 var(--space-xs) 0;
+      color: var(--color-bay-deep);
+      letter-spacing: -0.01em;
+    }
+
+    .input-tagline {
+      font-family: var(--font-heading);
+      font-size: 1.125rem;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--color-sage);
+      margin: 0 0 var(--space-sm) 0;
     }
 
     .input-subtitle {
       font-size: 0.9375rem;
       color: var(--color-muted);
-      margin: 0 0 var(--space-md) 0;
+      margin: 0;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .input-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: var(--space-md);
+      gap: var(--space-lg);
+      max-width: 560px;
+      margin: 0 auto;
+      text-align: left;
     }
 
     @media (max-width: 520px) {
@@ -218,31 +300,45 @@
     }
 
     .input-label {
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--color-muted);
+      font-family: var(--font-body);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .input-label-icon {
+      width: 18px;
+      height: 18px;
+      color: var(--color-sage);
     }
 
     .input-text {
       font-family: var(--font-body);
-      font-size: 1rem;
-      padding: 0.75rem 1rem;
+      font-size: 1.125rem;
+      padding: 0.875rem 1rem;
       border: 2px solid var(--color-border);
-      border-radius: var(--radius-sm);
-      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      background: white;
       color: var(--color-text);
-      transition: border-color var(--transition-fast);
+      transition: all var(--transition-fast);
+      box-shadow: var(--shadow-sm);
     }
 
     .input-text:focus {
       outline: none;
-      border-color: var(--color-text);
+      border-color: var(--color-sage);
+      box-shadow: 0 0 0 3px rgba(124, 144, 130, 0.15);
     }
 
     .input-text.is-invalid {
-      border-color: #DC2626;
+      border-color: #C53030;
+    }
+
+    .input-text.is-invalid:focus {
+      box-shadow: 0 0 0 3px rgba(197, 48, 48, 0.15);
     }
 
     .input-help {
@@ -252,7 +348,7 @@
 
     .input-error {
       font-size: 0.8125rem;
-      color: #DC2626;
+      color: #C53030;
       display: none;
     }
 
@@ -260,16 +356,51 @@
       display: block;
     }
 
+    /* Location Display */
+    .location-display {
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.875rem 1rem;
+      background: var(--color-cream);
+      border-radius: var(--radius-md);
+      border: 2px solid transparent;
+    }
+
+    .location-display.is-visible {
+      display: flex;
+    }
+
+    .location-name {
+      font-weight: 500;
+      color: var(--color-text);
+    }
+
+    .location-change {
+      font-size: 0.8125rem;
+      color: var(--color-sage);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      margin-left: auto;
+    }
+
+    .location-change:hover {
+      color: var(--color-bay-deep);
+      text-decoration: underline;
+    }
+
     /* Sun Slider */
     .sun-slider-container {
       display: flex;
       flex-direction: column;
-      gap: var(--space-xs);
+      gap: 0.75rem;
     }
 
     .sun-slider-value {
       font-family: var(--font-body);
-      font-size: 0.9375rem;
+      font-size: 1rem;
       font-weight: 500;
       color: var(--color-text);
       min-height: 1.5rem;
@@ -278,16 +409,41 @@
     .sun-slider-track {
       position: relative;
       width: 100%;
-      padding: 0.5rem 0;
+      padding: 0.75rem 0;
+    }
+
+    .sun-slider-visual {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 0.5rem;
+      padding: 0 0.25rem;
+    }
+
+    .sun-icon {
+      width: 24px;
+      height: 24px;
+      color: var(--color-stone);
+      transition: all var(--transition-fast);
+    }
+
+    .sun-icon.is-active {
+      color: var(--color-poppy);
+      transform: scale(1.1);
     }
 
     .sun-slider-input {
       -webkit-appearance: none;
       appearance: none;
       width: 100%;
-      height: 6px;
-      background: linear-gradient(to right, #6B7280 0%, var(--color-accent) 100%);
-      border-radius: 3px;
+      height: 8px;
+      background: linear-gradient(to right,
+        var(--color-sage) 0%,
+        var(--color-stone) 33%,
+        var(--color-poppy) 66%,
+        #E8A849 100%
+      );
+      border-radius: 4px;
       outline: none;
       cursor: pointer;
     }
@@ -295,36 +451,52 @@
     .sun-slider-input::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 24px;
-      height: 24px;
-      background: var(--color-text);
+      width: 28px;
+      height: 28px;
+      background: white;
       border-radius: 50%;
       cursor: grab;
-      border: 3px solid var(--color-bg);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-      transition: transform var(--transition-fast);
+      border: 3px solid var(--color-bay-deep);
+      box-shadow: var(--shadow-md);
+      transition: all var(--transition-fast);
     }
 
     .sun-slider-input::-webkit-slider-thumb:hover {
       transform: scale(1.1);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .sun-slider-input::-webkit-slider-thumb:active {
+      cursor: grabbing;
     }
 
     .sun-slider-input::-moz-range-thumb {
-      width: 24px;
-      height: 24px;
-      background: var(--color-text);
+      width: 28px;
+      height: 28px;
+      background: white;
       border-radius: 50%;
       cursor: grab;
-      border: 3px solid var(--color-bg);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      border: 3px solid var(--color-bay-deep);
+      box-shadow: var(--shadow-md);
     }
 
-    .sun-slider-ticks {
+    .sun-slider-labels {
       display: flex;
       justify-content: space-between;
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
+      margin-top: 0.5rem;
+    }
+
+    .sun-slider-label {
+      font-size: 0.75rem;
       color: var(--color-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .sun-slider-label svg {
+      width: 14px;
+      height: 14px;
     }
 
     /* Find Plants Button */
@@ -332,31 +504,40 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
-      font-family: var(--font-mono);
-      font-size: 0.875rem;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 1rem 1.5rem;
-      border: 2px solid var(--color-text);
-      background-color: var(--color-text);
-      color: var(--color-bg);
+      gap: 0.625rem;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 1rem 2rem;
+      border: none;
+      background: var(--color-bay-deep);
+      color: white;
       cursor: pointer;
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-md);
       transition: all var(--transition-fast);
-      margin-top: var(--space-md);
+      margin-top: var(--space-lg);
+      box-shadow: var(--shadow-md);
     }
 
     .find-btn:hover {
-      background-color: var(--color-accent);
-      border-color: var(--color-accent);
-      color: var(--color-text);
+      background: var(--color-sage);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .find-btn:active {
+      transform: translateY(0);
     }
 
     .find-btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+      transform: none;
+    }
+
+    .find-btn svg {
+      width: 20px;
+      height: 20px;
     }
 
     /* ==========================================================================
@@ -376,18 +557,22 @@
     }
 
     .results-header {
-      margin-bottom: var(--space-md);
+      margin-bottom: var(--space-lg);
+      text-align: center;
+      padding-bottom: var(--space-md);
+      border-bottom: 1px solid var(--color-border);
     }
 
     .results-title {
       font-family: var(--font-heading);
-      font-size: 1.5rem;
-      font-weight: 700;
+      font-size: 1.75rem;
+      font-weight: 600;
       margin: 0 0 var(--space-xs) 0;
+      color: var(--color-bay-deep);
     }
 
     .results-meta {
-      font-size: 0.875rem;
+      font-size: 0.9375rem;
       color: var(--color-muted);
       margin: 0;
     }
@@ -395,133 +580,209 @@
     .region-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.375rem;
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 0.375rem 0.75rem;
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-sm);
-      margin-top: var(--space-xs);
+      gap: 0.5rem;
+      font-family: var(--font-body);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      background: var(--color-cream);
+      border-radius: var(--radius-md);
+      margin-top: var(--space-sm);
+      color: var(--color-text);
     }
 
-    /* ==========================================================================
-       Landscape Visualization
-       ========================================================================== */
-    .landscape-section {
-      margin-bottom: var(--space-lg);
+    .region-badge svg {
+      width: 16px;
+      height: 16px;
+      color: var(--color-sage);
     }
 
-    .landscape-title {
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--color-muted);
+    /* Filter Section */
+    .filter-section {
+      margin-bottom: var(--space-md);
+      padding: var(--space-md);
+      background: var(--color-cream);
+      border-radius: var(--radius-md);
+    }
+
+    .filter-title {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--color-text);
       margin: 0 0 var(--space-sm) 0;
     }
 
-    .landscape-container {
-      position: relative;
-      background: linear-gradient(to bottom, #E0F4FF 0%, #B8E6FF 30%, #90D8FF 100%);
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      height: 280px;
-      border: 1px solid var(--color-border);
-    }
-
-    .landscape-ground {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 20px;
-      background: linear-gradient(to bottom, #8B7355 0%, #6B5344 100%);
-    }
-
-    .landscape-layers {
-      position: absolute;
-      bottom: 20px;
-      left: 0;
-      right: 0;
-      top: 0;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      padding: 0 var(--space-sm);
-      gap: 2px;
-    }
-
-    .plant-silhouette {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      cursor: pointer;
-      transition: transform var(--transition-fast), filter var(--transition-fast);
-      position: relative;
-    }
-
-    .plant-silhouette:hover {
-      transform: translateY(-4px);
-      filter: brightness(1.1);
-    }
-
-    .plant-silhouette.is-active {
-      filter: brightness(1.2);
-    }
-
-    .plant-shape {
-      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-      transition: all var(--transition-fast);
-    }
-
-    .plant-shape--canopy {
-      background: var(--color-canopy);
-    }
-
-    .plant-shape--small-tree {
-      background: var(--color-small-tree);
-    }
-
-    .plant-shape--tall-shrub {
-      background: var(--color-tall-shrub);
-    }
-
-    .plant-shape--low-shrub {
-      background: var(--color-low-shrub);
-    }
-
-    .plant-shape--ground {
-      background: var(--color-ground);
-    }
-
-    .plant-stem {
-      width: 3px;
-      background: #5D4E3A;
-      margin-top: -2px;
-    }
-
-    /* Layer Legend */
-    .layer-legend {
+    .filter-groups {
       display: flex;
       flex-wrap: wrap;
-      gap: var(--space-xs);
-      margin-top: var(--space-sm);
+      gap: var(--space-md);
     }
 
-    .legend-item {
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.375rem;
+    }
+
+    .filter-group-label {
+      font-size: 0.6875rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-muted);
+    }
+
+    .filter-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem;
+    }
+
+    .filter-pill {
+      font-family: var(--font-body);
+      font-size: 0.8125rem;
+      padding: 0.375rem 0.75rem;
+      border: 1px solid var(--color-border);
+      background: white;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
       display: flex;
       align-items: center;
       gap: 0.375rem;
+    }
+
+    .filter-pill:hover {
+      border-color: var(--color-sage);
+    }
+
+    .filter-pill.is-active {
+      background: var(--color-bay-deep);
+      border-color: var(--color-bay-deep);
+      color: white;
+    }
+
+    .filter-pill svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .filter-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: var(--space-sm);
+      padding-top: var(--space-sm);
+      border-top: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .filter-count {
+      font-size: 0.875rem;
+      color: var(--color-muted);
+    }
+
+    .filter-count strong {
+      color: var(--color-text);
+      font-weight: 600;
+    }
+
+    .filter-clear {
+      font-size: 0.8125rem;
+      color: var(--color-sage);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .filter-clear:hover {
+      color: var(--color-bay-deep);
+      text-decoration: underline;
+    }
+
+    /* ==========================================================================
+       Layer Overview (Simplified landscape visualization)
+       ========================================================================== */
+    .layers-overview {
+      margin-bottom: var(--space-lg);
+      padding: var(--space-md);
+      background: linear-gradient(135deg, var(--color-cream) 0%, rgba(245, 242, 235, 0.5) 100%);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--color-border);
+    }
+
+    .layers-overview-title {
+      font-family: var(--font-heading);
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin: 0 0 var(--space-sm) 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .layers-overview-title svg {
+      width: 18px;
+      height: 18px;
+      color: var(--color-sage);
+    }
+
+    .layers-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .layer-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.625rem 0.75rem;
+      background: white;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .layer-row:hover {
+      background: rgba(255, 255, 255, 0.9);
+      transform: translateX(4px);
+    }
+
+    .layer-indicator {
+      width: 4px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .layer-indicator--canopy { background: var(--color-canopy); height: 32px; }
+    .layer-indicator--small-tree { background: var(--color-small-tree); height: 26px; }
+    .layer-indicator--tall-shrub { background: var(--color-tall-shrub); height: 20px; }
+    .layer-indicator--low-shrub { background: var(--color-low-shrub); height: 14px; }
+    .layer-indicator--ground { background: var(--color-ground); height: 8px; }
+
+    .layer-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .layer-name {
+      font-weight: 500;
+      font-size: 0.875rem;
+      color: var(--color-text);
+    }
+
+    .layer-meta {
       font-size: 0.75rem;
       color: var(--color-muted);
     }
 
-    .legend-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
+    .layer-count {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--color-sage);
+      white-space: nowrap;
     }
 
     /* ==========================================================================
@@ -532,16 +793,26 @@
     }
 
     .plants-category {
-      margin-bottom: var(--space-lg);
+      margin-bottom: var(--space-xl);
     }
 
     .category-header {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
-      margin-bottom: var(--space-sm);
-      padding-bottom: var(--space-xs);
-      border-bottom: 1px solid var(--color-border);
+      margin-bottom: var(--space-md);
+      padding: var(--space-sm) var(--space-md);
+      background: var(--color-cream);
+      border-radius: var(--radius-md);
+      position: sticky;
+      top: 60px;
+      z-index: 10;
+    }
+
+    .category-header-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
     }
 
     .category-title {
@@ -549,36 +820,107 @@
       font-size: 1.125rem;
       font-weight: 600;
       margin: 0;
+      color: var(--color-bay-deep);
     }
 
-    .category-count {
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
+    .category-subtitle {
+      font-size: 0.8125rem;
       color: var(--color-muted);
+      font-style: italic;
+    }
+
+    .category-meta {
+      font-size: 0.8125rem;
+      color: var(--color-sage);
+      font-weight: 500;
+      white-space: nowrap;
     }
 
     .plants-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      display: flex;
+      flex-direction: column;
       gap: var(--space-sm);
     }
 
     .plant-card {
-      background: var(--color-bg);
+      background: white;
       border: 1px solid var(--color-border);
       border-radius: var(--radius-md);
-      padding: var(--space-md);
-      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+      overflow: hidden;
+      transition: all var(--transition-fast);
       cursor: pointer;
+      display: flex;
+      flex-direction: row;
     }
 
     .plant-card:hover {
-      border-color: var(--color-text);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border-color: var(--color-sage);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
     }
 
     .plant-card.is-expanded {
-      border-color: var(--color-text);
+      border-color: var(--color-bay-deep);
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* Plant Image/Placeholder */
+    .plant-image-container {
+      width: 120px;
+      min-height: 140px;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .plant-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .plant-placeholder--canopy_tree { background: linear-gradient(135deg, var(--color-canopy) 0%, #1E3326 100%); }
+    .plant-placeholder--small_tree { background: linear-gradient(135deg, var(--color-small-tree) 0%, var(--color-canopy) 100%); }
+    .plant-placeholder--tall_shrub { background: linear-gradient(135deg, var(--color-tall-shrub) 0%, var(--color-small-tree) 100%); }
+    .plant-placeholder--low_shrub { background: linear-gradient(135deg, var(--color-low-shrub) 0%, var(--color-tall-shrub) 100%); }
+    .plant-placeholder--ground_cover { background: linear-gradient(135deg, var(--color-ground) 0%, var(--color-low-shrub) 100%); }
+
+    .plant-placeholder-icon {
+      width: 48px;
+      height: 48px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .plant-bloom-badge {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      font-size: 0.6875rem;
+      font-weight: 500;
+    }
+
+    .plant-bloom-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    /* Plant Content */
+    .plant-content {
+      flex: 1;
+      padding: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
     }
 
     .plant-card-header {
@@ -586,57 +928,123 @@
       justify-content: space-between;
       align-items: flex-start;
       gap: var(--space-sm);
-      margin-bottom: var(--space-xs);
+      margin-bottom: 0.5rem;
+    }
+
+    .plant-name-group {
+      min-width: 0;
     }
 
     .plant-name {
       font-family: var(--font-heading);
-      font-size: 1rem;
+      font-size: 1.0625rem;
       font-weight: 600;
       margin: 0;
       line-height: 1.3;
+      color: var(--color-text);
     }
 
     .plant-scientific {
       font-size: 0.8125rem;
       font-style: italic;
       color: var(--color-muted);
-      margin: 0 0 var(--space-xs) 0;
+      margin: 0.125rem 0 0 0;
     }
 
-    .plant-bloom {
+    /* Favorite Button */
+    .plant-favorite {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: var(--color-cream);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      color: var(--color-stone);
+    }
+
+    .plant-favorite:hover {
+      background: var(--color-manzanita);
+      color: white;
+    }
+
+    .plant-favorite.is-favorited {
+      background: var(--color-manzanita);
+      color: white;
+    }
+
+    .plant-favorite svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Tag Groups */
+    .plant-tags-grouped {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: auto;
+    }
+
+    .tag-group {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    /* Water Tags */
+    .plant-tag {
+      font-size: 0.6875rem;
+      font-weight: 500;
+      padding: 0.25rem 0.5rem;
+      border-radius: 12px;
       display: inline-flex;
       align-items: center;
       gap: 0.25rem;
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 0.25rem 0.5rem;
-      border-radius: var(--radius-sm);
-      white-space: nowrap;
     }
 
-    .bloom-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
+    .plant-tag svg {
+      width: 12px;
+      height: 12px;
     }
 
-    .plant-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.375rem;
-      margin-bottom: var(--space-sm);
+    .plant-tag--water-very-low {
+      background: var(--color-water-very-low);
+      color: #1E5A7C;
     }
 
-    .plant-tag {
-      font-size: 0.75rem;
-      padding: 0.25rem 0.5rem;
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-sm);
+    .plant-tag--water-low {
+      background: var(--color-water-low);
+      color: #0F3D54;
     }
 
+    .plant-tag--water-moderate {
+      background: var(--color-water-moderate);
+      color: white;
+    }
+
+    /* Wildlife Tags */
+    .plant-tag--wildlife {
+      background: var(--color-wildlife-subtle);
+      color: #8B6914;
+    }
+
+    /* Care Tags */
+    .plant-tag--easy {
+      background: rgba(124, 144, 130, 0.15);
+      color: var(--color-bay-deep);
+    }
+
+    .plant-tag--deer {
+      background: rgba(139, 115, 85, 0.12);
+      color: var(--color-earth);
+    }
+
+    /* Plant Details (Expanded) */
     .plant-details {
       display: none;
       padding-top: var(--space-sm);
@@ -646,11 +1054,23 @@
 
     .plant-card.is-expanded .plant-details {
       display: block;
+      animation: slideDown 0.2s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .plant-description {
       font-size: 0.875rem;
-      line-height: 1.6;
+      line-height: 1.7;
       color: var(--color-muted);
       margin: 0 0 var(--space-sm) 0;
     }
@@ -658,7 +1078,10 @@
     .plant-stats {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: var(--space-xs);
+      gap: var(--space-sm);
+      background: var(--color-cream);
+      padding: var(--space-sm);
+      border-radius: var(--radius-sm);
     }
 
     .plant-stat {
@@ -668,16 +1091,135 @@
     }
 
     .stat-label {
-      font-family: var(--font-mono);
-      font-size: 0.625rem;
+      font-size: 0.6875rem;
+      font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.03em;
       color: var(--color-muted);
     }
 
     .stat-value {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--color-text);
+    }
+
+    .plant-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      margin-top: var(--space-sm);
       font-size: 0.8125rem;
       font-weight: 500;
+      color: var(--color-sage);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+
+    .plant-link:hover {
+      color: var(--color-bay-deep);
+    }
+
+    .plant-link svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* Mobile: Stack vertically */
+    @media (max-width: 520px) {
+      .plant-card {
+        flex-direction: column;
+      }
+
+      .plant-image-container {
+        width: 100%;
+        min-height: 120px;
+      }
+    }
+
+    /* ==========================================================================
+       My Garden (Favorites) Section
+       ========================================================================== */
+    .my-garden-section {
+      margin-bottom: var(--space-lg);
+      padding: var(--space-md);
+      background: linear-gradient(135deg, rgba(196, 164, 164, 0.15) 0%, rgba(232, 168, 73, 0.1) 100%);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(196, 164, 164, 0.3);
+    }
+
+    .my-garden-section.is-hidden {
+      display: none;
+    }
+
+    .my-garden-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-sm);
+    }
+
+    .my-garden-title {
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .my-garden-title svg {
+      width: 18px;
+      height: 18px;
+      color: var(--color-manzanita);
+    }
+
+    .my-garden-count {
+      font-size: 0.8125rem;
+      color: var(--color-muted);
+    }
+
+    .my-garden-plants {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .my-garden-plant {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background: white;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .my-garden-plant-remove {
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: var(--color-cream);
+      border-radius: 50%;
+      cursor: pointer;
+      color: var(--color-muted);
+      transition: all var(--transition-fast);
+    }
+
+    .my-garden-plant-remove:hover {
+      background: var(--color-manzanita);
+      color: white;
+    }
+
+    .my-garden-plant-remove svg {
+      width: 12px;
+      height: 12px;
     }
 
     /* ==========================================================================
@@ -686,51 +1228,105 @@
     .nurseries-section {
       margin-bottom: var(--space-lg);
       padding: var(--space-md);
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-md);
+      background: var(--color-cream);
+      border-radius: var(--radius-lg);
+    }
+
+    .nurseries-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: var(--space-sm);
     }
 
     .nurseries-title {
       font-family: var(--font-heading);
       font-size: 1.125rem;
       font-weight: 600;
-      margin: 0 0 var(--space-sm) 0;
+      margin: 0;
+      color: var(--color-bay-deep);
+    }
+
+    .nurseries-subtitle {
+      font-size: 0.8125rem;
+      color: var(--color-muted);
+      margin: 0 0 var(--space-md) 0;
+      font-style: italic;
     }
 
     .nurseries-list {
       list-style: none;
       margin: 0;
       padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
     }
 
     .nursery-item {
-      padding: var(--space-xs) 0;
-      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      gap: var(--space-md);
+      padding: var(--space-sm);
+      background: white;
+      border-radius: var(--radius-md);
+      transition: all var(--transition-fast);
     }
 
-    .nursery-item:last-child {
-      border-bottom: none;
+    .nursery-item:hover {
+      box-shadow: var(--shadow-sm);
+    }
+
+    .nursery-icon {
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-sage);
+      border-radius: var(--radius-sm);
+      color: white;
+    }
+
+    .nursery-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .nursery-content {
+      flex: 1;
+      min-width: 0;
     }
 
     .nursery-name {
-      font-weight: 500;
-      margin-bottom: 0.125rem;
+      font-weight: 600;
+      font-size: 0.9375rem;
+      margin-bottom: 0.25rem;
     }
 
     .nursery-name a {
       color: var(--color-text);
       text-decoration: none;
-      border-bottom: 1px solid var(--color-border);
-      transition: border-color var(--transition-fast);
+      transition: color var(--transition-fast);
     }
 
     .nursery-name a:hover {
-      border-color: var(--color-text);
+      color: var(--color-sage);
     }
 
     .nursery-address {
       font-size: 0.8125rem;
       color: var(--color-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .nursery-note {
+      font-size: 0.75rem;
+      color: var(--color-sage);
+      margin-top: 0.25rem;
+      font-style: italic;
     }
 
     /* ==========================================================================
@@ -738,45 +1334,60 @@
        ========================================================================== */
     .export-section {
       display: flex;
+      flex-wrap: wrap;
       gap: var(--space-sm);
-      padding-top: var(--space-md);
-      border-top: 1px solid var(--color-border);
+      padding: var(--space-md);
+      background: var(--color-cream);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--space-lg);
+    }
+
+    .export-title {
+      width: 100%;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin: 0 0 var(--space-xs) 0;
     }
 
     .export-btn {
       flex: 1;
+      min-width: 140px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
-      font-family: var(--font-mono);
-      font-size: 0.8125rem;
+      font-family: var(--font-body);
+      font-size: 0.875rem;
       font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 0.875rem 1.25rem;
-      border: 2px solid var(--color-text);
-      background-color: var(--color-text);
-      color: var(--color-bg);
+      padding: 0.75rem 1rem;
+      border: none;
+      background: var(--color-bay-deep);
+      color: white;
       cursor: pointer;
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-md);
       transition: all var(--transition-fast);
     }
 
     .export-btn:hover {
-      background-color: var(--color-accent);
-      border-color: var(--color-accent);
-      color: var(--color-text);
+      background: var(--color-sage);
+      transform: translateY(-1px);
+    }
+
+    .export-btn svg {
+      width: 16px;
+      height: 16px;
     }
 
     .export-btn--secondary {
-      background-color: transparent;
+      background: white;
       color: var(--color-text);
+      border: 1px solid var(--color-border);
     }
 
     .export-btn--secondary:hover {
-      background-color: var(--color-text);
-      color: var(--color-bg);
+      background: var(--color-bg-alt);
+      border-color: var(--color-sage);
     }
 
     /* ==========================================================================
@@ -785,58 +1396,145 @@
     .unsupported-message {
       text-align: center;
       padding: var(--space-xl) var(--space-md);
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-md);
+      background: var(--color-cream);
+      border-radius: var(--radius-lg);
+    }
+
+    .unsupported-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto var(--space-md);
+      color: var(--color-sage);
     }
 
     .unsupported-title {
       font-family: var(--font-heading);
-      font-size: 1.25rem;
+      font-size: 1.375rem;
       font-weight: 600;
       margin: 0 0 var(--space-sm) 0;
+      color: var(--color-bay-deep);
     }
 
     .unsupported-text {
       color: var(--color-muted);
       margin: 0 0 var(--space-md) 0;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .unsupported-link {
-      color: var(--color-text);
+      color: var(--color-sage);
       font-weight: 500;
+      transition: color var(--transition-fast);
+    }
+
+    .unsupported-link:hover {
+      color: var(--color-bay-deep);
     }
 
     /* ==========================================================================
        Footer
        ========================================================================== */
     .site-footer {
-      padding: var(--space-sm) var(--space-md);
+      padding: var(--space-md) var(--space-md);
       text-align: center;
-      font-size: 0.75rem;
+      font-size: 0.8125rem;
       color: var(--color-muted);
+      border-top: 1px solid var(--color-border);
+      background: rgba(245, 242, 235, 0.5);
+    }
+
+    .footer-content {
+      max-width: 480px;
+      margin: 0 auto;
     }
 
     .privacy-note {
-      margin: 0;
+      margin: 0 0 0.5rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .privacy-note svg {
+      width: 14px;
+      height: 14px;
+      color: var(--color-sage);
     }
 
     .data-source {
-      margin: var(--space-xs) 0 0 0;
+      margin: 0;
     }
 
     .data-source a {
-      color: var(--color-muted);
+      color: var(--color-sage);
       text-decoration: none;
-      border-bottom: 1px solid var(--color-border);
+      font-weight: 500;
+      transition: color var(--transition-fast);
     }
 
     .data-source a:hover {
-      color: var(--color-text);
+      color: var(--color-bay-deep);
     }
+
+    /* ==========================================================================
+       Animations
+       ========================================================================== */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    .animate-fade-in {
+      animation: fadeInUp 0.4s ease forwards;
+    }
+
+    .animate-stagger-1 { animation-delay: 0.05s; }
+    .animate-stagger-2 { animation-delay: 0.1s; }
+    .animate-stagger-3 { animation-delay: 0.15s; }
+    .animate-stagger-4 { animation-delay: 0.2s; }
+    .animate-stagger-5 { animation-delay: 0.25s; }
 
     /* ==========================================================================
        Responsive Adjustments
        ========================================================================== */
+    @media (max-width: 640px) {
+      .input-title {
+        font-size: 1.75rem;
+      }
+
+      .input-tagline {
+        font-size: 1rem;
+      }
+
+      .filter-groups {
+        flex-direction: column;
+      }
+
+      .category-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+    }
+
     @media (max-width: 480px) {
       .site-header {
         padding: var(--space-xs) var(--space-sm);
@@ -850,16 +1548,20 @@
         font-size: 1.5rem;
       }
 
-      .landscape-container {
-        height: 200px;
+      .input-grid {
+        gap: var(--space-md);
       }
 
-      .plants-grid {
-        grid-template-columns: 1fr;
+      .results-title {
+        font-size: 1.375rem;
       }
 
       .export-section {
         flex-direction: column;
+      }
+
+      .export-btn {
+        width: 100%;
       }
     }
 
@@ -867,10 +1569,24 @@
        Reduced Motion
        ========================================================================== */
     @media (prefers-reduced-motion: reduce) {
-      .plant-silhouette,
       .plant-card,
-      .results-section {
+      .results-section,
+      .filter-pill,
+      .layer-row,
+      .export-btn,
+      .find-btn {
         transition: none;
+      }
+
+      .animate-fade-in {
+        animation: none;
+        opacity: 1;
+      }
+
+      .plant-card:hover,
+      .find-btn:hover,
+      .export-btn:hover {
+        transform: none;
       }
     }
 
@@ -880,6 +1596,11 @@
     @media print {
       body {
         background: white;
+        background-image: none;
+      }
+
+      body::before {
+        display: none;
       }
 
       .site-header,
@@ -887,7 +1608,11 @@
       .export-section,
       .reset-link,
       .find-btn,
-      .input-section {
+      .input-section,
+      .filter-section,
+      .my-garden-section,
+      .plant-favorite,
+      .layers-overview {
         display: none !important;
       }
 
@@ -899,6 +1624,18 @@
       .plant-card {
         break-inside: avoid;
         page-break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ddd;
+      }
+
+      .plant-card:hover {
+        transform: none;
+        box-shadow: none;
+      }
+
+      .category-header {
+        position: static;
+        background: #f5f5f5;
       }
     }
   </style>
@@ -916,17 +1653,26 @@
     <div class="tool" id="tool" role="application" aria-label="Native Plant Finder tool">
       <!-- Input Section -->
       <section class="input-section" id="input-section">
-        <h1 class="input-title">Find Native Plants</h1>
-        <p class="input-subtitle">Enter your location and sun conditions to discover native plants that will thrive in your garden.</p>
+        <div class="input-header">
+          <h1 class="input-title">Native Plant Finder</h1>
+          <p class="input-tagline">Discover what grows here</p>
+          <p class="input-subtitle">Find California native plants that thrive in your specific conditions. Support local pollinators, birds, and beneficial insects while reducing water and maintenance.</p>
+        </div>
 
         <div class="input-grid">
           <div class="input-group">
-            <label class="input-label" for="zip-input">Zip Code</label>
+            <label class="input-label" for="zip-input">
+              <svg class="input-label-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              Your Location
+            </label>
             <input
               type="text"
               class="input-text"
               id="zip-input"
-              placeholder="94402"
+              placeholder="Enter zip code"
               maxlength="5"
               inputmode="numeric"
               pattern="[0-9]*"
@@ -937,7 +1683,20 @@
           </div>
 
           <div class="input-group">
-            <label class="input-label" for="sun-input">Sun Exposure</label>
+            <label class="input-label" for="sun-input">
+              <svg class="input-label-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+              </svg>
+              Sun Exposure
+            </label>
             <div class="sun-slider-container">
               <div class="sun-slider-value" id="sun-value">Part Sun (4-6 hrs)</div>
               <div class="sun-slider-track">
@@ -952,17 +1711,47 @@
                   aria-valuemin="1"
                   aria-valuemax="4"
                   aria-valuenow="3"
+                  aria-valuetext="Part Sun, 4 to 6 hours"
                 >
               </div>
-              <div class="sun-slider-ticks">
-                <span>Shade</span>
-                <span>Full Sun</span>
+              <div class="sun-slider-labels">
+                <span class="sun-slider-label">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 18a5 5 0 0 0-10 0"></path>
+                    <line x1="12" y1="9" x2="12" y2="2"></line>
+                    <line x1="4.22" y1="10.22" x2="5.64" y2="11.64"></line>
+                    <line x1="1" y1="18" x2="3" y2="18"></line>
+                    <line x1="21" y1="18" x2="23" y2="18"></line>
+                    <line x1="18.36" y1="11.64" x2="19.78" y2="10.22"></line>
+                  </svg>
+                  Shade
+                </span>
+                <span class="sun-slider-label">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                  </svg>
+                  Full Sun
+                </span>
               </div>
             </div>
           </div>
         </div>
 
-        <button type="button" class="find-btn" id="find-btn">Find Plants</button>
+        <button type="button" class="find-btn" id="find-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          Find Plants
+        </button>
       </section>
 
       <!-- Results Section (hidden initially) -->
@@ -973,8 +1762,16 @@
   </main>
 
   <footer class="site-footer">
-    <p class="privacy-note">Nothing is saved. All data stays in your browser.</p>
-    <p class="data-source">Plant data sourced from <a href="https://calscape.org" target="_blank" rel="noopener">Calscape.org</a> / California Native Plant Society</p>
+    <div class="footer-content">
+      <p class="privacy-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        Nothing is saved. All data stays in your browser.
+      </p>
+      <p class="data-source">Plant data sourced from <a href="https://calscape.org" target="_blank" rel="noopener">Calscape.org</a> / California Native Plant Society</p>
+    </div>
   </footer>
 
   <script>
@@ -1444,8 +2241,62 @@
         sunLevel: 3,
         region: null,
         filteredPlants: [],
-        expandedPlantId: null
+        displayedPlants: [],
+        expandedPlantId: null,
+        filters: {
+          water: [],
+          wildlife: [],
+          care: []
+        },
+        favorites: loadFavorites()
       };
+
+      // Category descriptions for the new design
+      var categoryDescriptions = {
+        canopy_tree: "The backbone of your garden",
+        small_tree: "Structure and seasonal interest",
+        tall_shrub: "Privacy and wildlife habitat",
+        low_shrub: "Color and fragrance",
+        ground_cover: "Knit it all together"
+      };
+
+      // Icons SVG paths
+      var ICONS = {
+        heart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>',
+        heartFilled: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>',
+        droplet: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>',
+        bird: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 7h.01M3.4 18H12a8 8 0 0 0 8-8V7a4 4 0 0 0-7.28-2.28L2 20"></path></svg>',
+        check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>',
+        deer: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3"/><path d="M12 11v4"/><path d="M9 8V5L7 3M15 8V5l2-2"/><path d="M8 19l4-4 4 4"/></svg>',
+        plant: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 20h10M10 20c0-3.37 2-6 2-8s-2-4.5-2-6.5c0 2 2 4.5 2 6.5s-2 4.63-2 8zM12 14c1.5 0 4.5-1.5 4.5-5.5 0 4-3 5.5-4.5 5.5zm0 0c-1.5 0-4.5-1.5-4.5-5.5 0 4 3 5.5 4.5 5.5z"></path></svg>',
+        layers: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>',
+        download: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>',
+        printer: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>',
+        share: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>',
+        store: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>',
+        external: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>',
+        x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
+        mapPin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>'
+      };
+
+      // Load favorites from localStorage
+      function loadFavorites() {
+        try {
+          var saved = localStorage.getItem('nativePlantFavorites');
+          return saved ? JSON.parse(saved) : [];
+        } catch (e) {
+          return [];
+        }
+      }
+
+      // Save favorites to localStorage
+      function saveFavorites() {
+        try {
+          localStorage.setItem('nativePlantFavorites', JSON.stringify(state.favorites));
+        } catch (e) {
+          // localStorage not available
+        }
+      }
 
       // ==========================================================================
       // Helpers
@@ -1476,6 +2327,56 @@
           groups[cat].push(plant);
         });
         return groups;
+      }
+
+      // Apply additional filters to plants
+      function applyFilters(plants) {
+        return plants.filter(function(plant) {
+          // Water filter
+          if (state.filters.water.length > 0) {
+            if (state.filters.water.indexOf(plant.waterNeeds) === -1) {
+              return false;
+            }
+          }
+
+          // Wildlife filter
+          if (state.filters.wildlife.length > 0) {
+            var hasWildlife = state.filters.wildlife.some(function(w) {
+              return plant.ecologicalValue.indexOf(w) !== -1;
+            });
+            if (!hasWildlife) return false;
+          }
+
+          // Care filter
+          if (state.filters.care.length > 0) {
+            var matchesCare = state.filters.care.some(function(c) {
+              if (c === 'easy') return plant.difficulty === 'easy';
+              if (c === 'deer') return plant.deerResistant;
+              return false;
+            });
+            if (!matchesCare) return false;
+          }
+
+          return true;
+        });
+      }
+
+      // Toggle favorite
+      function toggleFavorite(plantId) {
+        var idx = state.favorites.indexOf(plantId);
+        if (idx === -1) {
+          state.favorites.push(plantId);
+        } else {
+          state.favorites.splice(idx, 1);
+        }
+        saveFavorites();
+        updateFavoriteButtons();
+        updateMyGardenSection();
+      }
+
+      // Check if plant is favorited
+      function isFavorited(plantId) {
+        return state.favorites.indexOf(plantId) !== -1;
       }
 
       function formatHeight(inches) {
@@ -1511,8 +2412,10 @@
       // ==========================================================================
       sunInput.addEventListener('input', function() {
         state.sunLevel = parseInt(sunInput.value, 10);
-        sunValue.textContent = getSunLabel(state.sunLevel);
+        var label = getSunLabel(state.sunLevel);
+        sunValue.textContent = label;
         sunInput.setAttribute('aria-valuenow', state.sunLevel);
+        sunInput.setAttribute('aria-valuetext', label);
       });
 
       // ==========================================================================
@@ -1567,11 +2470,14 @@
         state.sunLevel = 3;
         state.region = null;
         state.filteredPlants = [];
+        state.displayedPlants = [];
         state.expandedPlantId = null;
+        state.filters = { water: [], wildlife: [], care: [] };
 
         zipInput.value = '';
         sunInput.value = 3;
         sunValue.textContent = getSunLabel(3);
+        sunInput.setAttribute('aria-valuetext', 'Part Sun, 4 to 6 hours');
         zipInput.classList.remove('is-invalid');
         zipError.classList.remove('is-visible');
 
@@ -1601,16 +2507,20 @@
       function renderUnsupportedRegion() {
         var html = '' +
           '<div class="unsupported-message">' +
+            '<div class="unsupported-icon">' + ICONS.mapPin + '</div>' +
             '<h2 class="unsupported-title">Region Not Yet Supported</h2>' +
             '<p class="unsupported-text">' +
-              'We currently only have plant data for the San Mateo, CA area (94402). ' +
-              'We\'re working on expanding to more regions.' +
+              'We currently have plant data for the San Mateo, CA area (94402). ' +
+              'More regions coming soon!' +
             '</p>' +
             '<p class="unsupported-text">' +
               'In the meantime, try <a href="https://calscape.org" target="_blank" rel="noopener" class="unsupported-link">Calscape.org</a> ' +
               'to find native plants for your California location.' +
             '</p>' +
-            '<button type="button" class="find-btn" id="try-again-btn">Try Another Zip</button>' +
+            '<button type="button" class="find-btn" id="try-again-btn">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>' +
+              'Try Another Zip' +
+            '</button>' +
           '</div>';
 
         resultsSection.innerHTML = html;
@@ -1626,25 +2536,31 @@
       // ==========================================================================
       function renderResults() {
         var region = state.region;
-        var plants = state.filteredPlants;
+        state.displayedPlants = applyFilters(state.filteredPlants);
+        var plants = state.displayedPlants;
         var grouped = groupByCategory(plants);
 
         var html = '' +
           '<div class="results-header">' +
-            '<h2 class="results-title">' + plants.length + ' Native Plants for Your Garden</h2>' +
+            '<h2 class="results-title">' + state.filteredPlants.length + ' Native Plants for Your Garden</h2>' +
             '<p class="results-meta">Filtered for ' + getSunLabel(state.sunLevel).toLowerCase() + ' conditions</p>' +
             '<div class="region-badge">' +
-              '<span>' + region.name + '</span>' +
-              '<span>·</span>' +
-              '<span>USDA Zone ' + region.usdaZone + '</span>' +
+              ICONS.mapPin +
+              '<span>' + region.name + ' · USDA Zone ' + region.usdaZone + '</span>' +
             '</div>' +
           '</div>';
 
-        // Landscape Visualization
-        html += renderLandscape(plants);
+        // My Garden Section (favorites)
+        html += renderMyGarden();
+
+        // Filter Section
+        html += renderFilters();
+
+        // Layers Overview (simplified landscape)
+        html += renderLayersOverview(grouped);
 
         // Plant Cards by Category
-        html += '<div class="plants-section">';
+        html += '<div class="plants-section" id="plants-section">';
 
         var categoryOrder = ['canopy_tree', 'small_tree', 'tall_shrub', 'low_shrub', 'ground_cover'];
         categoryOrder.forEach(function(catKey) {
@@ -1659,125 +2575,262 @@
         html += renderNurseries();
 
         // Export Section
-        html += '' +
-          '<div class="export-section">' +
-            '<button type="button" class="export-btn" id="export-pdf-btn">Download PDF</button>' +
-            '<button type="button" class="export-btn export-btn--secondary" id="print-btn">Print</button>' +
-          '</div>';
+        html += renderExportSection();
 
         resultsSection.innerHTML = html;
 
         // Attach event listeners
         attachPlantCardListeners();
         attachExportListeners();
-        attachLandscapeListeners();
+        attachFilterListeners();
+        attachLayerListeners();
+        attachFavoriteListeners();
+      }
+
+      // Re-render just the plants section when filters change
+      function updatePlantsDisplay() {
+        state.displayedPlants = applyFilters(state.filteredPlants);
+        var grouped = groupByCategory(state.displayedPlants);
+
+        var plantsSection = document.getElementById('plants-section');
+        if (!plantsSection) return;
+
+        var html = '';
+        var categoryOrder = ['canopy_tree', 'small_tree', 'tall_shrub', 'low_shrub', 'ground_cover'];
+        categoryOrder.forEach(function(catKey) {
+          if (grouped[catKey] && grouped[catKey].length > 0) {
+            html += renderCategory(catKey, grouped[catKey]);
+          }
+        });
+
+        plantsSection.innerHTML = html;
+
+        // Update filter count
+        var filterCount = document.querySelector('.filter-count');
+        if (filterCount) {
+          filterCount.innerHTML = 'Showing <strong>' + state.displayedPlants.length + '</strong> of ' + state.filteredPlants.length + ' plants';
+        }
+
+        // Update layers overview
+        var layersSection = document.querySelector('.layers-overview');
+        if (layersSection) {
+          layersSection.outerHTML = renderLayersOverview(grouped);
+          attachLayerListeners();
+        }
+
+        // Re-attach listeners
+        attachPlantCardListeners();
+        attachFavoriteListeners();
       }
 
       // ==========================================================================
-      // Landscape Visualization
+      // My Garden (Favorites) Section
       // ==========================================================================
-      function renderLandscape(plants) {
+      function renderMyGarden() {
+        var favoritedPlants = state.favorites.map(function(id) {
+          return PLANT_DATA.plants.find(function(p) { return p.id === id; });
+        }).filter(Boolean);
+
+        if (favoritedPlants.length === 0) {
+          return '<div class="my-garden-section is-hidden" id="my-garden-section"></div>';
+        }
+
         var html = '' +
-          '<div class="landscape-section">' +
-            '<h3 class="landscape-title">Your Native Landscape</h3>' +
-            '<div class="landscape-container" id="landscape">' +
-              '<div class="landscape-layers" id="landscape-layers"></div>' +
-              '<div class="landscape-ground"></div>' +
+          '<div class="my-garden-section" id="my-garden-section">' +
+            '<div class="my-garden-header">' +
+              '<h3 class="my-garden-title">' + ICONS.heartFilled + ' My Garden</h3>' +
+              '<span class="my-garden-count">' + favoritedPlants.length + ' plant' + (favoritedPlants.length !== 1 ? 's' : '') + ' selected</span>' +
             '</div>' +
-            '<div class="layer-legend">' +
-              '<div class="legend-item"><div class="legend-dot" style="background: var(--color-canopy)"></div><span>Canopy</span></div>' +
-              '<div class="legend-item"><div class="legend-dot" style="background: var(--color-small-tree)"></div><span>Small Tree</span></div>' +
-              '<div class="legend-item"><div class="legend-dot" style="background: var(--color-tall-shrub)"></div><span>Tall Shrub</span></div>' +
-              '<div class="legend-item"><div class="legend-dot" style="background: var(--color-low-shrub)"></div><span>Low Shrub</span></div>' +
-              '<div class="legend-item"><div class="legend-dot" style="background: var(--color-ground)"></div><span>Ground Cover</span></div>' +
+            '<div class="my-garden-plants">';
+
+        favoritedPlants.forEach(function(plant) {
+          html += '' +
+            '<div class="my-garden-plant" data-plant-id="' + plant.id + '">' +
+              '<span>' + plant.commonName + '</span>' +
+              '<button class="my-garden-plant-remove" data-plant-id="' + plant.id + '" aria-label="Remove ' + plant.commonName + ' from My Garden">' +
+                ICONS.x +
+              '</button>' +
+            '</div>';
+        });
+
+        html += '</div></div>';
+        return html;
+      }
+
+      function updateMyGardenSection() {
+        var section = document.getElementById('my-garden-section');
+        if (section) {
+          section.outerHTML = renderMyGarden();
+          // Re-attach remove listeners
+          document.querySelectorAll('.my-garden-plant-remove').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+              e.stopPropagation();
+              var plantId = btn.getAttribute('data-plant-id');
+              toggleFavorite(plantId);
+            });
+          });
+        }
+      }
+
+      // ==========================================================================
+      // Filters Section
+      // ==========================================================================
+      function renderFilters() {
+        var hasActiveFilters = state.filters.water.length > 0 ||
+                               state.filters.wildlife.length > 0 ||
+                               state.filters.care.length > 0;
+
+        var html = '' +
+          '<div class="filter-section">' +
+            '<div class="filter-groups">' +
+              // Water filters
+              '<div class="filter-group">' +
+                '<span class="filter-group-label">Water Needs</span>' +
+                '<div class="filter-pills">' +
+                  '<button class="filter-pill' + (state.filters.water.indexOf('very_low') !== -1 ? ' is-active' : '') + '" data-filter="water" data-value="very_low">' +
+                    ICONS.droplet + ' Very Low' +
+                  '</button>' +
+                  '<button class="filter-pill' + (state.filters.water.indexOf('low') !== -1 ? ' is-active' : '') + '" data-filter="water" data-value="low">' +
+                    ICONS.droplet + ' Low' +
+                  '</button>' +
+                  '<button class="filter-pill' + (state.filters.water.indexOf('moderate') !== -1 ? ' is-active' : '') + '" data-filter="water" data-value="moderate">' +
+                    ICONS.droplet + ' Moderate' +
+                  '</button>' +
+                '</div>' +
+              '</div>' +
+              // Wildlife filters
+              '<div class="filter-group">' +
+                '<span class="filter-group-label">Wildlife</span>' +
+                '<div class="filter-pills">' +
+                  '<button class="filter-pill' + (state.filters.wildlife.indexOf('hummingbirds') !== -1 ? ' is-active' : '') + '" data-filter="wildlife" data-value="hummingbirds">' +
+                    ICONS.bird + ' Hummingbirds' +
+                  '</button>' +
+                  '<button class="filter-pill' + (state.filters.wildlife.indexOf('butterflies') !== -1 ? ' is-active' : '') + '" data-filter="wildlife" data-value="butterflies">' +
+                    'Butterflies' +
+                  '</button>' +
+                  '<button class="filter-pill' + (state.filters.wildlife.indexOf('birds') !== -1 ? ' is-active' : '') + '" data-filter="wildlife" data-value="birds">' +
+                    'Birds' +
+                  '</button>' +
+                '</div>' +
+              '</div>' +
+              // Care filters
+              '<div class="filter-group">' +
+                '<span class="filter-group-label">Care</span>' +
+                '<div class="filter-pills">' +
+                  '<button class="filter-pill' + (state.filters.care.indexOf('easy') !== -1 ? ' is-active' : '') + '" data-filter="care" data-value="easy">' +
+                    ICONS.check + ' Easy' +
+                  '</button>' +
+                  '<button class="filter-pill' + (state.filters.care.indexOf('deer') !== -1 ? ' is-active' : '') + '" data-filter="care" data-value="deer">' +
+                    'Deer Resistant' +
+                  '</button>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="filter-summary">' +
+              '<span class="filter-count">Showing <strong>' + state.displayedPlants.length + '</strong> of ' + state.filteredPlants.length + ' plants</span>' +
+              (hasActiveFilters ? '<button class="filter-clear" id="filter-clear">Clear filters</button>' : '') +
             '</div>' +
           '</div>';
 
         return html;
       }
 
-      function buildLandscapePlants() {
-        var layers = document.getElementById('landscape-layers');
-        if (!layers) return;
+      function attachFilterListeners() {
+        document.querySelectorAll('.filter-pill').forEach(function(pill) {
+          pill.addEventListener('click', function() {
+            var filterType = pill.getAttribute('data-filter');
+            var value = pill.getAttribute('data-value');
 
-        layers.innerHTML = '';
+            var idx = state.filters[filterType].indexOf(value);
+            if (idx === -1) {
+              state.filters[filterType].push(value);
+              pill.classList.add('is-active');
+            } else {
+              state.filters[filterType].splice(idx, 1);
+              pill.classList.remove('is-active');
+            }
 
-        var plants = state.filteredPlants;
-
-        // Scale factors for heights (container is ~260px usable)
-        var maxContainerHeight = 240;
-        var categoryHeights = {
-          canopy_tree: { height: maxContainerHeight, width: 120 },
-          small_tree: { height: 160, width: 80 },
-          tall_shrub: { height: 100, width: 60 },
-          low_shrub: { height: 60, width: 50 },
-          ground_cover: { height: 30, width: 40 }
-        };
-
-        // Sort plants by height category (tallest first for z-index layering)
-        var sorted = plants.slice().sort(function(a, b) {
-          var orderA = PLANT_DATA.heightCategories[a.heightCategory].order;
-          var orderB = PLANT_DATA.heightCategories[b.heightCategory].order;
-          return orderB - orderA;
+            updatePlantsDisplay();
+          });
         });
 
-        // Take a sample of plants for the visualization (max ~12)
-        var sample = [];
-        var categories = ['canopy_tree', 'small_tree', 'tall_shrub', 'low_shrub', 'ground_cover'];
-        categories.forEach(function(cat) {
-          var catPlants = sorted.filter(function(p) { return p.heightCategory === cat; });
-          sample = sample.concat(catPlants.slice(0, 3));
+        var clearBtn = document.getElementById('filter-clear');
+        if (clearBtn) {
+          clearBtn.addEventListener('click', function() {
+            state.filters = { water: [], wildlife: [], care: [] };
+            document.querySelectorAll('.filter-pill.is-active').forEach(function(p) {
+              p.classList.remove('is-active');
+            });
+            updatePlantsDisplay();
+          });
+        }
+      }
+
+      // ==========================================================================
+      // Layers Overview (Simplified Landscape)
+      // ==========================================================================
+      function renderLayersOverview(grouped) {
+        var categoryOrder = ['canopy_tree', 'small_tree', 'tall_shrub', 'low_shrub', 'ground_cover'];
+        var hasPlants = categoryOrder.some(function(cat) { return grouped[cat] && grouped[cat].length > 0; });
+
+        if (!hasPlants) {
+          return '<div class="layers-overview"><p style="text-align:center;color:var(--color-muted);">No plants match your current filters</p></div>';
+        }
+
+        var html = '' +
+          '<div class="layers-overview">' +
+            '<h3 class="layers-overview-title">' + ICONS.layers + ' Garden Layers</h3>' +
+            '<div class="layers-stack">';
+
+        categoryOrder.forEach(function(catKey) {
+          var category = PLANT_DATA.heightCategories[catKey];
+          var plants = grouped[catKey] || [];
+          var indicatorClass = catKey.replace('_', '-');
+
+          html += '' +
+            '<div class="layer-row" data-category="' + catKey + '" role="button" tabindex="0" aria-label="Jump to ' + category.label + '">' +
+              '<div class="layer-indicator layer-indicator--' + indicatorClass + '"></div>' +
+              '<div class="layer-info">' +
+                '<div class="layer-name">' + category.label + '</div>' +
+                '<div class="layer-meta">' + category.range + ' — ' + categoryDescriptions[catKey] + '</div>' +
+              '</div>' +
+              '<div class="layer-count">' + plants.length + ' plant' + (plants.length !== 1 ? 's' : '') + '</div>' +
+            '</div>';
         });
 
-        sample.forEach(function(plant, index) {
-          var dims = categoryHeights[plant.heightCategory];
-          var colorClass = plant.heightCategory.replace('_', '-');
+        html += '</div></div>';
+        return html;
+      }
 
-          var div = document.createElement('div');
-          div.className = 'plant-silhouette';
-          div.setAttribute('data-plant-id', plant.id);
-          div.setAttribute('tabindex', '0');
-          div.setAttribute('role', 'button');
-          div.setAttribute('aria-label', plant.commonName);
-          div.title = plant.commonName;
-
-          // Randomize width slightly
-          var widthVar = dims.width * (0.8 + Math.random() * 0.4);
-
-          div.innerHTML = '' +
-            '<div class="plant-shape plant-shape--' + colorClass + '" style="' +
-              'width: ' + widthVar + 'px; ' +
-              'height: ' + dims.height + 'px;' +
-            '"></div>' +
-            '<div class="plant-stem" style="height: ' + (dims.height * 0.15) + 'px;"></div>';
-
-          layers.appendChild(div);
+      function attachLayerListeners() {
+        document.querySelectorAll('.layer-row').forEach(function(row) {
+          row.addEventListener('click', function() {
+            var category = row.getAttribute('data-category');
+            scrollToCategory(category);
+          });
+          row.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              var category = row.getAttribute('data-category');
+              scrollToCategory(category);
+            }
+          });
         });
       }
 
-      function attachLandscapeListeners() {
-        buildLandscapePlants();
-
-        var layers = document.getElementById('landscape-layers');
-        if (!layers) return;
-
-        layers.addEventListener('click', function(e) {
-          var silhouette = e.target.closest('.plant-silhouette');
-          if (silhouette) {
-            var plantId = silhouette.getAttribute('data-plant-id');
-            scrollToPlantCard(plantId);
-          }
-        });
+      function scrollToCategory(categoryKey) {
+        var section = document.querySelector('.plants-category[data-category="' + categoryKey + '"]');
+        if (section) {
+          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
       }
 
       function scrollToPlantCard(plantId) {
         var card = document.querySelector('.plant-card[data-plant-id="' + plantId + '"]');
         if (card) {
           card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          // Expand the card
           togglePlantCard(card);
-          // Highlight briefly
-          card.style.boxShadow = '0 0 0 3px var(--color-accent)';
+          card.style.boxShadow = '0 0 0 3px var(--color-poppy)';
           setTimeout(function() {
             card.style.boxShadow = '';
           }, 1500);
@@ -1791,15 +2844,18 @@
         var category = PLANT_DATA.heightCategories[categoryKey];
 
         var html = '' +
-          '<div class="plants-category">' +
+          '<div class="plants-category" data-category="' + categoryKey + '">' +
             '<div class="category-header">' +
-              '<h3 class="category-title">' + category.label + '</h3>' +
-              '<span class="category-count">' + plants.length + ' plant' + (plants.length !== 1 ? 's' : '') + ' · ' + category.range + '</span>' +
+              '<div class="category-header-content">' +
+                '<h3 class="category-title">' + category.label + '</h3>' +
+                '<span class="category-subtitle">' + categoryDescriptions[categoryKey] + '</span>' +
+              '</div>' +
+              '<span class="category-meta">' + plants.length + ' plant' + (plants.length !== 1 ? 's' : '') + ' · ' + category.range + '</span>' +
             '</div>' +
             '<div class="plants-grid">';
 
-        plants.forEach(function(plant) {
-          html += renderPlantCard(plant);
+        plants.forEach(function(plant, index) {
+          html += renderPlantCard(plant, index);
         });
 
         html += '</div></div>';
@@ -1809,71 +2865,121 @@
       // ==========================================================================
       // Render Plant Card
       // ==========================================================================
-      function renderPlantCard(plant) {
+      function renderPlantCard(plant, index) {
         var bloomColor = PLANT_DATA.bloomColors[plant.bloomColor] || '#ccc';
+        var isFav = isFavorited(plant.id);
+        var staggerClass = index < 5 ? ' animate-fade-in animate-stagger-' + (index + 1) : ' animate-fade-in';
 
-        var tags = [];
-        if (plant.waterNeeds) {
-          tags.push(PLANT_DATA.waterNeeds[plant.waterNeeds] + ' Water');
-        }
-        if (plant.deerResistant) {
-          tags.push('Deer Resistant');
-        }
-        if (plant.difficulty === 'easy') {
-          tags.push('Easy');
-        }
-
-        var ecologyTags = plant.ecologicalValue.slice(0, 3).map(function(val) {
-          return PLANT_DATA.ecologicalIcons[val] || val;
-        });
+        // Water tag class
+        var waterTagClass = 'plant-tag--water-' + plant.waterNeeds.replace('_', '-');
 
         var html = '' +
-          '<div class="plant-card" data-plant-id="' + plant.id + '" tabindex="0" role="button" aria-expanded="false">' +
-            '<div class="plant-card-header">' +
-              '<div>' +
-                '<h4 class="plant-name">' + plant.commonName + '</h4>' +
-                '<p class="plant-scientific">' + plant.scientificName + '</p>' +
-              '</div>' +
-              '<div class="plant-bloom" style="background: ' + bloomColor + '; color: ' + getContrastColor(bloomColor) + ';">' +
-                '<span class="bloom-dot" style="background: ' + getContrastColor(bloomColor) + ';"></span>' +
-                formatSeason(plant.bloomSeason) +
+          '<div class="plant-card' + staggerClass + '" data-plant-id="' + plant.id + '" tabindex="0" role="button" aria-expanded="false">' +
+            // Plant image placeholder
+            '<div class="plant-image-container">' +
+              '<div class="plant-placeholder plant-placeholder--' + plant.heightCategory + '">' +
+                '<div class="plant-placeholder-icon">' + ICONS.plant + '</div>' +
+                '<div class="plant-bloom-badge">' +
+                  '<span class="plant-bloom-dot" style="background: ' + bloomColor + ';"></span>' +
+                  formatSeason(plant.bloomSeason) +
+                '</div>' +
               '</div>' +
             '</div>' +
-            '<div class="plant-tags">';
+            // Plant content
+            '<div class="plant-content">' +
+              '<div class="plant-card-header">' +
+                '<div class="plant-name-group">' +
+                  '<h4 class="plant-name">' + plant.commonName + '</h4>' +
+                  '<p class="plant-scientific">' + plant.scientificName + '</p>' +
+                '</div>' +
+                '<button class="plant-favorite' + (isFav ? ' is-favorited' : '') + '" data-plant-id="' + plant.id + '" aria-label="' + (isFav ? 'Remove from' : 'Add to') + ' My Garden">' +
+                  (isFav ? ICONS.heartFilled : ICONS.heart) +
+                '</button>' +
+              '</div>' +
+              // Tags grouped by type
+              '<div class="plant-tags-grouped">' +
+                // Water tag
+                '<span class="plant-tag ' + waterTagClass + '">' +
+                  ICONS.droplet +
+                  PLANT_DATA.waterNeeds[plant.waterNeeds] +
+                '</span>';
 
-        tags.forEach(function(tag) {
-          html += '<span class="plant-tag">' + tag + '</span>';
+        // Wildlife tags (show up to 2)
+        var wildlifeTags = plant.ecologicalValue.slice(0, 2);
+        wildlifeTags.forEach(function(val) {
+          var label = PLANT_DATA.ecologicalIcons[val] || val;
+          html += '<span class="plant-tag plant-tag--wildlife">' + label + '</span>';
         });
 
-        ecologyTags.forEach(function(tag) {
-          html += '<span class="plant-tag">' + tag + '</span>';
-        });
+        // Care tags
+        if (plant.difficulty === 'easy') {
+          html += '<span class="plant-tag plant-tag--easy">' + ICONS.check + ' Easy</span>';
+        }
+        if (plant.deerResistant) {
+          html += '<span class="plant-tag plant-tag--deer">Deer Resistant</span>';
+        }
 
         html += '</div>' +
-          '<div class="plant-details">' +
-            '<p class="plant-description">' + plant.description + '</p>' +
-            '<div class="plant-stats">' +
-              '<div class="plant-stat">' +
-                '<span class="stat-label">Height</span>' +
-                '<span class="stat-value">' + formatHeight(plant.heightInches) + '</span>' +
-              '</div>' +
-              '<div class="plant-stat">' +
-                '<span class="stat-label">Spread</span>' +
-                '<span class="stat-value">' + Math.round(plant.spreadInches / 12) + ' ft</span>' +
-              '</div>' +
-              '<div class="plant-stat">' +
-                '<span class="stat-label">Sun</span>' +
-                '<span class="stat-value">' + formatSunRange(plant.sunMin, plant.sunMax) + '</span>' +
-              '</div>' +
-              '<div class="plant-stat">' +
-                '<span class="stat-label">Water</span>' +
-                '<span class="stat-value">' + PLANT_DATA.waterNeeds[plant.waterNeeds] + '</span>' +
+              // Details (expanded)
+              '<div class="plant-details">' +
+                '<p class="plant-description">' + plant.description + '</p>' +
+                '<div class="plant-stats">' +
+                  '<div class="plant-stat">' +
+                    '<span class="stat-label">Height</span>' +
+                    '<span class="stat-value">' + formatHeight(plant.heightInches) + '</span>' +
+                  '</div>' +
+                  '<div class="plant-stat">' +
+                    '<span class="stat-label">Spread</span>' +
+                    '<span class="stat-value">' + Math.round(plant.spreadInches / 12) + ' ft</span>' +
+                  '</div>' +
+                  '<div class="plant-stat">' +
+                    '<span class="stat-label">Sun</span>' +
+                    '<span class="stat-value">' + formatSunRange(plant.sunMin, plant.sunMax) + '</span>' +
+                  '</div>' +
+                  '<div class="plant-stat">' +
+                    '<span class="stat-label">Water</span>' +
+                    '<span class="stat-value">' + PLANT_DATA.waterNeeds[plant.waterNeeds] + '</span>' +
+                  '</div>' +
+                '</div>' +
+                '<a href="https://calscape.org/loc-California/cat-All/ord-popular/vw-list/np-1?srch=' + encodeURIComponent(plant.scientificName) + '" target="_blank" rel="noopener" class="plant-link">' +
+                  'View on Calscape ' + ICONS.external +
+                '</a>' +
               '</div>' +
             '</div>' +
-          '</div>' +
-        '</div>';
+          '</div>';
 
         return html;
+      }
+
+      // Attach favorite button listeners
+      function attachFavoriteListeners() {
+        document.querySelectorAll('.plant-favorite').forEach(function(btn) {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var plantId = btn.getAttribute('data-plant-id');
+            toggleFavorite(plantId);
+          });
+        });
+
+        // My garden remove buttons
+        document.querySelectorAll('.my-garden-plant-remove').forEach(function(btn) {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var plantId = btn.getAttribute('data-plant-id');
+            toggleFavorite(plantId);
+          });
+        });
+      }
+
+      // Update favorite button states
+      function updateFavoriteButtons() {
+        document.querySelectorAll('.plant-favorite').forEach(function(btn) {
+          var plantId = btn.getAttribute('data-plant-id');
+          var isFav = isFavorited(plantId);
+          btn.classList.toggle('is-favorited', isFav);
+          btn.innerHTML = isFav ? ICONS.heartFilled : ICONS.heart;
+          btn.setAttribute('aria-label', (isFav ? 'Remove from' : 'Add to') + ' My Garden');
+        });
       }
 
       function formatSunRange(min, max) {
@@ -1935,14 +3041,21 @@
       function renderNurseries() {
         var html = '' +
           '<div class="nurseries-section">' +
-            '<h3 class="nurseries-title">Where to Buy Native Plants</h3>' +
+            '<div class="nurseries-header">' +
+              '<h3 class="nurseries-title">Where to Buy Native Plants</h3>' +
+            '</div>' +
+            '<p class="nurseries-subtitle">Call ahead to check availability for your plant list</p>' +
             '<ul class="nurseries-list">';
 
         PLANT_DATA.nurseries.forEach(function(nursery) {
           html += '' +
             '<li class="nursery-item">' +
-              '<div class="nursery-name"><a href="' + nursery.url + '" target="_blank" rel="noopener">' + nursery.name + '</a></div>' +
-              '<div class="nursery-address">' + nursery.address + '</div>' +
+              '<div class="nursery-icon">' + ICONS.store + '</div>' +
+              '<div class="nursery-content">' +
+                '<div class="nursery-name"><a href="' + nursery.url + '" target="_blank" rel="noopener">' + nursery.name + ' ' + ICONS.external + '</a></div>' +
+                '<div class="nursery-address">' + nursery.address + '</div>' +
+                (nursery.notes ? '<div class="nursery-note">' + nursery.notes + '</div>' : '') +
+              '</div>' +
             '</li>';
         });
 
@@ -1951,13 +3064,72 @@
       }
 
       // ==========================================================================
+      // Export Section
+      // ==========================================================================
+      function renderExportSection() {
+        var html = '' +
+          '<div class="export-section">' +
+            '<h4 class="export-title">Save Your Plant List</h4>' +
+            '<button type="button" class="export-btn" id="export-pdf-btn">' +
+              ICONS.download + ' Download PDF' +
+            '</button>' +
+            '<button type="button" class="export-btn export-btn--secondary" id="print-btn">' +
+              ICONS.printer + ' Print' +
+            '</button>' +
+            '<button type="button" class="export-btn export-btn--secondary" id="share-btn">' +
+              ICONS.share + ' Share' +
+            '</button>' +
+          '</div>';
+
+        return html;
+      }
+
+      // ==========================================================================
       // Export Functionality
       // ==========================================================================
       function attachExportListeners() {
-        document.getElementById('export-pdf-btn').addEventListener('click', generatePDF);
-        document.getElementById('print-btn').addEventListener('click', function() {
-          window.print();
-        });
+        var pdfBtn = document.getElementById('export-pdf-btn');
+        var printBtn = document.getElementById('print-btn');
+        var shareBtn = document.getElementById('share-btn');
+
+        if (pdfBtn) {
+          pdfBtn.addEventListener('click', generatePDF);
+        }
+        if (printBtn) {
+          printBtn.addEventListener('click', function() {
+            window.print();
+          });
+        }
+        if (shareBtn) {
+          shareBtn.addEventListener('click', shareResults);
+        }
+      }
+
+      function shareResults() {
+        var shareData = {
+          title: 'Native Plants for ' + state.region.name,
+          text: 'Check out these ' + state.displayedPlants.length + ' California native plants perfect for ' + getSunLabel(state.sunLevel).toLowerCase() + ' conditions!',
+          url: window.location.href
+        };
+
+        if (navigator.share) {
+          navigator.share(shareData).catch(function(err) {
+            // User cancelled or error
+            console.log('Share cancelled or failed:', err);
+          });
+        } else {
+          // Fallback: copy URL to clipboard
+          navigator.clipboard.writeText(window.location.href).then(function() {
+            var btn = document.getElementById('share-btn');
+            var originalHTML = btn.innerHTML;
+            btn.innerHTML = ICONS.check + ' Link Copied!';
+            setTimeout(function() {
+              btn.innerHTML = originalHTML;
+            }, 2000);
+          }).catch(function(err) {
+            console.log('Copy failed:', err);
+          });
+        }
       }
 
       function generatePDF() {
@@ -1988,8 +3160,8 @@
 
         doc.setTextColor(0);
 
-        // Plants by category
-        var grouped = groupByCategory(state.filteredPlants);
+        // Plants by category (use displayedPlants to respect active filters)
+        var grouped = groupByCategory(state.displayedPlants);
         var categoryOrder = ['canopy_tree', 'small_tree', 'tall_shrub', 'low_shrub', 'ground_cover'];
 
         categoryOrder.forEach(function(catKey) {
