@@ -2719,8 +2719,14 @@
         heartFilled: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>',
         droplet: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>',
         bird: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 7h.01M3.4 18H12a8 8 0 0 0 8-8V7a4 4 0 0 0-7.28-2.28L2 20"></path></svg>',
+        hummingbird: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8c-2 0-4 1-5 3l-4 1 2 2-3 5 5-3 2 2 1-4c2-1 3-3 3-5 0-1.5-1-2-1-2"/><path d="M16 6c1-1 3-2 5-1-1 2-2 4-3 5"/><circle cx="13" cy="9" r="0.5" fill="currentColor"/></svg>',
+        butterfly: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><path d="M4.5 8.5c-2-2-2-5 1-6s5 2 6.5 5.5c-1.5 3.5-3.5 6.5-6.5 5.5s-3-4-1-6"/><path d="M19.5 8.5c2-2 2-5-1-6s-5 2-6.5 5.5c1.5 3.5 3.5 6.5 6.5 5.5s3-4 1-6"/></svg>',
+        feather: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line x1="16" y1="8" x2="2" y2="22"></line><line x1="17.5" y1="15" x2="9" y2="15"></line></svg>',
+        bee: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="14" rx="5" ry="6"/><path d="M12 8V6M9 7l-1-2M15 7l1-2"/><path d="M8 12h8M8 15h8"/><path d="M7 13c-2-1-4 0-4 2s2 2 3 1M17 13c2-1 4 0 4 2s-2 2-3 1"/></svg>',
+        bug: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="6" width="8" height="14" rx="4"></rect><path d="M19 8l-3 1M5 8l3 1M19 16l-3-1M5 16l3-1M19 12h-3M5 12h3"/><path d="M10 3l1 3M14 3l-1 3"/></svg>',
+        leaf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 21c3-3 6-6 6-12 0-4 3-6 8.5-6-1 5.5-3 8.5-7 8.5-6 0-9 3-9 6"/><path d="M6.5 21c3-6 9-9 14.5-9"/></svg>',
         check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>',
-        deer: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3"/><path d="M12 11v4"/><path d="M9 8V5L7 3M15 8V5l2-2"/><path d="M8 19l4-4 4 4"/></svg>',
+        deer: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="14" rx="4" ry="5"/><circle cx="12" cy="7" r="3"/><path d="M9 5V3L7 1M15 5V3l2-2"/><path d="M8 19v2M16 19v2"/></svg>',
         plant: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 20h10M10 20c0-3.37 2-6 2-8s-2-4.5-2-6.5c0 2 2 4.5 2 6.5s-2 4.63-2 8zM12 14c1.5 0 4.5-1.5 4.5-5.5 0 4-3 5.5-4.5 5.5zm0 0c-1.5 0-4.5-1.5-4.5-5.5 0 4 3 5.5 4.5 5.5z"></path></svg>',
         layers: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>',
         download: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>',
@@ -3170,13 +3176,13 @@
                 '<span class="filter-group-label">Wildlife</span>' +
                 '<div class="filter-pills">' +
                   '<button class="filter-pill' + (state.filters.wildlife.indexOf('hummingbirds') !== -1 ? ' is-active' : '') + '" data-filter="wildlife" data-value="hummingbirds">' +
-                    ICONS.bird + ' Hummingbirds' +
+                    ICONS.hummingbird + ' Hummingbirds' +
                   '</button>' +
                   '<button class="filter-pill' + (state.filters.wildlife.indexOf('butterflies') !== -1 ? ' is-active' : '') + '" data-filter="wildlife" data-value="butterflies">' +
-                    'Butterflies' +
+                    ICONS.butterfly + ' Butterflies' +
                   '</button>' +
                   '<button class="filter-pill' + (state.filters.wildlife.indexOf('birds') !== -1 ? ' is-active' : '') + '" data-filter="wildlife" data-value="birds">' +
-                    'Birds' +
+                    ICONS.feather + ' Birds' +
                   '</button>' +
                 '</div>' +
               '</div>' +
@@ -3188,7 +3194,7 @@
                     ICONS.check + ' Easy' +
                   '</button>' +
                   '<button class="filter-pill' + (state.filters.care.indexOf('deer') !== -1 ? ' is-active' : '') + '" data-filter="care" data-value="deer">' +
-                    'Deer Resistant' +
+                    ICONS.deer + ' Deer Resistant' +
                   '</button>' +
                 '</div>' +
               '</div>' +
@@ -3438,9 +3444,18 @@
 
         // Wildlife tags (show up to 2)
         var wildlifeTags = plant.ecologicalValue.slice(0, 2);
+        var wildlifeIconMap = {
+          pollinators: ICONS.bee,
+          hummingbirds: ICONS.hummingbird,
+          butterflies: ICONS.butterfly,
+          birds: ICONS.feather,
+          beneficial_insects: ICONS.bug,
+          erosion_control: ICONS.leaf
+        };
         wildlifeTags.forEach(function(val) {
           var label = PLANT_DATA.ecologicalIcons[val] || val;
-          html += '<span class="plant-tag plant-tag--wildlife">' + label + '</span>';
+          var icon = wildlifeIconMap[val] || '';
+          html += '<span class="plant-tag plant-tag--wildlife">' + icon + (icon ? ' ' : '') + label + '</span>';
         });
 
         // Care tags
@@ -3448,7 +3463,7 @@
           html += '<span class="plant-tag plant-tag--easy">' + ICONS.check + ' Easy</span>';
         }
         if (plant.deerResistant) {
-          html += '<span class="plant-tag plant-tag--deer">Deer Resistant</span>';
+          html += '<span class="plant-tag plant-tag--deer">' + ICONS.deer + ' Deer Resistant</span>';
         }
 
         html += '</div>' +
