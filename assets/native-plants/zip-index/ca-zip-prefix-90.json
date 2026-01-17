@@ -1,0 +1,26 @@
+{
+  "prefix": "90",
+  "state": "CA",
+  "defaultRegionKey": "ca_ecoregion_south-coast",
+  "defaultDisplayName": "Southern California",
+  "zips": {
+    "90001": {
+      "city": "Los Angeles",
+      "county": "Los Angeles",
+      "regionKey": "ca_ecoregion_south-coast",
+      "displayName": "Los Angeles, CA"
+    },
+    "90210": {
+      "city": "Beverly Hills",
+      "county": "Los Angeles",
+      "regionKey": "ca_ecoregion_south-coast",
+      "displayName": "Beverly Hills, CA"
+    },
+    "90802": {
+      "city": "Long Beach",
+      "county": "Los Angeles",
+      "regionKey": "ca_ecoregion_south-coast",
+      "displayName": "Long Beach, CA"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "prefix": "92",
+  "state": "CA",
+  "defaultRegionKey": "ca_ecoregion_south-coast",
+  "defaultDisplayName": "Southern California",
+  "zips": {
+    "92501": {
+      "city": "Riverside",
+      "county": "Riverside",
+      "regionKey": "ca_ecoregion_south-coast",
+      "displayName": "Riverside, CA"
+    },
+    "92602": {
+      "city": "Irvine",
+      "county": "Orange",
+      "regionKey": "ca_ecoregion_south-coast",
+      "displayName": "Irvine, CA"
+    }
+  }
+}

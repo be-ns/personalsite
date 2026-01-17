@@ -1,0 +1,12 @@
+{
+  "version": "2.0.0",
+  "lastUpdated": "2025-02-10",
+  "dataSource": "Calscape.org / California Native Plant Society",
+  "supportedState": "CA",
+  "zipPrefixes": ["90", "91", "92", "93", "94", "95", "96"],
+  "regionSystem": "ecoregion",
+  "sunLevels": [1, 2, 3, 4],
+  "waterNeeds": ["very_low", "low", "moderate"],
+  "heightCategories": ["ground_cover", "low_shrub", "tall_shrub", "small_tree", "canopy_tree"],
+  "ecologicalIcons": ["pollinators", "hummingbirds", "butterflies", "birds", "beneficial_insects", "erosion_control"]
+}

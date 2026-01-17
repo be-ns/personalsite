@@ -1,0 +1,20 @@
+{
+  "prefix": "95",
+  "state": "CA",
+  "defaultRegionKey": "ca_ecoregion_central-valley",
+  "defaultDisplayName": "Central Valley",
+  "zips": {
+    "95814": {
+      "city": "Sacramento",
+      "county": "Sacramento",
+      "regionKey": "ca_ecoregion_central-valley",
+      "displayName": "Sacramento, CA"
+    },
+    "95404": {
+      "city": "Santa Rosa",
+      "county": "Sonoma",
+      "regionKey": "ca_ecoregion_north-coast",
+      "displayName": "Santa Rosa, CA"
+    }
+  }
+}

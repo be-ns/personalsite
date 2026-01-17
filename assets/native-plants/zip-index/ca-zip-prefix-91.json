@@ -1,0 +1,20 @@
+{
+  "prefix": "91",
+  "state": "CA",
+  "defaultRegionKey": "ca_ecoregion_south-coast",
+  "defaultDisplayName": "Southern California",
+  "zips": {
+    "91910": {
+      "city": "Chula Vista",
+      "county": "San Diego",
+      "regionKey": "ca_ecoregion_south-coast",
+      "displayName": "Chula Vista, CA"
+    },
+    "92101": {
+      "city": "San Diego",
+      "county": "San Diego",
+      "regionKey": "ca_ecoregion_south-coast",
+      "displayName": "San Diego, CA"
+    }
+  }
+}

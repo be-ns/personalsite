@@ -1,0 +1,53 @@
+{
+  "defaultNurseryIds": ["calflora", "theodore_payne", "yerba_buena"],
+  "nurseries": {
+    "yerba_buena": {
+      "name": "Yerba Buena Nursery",
+      "address": "19500 Skyline Blvd, Woodside, CA",
+      "url": "https://www.yerbabuenanursery.com",
+      "notes": "Peninsula nursery specializing in natives"
+    },
+    "mostly_natives": {
+      "name": "Mostly Natives Nursery",
+      "address": "27235 Highway 1, Tomales, CA",
+      "url": "https://www.mostlynatives.com",
+      "notes": "Coastal natives and locally sourced plants"
+    },
+    "calflora": {
+      "name": "California Flora Nursery",
+      "address": "2990 Somers St, Fulton, CA",
+      "url": "https://www.calfloranursery.com",
+      "notes": "Large selection of California natives"
+    },
+    "theodore_payne": {
+      "name": "Theodore Payne Foundation",
+      "address": "10459 Tuxford St, Sun Valley, CA",
+      "url": "https://theodorepayne.org",
+      "notes": "Native plant powerhouse for Southern California"
+    },
+    "moosa_creek": {
+      "name": "Moosa Creek Nursery",
+      "address": "36260 Mesa Dr, Valley Center, CA",
+      "url": "https://moosacreeknursery.com",
+      "notes": "Native plants and habitat restoration stock"
+    },
+    "green_acres": {
+      "name": "Green Acres Nursery & Supply",
+      "address": "Multiple Central Valley locations",
+      "url": "https://idiggreenacres.com",
+      "notes": "Central Valley locations with native plant stock"
+    },
+    "elderberry_farms": {
+      "name": "Elderberry Farms Native Plant Nursery",
+      "address": "975 Garden Hwy, Sacramento, CA",
+      "url": "https://elderberryfarms.com",
+      "notes": "Specializes in habitat restoration natives"
+    },
+    "ocotillo_nursery": {
+      "name": "Ocotillo Nursery",
+      "address": "Atascadero, CA",
+      "url": "https://ocotillonursery.com",
+      "notes": "Native plants for arid and dry climates"
+    }
+  }
+}

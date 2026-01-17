@@ -1,0 +1,20 @@
+{
+  "prefix": "93",
+  "state": "CA",
+  "defaultRegionKey": "ca_ecoregion_sierra-foothills",
+  "defaultDisplayName": "Sierra Foothills",
+  "zips": {
+    "93201": {
+      "city": "Alpaugh",
+      "county": "Tulare",
+      "regionKey": "ca_ecoregion_central-valley",
+      "displayName": "Alpaugh, CA"
+    },
+    "93650": {
+      "city": "Fresno",
+      "county": "Fresno",
+      "regionKey": "ca_ecoregion_central-valley",
+      "displayName": "Fresno, CA"
+    }
+  }
+}
