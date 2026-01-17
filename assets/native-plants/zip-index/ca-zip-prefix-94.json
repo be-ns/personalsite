@@ -1,0 +1,26 @@
+{
+  "prefix": "94",
+  "state": "CA",
+  "defaultRegionKey": "ca_ecoregion_central-coast",
+  "defaultDisplayName": "Central Coast",
+  "zips": {
+    "94110": {
+      "city": "San Francisco",
+      "county": "San Francisco",
+      "regionKey": "ca_ecoregion_central-coast",
+      "displayName": "San Francisco, CA"
+    },
+    "94402": {
+      "city": "San Mateo",
+      "county": "San Mateo",
+      "regionKey": "ca_ecoregion_central-coast",
+      "displayName": "San Mateo, CA"
+    },
+    "94704": {
+      "city": "Berkeley",
+      "county": "Alameda",
+      "regionKey": "ca_ecoregion_central-coast",
+      "displayName": "Berkeley, CA"
+    }
+  }
+}

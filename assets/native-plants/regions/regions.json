@@ -1,0 +1,46 @@
+{
+  "regions": {
+    "ca_ecoregion_central-coast": {
+      "name": "Central Coast",
+      "usdaZone": "10a",
+      "rainfallInches": 20,
+      "notes": "Mediterranean coastal climate with dry summers and mild, wet winters.",
+      "nurseryIds": ["yerba_buena", "mostly_natives", "calflora"]
+    },
+    "ca_ecoregion_north-coast": {
+      "name": "North Coast",
+      "usdaZone": "9a",
+      "rainfallInches": 45,
+      "notes": "Cooler coastal fog belt with higher rainfall and long growing season.",
+      "nurseryIds": ["calflora", "mostly_natives"]
+    },
+    "ca_ecoregion_south-coast": {
+      "name": "South Coast",
+      "usdaZone": "10b",
+      "rainfallInches": 14,
+      "notes": "Warm coastal plain with long dry season and mild winters.",
+      "nurseryIds": ["theodore_payne", "moosa_creek"]
+    },
+    "ca_ecoregion_central-valley": {
+      "name": "Central Valley",
+      "usdaZone": "9b",
+      "rainfallInches": 18,
+      "notes": "Hot, dry summers and cool winters with a pronounced temperature swing.",
+      "nurseryIds": ["green_acres", "calflora"]
+    },
+    "ca_ecoregion_sierra-foothills": {
+      "name": "Sierra Foothills",
+      "usdaZone": "9a",
+      "rainfallInches": 30,
+      "notes": "Rolling foothills with cold winters, warm summers, and diverse microclimates.",
+      "nurseryIds": ["elderberry_farms", "calflora"]
+    },
+    "ca_ecoregion_desert_sonoran": {
+      "name": "Sonoran Desert",
+      "usdaZone": "10a",
+      "rainfallInches": 6,
+      "notes": "Arid desert with intense sun and very low annual rainfall.",
+      "nurseryIds": ["ocotillo_nursery", "theodore_payne"]
+    }
+  }
+}

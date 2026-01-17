@@ -2122,8 +2122,12 @@
               pattern="[0-9]*"
               aria-describedby="zip-help zip-error"
             >
-            <span class="input-help" id="zip-help">Currently supporting San Mateo area (94402)</span>
+            <span class="input-help" id="zip-help">California ZIP codes supported</span>
             <span class="input-error" id="zip-error" role="alert">Please enter a valid 5-digit zip code</span>
+            <div class="location-display" id="location-display" aria-live="polite">
+              <span class="location-name" id="location-name"></span>
+              <button class="location-change" id="location-change" type="button">Change location</button>
+            </div>
           </div>
 
           <div class="input-group">
@@ -2224,20 +2228,6 @@
       // Plant Database
       // ==========================================================================
       var PLANT_DATA = {
-        meta: {
-          version: "1.0.0",
-          lastUpdated: "2025-01-16",
-          source: "Calscape.org / California Native Plant Society"
-        },
-        regions: {
-          "94402": {
-            name: "San Mateo, CA",
-            ecoregion: "Central Coast - California Floristic Province",
-            usdaZone: "10a",
-            rainfallInches: 20,
-            notes: "Mediterranean climate with dry summers, mild wet winters. Coastal influence moderates temperatures."
-          }
-        },
         heightCategories: {
           ground_cover: { label: "Ground Cover", range: "Under 3 ft", order: 0 },
           low_shrub: { label: "Low Shrubs", range: "2-6 ft", order: 1 },
@@ -2272,388 +2262,6 @@
           "yellow-green": "#BEF264",
           green: "#86EFAC"
         },
-        plants: [
-          {
-            id: "yarrow",
-            commonName: "Common Yarrow",
-            scientificName: "Achillea millefolium",
-            heightCategory: "ground_cover",
-            heightInches: { min: 12, max: 36 },
-            sunMin: 2,
-            sunMax: 4,
-            waterNeeds: "very_low",
-            ecologicalValue: ["pollinators", "butterflies", "beneficial_insects"],
-            bloomSeason: ["spring", "summer"],
-            bloomColor: "white",
-            difficulty: "easy",
-            deerResistant: true,
-            spreadInches: 36,
-            regions: ["94402"],
-            description: "Feathery, aromatic foliage with flat-topped flower clusters. Extremely drought tolerant once established. Spreads to form dense mats."
-          },
-          {
-            id: "california_fuchsia",
-            commonName: "California Fuchsia",
-            scientificName: "Epilobium canum",
-            heightCategory: "ground_cover",
-            heightInches: { min: 12, max: 24 },
-            sunMin: 3,
-            sunMax: 4,
-            waterNeeds: "very_low",
-            ecologicalValue: ["hummingbirds", "pollinators"],
-            bloomSeason: ["summer", "fall"],
-            bloomColor: "orange-red",
-            difficulty: "easy",
-            deerResistant: true,
-            spreadInches: 36,
-            regions: ["94402"],
-            description: "Brilliant tubular flowers attract hummingbirds late in the season when little else blooms. Gray-green foliage."
-          },
-          {
-            id: "beach_strawberry",
-            commonName: "Beach Strawberry",
-            scientificName: "Fragaria chiloensis",
-            heightCategory: "ground_cover",
-            heightInches: { min: 4, max: 8 },
-            sunMin: 2,
-            sunMax: 4,
-            waterNeeds: "low",
-            ecologicalValue: ["birds", "pollinators", "erosion_control"],
-            bloomSeason: ["spring"],
-            bloomColor: "white",
-            difficulty: "easy",
-            deerResistant: false,
-            spreadInches: 24,
-            regions: ["94402"],
-            description: "Excellent evergreen groundcover with glossy leaves, white flowers, and small edible fruit. Parent species of commercial strawberries."
-          },
-          {
-            id: "douglas_iris",
-            commonName: "Douglas Iris",
-            scientificName: "Iris douglasiana",
-            heightCategory: "ground_cover",
-            heightInches: { min: 12, max: 24 },
-            sunMin: 2,
-            sunMax: 4,
-            waterNeeds: "low",
-            ecologicalValue: ["pollinators"],
-            bloomSeason: ["spring"],
-            bloomColor: "purple",
-            difficulty: "easy",
-            deerResistant: true,
-            spreadInches: 24,
-            regions: ["94402"],
-            description: "Elegant sword-like foliage with purple to blue flowers in spring. Tolerates a wide range of conditions including clay soil."
-          },
-          {
-            id: "coast_buckwheat",
-            commonName: "Coast Buckwheat",
-            scientificName: "Eriogonum latifolium",
-            heightCategory: "ground_cover",
-            heightInches: { min: 12, max: 24 },
-            sunMin: 3,
-            sunMax: 4,
-            waterNeeds: "very_low",
-            ecologicalValue: ["pollinators", "butterflies", "beneficial_insects", "birds"],
-            bloomSeason: ["summer", "fall"],
-            bloomColor: "pink-white",
-            difficulty: "easy",
-            deerResistant: true,
-            spreadInches: 36,
-            regions: ["94402"],
-            description: "Powerhouse pollinator plant. Long-lasting flower heads age from white to rose to rust. Host plant for several butterfly species."
-          },
-          {
-            id: "hummingbird_sage",
-            commonName: "Hummingbird Sage",
-            scientificName: "Salvia spathacea",
-            heightCategory: "ground_cover",
-            heightInches: { min: 12, max: 36 },
-            sunMin: 1,
-            sunMax: 3,
-            waterNeeds: "low",
-            ecologicalValue: ["hummingbirds", "pollinators"],
-            bloomSeason: ["spring"],
-            bloomColor: "magenta",
-            difficulty: "easy",
-            deerResistant: true,
-            spreadInches: 36,
-            regions: ["94402"],
-            description: "One of the best shade-tolerant natives. Large aromatic leaves and magenta flower spikes. Spreads by rhizomes to form colonies."
-          },
-          {
-            id: "california_sagebrush",
-            commonName: "California Sagebrush",
-            scientificName: "Artemisia californica",
-            heightCategory: "low_shrub",
-            heightInches: { min: 24, max: 60 },
-            sunMin: 3,
-            sunMax: 4,
-            waterNeeds: "very_low",
-            ecologicalValue: ["birds", "beneficial_insects"],
-            bloomSeason: ["fall"],
-            bloomColor: "yellow",
-            difficulty: "easy",
-            deerResistant: true,
-            spreadInches: 72,
-            regions: ["94402"],
-            description: "Aromatic silvery-green foliage with that classic California coastal sage scent. Virtually indestructible once established."
-          },
-          {
-            id: "coyote_brush",
-            commonName: "Coyote Brush",
-            scientificName: "Baccharis pilularis",
-            heightCategory: "low_shrub",
-            heightInches: { min: 12, max: 96 },
-            sunMin: 3,
-            sunMax: 4,
-            waterNeeds: "very_low",
-            ecologicalValue: ["pollinators", "birds", "butterflies", "erosion_control"],
-            bloomSeason: ["fall", "winter"],
-            bloomColor: "white",
-            difficulty: "easy",
-            deerResistant: true,
-            spreadInches: 72,
-            regions: ["94402"],
-            description: "Workhorse native shrub. Dwarf forms available for groundcover. Pioneer species that establishes easily and supports dozens of insect species."
-          },
-          {
-            id: "sticky_monkey",
-            commonName: "Sticky Monkeyflower",
-            scientificName: "Diplacus aurantiacus",
-            heightCategory: "low_shrub",
-            heightInches: { min: 24, max: 48 },
-            sunMin: 2,
-            sunMax: 4,
-            waterNeeds: "very_low",
-            ecologicalValue: ["hummingbirds", "pollinators"],
-            bloomSeason: ["spring", "summer"],
-            bloomColor: "orange",
-            difficulty: "easy",
-            deerResistant: true,
-            spreadInches: 48,
-            regions: ["94402"],
-            description: "Cheerful orange tubular flowers bloom for months. Tolerates poor soil and drought. Hummingbird magnet."
-          },
-          {
-            id: "salvia_clevelandii",
-            commonName: "Cleveland Sage",
-            scientificName: "Salvia clevelandii",
-            heightCategory: "low_shrub",
-            heightInches: { min: 36, max: 60 },
-            sunMin: 4,
-            sunMax: 4,
-            waterNeeds: "very_low",
-            ecologicalValue: ["hummingbirds", "pollinators", "butterflies"],
-            bloomSeason: ["spring", "summer"],
-            bloomColor: "blue-purple",
-            difficulty: "easy",
-            deerResistant: true,
-            spreadInches: 60,
-            regions: ["94402"],
-            description: "Intensely fragrant gray-green foliage. Whorls of blue-violet flowers loved by hummingbirds. Requires excellent drainage."
-          },
-          {
-            id: "black_sage",
-            commonName: "Black Sage",
-            scientificName: "Salvia mellifera",
-            heightCategory: "low_shrub",
-            heightInches: { min: 36, max: 72 },
-            sunMin: 3,
-            sunMax: 4,
-            waterNeeds: "very_low",
-            ecologicalValue: ["pollinators", "birds", "beneficial_insects"],
-            bloomSeason: ["spring", "summer"],
-            bloomColor: "white-lavender",
-            difficulty: "easy",
-            deerResistant: true,
-            spreadInches: 72,
-            regions: ["94402"],
-            description: "Major honey-producing plant. Aromatic foliage goes dormant in summer drought. Essential coastal sage scrub species."
-          },
-          {
-            id: "coffeeberry",
-            commonName: "California Coffeeberry",
-            scientificName: "Frangula californica",
-            heightCategory: "tall_shrub",
-            heightInches: { min: 72, max: 144 },
-            sunMin: 1,
-            sunMax: 4,
-            waterNeeds: "low",
-            ecologicalValue: ["birds", "pollinators"],
-            bloomSeason: ["spring"],
-            bloomColor: "green",
-            difficulty: "easy",
-            deerResistant: false,
-            spreadInches: 96,
-            regions: ["94402"],
-            description: "Versatile evergreen shrub tolerating sun to full shade. Berries ripen from green to red to black, attracting birds. Dwarf cultivars available."
-          },
-          {
-            id: "toyon",
-            commonName: "Toyon",
-            scientificName: "Heteromeles arbutifolia",
-            heightCategory: "tall_shrub",
-            heightInches: { min: 72, max: 180 },
-            sunMin: 2,
-            sunMax: 4,
-            waterNeeds: "very_low",
-            ecologicalValue: ["birds", "pollinators"],
-            bloomSeason: ["summer"],
-            bloomColor: "white",
-            difficulty: "easy",
-            deerResistant: true,
-            spreadInches: 120,
-            regions: ["94402"],
-            description: "The plant that gave Hollywood its name. Bright red winter berries attract birds. Can be trained as small tree or kept as shrub."
-          },
-          {
-            id: "red_flowering_currant",
-            commonName: "Red Flowering Currant",
-            scientificName: "Ribes sanguineum",
-            heightCategory: "tall_shrub",
-            heightInches: { min: 60, max: 120 },
-            sunMin: 2,
-            sunMax: 4,
-            waterNeeds: "low",
-            ecologicalValue: ["hummingbirds", "pollinators", "birds"],
-            bloomSeason: ["winter", "spring"],
-            bloomColor: "pink-red",
-            difficulty: "easy",
-            deerResistant: true,
-            spreadInches: 72,
-            regions: ["94402"],
-            description: "One of the first plants to bloom in late winter. Drooping clusters of pink flowers are critical early hummingbird food. Blue berries follow."
-          },
-          {
-            id: "manzanita",
-            commonName: "Common Manzanita",
-            scientificName: "Arctostaphylos manzanita",
-            heightCategory: "tall_shrub",
-            heightInches: { min: 72, max: 144 },
-            sunMin: 3,
-            sunMax: 4,
-            waterNeeds: "very_low",
-            ecologicalValue: ["pollinators", "birds"],
-            bloomSeason: ["winter", "spring"],
-            bloomColor: "white-pink",
-            difficulty: "moderate",
-            deerResistant: true,
-            spreadInches: 96,
-            regions: ["94402"],
-            description: "Beautiful red bark and urn-shaped flowers. Many cultivars available from groundcover to tree-sized. Critical early pollinator food."
-          },
-          {
-            id: "western_redbud",
-            commonName: "Western Redbud",
-            scientificName: "Cercis occidentalis",
-            heightCategory: "small_tree",
-            heightInches: { min: 120, max: 240 },
-            sunMin: 3,
-            sunMax: 4,
-            waterNeeds: "low",
-            ecologicalValue: ["pollinators", "birds"],
-            bloomSeason: ["spring"],
-            bloomColor: "magenta",
-            difficulty: "easy",
-            deerResistant: true,
-            spreadInches: 180,
-            regions: ["94402"],
-            description: "Stunning spring display of magenta flowers on bare branches. Heart-shaped leaves turn yellow in fall. Multi-trunked form."
-          },
-          {
-            id: "blue_elderberry",
-            commonName: "Blue Elderberry",
-            scientificName: "Sambucus nigra ssp. caerulea",
-            heightCategory: "small_tree",
-            heightInches: { min: 120, max: 300 },
-            sunMin: 2,
-            sunMax: 4,
-            waterNeeds: "low",
-            ecologicalValue: ["birds", "pollinators", "butterflies"],
-            bloomSeason: ["spring", "summer"],
-            bloomColor: "white",
-            difficulty: "easy",
-            deerResistant: false,
-            spreadInches: 180,
-            regions: ["94402"],
-            description: "Fast-growing with creamy flower clusters and blue berries beloved by birds. Berries edible when cooked. Important wildlife plant."
-          },
-          {
-            id: "california_buckeye",
-            commonName: "California Buckeye",
-            scientificName: "Aesculus californica",
-            heightCategory: "small_tree",
-            heightInches: { min: 120, max: 300 },
-            sunMin: 2,
-            sunMax: 4,
-            waterNeeds: "very_low",
-            ecologicalValue: ["pollinators", "butterflies"],
-            bloomSeason: ["spring"],
-            bloomColor: "white-pink",
-            difficulty: "moderate",
-            deerResistant: true,
-            spreadInches: 240,
-            regions: ["94402"],
-            description: "Distinctive deciduous tree with fragrant flower spikes. Drops leaves in summer drought, revealing silvery bark. Toxic to honeybees."
-          },
-          {
-            id: "coast_live_oak",
-            commonName: "Coast Live Oak",
-            scientificName: "Quercus agrifolia",
-            heightCategory: "canopy_tree",
-            heightInches: { min: 240, max: 600 },
-            sunMin: 3,
-            sunMax: 4,
-            waterNeeds: "very_low",
-            ecologicalValue: ["birds", "butterflies", "beneficial_insects"],
-            bloomSeason: ["spring"],
-            bloomColor: "yellow",
-            difficulty: "easy",
-            deerResistant: true,
-            spreadInches: 600,
-            regions: ["94402"],
-            description: "Iconic California tree supporting 300+ species of insects and wildlife. Long-lived. Do not irrigate established trees in summer."
-          },
-          {
-            id: "california_bay_laurel",
-            commonName: "California Bay Laurel",
-            scientificName: "Umbellularia californica",
-            heightCategory: "canopy_tree",
-            heightInches: { min: 240, max: 600 },
-            sunMin: 1,
-            sunMax: 4,
-            waterNeeds: "low",
-            ecologicalValue: ["birds", "pollinators"],
-            bloomSeason: ["winter", "spring"],
-            bloomColor: "yellow-green",
-            difficulty: "easy",
-            deerResistant: true,
-            spreadInches: 480,
-            regions: ["94402"],
-            description: "Aromatic evergreen leaves used in cooking (stronger than Mediterranean bay). Tolerates heavy shade. Can cause sudden oak death if planted near oaks."
-          }
-        ],
-        nurseries: [
-          {
-            name: "Yerba Buena Nursery",
-            address: "19500 Skyline Blvd, Woodside, CA",
-            url: "https://www.yerbabuenanursery.com",
-            notes: "Local to Peninsula, specializes in natives"
-          },
-          {
-            name: "Mostly Natives Nursery",
-            address: "27235 Highway 1, Tomales, CA",
-            url: "https://www.mostlynatives.com",
-            notes: "Excellent selection of locally-sourced natives"
-          },
-          {
-            name: "California Flora Nursery",
-            address: "2990 Somers St, Fulton, CA",
-            url: "https://www.calfloranursery.com",
-            notes: "Wide variety of California natives"
-          }
-        ],
         ecologicalIcons: {
           pollinators: "Pollinators",
           hummingbirds: "Hummingbirds",
@@ -2664,6 +2272,60 @@
         }
       };
 
+      var DATA_CACHE = {
+        meta: null,
+        plants: [],
+        regions: {},
+        nurseries: {
+          defaultNurseryIds: [],
+          nurseries: {}
+        },
+        zipIndexByPrefix: {}
+      };
+
+      var DATA_ENDPOINTS = {
+        meta: '/assets/native-plants/meta.json',
+        regions: '/assets/native-plants/regions/regions.json',
+        nurseries: '/assets/native-plants/nurseries/nurseries.json',
+        plants: '/assets/native-plants/plants/plants-core.json',
+        zipIndexBase: '/assets/native-plants/zip-index/ca-zip-prefix-'
+      };
+
+      function loadJson(url) {
+        return fetch(url, { credentials: 'same-origin' }).then(function(response) {
+          if (!response.ok) {
+            throw new Error('Failed to load ' + url);
+          }
+          return response.json();
+        });
+      }
+
+      function initializeData() {
+        return Promise.all([
+          loadJson(DATA_ENDPOINTS.meta),
+          loadJson(DATA_ENDPOINTS.plants),
+          loadJson(DATA_ENDPOINTS.regions),
+          loadJson(DATA_ENDPOINTS.nurseries)
+        ]).then(function(results) {
+          DATA_CACHE.meta = results[0];
+          DATA_CACHE.plants = results[1].plants || [];
+          DATA_CACHE.regions = results[2].regions || {};
+          DATA_CACHE.nurseries = results[3];
+        }).catch(function(err) {
+          console.error('Failed to load plant data:', err);
+        });
+      }
+
+      function loadZipIndexForPrefix(prefix) {
+        if (DATA_CACHE.zipIndexByPrefix[prefix]) {
+          return Promise.resolve(DATA_CACHE.zipIndexByPrefix[prefix]);
+        }
+        return loadJson(DATA_ENDPOINTS.zipIndexBase + prefix + '.json').then(function(data) {
+          DATA_CACHE.zipIndexByPrefix[prefix] = data;
+          return data;
+        });
+      }
+
       // ==========================================================================
       // DOM Elements
       // ==========================================================================
@@ -2673,6 +2335,9 @@
       var resultsSection = document.getElementById('results-section');
       var zipInput = document.getElementById('zip-input');
       var zipError = document.getElementById('zip-error');
+      var locationDisplay = document.getElementById('location-display');
+      var locationName = document.getElementById('location-name');
+      var locationChange = document.getElementById('location-change');
       var sunInput = document.getElementById('sun-input');
       var sunValue = document.getElementById('sun-value');
       var findBtn = document.getElementById('find-btn');
@@ -2683,7 +2348,8 @@
       var state = {
         zipCode: '',
         sunLevel: 3,
-        region: null,
+        zipResolved: null,
+        regionProfile: null,
         filteredPlants: [],
         displayedPlants: [],
         expandedPlantId: null,
@@ -2739,6 +2405,8 @@
         info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>'
       };
 
+      var dataReadyPromise = initializeData();
+
       // Load favorites from localStorage
       function loadFavorites() {
         try {
@@ -2765,16 +2433,106 @@
         return /^\d{5}$/.test(zip);
       }
 
-      function isRegionSupported(zip) {
-        return PLANT_DATA.regions.hasOwnProperty(zip);
+      function getZipPrefix(zip) {
+        return zip.slice(0, 2);
       }
 
-      function filterPlants(zip, sunLevel) {
-        return PLANT_DATA.plants.filter(function(plant) {
-          var inRegion = plant.regions.indexOf(zip) !== -1;
+      function resolveZipToRegion(zip) {
+        if (!DATA_CACHE.meta) {
+          return Promise.resolve({
+            isCAZip: false,
+            displayName: '',
+            city: '',
+            county: '',
+            regionKey: null,
+            error: 'missing_meta'
+          });
+        }
+
+        var prefix = getZipPrefix(zip);
+        var isCAPrefix = DATA_CACHE.meta.zipPrefixes.indexOf(prefix) !== -1;
+        if (!isCAPrefix) {
+          return Promise.resolve({
+            isCAZip: false,
+            displayName: '',
+            city: '',
+            county: '',
+            regionKey: null,
+            error: 'non_ca'
+          });
+        }
+
+        return loadZipIndexForPrefix(prefix).then(function(indexData) {
+          var zipEntry = indexData.zips && indexData.zips[zip];
+          if (zipEntry) {
+            return {
+              isCAZip: true,
+              displayName: zipEntry.displayName,
+              city: zipEntry.city || '',
+              county: zipEntry.county || '',
+              regionKey: zipEntry.regionKey || null,
+              error: null
+            };
+          }
+
+          if (indexData.defaultRegionKey) {
+            return {
+              isCAZip: true,
+              displayName: indexData.defaultDisplayName || ('California ' + prefix + 'xxx'),
+              city: '',
+              county: '',
+              regionKey: indexData.defaultRegionKey,
+              error: null
+            };
+          }
+
+          return {
+            isCAZip: true,
+            displayName: '',
+            city: '',
+            county: '',
+            regionKey: null,
+            error: 'missing_index'
+          };
+        }).catch(function() {
+          return {
+            isCAZip: true,
+            displayName: '',
+            city: '',
+            county: '',
+            regionKey: null,
+            error: 'missing_index'
+          };
+        });
+      }
+
+      function filterPlantsByRegionAndSun(regionKey, sunLevel) {
+        return DATA_CACHE.plants.filter(function(plant) {
+          var inRegion = plant.regionKeys && plant.regionKeys.indexOf(regionKey) !== -1;
           var sunMatch = sunLevel >= plant.sunMin && sunLevel <= plant.sunMax;
           return inRegion && sunMatch;
         });
+      }
+
+      function getRegionProfile(regionKey) {
+        return DATA_CACHE.regions[regionKey] || null;
+      }
+
+      function getLocationLabel() {
+        if (!state.zipResolved) return '';
+        var pieces = [];
+        if (state.zipResolved.displayName) {
+          pieces.push(state.zipResolved.displayName);
+        } else if (state.zipCode) {
+          pieces.push('ZIP ' + state.zipCode);
+        }
+        if (state.zipResolved.county) {
+          pieces.push(state.zipResolved.county + ' County');
+        }
+        if (state.regionProfile && state.regionProfile.name) {
+          pieces.push(state.regionProfile.name);
+        }
+        return pieces.join(' · ');
       }
 
       function groupByCategory(plants) {
@@ -2885,6 +2643,10 @@
         var value = zipInput.value.replace(/\D/g, '').slice(0, 5);
         zipInput.value = value;
         state.zipCode = value;
+        state.zipResolved = null;
+        state.regionProfile = null;
+        locationDisplay.classList.remove('is-visible');
+        locationName.textContent = '';
 
         // Clear error state
         zipInput.classList.remove('is-invalid');
@@ -2898,10 +2660,19 @@
         }
       });
 
+      locationChange.addEventListener('click', function() {
+        resetTool();
+        zipInput.focus();
+      });
+
       // ==========================================================================
       // Find Plants Button
       // ==========================================================================
       findBtn.addEventListener('click', function() {
+        handleFind();
+      });
+
+      function handleFind() {
         var zip = state.zipCode;
 
         // Validate
@@ -2912,11 +2683,22 @@
           return;
         }
 
-        // Find plants and show results
-        state.region = PLANT_DATA.regions[zip] || null;
-        state.filteredPlants = filterPlants(zip, state.sunLevel);
-        showResults();
-      });
+        findBtn.setAttribute('disabled', 'true');
+
+        dataReadyPromise.then(function() {
+          return resolveZipToRegion(zip);
+        }).then(function(resolved) {
+          state.zipResolved = resolved;
+          state.regionProfile = resolved.regionKey ? getRegionProfile(resolved.regionKey) : null;
+          state.filteredPlants = resolved.regionKey
+            ? filterPlantsByRegionAndSun(resolved.regionKey, state.sunLevel)
+            : [];
+          updateLocationDisplay();
+          showResults();
+        }).finally(function() {
+          findBtn.removeAttribute('disabled');
+        });
+      }
 
       // ==========================================================================
       // Header Reset
@@ -2928,7 +2710,8 @@
       function resetTool() {
         state.zipCode = '';
         state.sunLevel = 3;
-        state.region = null;
+        state.zipResolved = null;
+        state.regionProfile = null;
         state.filteredPlants = [];
         state.displayedPlants = [];
         state.expandedPlantId = null;
@@ -2940,10 +2723,22 @@
         sunInput.setAttribute('aria-valuetext', 'Part Sun, 4 to 6 hours');
         zipInput.classList.remove('is-invalid');
         zipError.classList.remove('is-visible');
+        locationDisplay.classList.remove('is-visible');
+        locationName.textContent = '';
 
         resultsSection.classList.add('is-hidden');
         inputSection.style.display = '';
         headerReset.classList.remove('is-visible');
+      }
+
+      function updateLocationDisplay() {
+        if (state.zipResolved && state.zipResolved.regionKey) {
+          locationName.textContent = getLocationLabel();
+          locationDisplay.classList.add('is-visible');
+        } else {
+          locationName.textContent = '';
+          locationDisplay.classList.remove('is-visible');
+        }
       }
 
       // ==========================================================================
@@ -2952,7 +2747,7 @@
       function showResults() {
         headerReset.classList.add('is-visible');
 
-        if (!isRegionSupported(state.zipCode)) {
+        if (!state.zipResolved || !state.zipResolved.regionKey) {
           renderUnsupportedRegion();
         } else {
           renderResults();
@@ -2965,14 +2760,28 @@
       // Render Unsupported Region
       // ==========================================================================
       function renderUnsupportedRegion() {
+        var isCAOnly = state.zipResolved && state.zipResolved.error === 'non_ca';
+        var isMissingIndex = state.zipResolved && state.zipResolved.error === 'missing_index';
+        var isMissingData = !state.zipResolved || state.zipResolved.error === 'missing_meta';
+        var title = 'ZIP Not In Offline Index';
+        var message = 'That California ZIP code is not in this version’s offline index. Update data assets to include it.';
+
+        if (isCAOnly) {
+          title = 'California ZIPs Only';
+          message = 'This tool currently supports California ZIP codes only.';
+        } else if (isMissingData) {
+          title = 'Data Unavailable';
+          message = 'Plant data failed to load. Please refresh and try again.';
+        } else if (isMissingIndex) {
+          title = 'ZIP Not In Offline Index';
+          message = 'That California ZIP code is not in this version’s offline index. Update data assets to include it.';
+        }
+
         var html = '' +
           '<div class="unsupported-message">' +
             '<div class="unsupported-icon">' + ICONS.mapPin + '</div>' +
-            '<h2 class="unsupported-title">Region Not Yet Supported</h2>' +
-            '<p class="unsupported-text">' +
-              'We currently have plant data for the San Mateo, CA area (94402). ' +
-              'More regions coming soon!' +
-            '</p>' +
+            '<h2 class="unsupported-title">' + title + '</h2>' +
+            '<p class="unsupported-text">' + message + '</p>' +
             '<p class="unsupported-text">' +
               'In the meantime, try <a href="https://calscape.org" target="_blank" rel="noopener" class="unsupported-link">Calscape.org</a> ' +
               'to find native plants for your California location.' +
@@ -2995,15 +2804,24 @@
       // Render Results
       // ==========================================================================
       function renderResults() {
-        var region = state.region;
+        var region = state.regionProfile;
         state.displayedPlants = applyFilters(state.filteredPlants);
         var plants = state.displayedPlants;
         var grouped = groupByCategory(plants);
+        var locationName = state.zipResolved && state.zipResolved.displayName ? state.zipResolved.displayName : ('ZIP ' + state.zipCode);
+        var regionName = region ? region.name : 'California';
+        var zoneLabel = region && region.usdaZone ? ('Zone ' + region.usdaZone) : '';
+        var metaParts = [
+          getSunLabel(state.sunLevel).toLowerCase().replace(/\(.*\)/, '').trim(),
+          locationName,
+          regionName,
+          zoneLabel
+        ].filter(Boolean);
 
         var html = '' +
           '<div class="results-header">' +
             '<h2 class="results-title">' + state.filteredPlants.length + ' plants for ' + getSunLabel(state.sunLevel).toLowerCase().replace(/\(.*\)/, '').trim() + '</h2>' +
-            '<p class="results-meta">' + region.name + ' · Zone ' + region.usdaZone + '</p>' +
+            '<p class="results-meta">' + metaParts.join(' · ') + '</p>' +
           '</div>';
 
         // Sticky Actions Bar
@@ -3101,7 +2919,7 @@
       // ==========================================================================
       function renderMyGarden() {
         var favoritedPlants = state.favorites.map(function(id) {
-          return PLANT_DATA.plants.find(function(p) { return p.id === id; });
+          return DATA_CACHE.plants.find(function(p) { return p.id === id; });
         }).filter(Boolean);
 
         if (favoritedPlants.length === 0) {
@@ -3586,6 +3404,10 @@
       // Render Nurseries
       // ==========================================================================
       function renderNurseries() {
+        var regionNurseryIds = (state.regionProfile && state.regionProfile.nurseryIds) || [];
+        var fallbackIds = DATA_CACHE.nurseries.defaultNurseryIds || [];
+        var nurseryIds = regionNurseryIds.length > 0 ? regionNurseryIds : fallbackIds;
+
         var html = '' +
           '<div class="nurseries-section">' +
             '<div class="nurseries-header">' +
@@ -3595,7 +3417,11 @@
             '<p class="nurseries-subtitle">Call ahead to check availability</p>' +
             '<ul class="nurseries-list">';
 
-        PLANT_DATA.nurseries.forEach(function(nursery) {
+        nurseryIds.forEach(function(id) {
+          var nursery = DATA_CACHE.nurseries.nurseries[id];
+          if (!nursery) {
+            return;
+          }
           html += '' +
             '<li class="nursery-item">' +
               '<div class="nursery-content">' +
@@ -3653,9 +3479,11 @@
       }
 
       function shareResults() {
+        var regionName = state.regionProfile ? state.regionProfile.name : 'California';
+        var locationName = state.zipResolved && state.zipResolved.displayName ? state.zipResolved.displayName : state.zipCode;
         var shareData = {
-          title: 'Native Plants for ' + state.region.name,
-          text: 'Check out these ' + state.displayedPlants.length + ' California native plants perfect for ' + getSunLabel(state.sunLevel).toLowerCase() + ' conditions!',
+          title: 'Native Plants for ' + locationName,
+          text: 'Check out these ' + state.displayedPlants.length + ' California native plants perfect for ' + getSunLabel(state.sunLevel).toLowerCase() + ' in ' + regionName + '!',
           url: window.location.href
         };
 
@@ -3695,14 +3523,16 @@
         // Title
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(20);
-        doc.text('Native Plants for ' + state.zipCode, margin, y);
+        var pdfLocation = state.zipResolved && state.zipResolved.displayName ? state.zipResolved.displayName : state.zipCode;
+        doc.text('Native Plants for ' + pdfLocation, margin, y);
         y += 30;
 
         // Subtitle
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(11);
         doc.setTextColor(100);
-        doc.text(state.region.name + ' · ' + getSunLabel(state.sunLevel), margin, y);
+        var regionLabel = state.regionProfile ? state.regionProfile.name : 'California';
+        doc.text(regionLabel + ' · ' + getSunLabel(state.sunLevel), margin, y);
         y += 25;
 
         doc.setTextColor(0);
@@ -3782,7 +3612,12 @@
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(10);
 
-        PLANT_DATA.nurseries.forEach(function(nursery) {
+        var pdfNurseryIds = ((state.regionProfile && state.regionProfile.nurseryIds) || DATA_CACHE.nurseries.defaultNurseryIds || []);
+        pdfNurseryIds.forEach(function(id) {
+          var nursery = DATA_CACHE.nurseries.nurseries[id];
+          if (!nursery) {
+            return;
+          }
           doc.setFont('helvetica', 'bold');
           doc.text(nursery.name, margin, y);
           y += 12;
