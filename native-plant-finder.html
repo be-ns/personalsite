@@ -812,6 +812,141 @@
       margin-top: 0.25rem;
     }
 
+    /* Category info tooltip - modern 2026 design */
+    .category-title-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .category-info-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.25rem;
+      height: 1.25rem;
+      padding: 0;
+      border: none;
+      background: transparent;
+      color: var(--color-text-tertiary);
+      cursor: pointer;
+      border-radius: 50%;
+      transition: all var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .category-info-btn:hover {
+      color: var(--color-sage);
+      background: var(--color-sage-subtle);
+    }
+
+    .category-info-btn:focus-visible {
+      outline: 2px solid var(--color-poppy);
+      outline-offset: 2px;
+    }
+
+    .category-info-btn svg {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .category-info-btn[aria-expanded="true"] {
+      color: var(--color-sage);
+      background: var(--color-sage-subtle);
+    }
+
+    .category-tooltip {
+      display: none;
+      margin-top: 0.75rem;
+      padding: 1rem 1.25rem;
+      background: linear-gradient(135deg, var(--color-off-white) 0%, #FEFEFE 100%);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      animation: tooltipFadeIn 0.2s ease-out;
+    }
+
+    .category-tooltip.is-visible {
+      display: block;
+    }
+
+    @keyframes tooltipFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-4px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .category-tooltip-content {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .category-tooltip-icon {
+      flex-shrink: 0;
+      width: 2.5rem;
+      height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-sage-subtle);
+      border-radius: var(--radius-md);
+      color: var(--color-sage);
+    }
+
+    .category-tooltip-icon svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    .category-tooltip-text {
+      flex: 1;
+    }
+
+    .category-tooltip-heading {
+      font-family: var(--font-body);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-sage);
+      margin: 0 0 0.375rem 0;
+    }
+
+    .category-tooltip-description {
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    /* Mobile adjustments for tooltip */
+    @media (max-width: 640px) {
+      .category-tooltip {
+        padding: 0.875rem 1rem;
+      }
+
+      .category-tooltip-content {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .category-tooltip-icon {
+        width: 2rem;
+        height: 2rem;
+      }
+
+      .category-tooltip-icon svg {
+        width: 1rem;
+        height: 1rem;
+      }
+    }
+
     .plants-grid {
       display: flex;
       flex-direction: column;
@@ -2569,6 +2704,15 @@
         ground_cover: "Knit it all together"
       };
 
+      // Detailed explanations for each category (shown in tooltips)
+      var categoryExplanations = {
+        canopy_tree: "Large trees that form the uppermost layer of your garden. They provide shade, sequester carbon, and create the foundational structure that other plants grow around. Think of them as the 'ceiling' of your outdoor room.",
+        small_tree: "Mid-sized trees that add vertical interest without dominating the space. Perfect for smaller yards, they offer seasonal flowers, fall color, and food for birds while fitting under power lines.",
+        tall_shrub: "These workhorses create natural screens, windbreaks, and wildlife corridors. Plant them along property lines or group them to create private garden 'rooms' that shelter smaller plants.",
+        low_shrub: "The colorful middle layer that brings flowers and fragrance to eye and nose level. These are your showstoppers for seasonal interest and pollinator support.",
+        ground_cover: "The finishing touch that ties everything together. Ground covers suppress weeds, prevent erosion, and create a living mulch that keeps soil cool and moist for other plants."
+      };
+
       // Icons SVG paths
       var ICONS = {
         heart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>',
@@ -2585,7 +2729,8 @@
         store: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>',
         external: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>',
         x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
-        mapPin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>'
+        mapPin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>',
+        info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>'
       };
 
       // Load favorites from localStorage
@@ -2905,6 +3050,7 @@
         attachFilterListeners();
         attachLayerListeners();
         attachFavoriteListeners();
+        attachCategoryTooltipListeners();
       }
 
       // Re-render just the plants section when filters change
@@ -2941,6 +3087,7 @@
         // Re-attach listeners
         attachPlantCardListeners();
         attachFavoriteListeners();
+        attachCategoryTooltipListeners();
       }
 
       // ==========================================================================
@@ -3136,6 +3283,58 @@
         });
       }
 
+      function attachCategoryTooltipListeners() {
+        document.querySelectorAll('.category-info-btn').forEach(function(btn) {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var tooltipId = btn.getAttribute('aria-controls');
+            var tooltip = document.getElementById(tooltipId);
+            var isExpanded = btn.getAttribute('aria-expanded') === 'true';
+
+            // Close all other tooltips first
+            document.querySelectorAll('.category-info-btn').forEach(function(otherBtn) {
+              if (otherBtn !== btn) {
+                otherBtn.setAttribute('aria-expanded', 'false');
+                var otherId = otherBtn.getAttribute('aria-controls');
+                var otherTooltip = document.getElementById(otherId);
+                if (otherTooltip) {
+                  otherTooltip.classList.remove('is-visible');
+                }
+              }
+            });
+
+            // Toggle this tooltip
+            btn.setAttribute('aria-expanded', !isExpanded);
+            if (tooltip) {
+              tooltip.classList.toggle('is-visible', !isExpanded);
+            }
+          });
+
+          btn.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+              btn.setAttribute('aria-expanded', 'false');
+              var tooltipId = btn.getAttribute('aria-controls');
+              var tooltip = document.getElementById(tooltipId);
+              if (tooltip) {
+                tooltip.classList.remove('is-visible');
+              }
+            }
+          });
+        });
+
+        // Close tooltips when clicking outside
+        document.addEventListener('click', function(e) {
+          if (!e.target.closest('.category-info-btn') && !e.target.closest('.category-tooltip')) {
+            document.querySelectorAll('.category-info-btn').forEach(function(btn) {
+              btn.setAttribute('aria-expanded', 'false');
+            });
+            document.querySelectorAll('.category-tooltip').forEach(function(tooltip) {
+              tooltip.classList.remove('is-visible');
+            });
+          }
+        });
+      }
+
       function scrollToCategory(categoryKey) {
         var section = document.querySelector('.plants-category[data-category="' + categoryKey + '"]');
         if (section) {
@@ -3160,14 +3359,29 @@
       // ==========================================================================
       function renderCategory(categoryKey, plants) {
         var category = PLANT_DATA.heightCategories[categoryKey];
+        var tooltipId = 'tooltip-' + categoryKey;
 
         var html = '' +
           '<div class="plants-category" data-category="' + categoryKey + '">' +
             '<div class="category-header">' +
               '<div class="category-header-content">' +
                 '<span class="category-label">' + category.label.toUpperCase() + '</span>' +
-                '<h3 class="category-title">' + categoryDescriptions[categoryKey] + '</h3>' +
+                '<div class="category-title-row">' +
+                  '<h3 class="category-title">' + categoryDescriptions[categoryKey] + '</h3>' +
+                  '<button class="category-info-btn" aria-expanded="false" aria-controls="' + tooltipId + '" aria-label="Learn more about ' + category.label.toLowerCase() + '">' +
+                    ICONS.info +
+                  '</button>' +
+                '</div>' +
                 '<span class="category-meta">' + plants.length + ' plant' + (plants.length !== 1 ? 's' : '') + ' · ' + category.range + '</span>' +
+                '<div id="' + tooltipId + '" class="category-tooltip" role="tooltip">' +
+                  '<div class="category-tooltip-content">' +
+                    '<div class="category-tooltip-icon">' + ICONS.layers + '</div>' +
+                    '<div class="category-tooltip-text">' +
+                      '<p class="category-tooltip-heading">Why ' + category.label.toLowerCase() + '?</p>' +
+                      '<p class="category-tooltip-description">' + categoryExplanations[categoryKey] + '</p>' +
+                    '</div>' +
+                  '</div>' +
+                '</div>' +
               '</div>' +
             '</div>' +
             '<div class="plants-grid">';
