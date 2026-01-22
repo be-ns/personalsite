@@ -255,7 +255,8 @@
       </header>
 
       <button class="contact-email" type="button" data-email="YmVuamFtaW5zaXZlcmx5QGdtYWlsLmNvbQ==">
-        Copy email
+        <span class="contact-email-text">Click to copy email</span>
+        <span class="contact-email-icon" aria-hidden="true">→</span>
       </button>
       <span class="contact-email-status" aria-live="polite"></span>
 
@@ -401,11 +402,24 @@
       var emailButton = document.querySelector('.contact-email');
       if (emailButton) {
         var emailStatus = document.querySelector('.contact-email-status');
+        var emailText = emailButton.querySelector('.contact-email-text');
         var encodedEmail = emailButton.getAttribute('data-email');
+        var statusTimeout = null;
 
-        function setEmailStatus(message) {
+        function setEmailStatus(message, duration) {
           if (emailStatus) {
+            // Clear any existing timeout
+            if (statusTimeout) {
+              clearTimeout(statusTimeout);
+            }
+
             emailStatus.textContent = message;
+            emailStatus.classList.add('is-visible');
+
+            // Auto-hide after duration (default 3 seconds)
+            statusTimeout = setTimeout(function() {
+              emailStatus.classList.remove('is-visible');
+            }, duration || 3000);
           }
         }
 
@@ -417,18 +431,34 @@
           }
         }
 
+        function onCopySuccess(email) {
+          // Update button text temporarily
+          if (emailText) {
+            var originalText = emailText.textContent;
+            emailText.textContent = 'Copied!';
+            setTimeout(function() {
+              emailText.textContent = originalText;
+            }, 2000);
+          }
+          setEmailStatus(email + ' is ready to paste', 4000);
+        }
+
+        function onCopyError() {
+          setEmailStatus('Something went wrong. Try again?', 4000);
+        }
+
         function copyEmail() {
           var email = decodeEmail();
           if (!email) {
-            setEmailStatus('Email unavailable');
+            setEmailStatus("Couldn't find the email address", 4000);
             return;
           }
 
           if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(email).then(function() {
-              setEmailStatus('Email copied');
+              onCopySuccess(email);
             }).catch(function() {
-              setEmailStatus('Unable to copy email');
+              onCopyError();
             });
             return;
           }
@@ -443,9 +473,9 @@
 
           try {
             document.execCommand('copy');
-            setEmailStatus('Email copied');
+            onCopySuccess(email);
           } catch (err) {
-            setEmailStatus('Unable to copy email');
+            onCopyError();
           }
 
           document.body.removeChild(tempInput);
