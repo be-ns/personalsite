@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Service of Life Builder — Ben Siverly</title>
-  <meta name="description" content="Build a liturgy for a memorial or celebration of life.">
+  <meta name="description" content="Build an Anglican-shaped memorial or funeral liturgy with optional Lutheran or Catholic influences, then print a clean order-of-service PDF.">
 
   <!-- Open Graph -->
   <meta property="og:title" content="Service of Life Builder — Ben Siverly">
@@ -31,8 +31,922 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Zilla+Slab:wght@600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ==========================================================================
+       Service of Life Builder Styles
+       ========================================================================== */
+
+    .sol-app {
+      --sol-gap: var(--space-lg);
+    }
+
+    .sol-app main {
+      max-width: 1200px;
+      padding-top: calc(var(--space-lg) + var(--header-height));
+    }
+
+    .sol-hero {
+      margin-bottom: var(--space-lg);
+      padding-bottom: var(--space-md);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .sol-hero h1 {
+      font-size: clamp(1.75rem, 4vw, 2.25rem);
+      margin-bottom: var(--space-xs);
+    }
+
+    .sol-hero p {
+      color: var(--color-muted);
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    /* Layout */
+    .sol-layout {
+      display: grid;
+      gap: var(--sol-gap);
+    }
+
+    @media (min-width: 900px) {
+      .sol-layout {
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+      }
+    }
+
+    /* Builder Panel */
+    .sol-builder {
+      display: grid;
+      gap: var(--space-md);
+    }
+
+    .sol-builder-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding-bottom: var(--space-sm);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .sol-builder-title {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-muted);
+      margin: 0;
+    }
+
+    /* Steps Navigation */
+    .sol-steps {
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .sol-step-btn {
+      flex: 1;
+      padding: 0.75rem 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: var(--color-bg);
+      border: none;
+      border-right: 1px solid var(--color-border);
+      color: var(--color-muted);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .sol-step-btn:last-child {
+      border-right: none;
+    }
+
+    .sol-step-btn:hover {
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+    }
+
+    .sol-step-btn.is-active {
+      background: var(--color-text);
+      color: var(--color-bg);
+    }
+
+    .sol-step-btn:focus-visible {
+      outline: 2px solid var(--color-cobalt);
+      outline-offset: -2px;
+      z-index: 1;
+    }
+
+    /* Step Content */
+    .sol-step-content {
+      display: none;
+    }
+
+    .sol-step-content.is-active {
+      display: block;
+    }
+
+    /* Form Styles */
+    .sol-form-group {
+      display: grid;
+      gap: var(--space-xs);
+      margin-bottom: var(--space-md);
+    }
+
+    .sol-form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .sol-label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+    }
+
+    .sol-input,
+    .sol-select,
+    .sol-textarea {
+      font-family: var(--font-body);
+      font-size: 0.9375rem;
+      padding: 0.625rem 0.75rem;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: var(--color-bg);
+      color: var(--color-text);
+      transition: border-color var(--transition-fast);
+    }
+
+    .sol-input:focus,
+    .sol-select:focus,
+    .sol-textarea:focus {
+      outline: none;
+      border-color: var(--color-text);
+    }
+
+    .sol-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .sol-select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      padding-right: 2rem;
+    }
+
+    /* Sections List */
+    .sol-sections-list {
+      list-style: none;
+      display: grid;
+      gap: var(--space-xs);
+    }
+
+    .sol-section-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 0.75rem;
+      background: var(--color-bg-alt);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      cursor: grab;
+      transition: all var(--transition-fast);
+    }
+
+    .sol-section-item:hover {
+      border-color: var(--color-text);
+    }
+
+    .sol-section-item.is-dragging {
+      opacity: 0.5;
+    }
+
+    .sol-section-item.is-optional {
+      opacity: 0.6;
+      border-style: dashed;
+    }
+
+    .sol-section-item.is-optional.is-enabled {
+      opacity: 1;
+      border-style: solid;
+    }
+
+    .sol-section-drag {
+      color: var(--color-muted);
+      font-size: 1rem;
+      cursor: grab;
+    }
+
+    .sol-section-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .sol-section-name {
+      font-weight: 500;
+      font-size: 0.9375rem;
+    }
+
+    .sol-section-badge {
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+      margin-left: 0.5rem;
+    }
+
+    .sol-section-actions {
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .sol-section-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--color-muted);
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: all var(--transition-fast);
+    }
+
+    .sol-section-btn:hover {
+      background: var(--color-border);
+      color: var(--color-text);
+    }
+
+    .sol-section-btn:focus-visible {
+      outline: 2px solid var(--color-cobalt);
+      outline-offset: 1px;
+    }
+
+    /* Components Editor */
+    .sol-components {
+      display: grid;
+      gap: var(--space-sm);
+    }
+
+    .sol-component {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: var(--color-bg);
+      overflow: hidden;
+    }
+
+    .sol-component-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 0.625rem 0.75rem;
+      background: var(--color-bg-alt);
+      border-bottom: 1px solid var(--color-border);
+      cursor: pointer;
+    }
+
+    .sol-component-header:hover {
+      background: var(--color-border);
+    }
+
+    .sol-component-type {
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+      background: var(--color-bg);
+      padding: 0.125rem 0.375rem;
+      border-radius: 2px;
+    }
+
+    .sol-component-title {
+      flex: 1;
+      font-weight: 500;
+      font-size: 0.875rem;
+    }
+
+    .sol-component-toggle {
+      color: var(--color-muted);
+      font-size: 0.875rem;
+      transition: transform var(--transition-fast);
+    }
+
+    .sol-component.is-open .sol-component-toggle {
+      transform: rotate(180deg);
+    }
+
+    .sol-component-body {
+      display: none;
+      padding: var(--space-sm);
+    }
+
+    .sol-component.is-open .sol-component-body {
+      display: block;
+    }
+
+    .sol-component-actions {
+      display: flex;
+      gap: var(--space-xs);
+      padding-top: var(--space-sm);
+      border-top: 1px solid var(--color-border);
+      margin-top: var(--space-sm);
+    }
+
+    /* Add Component Button */
+    .sol-add-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px dashed var(--color-border);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--color-muted);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .sol-add-btn:hover {
+      border-color: var(--color-text);
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    /* Component Type Picker */
+    .sol-type-picker {
+      display: none;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-xs);
+      padding: var(--space-sm);
+      background: var(--color-bg-alt);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      margin-top: var(--space-xs);
+    }
+
+    .sol-type-picker.is-open {
+      display: grid;
+    }
+
+    .sol-type-btn {
+      padding: 0.5rem;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: var(--color-bg);
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .sol-type-btn:hover {
+      border-color: var(--color-text);
+      background: var(--color-text);
+      color: var(--color-bg);
+    }
+
+    /* Section Editor Panel */
+    .sol-section-editor {
+      display: none;
+    }
+
+    .sol-section-editor.is-active {
+      display: block;
+    }
+
+    .sol-section-editor-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+
+    .sol-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem 0;
+    }
+
+    .sol-back-btn:hover {
+      color: var(--color-text);
+    }
+
+    .sol-section-editor-title {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    /* Actions Panel */
+    .sol-actions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-sm);
+    }
+
+    .sol-action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.375rem;
+      padding: var(--space-sm);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .sol-action-btn:hover {
+      border-color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    .sol-action-btn--primary {
+      grid-column: span 2;
+      background: var(--color-text);
+      color: var(--color-bg);
+      border-color: var(--color-text);
+    }
+
+    .sol-action-btn--primary:hover {
+      background: var(--color-accent);
+      color: var(--color-text);
+      border-color: var(--color-accent);
+    }
+
+    .sol-action-icon {
+      font-size: 1.25rem;
+    }
+
+    /* Preview Panel */
+    .sol-preview {
+      position: sticky;
+      top: calc(var(--header-height) + var(--space-md));
+    }
+
+    .sol-preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-sm);
+      padding-bottom: var(--space-sm);
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: var(--space-md);
+    }
+
+    .sol-preview-title {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-muted);
+      margin: 0;
+    }
+
+    .sol-preview-toggles {
+      display: flex;
+      gap: var(--space-xs);
+    }
+
+    .sol-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-muted);
+      cursor: pointer;
+    }
+
+    .sol-toggle input {
+      width: 14px;
+      height: 14px;
+      accent-color: var(--color-text);
+    }
+
+    /* Preview Content */
+    .sol-preview-content {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      max-height: calc(100vh - var(--header-height) - 200px);
+      overflow-y: auto;
+    }
+
+    .sol-preview-empty {
+      text-align: center;
+      color: var(--color-muted);
+      padding: var(--space-xl) var(--space-md);
+    }
+
+    /* Service Preview */
+    .sol-service {
+      font-size: 0.9375rem;
+    }
+
+    .sol-service-header {
+      text-align: center;
+      margin-bottom: var(--space-lg);
+      padding-bottom: var(--space-md);
+      border-bottom: 2px solid var(--color-text);
+    }
+
+    .sol-service-type {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-muted);
+      margin-bottom: var(--space-xs);
+    }
+
+    .sol-service-name {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 0 0 var(--space-xs) 0;
+    }
+
+    .sol-service-details {
+      font-size: 0.875rem;
+      color: var(--color-muted);
+    }
+
+    .sol-service-section {
+      margin-bottom: var(--space-lg);
+      page-break-inside: avoid;
+    }
+
+    .sol-service-section-title {
+      font-family: var(--font-heading);
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin: 0 0 var(--space-sm) 0;
+      padding-bottom: var(--space-xs);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .sol-service-component {
+      margin-bottom: var(--space-md);
+    }
+
+    .sol-service-component:last-child {
+      margin-bottom: 0;
+    }
+
+    .sol-service-component-title {
+      font-weight: 600;
+      font-size: 0.9375rem;
+      margin: 0 0 0.25rem 0;
+    }
+
+    .sol-service-role {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+      margin-left: 0.5rem;
+    }
+
+    .sol-service-rubric {
+      font-style: italic;
+      color: var(--color-muted);
+      font-size: 0.875rem;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .sol-service-body {
+      white-space: pre-wrap;
+      line-height: 1.7;
+    }
+
+    .sol-service-reading {
+      background: var(--color-bg-alt);
+      padding: 0.75rem;
+      border-radius: var(--radius-sm);
+    }
+
+    .sol-service-reading-label {
+      font-weight: 600;
+    }
+
+    .sol-service-reading-citation {
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      color: var(--color-muted);
+    }
+
+    .sol-service-reading-reader {
+      font-size: 0.875rem;
+      color: var(--color-muted);
+      margin-top: 0.25rem;
+    }
+
+    .sol-service-music {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-xs);
+      padding: 0.5rem 0;
+      border-left: 3px solid var(--color-accent);
+      padding-left: 0.75rem;
+    }
+
+    .sol-service-music-kind {
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+    }
+
+    .sol-service-music-title {
+      font-weight: 500;
+    }
+
+    .sol-service-silence {
+      text-align: center;
+      padding: var(--space-sm);
+      color: var(--color-muted);
+      font-style: italic;
+    }
+
+    .sol-service-tribute {
+      background: var(--color-bg-alt);
+      padding: 0.75rem;
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--color-cobalt);
+    }
+
+    /* Hidden class for rubrics */
+    .sol-preview-content.hide-rubrics .sol-service-rubric {
+      display: none;
+    }
+
+    /* Mobile tabs for builder/preview */
+    .sol-mobile-tabs {
+      display: none;
+    }
+
+    @media (max-width: 899px) {
+      .sol-mobile-tabs {
+        display: flex;
+        gap: 0;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        margin-bottom: var(--space-md);
+      }
+
+      .sol-mobile-tab {
+        flex: 1;
+        padding: 0.75rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background: var(--color-bg);
+        border: none;
+        color: var(--color-muted);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .sol-mobile-tab:first-child {
+        border-right: 1px solid var(--color-border);
+      }
+
+      .sol-mobile-tab.is-active {
+        background: var(--color-text);
+        color: var(--color-bg);
+      }
+
+      .sol-builder {
+        display: none;
+      }
+
+      .sol-builder.is-active {
+        display: grid;
+      }
+
+      .sol-preview {
+        display: none;
+        position: static;
+      }
+
+      .sol-preview.is-active {
+        display: block;
+      }
+    }
+
+    /* Role styling in preview */
+    .sol-role-all {
+      font-weight: 600;
+    }
+
+    .sol-role-leader::before {
+      content: 'Leader: ';
+      font-weight: 600;
+      color: var(--color-muted);
+    }
+
+    .sol-role-reader::before {
+      content: 'Reader: ';
+      font-weight: 600;
+      color: var(--color-muted);
+    }
+
+    /* Privacy Note */
+    .sol-privacy {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      color: var(--color-muted);
+      text-align: center;
+      margin-top: var(--space-md);
+      padding-top: var(--space-sm);
+      border-top: 1px solid var(--color-border);
+    }
+
+    /* JSON Import/Export Modal */
+    .sol-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 9998;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-md);
+    }
+
+    .sol-modal-overlay.is-open {
+      display: flex;
+    }
+
+    .sol-modal {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      max-width: 500px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: var(--space-lg);
+    }
+
+    .sol-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-md);
+    }
+
+    .sol-modal-title {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .sol-modal-close {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 50%;
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+      cursor: pointer;
+      font-size: 1.25rem;
+    }
+
+    .sol-modal-close:hover {
+      background: var(--color-border);
+    }
+
+    .sol-modal-body {
+      display: grid;
+      gap: var(--space-md);
+    }
+
+    /* Print Styles */
+    @media print {
+      .sol-app .site-header,
+      .sol-app footer,
+      .sol-builder,
+      .sol-mobile-tabs,
+      .sol-preview-header,
+      .sol-modal-overlay,
+      .page-loader {
+        display: none !important;
+      }
+
+      .sol-app main {
+        max-width: none;
+        padding: 0.5in;
+        margin: 0;
+      }
+
+      .sol-hero {
+        display: none !important;
+      }
+
+      .sol-layout {
+        display: block;
+      }
+
+      .sol-preview {
+        display: block !important;
+        position: static;
+      }
+
+      .sol-preview-content {
+        border: none;
+        padding: 0;
+        max-height: none;
+        overflow: visible;
+      }
+
+      .sol-service-header {
+        border-bottom-width: 2pt;
+      }
+
+      .sol-service-section {
+        page-break-inside: avoid;
+      }
+
+      .sol-service-section-title {
+        page-break-after: avoid;
+      }
+
+      .sol-service-rubric {
+        display: none;
+      }
+
+      .sol-service-reading,
+      .sol-service-tribute {
+        border: 0.5pt solid #ccc;
+      }
+
+      .sol-service-music {
+        border-left-width: 2pt;
+        border-left-color: #000;
+      }
+
+      @page {
+        size: letter;
+        margin: 0.75in;
+      }
+    }
+  </style>
 </head>
-<body>
+<body class="sol-app">
   <!-- Page Loader -->
   <div class="page-loader" aria-hidden="true">
     <div class="page-loader__dot"></div>
@@ -44,69 +958,1233 @@
   </header>
 
   <main>
-    <section class="hero" aria-labelledby="service-of-life-heading">
-      <p class="location">Tool</p>
-      <h1 id="service-of-life-heading">Service of Life Builder</h1>
-      <div class="hero-content">
-        <p>Build a liturgy for a memorial or celebration of life. This tool is in progress.</p>
-      </div>
+    <section class="sol-hero" aria-labelledby="sol-heading">
+      <h1 id="sol-heading">Service of Life Builder</h1>
+      <p>Build an Anglican-shaped memorial or funeral liturgy, then print a clean order-of-service.</p>
     </section>
 
-    <hr class="section-divider">
+    <!-- Mobile Tabs -->
+    <div class="sol-mobile-tabs" role="tablist">
+      <button class="sol-mobile-tab is-active" role="tab" aria-selected="true" data-tab="build">Build</button>
+      <button class="sol-mobile-tab" role="tab" aria-selected="false" data-tab="preview">Preview</button>
+    </div>
 
-    <section class="tools" aria-labelledby="service-of-life-status">
-      <h2 id="service-of-life-status">Status</h2>
-      <article class="tool-card tool-card--featured">
-        <div class="tool-header">
-          <div class="tool-header-row">
-            <h3>Service of Life Builder</h3>
-            <div class="tool-header-actions">
-              <span class="status">Coming soon</span>
+    <div class="sol-layout">
+      <!-- Builder Panel -->
+      <div class="sol-builder is-active" role="tabpanel" aria-label="Service builder">
+        <div class="sol-builder-header">
+          <h2 class="sol-builder-title">Build Your Service</h2>
+        </div>
+
+        <!-- Steps Navigation -->
+        <nav class="sol-steps" role="tablist" aria-label="Builder steps">
+          <button class="sol-step-btn is-active" role="tab" data-step="basics">Basics</button>
+          <button class="sol-step-btn" role="tab" data-step="structure">Structure</button>
+          <button class="sol-step-btn" role="tab" data-step="content">Content</button>
+          <button class="sol-step-btn" role="tab" data-step="export">Export</button>
+        </nav>
+
+        <!-- Step 1: Basics -->
+        <div class="sol-step-content is-active" id="step-basics" role="tabpanel">
+          <div class="sol-form-group">
+            <label class="sol-label" for="service-type">Service Type</label>
+            <select class="sol-select" id="service-type">
+              <option value="memorial">Memorial Service (no committal)</option>
+              <option value="funeral">Funeral Service (with optional committal)</option>
+              <option value="graveside">Graveside / Committal Only</option>
+              <option value="vigil">Vigil / Wake</option>
+            </select>
+          </div>
+
+          <div class="sol-form-group">
+            <label class="sol-label" for="tradition">Tradition Profile</label>
+            <select class="sol-select" id="tradition">
+              <option value="anglican_default">Anglican (default)</option>
+              <option value="anglican_with_lutheran_headings">Anglican with Lutheran Headings</option>
+              <option value="anglican_with_catholic_station_mode">Anglican with Catholic Stations</option>
+            </select>
+          </div>
+
+          <div class="sol-form-group">
+            <label class="sol-label" for="deceased-name">Name of Deceased</label>
+            <input type="text" class="sol-input" id="deceased-name" placeholder="e.g., John William Smith">
+          </div>
+
+          <div class="sol-form-group">
+            <label class="sol-label" for="service-date">Date & Time</label>
+            <input type="text" class="sol-input" id="service-date" placeholder="e.g., Saturday, January 25, 2026 at 2:00 PM">
+          </div>
+
+          <div class="sol-form-group">
+            <label class="sol-label" for="service-location">Location</label>
+            <input type="text" class="sol-input" id="service-location" placeholder="e.g., St. Mary's Church">
+          </div>
+
+          <div class="sol-form-group">
+            <label class="sol-label" for="officiant">Officiant</label>
+            <input type="text" class="sol-input" id="officiant" placeholder="e.g., The Rev. Jane Doe">
+          </div>
+        </div>
+
+        <!-- Step 2: Structure -->
+        <div class="sol-step-content" id="step-structure" role="tabpanel">
+          <p style="color: var(--color-muted); font-size: 0.875rem; margin-bottom: var(--space-md);">
+            Drag sections to reorder. Click the edit button to add content to each section.
+          </p>
+          <ul class="sol-sections-list" id="sections-list" role="list">
+            <!-- Sections populated by JS -->
+          </ul>
+        </div>
+
+        <!-- Step 3: Content (Section Editor) -->
+        <div class="sol-step-content" id="step-content" role="tabpanel">
+          <div id="section-selector">
+            <p style="color: var(--color-muted); font-size: 0.875rem; margin-bottom: var(--space-md);">
+              Select a section to edit its content.
+            </p>
+            <ul class="sol-sections-list" id="sections-edit-list" role="list">
+              <!-- Sections populated by JS -->
+            </ul>
+          </div>
+          <div class="sol-section-editor" id="section-editor">
+            <div class="sol-section-editor-header">
+              <button class="sol-back-btn" id="back-to-sections">
+                <span>&larr;</span> Back
+              </button>
+              <h3 class="sol-section-editor-title" id="editor-section-title">Section</h3>
+            </div>
+            <div class="sol-components" id="components-list">
+              <!-- Components populated by JS -->
+            </div>
+            <button class="sol-add-btn" id="add-component-btn">
+              <span>+</span> Add Component
+            </button>
+            <div class="sol-type-picker" id="type-picker">
+              <button class="sol-type-btn" data-type="text_block">Text Block</button>
+              <button class="sol-type-btn" data-type="reading_ref">Reading</button>
+              <button class="sol-type-btn" data-type="music_item">Music</button>
+              <button class="sol-type-btn" data-type="tribute_slot">Tribute</button>
+              <button class="sol-type-btn" data-type="silence">Silence</button>
             </div>
           </div>
-          <p>Designing the flow for prayers, readings, and custom elements.</p>
         </div>
-      </article>
-    </section>
+
+        <!-- Step 4: Export -->
+        <div class="sol-step-content" id="step-export" role="tabpanel">
+          <div class="sol-actions">
+            <button class="sol-action-btn sol-action-btn--primary" id="print-btn">
+              <span class="sol-action-icon">&#x1F5A8;</span>
+              Print / Save PDF
+            </button>
+            <button class="sol-action-btn" id="export-btn">
+              <span class="sol-action-icon">&#x2193;</span>
+              Export JSON
+            </button>
+            <button class="sol-action-btn" id="import-btn">
+              <span class="sol-action-icon">&#x2191;</span>
+              Import JSON
+            </button>
+            <button class="sol-action-btn" id="duplicate-btn">
+              <span class="sol-action-icon">&#x2398;</span>
+              Duplicate
+            </button>
+            <button class="sol-action-btn" id="reset-btn" style="grid-column: span 2;">
+              <span class="sol-action-icon">&#x21BA;</span>
+              Start Over
+            </button>
+          </div>
+          <p class="sol-privacy">All data stays on this device unless you export it.</p>
+        </div>
+      </div>
+
+      <!-- Preview Panel -->
+      <div class="sol-preview" role="tabpanel" aria-label="Service preview">
+        <div class="sol-preview-header">
+          <h2 class="sol-preview-title">Preview</h2>
+          <div class="sol-preview-toggles">
+            <label class="sol-toggle">
+              <input type="checkbox" id="toggle-rubrics"> Rubrics
+            </label>
+          </div>
+        </div>
+        <div class="sol-preview-content" id="preview-content">
+          <div class="sol-preview-empty">
+            <p>Enter the name of the deceased to begin.</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
 
   <footer>
-    <p class="copyright">© 2026 Ben Siverly</p>
+    <p class="copyright">&copy; 2026 Ben Siverly</p>
   </footer>
 
+  <!-- Import Modal -->
+  <div class="sol-modal-overlay" id="import-modal">
+    <div class="sol-modal" role="dialog" aria-labelledby="import-modal-title">
+      <div class="sol-modal-header">
+        <h3 class="sol-modal-title" id="import-modal-title">Import Service</h3>
+        <button class="sol-modal-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="sol-modal-body">
+        <p style="color: var(--color-muted); font-size: 0.875rem;">
+          Paste previously exported JSON or select a file to import.
+        </p>
+        <div class="sol-form-group">
+          <label class="sol-label" for="import-textarea">JSON Data</label>
+          <textarea class="sol-textarea" id="import-textarea" rows="8" placeholder="Paste JSON here..."></textarea>
+        </div>
+        <div class="sol-form-group">
+          <label class="sol-label" for="import-file">Or select file</label>
+          <input type="file" id="import-file" accept=".json">
+        </div>
+        <button class="sol-action-btn sol-action-btn--primary" id="import-confirm" style="width: 100%;">
+          Import
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // Page Loader
     (function() {
-      var loader = document.querySelector('.page-loader');
-      if (!loader) return;
+      'use strict';
 
-      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      var animationDuration = reduceMotion ? 150 : 600;
-      var fadeOutDuration = reduceMotion ? 150 : 200;
-      var maxTimeout = 900;
+      // ==========================================================================
+      // Data Definitions
+      // ==========================================================================
 
-      document.body.style.overflow = 'hidden';
+      const SERVICE_TYPES = {
+        memorial: {
+          id: 'memorial',
+          label: 'Memorial Service',
+          sections: ['gathering', 'word', 'prayers', 'commendation', 'dismissal']
+        },
+        funeral: {
+          id: 'funeral',
+          label: 'Funeral Service',
+          sections: ['gathering', 'word', 'prayers', 'commendation', 'committal', 'dismissal']
+        },
+        graveside: {
+          id: 'graveside',
+          label: 'Graveside / Committal',
+          sections: ['sentences', 'committal_core', 'prayers_short', 'dismissal_short']
+        },
+        vigil: {
+          id: 'vigil',
+          label: 'Vigil / Wake',
+          sections: ['gathering_simple', 'readings_simple', 'remembrance', 'intercessions', 'lord_prayer', 'dismissal_short']
+        }
+      };
 
-      function removeLoader() {
-        loader.classList.add('is-fading');
-        setTimeout(function() {
-          if (loader && loader.parentNode) {
-            loader.parentNode.removeChild(loader);
+      const SECTIONS = {
+        gathering: { id: 'gathering', label: 'The Gathering', optional: false },
+        word: { id: 'word', label: 'Readings and Sermon', optional: false },
+        prayers: { id: 'prayers', label: 'Prayers', optional: false },
+        commendation: { id: 'commendation', label: 'Commendation and Farewell', optional: false },
+        committal: { id: 'committal', label: 'The Committal', optional: true },
+        dismissal: { id: 'dismissal', label: 'Dismissal', optional: false },
+        gathering_simple: { id: 'gathering_simple', label: 'Gathering', optional: false },
+        readings_simple: { id: 'readings_simple', label: 'Readings', optional: false },
+        remembrance: { id: 'remembrance', label: 'Remembrance / Tributes', optional: false },
+        intercessions: { id: 'intercessions', label: 'Intercessions', optional: false },
+        lord_prayer: { id: 'lord_prayer', label: "The Lord's Prayer", optional: false },
+        sentences: { id: 'sentences', label: 'Opening Words', optional: false },
+        committal_core: { id: 'committal_core', label: 'Committal', optional: false },
+        prayers_short: { id: 'prayers_short', label: 'Prayers', optional: false },
+        dismissal_short: { id: 'dismissal_short', label: 'Dismissal', optional: false }
+      };
+
+      const STARTER_BLOCKS = {
+        welcome: {
+          type: 'text_block',
+          payload: {
+            title: 'Welcome',
+            role: 'leader',
+            body: 'We gather to remember [Name], to give thanks for their life, and to hold one another in grief and hope.',
+            rubric: ''
           }
-          document.body.style.overflow = '';
-        }, fadeOutDuration);
+        },
+        opening_prayer: {
+          type: 'text_block',
+          payload: {
+            title: 'Opening Prayer',
+            role: 'leader',
+            body: 'God of mercy, be near to us in our sorrow. Give us comfort, courage, and a clear love for one another.\nAmen.',
+            rubric: ''
+          }
+        },
+        commendation: {
+          type: 'text_block',
+          payload: {
+            title: 'Commendation',
+            role: 'leader',
+            body: 'We entrust [Name] to your mercy, O God: receive them into your care, and sustain all who mourn.\nAmen.',
+            rubric: ''
+          }
+        },
+        lord_prayer: {
+          type: 'text_block',
+          payload: {
+            title: "The Lord's Prayer",
+            role: 'all',
+            body: "[Insert your community's customary version here.]",
+            rubric: ''
+          }
+        },
+        blessing: {
+          type: 'text_block',
+          payload: {
+            title: 'Blessing',
+            role: 'leader',
+            body: 'May the God of peace, who brought again from the dead our Lord Jesus, make you complete in everything good.\nAmen.',
+            rubric: ''
+          }
+        },
+        dismissal_text: {
+          type: 'text_block',
+          payload: {
+            title: 'Dismissal',
+            role: 'leader',
+            body: 'Go in peace to love and serve the Lord.\n\nThanks be to God.',
+            rubric: ''
+          }
+        }
+      };
+
+      const READING_SUGGESTIONS = [
+        { label: 'John 11:25-26', citation: 'John 11:25-26' },
+        { label: 'Romans 8:38-39', citation: 'Romans 8:38-39' },
+        { label: 'Psalm 23', citation: 'Psalm 23' },
+        { label: '1 Corinthians 15:51-57', citation: '1 Corinthians 15:51-57' },
+        { label: 'Revelation 21:1-6', citation: 'Revelation 21:1-6' },
+        { label: 'Ecclesiastes 3:1-8', citation: 'Ecclesiastes 3:1-8' }
+      ];
+
+      // ==========================================================================
+      // State Management
+      // ==========================================================================
+
+      const STORAGE_KEY = 'sol_service_draft';
+
+      function createEmptyService() {
+        return {
+          id: generateId(),
+          updated_at: new Date().toISOString(),
+          service_type: 'memorial',
+          tradition_profile: 'anglican_default',
+          meta: {
+            name_of_deceased: '',
+            date_time: '',
+            location: '',
+            officiant: ''
+          },
+          sections: []
+        };
       }
 
-      var animationTimer = setTimeout(removeLoader, animationDuration);
+      function generateId() {
+        return 'sol_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+      }
 
-      setTimeout(function() {
-        clearTimeout(animationTimer);
-        if (loader && loader.parentNode) {
-          loader.style.display = 'none';
-          loader.parentNode.removeChild(loader);
-          document.body.style.overflow = '';
+      function loadState() {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (saved) {
+            return JSON.parse(saved);
+          }
+        } catch (e) {
+          console.warn('Failed to load state:', e);
         }
-      }, maxTimeout);
+        return createEmptyService();
+      }
+
+      function saveState(state) {
+        try {
+          state.updated_at = new Date().toISOString();
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {
+          console.warn('Failed to save state:', e);
+        }
+      }
+
+      let state = loadState();
+      let currentStep = 'basics';
+      let editingSectionId = null;
+
+      // Initialize sections if empty
+      function initializeSections() {
+        if (state.sections.length === 0) {
+          const serviceType = SERVICE_TYPES[state.service_type];
+          state.sections = serviceType.sections.map(sectionId => ({
+            section_id: sectionId,
+            label_override: null,
+            enabled: !SECTIONS[sectionId].optional,
+            components: []
+          }));
+          saveState(state);
+        }
+      }
+
+      // ==========================================================================
+      // DOM Elements
+      // ==========================================================================
+
+      const elements = {
+        // Mobile tabs
+        mobileTabs: document.querySelectorAll('.sol-mobile-tab'),
+        builder: document.querySelector('.sol-builder'),
+        preview: document.querySelector('.sol-preview'),
+
+        // Step navigation
+        stepBtns: document.querySelectorAll('.sol-step-btn'),
+        stepContents: document.querySelectorAll('.sol-step-content'),
+
+        // Form inputs
+        serviceType: document.getElementById('service-type'),
+        tradition: document.getElementById('tradition'),
+        deceasedName: document.getElementById('deceased-name'),
+        serviceDate: document.getElementById('service-date'),
+        serviceLocation: document.getElementById('service-location'),
+        officiant: document.getElementById('officiant'),
+
+        // Sections
+        sectionsList: document.getElementById('sections-list'),
+        sectionsEditList: document.getElementById('sections-edit-list'),
+        sectionSelector: document.getElementById('section-selector'),
+        sectionEditor: document.getElementById('section-editor'),
+        editorSectionTitle: document.getElementById('editor-section-title'),
+        componentsList: document.getElementById('components-list'),
+        backToSections: document.getElementById('back-to-sections'),
+        addComponentBtn: document.getElementById('add-component-btn'),
+        typePicker: document.getElementById('type-picker'),
+
+        // Actions
+        printBtn: document.getElementById('print-btn'),
+        exportBtn: document.getElementById('export-btn'),
+        importBtn: document.getElementById('import-btn'),
+        duplicateBtn: document.getElementById('duplicate-btn'),
+        resetBtn: document.getElementById('reset-btn'),
+
+        // Preview
+        previewContent: document.getElementById('preview-content'),
+        toggleRubrics: document.getElementById('toggle-rubrics'),
+
+        // Modal
+        importModal: document.getElementById('import-modal'),
+        importTextarea: document.getElementById('import-textarea'),
+        importFile: document.getElementById('import-file'),
+        importConfirm: document.getElementById('import-confirm')
+      };
+
+      // ==========================================================================
+      // Event Handlers
+      // ==========================================================================
+
+      function initEventListeners() {
+        // Mobile tabs
+        elements.mobileTabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            const tabName = tab.dataset.tab;
+            elements.mobileTabs.forEach(t => t.classList.remove('is-active'));
+            tab.classList.add('is-active');
+
+            if (tabName === 'build') {
+              elements.builder.classList.add('is-active');
+              elements.preview.classList.remove('is-active');
+            } else {
+              elements.builder.classList.remove('is-active');
+              elements.preview.classList.add('is-active');
+            }
+          });
+        });
+
+        // Step navigation
+        elements.stepBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const step = btn.dataset.step;
+            setStep(step);
+          });
+        });
+
+        // Form inputs
+        elements.serviceType.addEventListener('change', () => {
+          state.service_type = elements.serviceType.value;
+          // Reset sections when service type changes
+          state.sections = [];
+          initializeSections();
+          saveState(state);
+          renderSectionsList();
+          renderSectionsEditList();
+          renderPreview();
+        });
+
+        elements.tradition.addEventListener('change', () => {
+          state.tradition_profile = elements.tradition.value;
+          saveState(state);
+          renderPreview();
+        });
+
+        elements.deceasedName.addEventListener('input', () => {
+          state.meta.name_of_deceased = elements.deceasedName.value;
+          saveState(state);
+          renderPreview();
+        });
+
+        elements.serviceDate.addEventListener('input', () => {
+          state.meta.date_time = elements.serviceDate.value;
+          saveState(state);
+          renderPreview();
+        });
+
+        elements.serviceLocation.addEventListener('input', () => {
+          state.meta.location = elements.serviceLocation.value;
+          saveState(state);
+          renderPreview();
+        });
+
+        elements.officiant.addEventListener('input', () => {
+          state.meta.officiant = elements.officiant.value;
+          saveState(state);
+          renderPreview();
+        });
+
+        // Back to sections
+        elements.backToSections.addEventListener('click', () => {
+          editingSectionId = null;
+          elements.sectionSelector.style.display = 'block';
+          elements.sectionEditor.classList.remove('is-active');
+        });
+
+        // Add component
+        elements.addComponentBtn.addEventListener('click', () => {
+          elements.typePicker.classList.toggle('is-open');
+        });
+
+        // Type picker buttons
+        document.querySelectorAll('.sol-type-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const type = btn.dataset.type;
+            addComponent(type);
+            elements.typePicker.classList.remove('is-open');
+          });
+        });
+
+        // Actions
+        elements.printBtn.addEventListener('click', () => {
+          window.print();
+        });
+
+        elements.exportBtn.addEventListener('click', exportService);
+        elements.importBtn.addEventListener('click', () => {
+          elements.importModal.classList.add('is-open');
+        });
+        elements.duplicateBtn.addEventListener('click', duplicateService);
+        elements.resetBtn.addEventListener('click', resetService);
+
+        // Modal
+        elements.importModal.querySelector('.sol-modal-close').addEventListener('click', () => {
+          elements.importModal.classList.remove('is-open');
+        });
+
+        elements.importModal.addEventListener('click', (e) => {
+          if (e.target === elements.importModal) {
+            elements.importModal.classList.remove('is-open');
+          }
+        });
+
+        elements.importFile.addEventListener('change', handleFileImport);
+        elements.importConfirm.addEventListener('click', confirmImport);
+
+        // Toggle rubrics
+        elements.toggleRubrics.addEventListener('change', () => {
+          if (elements.toggleRubrics.checked) {
+            elements.previewContent.classList.remove('hide-rubrics');
+          } else {
+            elements.previewContent.classList.add('hide-rubrics');
+          }
+        });
+      }
+
+      // ==========================================================================
+      // Step Navigation
+      // ==========================================================================
+
+      function setStep(step) {
+        currentStep = step;
+        elements.stepBtns.forEach(btn => {
+          btn.classList.toggle('is-active', btn.dataset.step === step);
+        });
+        elements.stepContents.forEach(content => {
+          content.classList.toggle('is-active', content.id === 'step-' + step);
+        });
+
+        // Reset section editor when leaving content step
+        if (step !== 'content') {
+          editingSectionId = null;
+          elements.sectionSelector.style.display = 'block';
+          elements.sectionEditor.classList.remove('is-active');
+        }
+      }
+
+      // ==========================================================================
+      // Sections Rendering
+      // ==========================================================================
+
+      function renderSectionsList() {
+        const list = elements.sectionsList;
+        list.innerHTML = '';
+
+        state.sections.forEach((section, index) => {
+          const sectionDef = SECTIONS[section.section_id];
+          const li = document.createElement('li');
+          li.className = 'sol-section-item';
+          if (sectionDef.optional) {
+            li.classList.add('is-optional');
+            if (section.enabled) li.classList.add('is-enabled');
+          }
+          li.draggable = true;
+          li.dataset.index = index;
+
+          li.innerHTML = `
+            <span class="sol-section-drag">&#x2630;</span>
+            <div class="sol-section-info">
+              <span class="sol-section-name">${section.label_override || sectionDef.label}</span>
+              ${sectionDef.optional ? '<span class="sol-section-badge">Optional</span>' : ''}
+            </div>
+            <div class="sol-section-actions">
+              ${sectionDef.optional ? `
+                <button class="sol-section-btn" title="${section.enabled ? 'Disable' : 'Enable'}" data-action="toggle">
+                  ${section.enabled ? '&#x2713;' : '&#x25CB;'}
+                </button>
+              ` : ''}
+              <button class="sol-section-btn" title="Move up" data-action="up" ${index === 0 ? 'disabled' : ''}>&#x2191;</button>
+              <button class="sol-section-btn" title="Move down" data-action="down" ${index === state.sections.length - 1 ? 'disabled' : ''}>&#x2193;</button>
+            </div>
+          `;
+
+          // Event handlers
+          li.querySelectorAll('.sol-section-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const action = btn.dataset.action;
+              if (action === 'toggle') {
+                section.enabled = !section.enabled;
+                saveState(state);
+                renderSectionsList();
+                renderPreview();
+              } else if (action === 'up' && index > 0) {
+                [state.sections[index - 1], state.sections[index]] = [state.sections[index], state.sections[index - 1]];
+                saveState(state);
+                renderSectionsList();
+                renderPreview();
+              } else if (action === 'down' && index < state.sections.length - 1) {
+                [state.sections[index], state.sections[index + 1]] = [state.sections[index + 1], state.sections[index]];
+                saveState(state);
+                renderSectionsList();
+                renderPreview();
+              }
+            });
+          });
+
+          // Drag and drop
+          li.addEventListener('dragstart', handleDragStart);
+          li.addEventListener('dragover', handleDragOver);
+          li.addEventListener('drop', handleDrop);
+          li.addEventListener('dragend', handleDragEnd);
+
+          list.appendChild(li);
+        });
+      }
+
+      function renderSectionsEditList() {
+        const list = elements.sectionsEditList;
+        list.innerHTML = '';
+
+        state.sections.forEach((section, index) => {
+          const sectionDef = SECTIONS[section.section_id];
+          if (sectionDef.optional && !section.enabled) return;
+
+          const li = document.createElement('li');
+          li.className = 'sol-section-item';
+          li.style.cursor = 'pointer';
+
+          li.innerHTML = `
+            <div class="sol-section-info">
+              <span class="sol-section-name">${section.label_override || sectionDef.label}</span>
+              <span class="sol-section-badge">${section.components.length} item${section.components.length !== 1 ? 's' : ''}</span>
+            </div>
+            <span style="color: var(--color-muted);">&rarr;</span>
+          `;
+
+          li.addEventListener('click', () => {
+            editSection(section.section_id);
+          });
+
+          list.appendChild(li);
+        });
+      }
+
+      // ==========================================================================
+      // Drag and Drop
+      // ==========================================================================
+
+      let draggedIndex = null;
+
+      function handleDragStart(e) {
+        draggedIndex = parseInt(e.currentTarget.dataset.index);
+        e.currentTarget.classList.add('is-dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      }
+
+      function handleDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+      }
+
+      function handleDrop(e) {
+        e.preventDefault();
+        const targetIndex = parseInt(e.currentTarget.dataset.index);
+        if (draggedIndex !== null && draggedIndex !== targetIndex) {
+          const [movedSection] = state.sections.splice(draggedIndex, 1);
+          state.sections.splice(targetIndex, 0, movedSection);
+          saveState(state);
+          renderSectionsList();
+          renderPreview();
+        }
+      }
+
+      function handleDragEnd(e) {
+        e.currentTarget.classList.remove('is-dragging');
+        draggedIndex = null;
+      }
+
+      // ==========================================================================
+      // Section Editor
+      // ==========================================================================
+
+      function editSection(sectionId) {
+        editingSectionId = sectionId;
+        const section = state.sections.find(s => s.section_id === sectionId);
+        const sectionDef = SECTIONS[sectionId];
+
+        elements.editorSectionTitle.textContent = section.label_override || sectionDef.label;
+        elements.sectionSelector.style.display = 'none';
+        elements.sectionEditor.classList.add('is-active');
+        elements.typePicker.classList.remove('is-open');
+
+        renderComponents(section);
+      }
+
+      function renderComponents(section) {
+        const list = elements.componentsList;
+        list.innerHTML = '';
+
+        if (section.components.length === 0) {
+          list.innerHTML = '<p style="color: var(--color-muted); font-size: 0.875rem; text-align: center; padding: var(--space-md);">No components yet. Add one below.</p>';
+          return;
+        }
+
+        section.components.forEach((component, index) => {
+          const div = document.createElement('div');
+          div.className = 'sol-component';
+          div.dataset.index = index;
+
+          div.innerHTML = `
+            <div class="sol-component-header">
+              <span class="sol-component-type">${getComponentTypeLabel(component.component_type)}</span>
+              <span class="sol-component-title">${getComponentTitle(component)}</span>
+              <span class="sol-component-toggle">&#x25BC;</span>
+            </div>
+            <div class="sol-component-body">
+              ${renderComponentForm(component, index)}
+              <div class="sol-component-actions">
+                <button class="sol-section-btn" title="Move up" data-action="up" ${index === 0 ? 'disabled' : ''}>&#x2191;</button>
+                <button class="sol-section-btn" title="Move down" data-action="down" ${index === section.components.length - 1 ? 'disabled' : ''}>&#x2193;</button>
+                <button class="sol-section-btn" title="Delete" data-action="delete" style="color: #c00;">&#x2715;</button>
+              </div>
+            </div>
+          `;
+
+          // Toggle expand/collapse
+          div.querySelector('.sol-component-header').addEventListener('click', () => {
+            div.classList.toggle('is-open');
+          });
+
+          // Action buttons
+          div.querySelectorAll('.sol-component-actions .sol-section-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const action = btn.dataset.action;
+              if (action === 'up' && index > 0) {
+                [section.components[index - 1], section.components[index]] = [section.components[index], section.components[index - 1]];
+                saveState(state);
+                renderComponents(section);
+                renderPreview();
+              } else if (action === 'down' && index < section.components.length - 1) {
+                [section.components[index], section.components[index + 1]] = [section.components[index + 1], section.components[index]];
+                saveState(state);
+                renderComponents(section);
+                renderPreview();
+              } else if (action === 'delete') {
+                if (confirm('Delete this component?')) {
+                  section.components.splice(index, 1);
+                  saveState(state);
+                  renderComponents(section);
+                  renderPreview();
+                }
+              }
+            });
+          });
+
+          // Form input handlers
+          div.querySelectorAll('input, textarea, select').forEach(input => {
+            input.addEventListener('input', () => {
+              const field = input.dataset.field;
+              component.payload[field] = input.value;
+              saveState(state);
+              renderPreview();
+              // Update title in header
+              div.querySelector('.sol-component-title').textContent = getComponentTitle(component);
+            });
+          });
+
+          list.appendChild(div);
+        });
+      }
+
+      function getComponentTypeLabel(type) {
+        const labels = {
+          text_block: 'Text',
+          reading_ref: 'Reading',
+          music_item: 'Music',
+          tribute_slot: 'Tribute',
+          silence: 'Silence'
+        };
+        return labels[type] || type;
+      }
+
+      function getComponentTitle(component) {
+        const p = component.payload;
+        switch (component.component_type) {
+          case 'text_block':
+            return p.title || 'Untitled';
+          case 'reading_ref':
+            return p.label || p.citation || 'Reading';
+          case 'music_item':
+            return p.title || 'Music';
+          case 'tribute_slot':
+            return p.speaker || 'Tribute';
+          case 'silence':
+            return p.label || 'Silence';
+          default:
+            return 'Component';
+        }
+      }
+
+      function renderComponentForm(component, index) {
+        const p = component.payload;
+        switch (component.component_type) {
+          case 'text_block':
+            return `
+              <div class="sol-form-group">
+                <label class="sol-label">Title</label>
+                <input type="text" class="sol-input" data-field="title" value="${escapeHtml(p.title || '')}">
+              </div>
+              <div class="sol-form-group">
+                <label class="sol-label">Role</label>
+                <select class="sol-select" data-field="role">
+                  <option value="leader" ${p.role === 'leader' ? 'selected' : ''}>Leader</option>
+                  <option value="all" ${p.role === 'all' ? 'selected' : ''}>All</option>
+                  <option value="reader" ${p.role === 'reader' ? 'selected' : ''}>Reader</option>
+                  <option value="soloist" ${p.role === 'soloist' ? 'selected' : ''}>Soloist</option>
+                  <option value="silent" ${p.role === 'silent' ? 'selected' : ''}>Silent</option>
+                </select>
+              </div>
+              <div class="sol-form-group">
+                <label class="sol-label">Text</label>
+                <textarea class="sol-textarea" data-field="body" rows="4">${escapeHtml(p.body || '')}</textarea>
+              </div>
+              <div class="sol-form-group">
+                <label class="sol-label">Rubric (instructions)</label>
+                <input type="text" class="sol-input" data-field="rubric" value="${escapeHtml(p.rubric || '')}" placeholder="Optional instruction for leaders">
+              </div>
+            `;
+          case 'reading_ref':
+            return `
+              <div class="sol-form-group">
+                <label class="sol-label">Label</label>
+                <input type="text" class="sol-input" data-field="label" value="${escapeHtml(p.label || '')}" placeholder="e.g., First Reading">
+              </div>
+              <div class="sol-form-group">
+                <label class="sol-label">Citation</label>
+                <input type="text" class="sol-input" data-field="citation" value="${escapeHtml(p.citation || '')}" placeholder="e.g., John 11:25-26">
+              </div>
+              <div class="sol-form-group">
+                <label class="sol-label">Reader</label>
+                <input type="text" class="sol-input" data-field="reader_name" value="${escapeHtml(p.reader_name || '')}" placeholder="Optional">
+              </div>
+              <div class="sol-form-group">
+                <label class="sol-label">Full Text (optional)</label>
+                <textarea class="sol-textarea" data-field="full_text" rows="4" placeholder="Paste the full text if desired">${escapeHtml(p.full_text || '')}</textarea>
+              </div>
+            `;
+          case 'music_item':
+            return `
+              <div class="sol-form-group">
+                <label class="sol-label">Title</label>
+                <input type="text" class="sol-input" data-field="title" value="${escapeHtml(p.title || '')}">
+              </div>
+              <div class="sol-form-group">
+                <label class="sol-label">Kind</label>
+                <select class="sol-select" data-field="kind">
+                  <option value="hymn" ${p.kind === 'hymn' ? 'selected' : ''}>Hymn</option>
+                  <option value="song" ${p.kind === 'song' ? 'selected' : ''}>Song</option>
+                  <option value="instrumental" ${p.kind === 'instrumental' ? 'selected' : ''}>Instrumental</option>
+                </select>
+              </div>
+              <div class="sol-form-group">
+                <label class="sol-label">Details</label>
+                <input type="text" class="sol-input" data-field="details" value="${escapeHtml(p.details || '')}" placeholder="e.g., Hymnal #123">
+              </div>
+              <div class="sol-form-group">
+                <label class="sol-label">Performer</label>
+                <input type="text" class="sol-input" data-field="performer" value="${escapeHtml(p.performer || '')}" placeholder="e.g., Congregation, Soloist">
+              </div>
+            `;
+          case 'tribute_slot':
+            return `
+              <div class="sol-form-group">
+                <label class="sol-label">Speaker</label>
+                <input type="text" class="sol-input" data-field="speaker" value="${escapeHtml(p.speaker || '')}">
+              </div>
+              <div class="sol-form-group">
+                <label class="sol-label">Notes</label>
+                <textarea class="sol-textarea" data-field="prompt" rows="2" placeholder="Optional notes about this tribute">${escapeHtml(p.prompt || '')}</textarea>
+              </div>
+              <div class="sol-form-group">
+                <label class="sol-label">Time Limit (minutes)</label>
+                <input type="number" class="sol-input" data-field="time_limit_minutes" value="${p.time_limit_minutes || ''}" min="1" max="30">
+              </div>
+            `;
+          case 'silence':
+            return `
+              <div class="sol-form-group">
+                <label class="sol-label">Label</label>
+                <input type="text" class="sol-input" data-field="label" value="${escapeHtml(p.label || '')}" placeholder="e.g., A moment of silence">
+              </div>
+              <div class="sol-form-group">
+                <label class="sol-label">Duration (seconds)</label>
+                <input type="number" class="sol-input" data-field="duration_seconds" value="${p.duration_seconds || ''}" min="5" max="300">
+              </div>
+            `;
+          default:
+            return '<p>Unknown component type</p>';
+        }
+      }
+
+      function addComponent(type) {
+        const section = state.sections.find(s => s.section_id === editingSectionId);
+        if (!section) return;
+
+        let payload = {};
+        switch (type) {
+          case 'text_block':
+            payload = { title: '', role: 'leader', body: '', rubric: '' };
+            break;
+          case 'reading_ref':
+            payload = { label: '', citation: '', reader_name: '', full_text: '' };
+            break;
+          case 'music_item':
+            payload = { title: '', kind: 'hymn', details: '', performer: '' };
+            break;
+          case 'tribute_slot':
+            payload = { speaker: '', prompt: '', time_limit_minutes: null };
+            break;
+          case 'silence':
+            payload = { label: 'A moment of silence', duration_seconds: 30 };
+            break;
+        }
+
+        section.components.push({
+          component_type: type,
+          payload: payload
+        });
+
+        saveState(state);
+        renderComponents(section);
+        renderPreview();
+
+        // Open the newly added component
+        const lastComponent = elements.componentsList.lastElementChild;
+        if (lastComponent && lastComponent.classList.contains('sol-component')) {
+          lastComponent.classList.add('is-open');
+        }
+      }
+
+      // ==========================================================================
+      // Preview Rendering
+      // ==========================================================================
+
+      function renderPreview() {
+        const content = elements.previewContent;
+
+        if (!state.meta.name_of_deceased) {
+          content.innerHTML = '<div class="sol-preview-empty"><p>Enter the name of the deceased to begin.</p></div>';
+          return;
+        }
+
+        const serviceType = SERVICE_TYPES[state.service_type];
+        const name = state.meta.name_of_deceased;
+
+        let html = `
+          <div class="sol-service">
+            <div class="sol-service-header">
+              <div class="sol-service-type">${serviceType.label}</div>
+              <h2 class="sol-service-name">In Celebration of the Life of<br>${escapeHtml(name)}</h2>
+              <div class="sol-service-details">
+                ${state.meta.date_time ? `<div>${escapeHtml(state.meta.date_time)}</div>` : ''}
+                ${state.meta.location ? `<div>${escapeHtml(state.meta.location)}</div>` : ''}
+                ${state.meta.officiant ? `<div>${escapeHtml(state.meta.officiant)}</div>` : ''}
+              </div>
+            </div>
+        `;
+
+        state.sections.forEach(section => {
+          const sectionDef = SECTIONS[section.section_id];
+          if (sectionDef.optional && !section.enabled) return;
+
+          html += `
+            <div class="sol-service-section">
+              <h3 class="sol-service-section-title">${section.label_override || sectionDef.label}</h3>
+          `;
+
+          if (section.components.length === 0) {
+            html += '<p style="color: var(--color-muted); font-style: italic;">No content added yet.</p>';
+          } else {
+            section.components.forEach(component => {
+              html += renderComponentPreview(component, name);
+            });
+          }
+
+          html += '</div>';
+        });
+
+        html += '</div>';
+        content.innerHTML = html;
+      }
+
+      function renderComponentPreview(component, deceasedName) {
+        const p = component.payload;
+        const replaceName = (text) => text.replace(/\[Name\]/g, deceasedName);
+
+        switch (component.component_type) {
+          case 'text_block':
+            return `
+              <div class="sol-service-component">
+                <h4 class="sol-service-component-title">
+                  ${escapeHtml(p.title)}
+                  <span class="sol-service-role">${p.role}</span>
+                </h4>
+                ${p.rubric ? `<p class="sol-service-rubric">${escapeHtml(p.rubric)}</p>` : ''}
+                <div class="sol-service-body ${p.role === 'all' ? 'sol-role-all' : ''}">${escapeHtml(replaceName(p.body || ''))}</div>
+              </div>
+            `;
+          case 'reading_ref':
+            return `
+              <div class="sol-service-component">
+                <div class="sol-service-reading">
+                  <div class="sol-service-reading-label">${escapeHtml(p.label || 'Reading')}</div>
+                  <div class="sol-service-reading-citation">${escapeHtml(p.citation)}</div>
+                  ${p.reader_name ? `<div class="sol-service-reading-reader">Reader: ${escapeHtml(p.reader_name)}</div>` : ''}
+                  ${p.full_text ? `<div class="sol-service-body" style="margin-top: 0.5rem;">${escapeHtml(p.full_text)}</div>` : ''}
+                </div>
+              </div>
+            `;
+          case 'music_item':
+            return `
+              <div class="sol-service-component">
+                <div class="sol-service-music">
+                  <span class="sol-service-music-kind">${p.kind || 'Music'}</span>
+                  <span class="sol-service-music-title">${escapeHtml(p.title)}</span>
+                  ${p.details ? `<span style="color: var(--color-muted);">(${escapeHtml(p.details)})</span>` : ''}
+                </div>
+                ${p.performer ? `<div style="font-size: 0.875rem; color: var(--color-muted); margin-left: 1rem;">${escapeHtml(p.performer)}</div>` : ''}
+              </div>
+            `;
+          case 'tribute_slot':
+            return `
+              <div class="sol-service-component">
+                <div class="sol-service-tribute">
+                  <strong>${escapeHtml(p.speaker || 'Tribute')}</strong>
+                  ${p.prompt ? `<p style="margin: 0.25rem 0 0 0; font-size: 0.875rem;">${escapeHtml(p.prompt)}</p>` : ''}
+                  ${p.time_limit_minutes ? `<div style="font-size: 0.75rem; color: var(--color-muted);">(${p.time_limit_minutes} minutes)</div>` : ''}
+                </div>
+              </div>
+            `;
+          case 'silence':
+            return `
+              <div class="sol-service-component">
+                <div class="sol-service-silence">
+                  ${escapeHtml(p.label || 'Silence')}
+                  ${p.duration_seconds ? ` (${p.duration_seconds} seconds)` : ''}
+                </div>
+              </div>
+            `;
+          default:
+            return '';
+        }
+      }
+
+      // ==========================================================================
+      // Import/Export
+      // ==========================================================================
+
+      function exportService() {
+        const dataStr = JSON.stringify(state, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const safeName = (state.meta.name_of_deceased || 'service').replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+        a.download = `service-of-life-${safeName}-${Date.now()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      function handleFileImport(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          elements.importTextarea.value = event.target.result;
+        };
+        reader.readAsText(file);
+      }
+
+      function confirmImport() {
+        try {
+          const data = JSON.parse(elements.importTextarea.value);
+          if (!data.id || !data.sections) {
+            throw new Error('Invalid service data');
+          }
+          state = data;
+          state.id = generateId(); // Generate new ID
+          saveState(state);
+          populateForm();
+          renderSectionsList();
+          renderSectionsEditList();
+          renderPreview();
+          elements.importModal.classList.remove('is-open');
+          elements.importTextarea.value = '';
+          elements.importFile.value = '';
+        } catch (e) {
+          alert('Invalid JSON data. Please check and try again.');
+        }
+      }
+
+      function duplicateService() {
+        state.id = generateId();
+        state.meta.name_of_deceased = state.meta.name_of_deceased + ' (Copy)';
+        saveState(state);
+        populateForm();
+        renderPreview();
+        alert('Service duplicated.');
+      }
+
+      function resetService() {
+        if (confirm('Are you sure you want to start over? This will delete all current data.')) {
+          state = createEmptyService();
+          initializeSections();
+          saveState(state);
+          populateForm();
+          renderSectionsList();
+          renderSectionsEditList();
+          renderPreview();
+          setStep('basics');
+        }
+      }
+
+      // ==========================================================================
+      // Utilities
+      // ==========================================================================
+
+      function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      function populateForm() {
+        elements.serviceType.value = state.service_type;
+        elements.tradition.value = state.tradition_profile;
+        elements.deceasedName.value = state.meta.name_of_deceased || '';
+        elements.serviceDate.value = state.meta.date_time || '';
+        elements.serviceLocation.value = state.meta.location || '';
+        elements.officiant.value = state.meta.officiant || '';
+      }
+
+      // ==========================================================================
+      // Initialization
+      // ==========================================================================
+
+      function init() {
+        initializeSections();
+        populateForm();
+        initEventListeners();
+        renderSectionsList();
+        renderSectionsEditList();
+        renderPreview();
+
+        // Hide rubrics by default
+        elements.previewContent.classList.add('hide-rubrics');
+      }
+
+      // Start
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+
+      // Page loader
+      (function() {
+        var loader = document.querySelector('.page-loader');
+        if (!loader) return;
+
+        var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var animationDuration = reduceMotion ? 150 : 600;
+        var fadeOutDuration = reduceMotion ? 150 : 200;
+        var maxTimeout = 900;
+
+        document.body.style.overflow = 'hidden';
+
+        function removeLoader() {
+          loader.classList.add('is-fading');
+          setTimeout(function() {
+            if (loader && loader.parentNode) {
+              loader.parentNode.removeChild(loader);
+            }
+            document.body.style.overflow = '';
+          }, fadeOutDuration);
+        }
+
+        var animationTimer = setTimeout(removeLoader, animationDuration);
+
+        setTimeout(function() {
+          clearTimeout(animationTimer);
+          if (loader && loader.parentNode) {
+            loader.style.display = 'none';
+            loader.parentNode.removeChild(loader);
+            document.body.style.overflow = '';
+          }
+        }, maxTimeout);
+      })();
+
     })();
   </script>
 </body>
