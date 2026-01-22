@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Memorial Pamphlet Creator — Ben Siverly</title>
-  <meta name="description" content="Create a simple, dignified memorial pamphlet.">
+  <meta name="description" content="Create a simple, dignified memorial pamphlet. Generate a printable PDF. Nothing is stored.">
 
   <!-- Open Graph -->
   <meta property="og:title" content="Memorial Pamphlet Creator — Ben Siverly">
-  <meta property="og:description" content="Create a simple, dignified memorial pamphlet.">
+  <meta property="og:description" content="Create a simple, dignified memorial pamphlet. Generate a printable PDF.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://bensiverly.com/memorial-pamphlet.html">
   <meta property="og:image" content="https://bensiverly.com/images/og-memorial-pamphlet.png">
@@ -19,7 +19,7 @@
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Memorial Pamphlet Creator — Ben Siverly">
-  <meta name="twitter:description" content="Create a simple, dignified memorial pamphlet.">
+  <meta name="twitter:description" content="Create a simple, dignified memorial pamphlet. Generate a printable PDF.">
   <meta name="twitter:image" content="https://bensiverly.com/images/og-memorial-pamphlet.png">
 
   <!-- Favicon -->
@@ -28,85 +28,1713 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Zilla+Slab:wght@600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Zilla+Slab:wght@600;700&family=JetBrains+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ==========================================================================
+       CSS Variables
+       ========================================================================== */
+    :root {
+      --color-bg: #FFFFFF;
+      --color-bg-warm: #FAF9F7;
+      --color-bg-alt: #F8F8F6;
+      --color-text: #1A1A1A;
+      --color-accent: #FFE227;
+      --color-accent-hover: #FFD800;
+      --color-cobalt: #0047AB;
+      --color-teal: #0D7377;
+      --color-muted: #666666;
+      --color-border: #E5E5E5;
+      --color-error: #DC2626;
+
+      --font-heading: 'Zilla Slab', Georgia, serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+      --font-serif: 'Instrument Serif', Georgia, serif;
+
+      --space-xs: 0.5rem;
+      --space-sm: 1rem;
+      --space-md: 1.5rem;
+      --space-lg: 2.5rem;
+      --space-xl: 4rem;
+
+      --radius-sm: 4px;
+      --radius-md: 8px;
+
+      --transition-fast: 150ms ease;
+      --transition-base: 250ms ease;
+    }
+
+    /* ==========================================================================
+       Base Styles
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ==========================================================================
+       Header
+       ========================================================================== */
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-sm) var(--space-md);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      background-color: var(--color-bg);
+      z-index: 100;
+    }
+
+    .site-brand {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--color-text);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+
+    .site-brand:hover {
+      color: var(--color-muted);
+    }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .tool-label {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+    }
+
+    .reset-link {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius-sm);
+      transition: color var(--transition-fast), background-color var(--transition-fast);
+    }
+
+    .reset-link:hover {
+      color: var(--color-text);
+      background-color: var(--color-bg-alt);
+    }
+
+    /* ==========================================================================
+       Main Container
+       ========================================================================== */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 960px;
+      width: 100%;
+      margin: 0 auto;
+      padding: var(--space-lg) var(--space-md);
+    }
+
+    /* ==========================================================================
+       Tool Container
+       ========================================================================== */
+    .tool {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+    }
+
+    /* ==========================================================================
+       Section Headers
+       ========================================================================== */
+    .section-header {
+      margin-bottom: var(--space-md);
+    }
+
+    .section-title {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0 0 var(--space-xs) 0;
+    }
+
+    .section-subtitle {
+      font-size: 0.9375rem;
+      color: var(--color-muted);
+      margin: 0;
+    }
+
+    /* ==========================================================================
+       Template Picker
+       ========================================================================== */
+    .template-picker {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-sm);
+    }
+
+    .template-card {
+      position: relative;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      cursor: pointer;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+      background-color: var(--color-bg);
+    }
+
+    .template-card:hover {
+      border-color: var(--color-text);
+    }
+
+    .template-card.is-selected {
+      border-color: var(--color-text);
+      box-shadow: 0 0 0 2px var(--color-accent);
+    }
+
+    .template-card input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .template-preview {
+      display: flex;
+      gap: 2px;
+      margin-bottom: var(--space-sm);
+      aspect-ratio: 2/1;
+    }
+
+    .template-preview-panel {
+      flex: 1;
+      background-color: var(--color-bg-alt);
+      border: 1px solid var(--color-border);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.5rem;
+      color: var(--color-muted);
+    }
+
+    .template-name {
+      font-weight: 600;
+      margin: 0 0 0.25rem 0;
+    }
+
+    .template-desc {
+      font-size: 0.8125rem;
+      color: var(--color-muted);
+      margin: 0;
+    }
+
+    /* ==========================================================================
+       Options Row
+       ========================================================================== */
+    .options-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-md);
+    }
+
+    .option-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+
+    .option-label {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+    }
+
+    .option-buttons {
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .option-btn {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding: 0.5rem 0.875rem;
+      border: 1px solid var(--color-border);
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      transition: all var(--transition-fast);
+    }
+
+    .option-btn:first-child {
+      border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+    }
+
+    .option-btn:last-child {
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    }
+
+    .option-btn:not(:first-child) {
+      margin-left: -1px;
+    }
+
+    .option-btn:hover {
+      background-color: var(--color-bg-alt);
+    }
+
+    .option-btn.is-selected {
+      background-color: var(--color-text);
+      color: var(--color-bg);
+      border-color: var(--color-text);
+      z-index: 1;
+    }
+
+    /* ==========================================================================
+       Form Fields
+       ========================================================================== */
+    .form-grid {
+      display: grid;
+      gap: var(--space-md);
+    }
+
+    .form-row {
+      display: grid;
+      gap: var(--space-md);
+    }
+
+    @media (min-width: 640px) {
+      .form-row--2col {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.375rem;
+    }
+
+    .form-label {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .form-label-required {
+      color: var(--color-error);
+    }
+
+    .form-input {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      padding: 0.75rem;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--color-text);
+      box-shadow: 0 0 0 2px rgba(26, 26, 26, 0.1);
+    }
+
+    .form-input::placeholder {
+      color: var(--color-muted);
+      opacity: 0.6;
+    }
+
+    .form-textarea {
+      min-height: 120px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    .form-char-count {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      color: var(--color-muted);
+      text-align: right;
+      margin-top: 0.25rem;
+    }
+
+    .form-char-count.is-warning {
+      color: #D97706;
+    }
+
+    .form-char-count.is-over {
+      color: var(--color-error);
+    }
+
+    /* ==========================================================================
+       Photo Upload
+       ========================================================================== */
+    .photo-uploads {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-md);
+    }
+
+    .photo-upload {
+      display: flex;
+      flex-direction: column;
+      gap: 0.375rem;
+    }
+
+    .photo-dropzone {
+      position: relative;
+      border: 2px dashed var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      text-align: center;
+      cursor: pointer;
+      transition: border-color var(--transition-fast), background-color var(--transition-fast);
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-xs);
+    }
+
+    .photo-dropzone:hover {
+      border-color: var(--color-text);
+      background-color: var(--color-bg-alt);
+    }
+
+    .photo-dropzone.is-dragging {
+      border-color: var(--color-cobalt);
+      background-color: rgba(0, 71, 171, 0.05);
+    }
+
+    .photo-dropzone.has-photo {
+      padding: 0;
+      border-style: solid;
+    }
+
+    .photo-dropzone input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .photo-dropzone-icon {
+      font-size: 2rem;
+      color: var(--color-muted);
+    }
+
+    .photo-dropzone-text {
+      font-size: 0.875rem;
+      color: var(--color-muted);
+    }
+
+    .photo-dropzone-hint {
+      font-size: 0.75rem;
+      color: var(--color-muted);
+      opacity: 0.7;
+    }
+
+    .photo-preview {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: calc(var(--radius-md) - 2px);
+    }
+
+    .photo-remove {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      width: 28px;
+      height: 28px;
+      border: none;
+      border-radius: 50%;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: background-color var(--transition-fast);
+      z-index: 1;
+    }
+
+    .photo-remove:hover {
+      background-color: var(--color-error);
+    }
+
+    /* ==========================================================================
+       Preview Section
+       ========================================================================== */
+    .preview-section {
+      background-color: var(--color-bg-alt);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+    }
+
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-md);
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+
+    .preview-title {
+      font-family: var(--font-heading);
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .preview-actions {
+      display: flex;
+      gap: var(--space-xs);
+    }
+
+    /* ==========================================================================
+       Pamphlet Preview
+       ========================================================================== */
+    .pamphlet-preview {
+      background-color: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+
+    .pamphlet-spread {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .pamphlet-spread + .pamphlet-spread {
+      border-top: 1px dashed var(--color-border);
+    }
+
+    .pamphlet-panel {
+      padding: var(--space-md);
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px dashed var(--color-border);
+    }
+
+    .pamphlet-panel:last-child {
+      border-right: none;
+    }
+
+    .pamphlet-panel--cover {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background-color: var(--color-bg-warm);
+    }
+
+    .pamphlet-panel--back {
+      align-items: center;
+      justify-content: flex-end;
+      text-align: center;
+      background-color: var(--color-bg-warm);
+    }
+
+    .panel-photo {
+      width: 100px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-sm);
+      border: 1px solid var(--color-border);
+    }
+
+    .panel-photo--secondary {
+      width: 80px;
+      height: 60px;
+      margin-bottom: var(--space-xs);
+    }
+
+    .panel-photo-placeholder {
+      width: 100px;
+      height: 120px;
+      background-color: var(--color-bg-alt);
+      border: 2px dashed var(--color-border);
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-muted);
+      font-size: 0.75rem;
+    }
+
+    .panel-title {
+      font-family: var(--font-serif);
+      font-size: 0.875rem;
+      font-style: italic;
+      color: var(--color-muted);
+      margin: 0 0 var(--space-xs) 0;
+    }
+
+    .panel-name {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0 0 0.25rem 0;
+      line-height: 1.2;
+    }
+
+    .panel-dates {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--color-muted);
+      letter-spacing: 0.05em;
+      margin: 0;
+    }
+
+    .panel-heading {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-muted);
+      margin: 0 0 var(--space-xs) 0;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .panel-text {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      margin: 0;
+      flex: 1;
+      white-space: pre-wrap;
+      overflow: hidden;
+    }
+
+    .panel-text--small {
+      font-size: 0.75rem;
+    }
+
+    .panel-closing {
+      font-family: var(--font-serif);
+      font-size: 0.9375rem;
+      font-style: italic;
+      color: var(--color-text);
+      margin: 0 0 var(--space-md) 0;
+    }
+
+    .panel-service-info {
+      font-size: 0.75rem;
+      color: var(--color-muted);
+      text-align: center;
+      margin: 0;
+    }
+
+    .panel-placeholder {
+      color: var(--color-muted);
+      font-style: italic;
+      opacity: 0.6;
+    }
+
+    /* Fold guides */
+    .fold-guide {
+      position: absolute;
+      background-color: var(--color-border);
+    }
+
+    .fold-guide--vertical {
+      width: 1px;
+      height: 100%;
+      left: 50%;
+      top: 0;
+    }
+
+    .fold-guide--label {
+      position: absolute;
+      top: -1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+      white-space: nowrap;
+    }
+
+    /* ==========================================================================
+       Buttons
+       ========================================================================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.875rem 1.5rem;
+      border: 2px solid var(--color-text);
+      background-color: transparent;
+      color: var(--color-text);
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      transition: all var(--transition-fast);
+      text-decoration: none;
+    }
+
+    .btn:hover,
+    .btn:focus {
+      background-color: var(--color-text);
+      color: var(--color-bg);
+    }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--color-text);
+      outline-offset: 2px;
+    }
+
+    .btn--primary {
+      background-color: var(--color-text);
+      color: var(--color-bg);
+    }
+
+    .btn--primary:hover,
+    .btn--primary:focus {
+      background-color: var(--color-accent);
+      border-color: var(--color-accent);
+      color: var(--color-text);
+    }
+
+    .btn--small {
+      padding: 0.5rem 0.875rem;
+      font-size: 0.75rem;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* ==========================================================================
+       Action Bar
+       ========================================================================== */
+    .action-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+      padding-top: var(--space-md);
+      border-top: 1px solid var(--color-border);
+      flex-wrap: wrap;
+    }
+
+    .action-bar-left {
+      display: flex;
+      gap: var(--space-sm);
+    }
+
+    .action-bar-right {
+      display: flex;
+      gap: var(--space-sm);
+    }
+
+    /* ==========================================================================
+       Footer
+       ========================================================================== */
+    .site-footer {
+      padding: var(--space-sm) var(--space-md);
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--color-muted);
+    }
+
+    .privacy-note {
+      margin: 0;
+    }
+
+    /* ==========================================================================
+       Loading State
+       ========================================================================== */
+    .btn.is-loading {
+      pointer-events: none;
+    }
+
+    .btn.is-loading::after {
+      content: '';
+      width: 1em;
+      height: 1em;
+      border: 2px solid currentColor;
+      border-right-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ==========================================================================
+       Modern Template Overrides
+       ========================================================================== */
+    .pamphlet-preview.template-modern .pamphlet-panel--cover {
+      position: relative;
+      background-color: var(--color-text);
+      color: var(--color-bg);
+    }
+
+    .pamphlet-preview.template-modern .pamphlet-panel--cover .panel-title {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .pamphlet-preview.template-modern .pamphlet-panel--cover .panel-name {
+      font-size: 1.5rem;
+    }
+
+    .pamphlet-preview.template-modern .pamphlet-panel--cover .panel-dates {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .pamphlet-preview.template-modern .panel-photo {
+      width: 120px;
+      height: 140px;
+      border: 2px solid var(--color-bg);
+    }
+
+    .pamphlet-preview.template-modern .pamphlet-panel--back {
+      background-color: var(--color-bg);
+    }
+
+    /* ==========================================================================
+       Responsive Adjustments
+       ========================================================================== */
+    @media (max-width: 640px) {
+      main {
+        padding: var(--space-md) var(--space-sm);
+      }
+
+      .pamphlet-spread {
+        grid-template-columns: 1fr;
+      }
+
+      .pamphlet-panel {
+        border-right: none;
+        border-bottom: 1px dashed var(--color-border);
+        min-height: 200px;
+      }
+
+      .pamphlet-panel:last-child {
+        border-bottom: none;
+      }
+
+      .action-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .action-bar-left,
+      .action-bar-right {
+        justify-content: center;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+
+    /* ==========================================================================
+       Reduced Motion
+       ========================================================================== */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
+    }
+
+    /* ==========================================================================
+       Print Styles
+       ========================================================================== */
+    @media print {
+      .site-header,
+      .site-footer,
+      .action-bar,
+      .preview-actions,
+      .section-header,
+      .template-picker,
+      .options-row,
+      .form-grid,
+      .photo-uploads {
+        display: none !important;
+      }
+
+      main {
+        max-width: none;
+        padding: 0;
+      }
+
+      .preview-section {
+        border: none;
+        padding: 0;
+        background: none;
+      }
+
+      .pamphlet-preview {
+        border: none;
+      }
+    }
+  </style>
 </head>
 <body>
-  <!-- Page Loader -->
-  <div class="page-loader" aria-hidden="true">
-    <div class="page-loader__dot"></div>
-  </div>
-
   <header class="site-header">
     <a href="index.html" class="site-brand" aria-label="Return to home">BS.</a>
-    <a class="page-link" href="index.html">Back to home</a>
+    <div class="header-meta">
+      <span class="tool-label">Memorial Pamphlet</span>
+      <button class="reset-link" id="header-reset" type="button">Start over</button>
+    </div>
   </header>
 
   <main>
-    <section class="hero" aria-labelledby="memorial-pamphlet-heading">
-      <p class="location">Tool</p>
-      <h1 id="memorial-pamphlet-heading">Memorial Pamphlet Creator</h1>
-      <div class="hero-content">
-        <p>Create a simple, dignified pamphlet for a memorial service. This tool is in progress.</p>
-      </div>
-    </section>
+    <div class="tool" id="tool" role="application" aria-label="Memorial Pamphlet Creator">
+      <!-- Template Selection -->
+      <section>
+        <div class="section-header">
+          <h1 class="section-title">Create a Memorial Pamphlet</h1>
+          <p class="section-subtitle">Choose a template and fill in the details. Generate a printable PDF.</p>
+        </div>
 
-    <hr class="section-divider">
+        <div class="template-picker" id="template-picker">
+          <label class="template-card is-selected">
+            <input type="radio" name="template" value="classic" checked>
+            <div class="template-preview">
+              <div class="template-preview-panel">Cover</div>
+              <div class="template-preview-panel">Inside</div>
+            </div>
+            <h3 class="template-name">Classic</h3>
+            <p class="template-desc">Traditional, centered layout with elegant typography.</p>
+          </label>
 
-    <section class="tools" aria-labelledby="memorial-pamphlet-status">
-      <h2 id="memorial-pamphlet-status">Status</h2>
-      <article class="tool-card tool-card--featured">
-        <div class="tool-header">
-          <div class="tool-header-row">
-            <h3>Memorial Pamphlet Creator</h3>
-            <div class="tool-header-actions">
-              <span class="status">Coming soon</span>
+          <label class="template-card">
+            <input type="radio" name="template" value="modern">
+            <div class="template-preview">
+              <div class="template-preview-panel" style="background: #1A1A1A; color: #fff;">Cover</div>
+              <div class="template-preview-panel">Inside</div>
+            </div>
+            <h3 class="template-name">Modern</h3>
+            <p class="template-desc">Contemporary design with bold typography and dark cover.</p>
+          </label>
+        </div>
+      </section>
+
+      <!-- Options -->
+      <section>
+        <div class="options-row">
+          <div class="option-group">
+            <span class="option-label">Paper Size</span>
+            <div class="option-buttons" id="paper-size">
+              <button type="button" class="option-btn is-selected" data-value="letter">Letter</button>
+              <button type="button" class="option-btn" data-value="a4">A4</button>
             </div>
           </div>
-          <p>Working on a guided template so you can focus on the content, not the formatting.</p>
         </div>
-      </article>
-    </section>
+      </section>
+
+      <!-- Form Fields -->
+      <section>
+        <div class="section-header">
+          <h2 class="section-title">Details</h2>
+        </div>
+
+        <div class="form-grid" id="form-fields">
+          <div class="form-row form-row--2col">
+            <div class="form-field">
+              <label class="form-label" for="fullName">
+                Full Name <span class="form-label-required">*</span>
+              </label>
+              <input type="text" class="form-input" id="fullName" placeholder="John Robert Smith" maxlength="80" required>
+            </div>
+            <div class="form-field">
+              <label class="form-label" for="datesLine">Dates</label>
+              <input type="text" class="form-input" id="datesLine" placeholder="January 15, 1954 — December 20, 2026" maxlength="80">
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label" for="serviceTitle">Cover Title</label>
+            <input type="text" class="form-input" id="serviceTitle" placeholder="In Loving Memory" value="In Loving Memory" maxlength="80">
+          </div>
+
+          <div class="form-row form-row--2col">
+            <div class="form-field">
+              <label class="form-label" for="serviceDateTime">Service Date & Time</label>
+              <input type="text" class="form-input" id="serviceDateTime" placeholder="Saturday, January 25, 2026 at 2:00 PM" maxlength="100">
+            </div>
+            <div class="form-field">
+              <label class="form-label" for="serviceLocation">Service Location</label>
+              <input type="text" class="form-input" id="serviceLocation" placeholder="St. Mary's Chapel, 123 Main Street" maxlength="200">
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label" for="shortObituary">Obituary</label>
+            <textarea class="form-input form-textarea" id="shortObituary" placeholder="Write a brief obituary or life summary..." maxlength="1800"></textarea>
+            <div class="form-char-count" id="shortObituary-count">0 / 1,800</div>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label" for="orderOfService">Order of Service</label>
+            <textarea class="form-input form-textarea" id="orderOfService" placeholder="Opening Prayer&#10;Scripture Reading&#10;Eulogy&#10;Musical Selection&#10;Closing Prayer" maxlength="2000"></textarea>
+            <div class="form-char-count" id="orderOfService-count">0 / 2,000</div>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label" for="closingLine">Closing Line</label>
+            <input type="text" class="form-input" id="closingLine" placeholder="Forever in our hearts." maxlength="240">
+          </div>
+        </div>
+      </section>
+
+      <!-- Photo Uploads -->
+      <section>
+        <div class="section-header">
+          <h2 class="section-title">Photos</h2>
+          <p class="section-subtitle">Add up to 2 photos. They stay in your browser and are not uploaded anywhere.</p>
+        </div>
+
+        <div class="photo-uploads">
+          <div class="photo-upload">
+            <span class="form-label">Primary Photo (Cover)</span>
+            <div class="photo-dropzone" id="photo-primary-dropzone">
+              <input type="file" id="photo-primary" accept="image/jpeg,image/png,image/webp" aria-label="Upload primary photo">
+              <span class="photo-dropzone-icon">+</span>
+              <span class="photo-dropzone-text">Click or drag to upload</span>
+              <span class="photo-dropzone-hint">JPG, PNG, or WebP</span>
+            </div>
+          </div>
+
+          <div class="photo-upload">
+            <span class="form-label">Secondary Photo (Optional)</span>
+            <div class="photo-dropzone" id="photo-secondary-dropzone">
+              <input type="file" id="photo-secondary" accept="image/jpeg,image/png,image/webp" aria-label="Upload secondary photo">
+              <span class="photo-dropzone-icon">+</span>
+              <span class="photo-dropzone-text">Click or drag to upload</span>
+              <span class="photo-dropzone-hint">JPG, PNG, or WebP</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Preview -->
+      <section class="preview-section">
+        <div class="preview-header">
+          <h2 class="preview-title">Preview</h2>
+          <div class="preview-actions">
+            <button type="button" class="btn btn--small" id="toggle-spread">Show Back</button>
+          </div>
+        </div>
+
+        <div class="pamphlet-preview template-classic" id="pamphlet-preview">
+          <!-- Front Spread (Outside when folded) -->
+          <div class="pamphlet-spread" id="spread-front">
+            <!-- Back Cover (left side when unfolded) -->
+            <div class="pamphlet-panel pamphlet-panel--back">
+              <div id="preview-photo-secondary"></div>
+              <p class="panel-closing" id="preview-closing">Forever in our hearts.</p>
+              <p class="panel-service-info">
+                <span id="preview-service-datetime"></span><br>
+                <span id="preview-service-location"></span>
+              </p>
+            </div>
+
+            <!-- Front Cover (right side when unfolded) -->
+            <div class="pamphlet-panel pamphlet-panel--cover">
+              <p class="panel-title" id="preview-service-title">In Loving Memory</p>
+              <div id="preview-photo-primary">
+                <div class="panel-photo-placeholder">Photo</div>
+              </div>
+              <h2 class="panel-name" id="preview-name">Full Name</h2>
+              <p class="panel-dates" id="preview-dates">Dates</p>
+            </div>
+          </div>
+
+          <!-- Back Spread (Inside when folded) -->
+          <div class="pamphlet-spread" id="spread-back" style="display: none;">
+            <!-- Inside Left -->
+            <div class="pamphlet-panel">
+              <h3 class="panel-heading">Obituary</h3>
+              <p class="panel-text" id="preview-obituary"><span class="panel-placeholder">Obituary text will appear here...</span></p>
+            </div>
+
+            <!-- Inside Right -->
+            <div class="pamphlet-panel">
+              <h3 class="panel-heading">Order of Service</h3>
+              <p class="panel-text panel-text--small" id="preview-order"><span class="panel-placeholder">Order of service will appear here...</span></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Actions -->
+      <div class="action-bar">
+        <div class="action-bar-left">
+          <button type="button" class="btn" id="btn-reset">Reset Form</button>
+        </div>
+        <div class="action-bar-right">
+          <button type="button" class="btn btn--primary" id="btn-generate">Generate PDF</button>
+        </div>
+      </div>
+    </div>
   </main>
 
-  <footer>
-    <p class="copyright">© 2026 Ben Siverly</p>
+  <footer class="site-footer">
+    <p class="privacy-note">Nothing is saved. All data stays in your browser. PDF is generated on your device.</p>
   </footer>
 
+  <!-- jsPDF Library (loaded on demand) -->
   <script>
-    // Page Loader
     (function() {
-      var loader = document.querySelector('.page-loader');
-      if (!loader) return;
+      // State
+      var state = {
+        template: 'classic',
+        paperSize: 'letter',
+        photoPrimary: null,
+        photoSecondary: null,
+        showBackSpread: false
+      };
 
-      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      var animationDuration = reduceMotion ? 150 : 600;
-      var fadeOutDuration = reduceMotion ? 150 : 200;
-      var maxTimeout = 900;
+      // Paper dimensions in points (72 points per inch)
+      var PAPER_SIZES = {
+        letter: { width: 612, height: 792, name: 'letter' },
+        a4: { width: 595.28, height: 841.89, name: 'a4' }
+      };
 
-      document.body.style.overflow = 'hidden';
+      // Field limits
+      var CHAR_LIMITS = {
+        shortObituary: 1800,
+        orderOfService: 2000
+      };
 
-      function removeLoader() {
-        loader.classList.add('is-fading');
-        setTimeout(function() {
-          if (loader && loader.parentNode) {
-            loader.parentNode.removeChild(loader);
-          }
-          document.body.style.overflow = '';
-        }, fadeOutDuration);
+      // Elements
+      var templateCards = document.querySelectorAll('.template-card');
+      var paperButtons = document.querySelectorAll('#paper-size .option-btn');
+      var previewEl = document.getElementById('pamphlet-preview');
+      var spreadFront = document.getElementById('spread-front');
+      var spreadBack = document.getElementById('spread-back');
+      var toggleSpreadBtn = document.getElementById('toggle-spread');
+      var generateBtn = document.getElementById('btn-generate');
+      var resetBtn = document.getElementById('btn-reset');
+      var headerReset = document.getElementById('header-reset');
+
+      // Form fields
+      var fields = ['fullName', 'datesLine', 'serviceTitle', 'serviceDateTime',
+                    'serviceLocation', 'shortObituary', 'orderOfService', 'closingLine'];
+
+      // Initialize
+      function init() {
+        attachTemplateListeners();
+        attachPaperSizeListeners();
+        attachFormListeners();
+        attachPhotoListeners();
+        attachActionListeners();
+        updatePreview();
       }
 
-      var animationTimer = setTimeout(removeLoader, animationDuration);
+      // Template selection
+      function attachTemplateListeners() {
+        templateCards.forEach(function(card) {
+          card.addEventListener('click', function() {
+            templateCards.forEach(function(c) { c.classList.remove('is-selected'); });
+            card.classList.add('is-selected');
+            state.template = card.querySelector('input').value;
+            updatePreviewTemplate();
+          });
+        });
+      }
 
-      setTimeout(function() {
-        clearTimeout(animationTimer);
-        if (loader && loader.parentNode) {
-          loader.style.display = 'none';
-          loader.parentNode.removeChild(loader);
-          document.body.style.overflow = '';
+      function updatePreviewTemplate() {
+        previewEl.classList.remove('template-classic', 'template-modern');
+        previewEl.classList.add('template-' + state.template);
+      }
+
+      // Paper size selection
+      function attachPaperSizeListeners() {
+        paperButtons.forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            paperButtons.forEach(function(b) { b.classList.remove('is-selected'); });
+            btn.classList.add('is-selected');
+            state.paperSize = btn.dataset.value;
+          });
+        });
+      }
+
+      // Form listeners
+      function attachFormListeners() {
+        fields.forEach(function(fieldId) {
+          var input = document.getElementById(fieldId);
+          if (input) {
+            input.addEventListener('input', function() {
+              updatePreview();
+              updateCharCount(fieldId);
+            });
+          }
+        });
+      }
+
+      function updateCharCount(fieldId) {
+        var input = document.getElementById(fieldId);
+        var countEl = document.getElementById(fieldId + '-count');
+        if (!input || !countEl) return;
+
+        var limit = CHAR_LIMITS[fieldId];
+        if (!limit) return;
+
+        var count = input.value.length;
+        countEl.textContent = count.toLocaleString() + ' / ' + limit.toLocaleString();
+
+        countEl.classList.remove('is-warning', 'is-over');
+        if (count > limit) {
+          countEl.classList.add('is-over');
+        } else if (count > limit * 0.9) {
+          countEl.classList.add('is-warning');
         }
-      }, maxTimeout);
+      }
+
+      // Photo listeners
+      function attachPhotoListeners() {
+        setupPhotoDropzone('photo-primary', 'primary');
+        setupPhotoDropzone('photo-secondary', 'secondary');
+      }
+
+      function setupPhotoDropzone(inputId, type) {
+        var input = document.getElementById(inputId);
+        var dropzone = document.getElementById(inputId + '-dropzone');
+
+        if (!input || !dropzone) return;
+
+        // File input change
+        input.addEventListener('change', function(e) {
+          if (e.target.files && e.target.files[0]) {
+            handlePhotoFile(e.target.files[0], type);
+          }
+        });
+
+        // Drag and drop
+        dropzone.addEventListener('dragover', function(e) {
+          e.preventDefault();
+          dropzone.classList.add('is-dragging');
+        });
+
+        dropzone.addEventListener('dragleave', function() {
+          dropzone.classList.remove('is-dragging');
+        });
+
+        dropzone.addEventListener('drop', function(e) {
+          e.preventDefault();
+          dropzone.classList.remove('is-dragging');
+          if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            handlePhotoFile(e.dataTransfer.files[0], type);
+          }
+        });
+      }
+
+      function handlePhotoFile(file, type) {
+        // Validate file type
+        var validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (!validTypes.includes(file.type)) {
+          alert('Please select a JPG, PNG, or WebP image.');
+          return;
+        }
+
+        // Validate file size (max 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+          alert('Image is too large. Please select an image under 10MB.');
+          return;
+        }
+
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var img = new Image();
+          img.onload = function() {
+            // Resize if needed (max 2400px)
+            var canvas = document.createElement('canvas');
+            var maxDim = 2400;
+            var width = img.width;
+            var height = img.height;
+
+            if (width > maxDim || height > maxDim) {
+              if (width > height) {
+                height = Math.round(height * maxDim / width);
+                width = maxDim;
+              } else {
+                width = Math.round(width * maxDim / height);
+                height = maxDim;
+              }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            var dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+            if (type === 'primary') {
+              state.photoPrimary = dataUrl;
+            } else {
+              state.photoSecondary = dataUrl;
+            }
+
+            updatePhotoPreview(type);
+            updatePreview();
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function updatePhotoPreview(type) {
+        var dropzoneId = type === 'primary' ? 'photo-primary-dropzone' : 'photo-secondary-dropzone';
+        var dropzone = document.getElementById(dropzoneId);
+        var photoData = type === 'primary' ? state.photoPrimary : state.photoSecondary;
+
+        if (!dropzone) return;
+
+        if (photoData) {
+          dropzone.classList.add('has-photo');
+          dropzone.innerHTML =
+            '<input type="file" id="photo-' + type + '" accept="image/jpeg,image/png,image/webp" aria-label="Upload ' + type + ' photo">' +
+            '<img src="' + photoData + '" alt="' + type + ' photo" class="photo-preview">' +
+            '<button type="button" class="photo-remove" data-type="' + type + '" aria-label="Remove photo">&times;</button>';
+
+          // Reattach listeners
+          var newInput = dropzone.querySelector('input');
+          newInput.addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+              handlePhotoFile(e.target.files[0], type);
+            }
+          });
+
+          var removeBtn = dropzone.querySelector('.photo-remove');
+          removeBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            removePhoto(type);
+          });
+        } else {
+          dropzone.classList.remove('has-photo');
+          dropzone.innerHTML =
+            '<input type="file" id="photo-' + type + '" accept="image/jpeg,image/png,image/webp" aria-label="Upload ' + type + ' photo">' +
+            '<span class="photo-dropzone-icon">+</span>' +
+            '<span class="photo-dropzone-text">Click or drag to upload</span>' +
+            '<span class="photo-dropzone-hint">JPG, PNG, or WebP</span>';
+
+          // Reattach input listener
+          var newInput = dropzone.querySelector('input');
+          newInput.addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+              handlePhotoFile(e.target.files[0], type);
+            }
+          });
+        }
+      }
+
+      function removePhoto(type) {
+        if (type === 'primary') {
+          state.photoPrimary = null;
+        } else {
+          state.photoSecondary = null;
+        }
+        updatePhotoPreview(type);
+        updatePreview();
+      }
+
+      // Update preview
+      function updatePreview() {
+        var fullName = document.getElementById('fullName').value || 'Full Name';
+        var datesLine = document.getElementById('datesLine').value || 'Dates';
+        var serviceTitle = document.getElementById('serviceTitle').value || 'In Loving Memory';
+        var serviceDateTime = document.getElementById('serviceDateTime').value;
+        var serviceLocation = document.getElementById('serviceLocation').value;
+        var shortObituary = document.getElementById('shortObituary').value;
+        var orderOfService = document.getElementById('orderOfService').value;
+        var closingLine = document.getElementById('closingLine').value || 'Forever in our hearts.';
+
+        // Update preview elements
+        document.getElementById('preview-name').textContent = fullName;
+        document.getElementById('preview-dates').textContent = datesLine;
+        document.getElementById('preview-service-title').textContent = serviceTitle;
+        document.getElementById('preview-closing').textContent = closingLine;
+
+        document.getElementById('preview-service-datetime').textContent = serviceDateTime;
+        document.getElementById('preview-service-location').textContent = serviceLocation;
+
+        // Obituary
+        var obituaryEl = document.getElementById('preview-obituary');
+        if (shortObituary) {
+          obituaryEl.innerHTML = escapeHtml(shortObituary);
+        } else {
+          obituaryEl.innerHTML = '<span class="panel-placeholder">Obituary text will appear here...</span>';
+        }
+
+        // Order of service
+        var orderEl = document.getElementById('preview-order');
+        if (orderOfService) {
+          orderEl.innerHTML = escapeHtml(orderOfService);
+        } else {
+          orderEl.innerHTML = '<span class="panel-placeholder">Order of service will appear here...</span>';
+        }
+
+        // Photos
+        var photoPrimaryEl = document.getElementById('preview-photo-primary');
+        if (state.photoPrimary) {
+          photoPrimaryEl.innerHTML = '<img src="' + state.photoPrimary + '" alt="Primary photo" class="panel-photo">';
+        } else {
+          photoPrimaryEl.innerHTML = '<div class="panel-photo-placeholder">Photo</div>';
+        }
+
+        var photoSecondaryEl = document.getElementById('preview-photo-secondary');
+        if (state.photoSecondary) {
+          photoSecondaryEl.innerHTML = '<img src="' + state.photoSecondary + '" alt="Secondary photo" class="panel-photo panel-photo--secondary">';
+        } else {
+          photoSecondaryEl.innerHTML = '';
+        }
+      }
+
+      function escapeHtml(text) {
+        var div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML.replace(/\n/g, '<br>');
+      }
+
+      // Action listeners
+      function attachActionListeners() {
+        // Toggle spread
+        toggleSpreadBtn.addEventListener('click', function() {
+          state.showBackSpread = !state.showBackSpread;
+          if (state.showBackSpread) {
+            spreadFront.style.display = 'none';
+            spreadBack.style.display = 'grid';
+            toggleSpreadBtn.textContent = 'Show Front';
+          } else {
+            spreadFront.style.display = 'grid';
+            spreadBack.style.display = 'none';
+            toggleSpreadBtn.textContent = 'Show Back';
+          }
+        });
+
+        // Generate PDF
+        generateBtn.addEventListener('click', generatePDF);
+
+        // Reset
+        resetBtn.addEventListener('click', confirmReset);
+        headerReset.addEventListener('click', confirmReset);
+      }
+
+      function confirmReset() {
+        if (confirm('Reset all fields? This cannot be undone.')) {
+          resetForm();
+        }
+      }
+
+      function resetForm() {
+        fields.forEach(function(fieldId) {
+          var input = document.getElementById(fieldId);
+          if (input) {
+            if (fieldId === 'serviceTitle') {
+              input.value = 'In Loving Memory';
+            } else {
+              input.value = '';
+            }
+          }
+        });
+
+        state.photoPrimary = null;
+        state.photoSecondary = null;
+        updatePhotoPreview('primary');
+        updatePhotoPreview('secondary');
+
+        // Reset char counts
+        Object.keys(CHAR_LIMITS).forEach(updateCharCount);
+
+        updatePreview();
+      }
+
+      // PDF Generation
+      function generatePDF() {
+        var fullName = document.getElementById('fullName').value.trim();
+
+        if (!fullName) {
+          alert('Please enter the full name to generate the PDF.');
+          document.getElementById('fullName').focus();
+          return;
+        }
+
+        generateBtn.classList.add('is-loading');
+        generateBtn.disabled = true;
+
+        // Load jsPDF if not already loaded
+        if (typeof window.jspdf === 'undefined') {
+          var script = document.createElement('script');
+          script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+          script.onload = function() {
+            createPDF();
+          };
+          script.onerror = function() {
+            alert('Failed to load PDF library. Please try again.');
+            generateBtn.classList.remove('is-loading');
+            generateBtn.disabled = false;
+          };
+          document.head.appendChild(script);
+        } else {
+          createPDF();
+        }
+      }
+
+      function createPDF() {
+        try {
+          var jsPDF = window.jspdf.jsPDF;
+          var paper = PAPER_SIZES[state.paperSize];
+
+          // Create PDF in landscape for bi-fold (will print on both sides)
+          var doc = new jsPDF({
+            orientation: 'landscape',
+            unit: 'pt',
+            format: [paper.height, paper.width] // Swap for landscape
+          });
+
+          var pageWidth = paper.height; // Landscape
+          var pageHeight = paper.width;
+          var panelWidth = pageWidth / 2;
+          var margin = 36; // 0.5 inch margin
+          var contentWidth = panelWidth - (margin * 2);
+
+          // Get form values
+          var fullName = document.getElementById('fullName').value.trim() || 'Name';
+          var datesLine = document.getElementById('datesLine').value.trim();
+          var serviceTitle = document.getElementById('serviceTitle').value.trim() || 'In Loving Memory';
+          var serviceDateTime = document.getElementById('serviceDateTime').value.trim();
+          var serviceLocation = document.getElementById('serviceLocation').value.trim();
+          var shortObituary = document.getElementById('shortObituary').value.trim();
+          var orderOfService = document.getElementById('orderOfService').value.trim();
+          var closingLine = document.getElementById('closingLine').value.trim() || 'Forever in our hearts.';
+
+          // Colors for modern template
+          var isModern = state.template === 'modern';
+          var coverBg = isModern ? [26, 26, 26] : [250, 249, 247];
+          var coverText = isModern ? [255, 255, 255] : [26, 26, 26];
+          var coverMuted = isModern ? [180, 180, 180] : [102, 102, 102];
+
+          // ============================================
+          // PAGE 1: Outside spread (Back cover | Front cover)
+          // When printed and folded: Front cover on right, back on left
+          // ============================================
+
+          // --- Back Cover (Left Panel) ---
+          doc.setFillColor(250, 249, 247);
+          doc.rect(0, 0, panelWidth, pageHeight, 'F');
+
+          var backCenterX = panelWidth / 2;
+          var backY = pageHeight - margin - 100;
+
+          // Secondary photo on back (if exists)
+          if (state.photoSecondary) {
+            try {
+              var imgHeight = 80;
+              var imgWidth = 100;
+              doc.addImage(state.photoSecondary, 'JPEG',
+                backCenterX - imgWidth/2, margin + 40, imgWidth, imgHeight);
+            } catch (e) {
+              console.warn('Could not add secondary image:', e);
+            }
+          }
+
+          // Closing line
+          doc.setTextColor(26, 26, 26);
+          doc.setFont('helvetica', 'italic');
+          doc.setFontSize(14);
+          var closingLines = doc.splitTextToSize(closingLine, contentWidth);
+          doc.text(closingLines, backCenterX, backY, { align: 'center' });
+
+          // Service info
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(9);
+          doc.setTextColor(102, 102, 102);
+          if (serviceDateTime) {
+            doc.text(serviceDateTime, backCenterX, backY + 30, { align: 'center' });
+          }
+          if (serviceLocation) {
+            var locLines = doc.splitTextToSize(serviceLocation, contentWidth - 20);
+            doc.text(locLines, backCenterX, backY + 45, { align: 'center' });
+          }
+
+          // --- Front Cover (Right Panel) ---
+          doc.setFillColor(coverBg[0], coverBg[1], coverBg[2]);
+          doc.rect(panelWidth, 0, panelWidth, pageHeight, 'F');
+
+          var frontCenterX = panelWidth + (panelWidth / 2);
+          var coverY = margin + 60;
+
+          // Service title
+          doc.setTextColor(coverMuted[0], coverMuted[1], coverMuted[2]);
+          doc.setFont('helvetica', 'italic');
+          doc.setFontSize(12);
+          doc.text(serviceTitle, frontCenterX, coverY, { align: 'center' });
+
+          // Primary photo
+          var photoY = coverY + 20;
+          if (state.photoPrimary) {
+            try {
+              var imgWidth = isModern ? 140 : 120;
+              var imgHeight = isModern ? 160 : 140;
+              doc.addImage(state.photoPrimary, 'JPEG',
+                frontCenterX - imgWidth/2, photoY, imgWidth, imgHeight);
+              photoY += imgHeight + 20;
+            } catch (e) {
+              console.warn('Could not add primary image:', e);
+              photoY += 160;
+            }
+          } else {
+            photoY += 160;
+          }
+
+          // Name
+          doc.setTextColor(coverText[0], coverText[1], coverText[2]);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(isModern ? 24 : 20);
+          var nameLines = doc.splitTextToSize(fullName, contentWidth);
+          doc.text(nameLines, frontCenterX, photoY, { align: 'center' });
+
+          // Dates
+          if (datesLine) {
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10);
+            doc.setTextColor(coverMuted[0], coverMuted[1], coverMuted[2]);
+            doc.text(datesLine, frontCenterX, photoY + 25, { align: 'center' });
+          }
+
+          // Fold guide (dashed line)
+          doc.setDrawColor(200, 200, 200);
+          doc.setLineDashPattern([3, 3], 0);
+          doc.line(panelWidth, 0, panelWidth, pageHeight);
+
+          // ============================================
+          // PAGE 2: Inside spread (Inside left | Inside right)
+          // ============================================
+          doc.addPage([paper.height, paper.width], 'landscape');
+
+          // --- Inside Left (Obituary) ---
+          doc.setFillColor(255, 255, 255);
+          doc.rect(0, 0, panelWidth, pageHeight, 'F');
+
+          doc.setTextColor(102, 102, 102);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(8);
+          doc.text('OBITUARY', margin, margin + 10);
+
+          // Line under heading
+          doc.setDrawColor(229, 229, 229);
+          doc.setLineDashPattern([], 0);
+          doc.line(margin, margin + 18, panelWidth - margin, margin + 18);
+
+          // Obituary text
+          if (shortObituary) {
+            doc.setTextColor(26, 26, 26);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10);
+            var obituaryLines = doc.splitTextToSize(shortObituary, contentWidth);
+            doc.text(obituaryLines, margin, margin + 35);
+          }
+
+          // --- Inside Right (Order of Service) ---
+          doc.setFillColor(255, 255, 255);
+          doc.rect(panelWidth, 0, panelWidth, pageHeight, 'F');
+
+          doc.setTextColor(102, 102, 102);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(8);
+          doc.text('ORDER OF SERVICE', panelWidth + margin, margin + 10);
+
+          // Line under heading
+          doc.line(panelWidth + margin, margin + 18, pageWidth - margin, margin + 18);
+
+          // Order of service text
+          if (orderOfService) {
+            doc.setTextColor(26, 26, 26);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10);
+            var orderLines = doc.splitTextToSize(orderOfService, contentWidth);
+            doc.text(orderLines, panelWidth + margin, margin + 35);
+          }
+
+          // Fold guide
+          doc.setDrawColor(200, 200, 200);
+          doc.setLineDashPattern([3, 3], 0);
+          doc.line(panelWidth, 0, panelWidth, pageHeight);
+
+          // Generate filename
+          var nameParts = fullName.split(' ');
+          var lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : nameParts[0];
+          var firstName = nameParts[0];
+          var today = new Date().toISOString().split('T')[0];
+          var filename = lastName + '_' + firstName + '_Memorial_Pamphlet_' + today + '.pdf';
+          filename = filename.replace(/[^a-zA-Z0-9_\-\.]/g, '_');
+
+          doc.save(filename);
+
+        } catch (error) {
+          console.error('PDF generation error:', error);
+          alert('There was an error generating the PDF. Please try again.');
+        } finally {
+          generateBtn.classList.remove('is-loading');
+          generateBtn.disabled = false;
+        }
+      }
+
+      // Initialize on load
+      init();
     })();
   </script>
 </body>
