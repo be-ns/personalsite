@@ -54,6 +54,7 @@
       <li><a href="#tools-heading" data-section="tools-heading">Tools</a></li>
       <li><a href="#skills-heading" data-section="skills-heading">Skills</a></li>
       <li><a href="#elsewhere-heading" data-section="elsewhere-heading">Elsewhere</a></li>
+      <li><a href="#poems-heading" data-section="poems-heading">Poems</a></li>
       <li><a href="#contact-heading" data-section="contact-heading">Contact</a></li>
     </ul>
   </nav>
@@ -247,6 +248,90 @@
       </ul>
     </section>
 
+    <!-- Poems Section -->
+    <section class="poems" aria-labelledby="poems-heading">
+      <header class="section-header">
+        <h2 id="poems-heading" class="section-title">Poems</h2>
+      </header>
+
+      <div class="poems-list">
+        <article class="poem">
+          <h3 class="poem-title">the room love needs to breathe</h3>
+          <div class="poem-content">
+            <p>listen,</p>
+            <p>I am not naturally a person who leaves space.</p>
+            <p>I am a person who wants to put my hands around things</p>
+            <p>and call it care.</p>
+            <p>I am a person who thinks love means proof,</p>
+            <p>means check-ins,</p>
+            <p>means a second "you good?"</p>
+            <p>when the first one didn't come back shiny enough.</p>
+            <br>
+            <p>But that morning,</p>
+            <p>you were still sleeping,</p>
+            <p>and the sun was a quiet trespasser</p>
+            <p>spilling gold on the counter like it owned the place,</p>
+            <p>and I practiced the smallest kind of restraint:</p>
+            <p>I let you rest.</p>
+            <br>
+            <p>Here's what startled me.</p>
+            <br>
+            <p>The more I didn't poke at the silence,</p>
+            <p>the more it softened into something warm.</p>
+            <p>The more I didn't demand a response,</p>
+            <p>the more your response found me anyway.</p>
+            <br>
+            <p>You woke up later and said,</p>
+            <p>"I slept so hard."</p>
+            <p>Like you were surprised your body trusted the house.</p>
+            <p>Like you didn't have to earn peace by explaining yourself.</p>
+            <br>
+            <p>I didn't say,</p>
+            <p>"I did that."</p>
+            <p>I didn't take a bow.</p>
+            <p>I just handed you coffee</p>
+            <p>and watched your shoulders drop</p>
+            <p>one notch closer to your actual life.</p>
+            <br>
+            <p>The more I didn't reach for you</p>
+            <p>like a life raft,</p>
+            <p>the more you drifted closer</p>
+            <p>because you could.</p>
+            <br>
+            <p>The more I unclenched my timing,</p>
+            <p>the more time showed up.</p>
+            <p>The more I stopped trying to be answered,</p>
+            <p>the more you spoke.</p>
+          </div>
+        </article>
+
+        <article class="poem">
+          <h3 class="poem-title">Come Down</h3>
+          <div class="poem-content">
+            <p>I was high for years</p>
+            <p>High-performer. High-potential.</p>
+            <p>Hits of yes</p>
+            <p>that tuned my insides down to a whisper.</p>
+            <p>The room with the highest ceiling,</p>
+            <p>the chair closest to the window.</p>
+            <br>
+            <p>Then the rush stopped rushing.</p>
+            <p>The yeses still came,</p>
+            <p>but they landed dull.</p>
+            <br>
+            <p>And I noticed something:</p>
+            <p>water never argues with gravity.</p>
+            <p>It doesn't negotiate for higher.</p>
+            <p>It moves toward what can hold it</p>
+            <p>and becomes useful.</p>
+            <br>
+            <p>The lowest part of the yard after rain</p>
+            <p>is the part that gets the garden.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
     <!-- Contact Section -->
     <section class="contact" aria-labelledby="contact-heading">
       <header class="section-header">
@@ -368,7 +453,7 @@
 
       // Scroll animations
       if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        var animateElements = document.querySelectorAll('.work-position, .tool-featured, .tool-upcoming, .capability, .elsewhere-item, section > .section-header');
+        var animateElements = document.querySelectorAll('.work-position, .tool-featured, .tool-upcoming, .capability, .elsewhere-item, .poem, section > .section-header');
 
         animateElements.forEach(function(el) {
           el.classList.add('animate-on-scroll');

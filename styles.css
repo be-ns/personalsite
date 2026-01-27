@@ -336,6 +336,7 @@ a:focus-visible {
 .menu-panel.is-open .menu-links li:nth-child(4) { transition-delay: 120ms; }
 .menu-panel.is-open .menu-links li:nth-child(5) { transition-delay: 150ms; }
 .menu-panel.is-open .menu-links li:nth-child(6) { transition-delay: 180ms; }
+.menu-panel.is-open .menu-links li:nth-child(7) { transition-delay: 210ms; }
 
 /* ==========================================================================
    Layout
@@ -838,6 +839,46 @@ section:last-of-type {
 
 .elsewhere-text {
   font-size: 1rem;
+}
+
+/* ==========================================================================
+   Poems Section
+   ========================================================================== */
+
+.poems-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xl);
+}
+
+.poem {
+  max-width: 48ch;
+}
+
+.poem-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--space-md);
+  letter-spacing: -0.01em;
+}
+
+.poem-content {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--color-text);
+}
+
+.poem-content p {
+  margin-bottom: 0;
+  line-height: 1.8;
+}
+
+.poem-content br {
+  display: block;
+  content: "";
+  margin-top: var(--space-md);
 }
 
 /* ==========================================================================
