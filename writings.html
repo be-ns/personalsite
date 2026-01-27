@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Writings — Ben Siverly</title>
+  <meta name="description" content="Poetry and prose by Ben Siverly. Words about life, memory, and paying attention.">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Writings — Ben Siverly">
+  <meta property="og:description" content="Poetry and prose. Words about life, memory, and paying attention.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://bensiverly.com/writings.html">
+  <meta property="og:image" content="https://bensiverly.com/images/og-home.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Writings — Ben Siverly">
+  <meta name="twitter:description" content="Poetry and prose. Words about life, memory, and paying attention.">
+  <meta name="twitter:image" content="https://bensiverly.com/images/og-home.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Zilla+Slab:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       CSS Variables
+       ========================================================================== */
+    :root {
+      --color-bg: #FFFFFF;
+      --color-bg-warm: #FAF9F7;
+      --color-bg-poetry: #FDFCFA;
+      --color-text: #1A1A1A;
+      --color-accent: #FFE227;
+      --color-accent-subtle: rgba(255, 226, 39, 0.15);
+      --color-cobalt: #0047AB;
+      --color-teal: #0D7377;
+      --color-muted: #666666;
+      --color-border: #E5E5E5;
+      --color-border-light: rgba(0, 0, 0, 0.06);
+
+      --font-heading: 'Zilla Slab', Georgia, serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+      --space-xs: 0.5rem;
+      --space-sm: 1rem;
+      --space-md: 1.5rem;
+      --space-lg: 2.5rem;
+      --space-xl: 4rem;
+      --space-2xl: 6rem;
+
+      --max-width: 680px;
+      --padding-x: 1.5rem;
+
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 16px;
+
+      --transition-fast: 150ms ease;
+      --transition-base: 250ms ease;
+    }
+
+    /* ==========================================================================
+       Base Styles
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 1.0625rem;
+      line-height: 1.7;
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.5s ease;
+    }
+
+    body.poetry-mode {
+      background-color: var(--color-bg-poetry);
+    }
+
+    /* ==========================================================================
+       Header
+       ========================================================================== */
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-sm) var(--padding-x);
+      border-bottom: 1px solid var(--color-border);
+      background-color: var(--color-bg);
+      transition: background-color 0.5s ease, border-color 0.5s ease;
+    }
+
+    body.poetry-mode .site-header {
+      background-color: var(--color-bg-poetry);
+      border-bottom-color: var(--color-border-light);
+    }
+
+    .site-brand {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-text);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    .site-brand:hover,
+    .site-brand:focus {
+      background-color: transparent;
+      text-decoration: none;
+    }
+
+    .page-link {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-muted);
+      text-decoration: none;
+      padding: 0.5rem;
+      border-radius: var(--radius-sm);
+      transition: color var(--transition-fast), background-color var(--transition-fast);
+    }
+
+    .page-link:hover,
+    .page-link:focus {
+      color: var(--color-text);
+      background-color: var(--color-bg-warm);
+    }
+
+    /* ==========================================================================
+       Main Content
+       ========================================================================== */
+    main {
+      flex: 1;
+      max-width: var(--max-width);
+      width: 100%;
+      margin: 0 auto;
+      padding: var(--space-xl) var(--padding-x);
+    }
+
+    /* ==========================================================================
+       Page Header
+       ========================================================================== */
+    .page-header {
+      margin-bottom: var(--space-xl);
+      padding-bottom: var(--space-lg);
+      border-bottom: 1px solid var(--color-border);
+      transition: border-color 0.5s ease;
+    }
+
+    body.poetry-mode .page-header {
+      border-bottom-color: var(--color-border-light);
+    }
+
+    .page-title {
+      font-family: var(--font-heading);
+      font-size: clamp(2rem, 5vw, 2.75rem);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.025em;
+      margin-bottom: var(--space-sm);
+    }
+
+    .page-intro {
+      color: var(--color-muted);
+      font-size: 1.0625rem;
+      max-width: 52ch;
+      margin-bottom: var(--space-lg);
+    }
+
+    /* ==========================================================================
+       Mode Toggle
+       ========================================================================== */
+    .mode-toggle {
+      display: flex;
+      gap: 0;
+      background-color: var(--color-bg-warm);
+      padding: 4px;
+      border-radius: 100px;
+      transition: background-color 0.5s ease;
+    }
+
+    body.poetry-mode .mode-toggle {
+      background-color: rgba(0, 0, 0, 0.04);
+    }
+
+    .mode-btn {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.625rem 1.25rem;
+      border: none;
+      background: transparent;
+      color: var(--color-muted);
+      cursor: pointer;
+      border-radius: 100px;
+      transition: all var(--transition-fast);
+    }
+
+    .mode-btn:hover {
+      color: var(--color-text);
+    }
+
+    .mode-btn.is-active {
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    body.poetry-mode .mode-btn.is-active {
+      background-color: var(--color-bg-poetry);
+    }
+
+    /* ==========================================================================
+       Writing Sections
+       ========================================================================== */
+    .writings-section {
+      display: none;
+    }
+
+    .writings-section.is-visible {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================================
+       Poetry Section - Softer, More Experiential
+       ========================================================================== */
+    .poetry-section {
+      /* Inherits from writings-section */
+    }
+
+    .poems-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2xl);
+    }
+
+    .poem {
+      max-width: 520px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .poem-title {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 600;
+      font-style: italic;
+      letter-spacing: -0.01em;
+      margin-bottom: var(--space-md);
+      color: var(--color-text);
+    }
+
+    .poem-body {
+      font-family: var(--font-heading);
+      font-size: 1.125rem;
+      font-weight: 400;
+      line-height: 2;
+      color: var(--color-text);
+      white-space: pre-line;
+    }
+
+    .poem-body em {
+      font-style: italic;
+    }
+
+    .poem-divider {
+      width: 40px;
+      height: 1px;
+      background-color: var(--color-border-light);
+      margin: var(--space-2xl) auto;
+    }
+
+    body.poetry-mode .poem-divider {
+      background-color: rgba(0, 0, 0, 0.08);
+    }
+
+    .poem-meta {
+      margin-top: var(--space-md);
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-muted);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: var(--space-2xl) var(--space-md);
+      color: var(--color-muted);
+    }
+
+    .empty-state-icon {
+      font-size: 2.5rem;
+      margin-bottom: var(--space-sm);
+      opacity: 0.3;
+    }
+
+    .empty-state-title {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-xs);
+    }
+
+    .empty-state-text {
+      font-size: 0.9375rem;
+    }
+
+    /* ==========================================================================
+       Prose Section - More Structured
+       ========================================================================== */
+    .prose-section {
+      /* Inherits from writings-section */
+    }
+
+    .prose-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+    }
+
+    .prose-item {
+      padding-bottom: var(--space-lg);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .prose-item:last-child {
+      border-bottom: none;
+    }
+
+    .prose-item-header {
+      margin-bottom: var(--space-sm);
+    }
+
+    .prose-title {
+      font-family: var(--font-heading);
+      font-size: 1.375rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--color-text);
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .prose-title:hover {
+      text-decoration: underline;
+      text-decoration-color: var(--color-accent);
+      text-decoration-thickness: 2px;
+      text-underline-offset: 3px;
+      background-color: transparent;
+    }
+
+    .prose-date {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-muted);
+      display: block;
+      margin-top: var(--space-xs);
+    }
+
+    .prose-excerpt {
+      color: var(--color-muted);
+      font-size: 1rem;
+      line-height: 1.65;
+    }
+
+    .prose-read-more {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text);
+      text-decoration: none;
+      margin-top: var(--space-sm);
+      transition: gap var(--transition-fast);
+    }
+
+    .prose-read-more:hover {
+      gap: 0.625rem;
+      background-color: transparent;
+    }
+
+    .prose-read-more span:last-child {
+      color: var(--color-cobalt);
+    }
+
+    /* ==========================================================================
+       Footer
+       ========================================================================== */
+    footer {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: var(--space-lg) var(--padding-x) var(--space-2xl);
+      border-top: 1px solid var(--color-border);
+      width: 100%;
+      transition: border-color 0.5s ease;
+    }
+
+    body.poetry-mode footer {
+      border-top-color: var(--color-border-light);
+    }
+
+    .copyright {
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      color: var(--color-muted);
+    }
+
+    /* ==========================================================================
+       Responsive
+       ========================================================================== */
+    @media (min-width: 640px) {
+      :root {
+        --padding-x: 2rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      :root {
+        --padding-x: 2.5rem;
+      }
+
+      body {
+        font-size: 1.125rem;
+      }
+
+      .poem-body {
+        font-size: 1.25rem;
+      }
+    }
+
+    @media (max-width: 479px) {
+      .mode-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.6875rem;
+      }
+
+      .poem-body {
+        font-size: 1.0625rem;
+        line-height: 1.9;
+      }
+    }
+
+    /* ==========================================================================
+       Reduced Motion
+       ========================================================================== */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+
+      .writings-section.is-visible {
+        animation: none;
+      }
+    }
+
+    /* ==========================================================================
+       Print
+       ========================================================================== */
+    @media print {
+      .site-header,
+      .mode-toggle {
+        display: none;
+      }
+
+      main {
+        padding: 0.5in;
+        max-width: none;
+      }
+
+      .poem {
+        page-break-inside: avoid;
+      }
+
+      .poem-divider {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a href="/" class="site-brand" aria-label="Return to home">BS.</a>
+    <a href="/" class="page-link">&larr; Back to home</a>
+  </header>
+
+  <main>
+    <header class="page-header">
+      <h1 class="page-title">Writings</h1>
+      <p class="page-intro">Words I've put together about life, memory, and paying attention. Some poetry, some prose.</p>
+
+      <div class="mode-toggle" role="tablist" aria-label="Writing type">
+        <button class="mode-btn is-active" role="tab" aria-selected="true" aria-controls="poetry-panel" id="poetry-tab" data-mode="poetry">
+          Poetry
+        </button>
+        <button class="mode-btn" role="tab" aria-selected="false" aria-controls="prose-panel" id="prose-tab" data-mode="prose">
+          Prose
+        </button>
+      </div>
+    </header>
+
+    <!-- Poetry Section -->
+    <section class="writings-section poetry-section is-visible" id="poetry-panel" role="tabpanel" aria-labelledby="poetry-tab">
+      <div class="poems-list">
+
+        <article class="poem">
+          <h2 class="poem-title">Morning Practice</h2>
+          <div class="poem-body">The coffee steeps while light
+arrives through kitchen glass,
+unhurried, like a guest
+who knows they're welcome here.
+
+I sit with what remains
+of yesterday's small hopes,
+and find them still intact,
+still possible, still warm.</div>
+          <p class="poem-meta">2024</p>
+        </article>
+
+        <div class="poem-divider" aria-hidden="true"></div>
+
+        <article class="poem">
+          <h2 class="poem-title">What the Garden Knows</h2>
+          <div class="poem-body">The buckwheat doesn't worry
+about the coming frost.
+It blooms anyway,
+feeds whoever comes.
+
+Some lessons take a decade.
+Others root and spread
+before you notice
+you've been learning.</div>
+          <p class="poem-meta">2024</p>
+        </article>
+
+        <div class="poem-divider" aria-hidden="true"></div>
+
+        <article class="poem">
+          <h2 class="poem-title">Inheritance</h2>
+          <div class="poem-body">My son arranges rocks
+in careful rows, then studies them
+the way my father studied stars,
+the way his father studied soil.
+
+We pass down these small rituals:
+the need to order things,
+to name them, hold them close,
+then set them free again.</div>
+          <p class="poem-meta">2024</p>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- Prose Section -->
+    <section class="writings-section prose-section" id="prose-panel" role="tabpanel" aria-labelledby="prose-tab" hidden>
+      <div class="prose-list">
+
+        <article class="prose-item">
+          <header class="prose-item-header">
+            <h2 class="prose-title">On Building Things That Last</h2>
+            <span class="prose-date">Coming soon</span>
+          </header>
+          <p class="prose-excerpt">Thoughts on the quiet ambition of making tools that might outlive you, and why that matters more than scale.</p>
+        </article>
+
+        <article class="prose-item">
+          <header class="prose-item-header">
+            <h2 class="prose-title">The Case for Native Gardens</h2>
+            <span class="prose-date">Coming soon</span>
+          </header>
+          <p class="prose-excerpt">Why I tore out my lawn and what grew in its place, both in the soil and in my understanding of home.</p>
+        </article>
+
+        <article class="prose-item">
+          <header class="prose-item-header">
+            <h2 class="prose-title">Notes on Fatherhood</h2>
+            <span class="prose-date">Coming soon</span>
+          </header>
+          <p class="prose-excerpt">Small observations from the first years of raising children, written mostly to remember.</p>
+        </article>
+
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p class="copyright">&copy; 2026 Ben Siverly</p>
+  </footer>
+
+  <script>
+    (function() {
+      var poetryTab = document.getElementById('poetry-tab');
+      var proseTab = document.getElementById('prose-tab');
+      var poetryPanel = document.getElementById('poetry-panel');
+      var prosePanel = document.getElementById('prose-panel');
+      var body = document.body;
+
+      function switchMode(mode) {
+        if (mode === 'poetry') {
+          poetryTab.classList.add('is-active');
+          poetryTab.setAttribute('aria-selected', 'true');
+          proseTab.classList.remove('is-active');
+          proseTab.setAttribute('aria-selected', 'false');
+
+          poetryPanel.classList.add('is-visible');
+          poetryPanel.removeAttribute('hidden');
+          prosePanel.classList.remove('is-visible');
+          prosePanel.setAttribute('hidden', '');
+
+          body.classList.add('poetry-mode');
+        } else {
+          proseTab.classList.add('is-active');
+          proseTab.setAttribute('aria-selected', 'true');
+          poetryTab.classList.remove('is-active');
+          poetryTab.setAttribute('aria-selected', 'false');
+
+          prosePanel.classList.add('is-visible');
+          prosePanel.removeAttribute('hidden');
+          poetryPanel.classList.remove('is-visible');
+          poetryPanel.setAttribute('hidden', '');
+
+          body.classList.remove('poetry-mode');
+        }
+      }
+
+      poetryTab.addEventListener('click', function() {
+        switchMode('poetry');
+      });
+
+      proseTab.addEventListener('click', function() {
+        switchMode('prose');
+      });
+
+      // Keyboard navigation
+      var tabs = [poetryTab, proseTab];
+      tabs.forEach(function(tab, index) {
+        tab.addEventListener('keydown', function(e) {
+          if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+            e.preventDefault();
+            var nextIndex = e.key === 'ArrowRight' ? (index + 1) % 2 : (index + 1) % 2;
+            tabs[nextIndex].focus();
+            tabs[nextIndex].click();
+          }
+        });
+      });
+
+      // Initialize with poetry mode
+      body.classList.add('poetry-mode');
+    })();
+  </script>
+</body>
+</html>
