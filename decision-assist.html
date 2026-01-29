@@ -1,0 +1,1858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Decision Assist — Ben Siverly</title>
+  <meta name="description" content="A weighted-criteria decision tool. Compare options by scoring them against what matters most to you.">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Decision Assist — Ben Siverly">
+  <meta property="og:description" content="A weighted-criteria decision tool. Compare options by scoring them against what matters most to you.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://bensiverly.com/decision-assist.html">
+  <meta property="og:image" content="https://bensiverly.com/images/og-decision-assist.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Decision Assist — Ben Siverly">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Decision Assist — Ben Siverly">
+  <meta name="twitter:description" content="A weighted-criteria decision tool. Compare options by scoring them against what matters most to you.">
+  <meta name="twitter:image" content="https://bensiverly.com/images/og-decision-assist.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Zilla+Slab:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       CSS Variables
+       ========================================================================== */
+    :root {
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #F8F8F6;
+      --color-bg-warm: #FAF9F7;
+      --color-text: #1A1A1A;
+      --color-accent: #FFE227;
+      --color-accent-hover: #FFD800;
+      --color-muted: #666666;
+      --color-border: #E5E5E5;
+      --color-cobalt: #0047AB;
+      --color-success: #059669;
+      --color-warning: #D97706;
+
+      --font-heading: 'Zilla Slab', Georgia, serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+      --space-xs: 0.5rem;
+      --space-sm: 1rem;
+      --space-md: 1.5rem;
+      --space-lg: 2.5rem;
+      --space-xl: 4rem;
+
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 16px;
+
+      --transition-fast: 150ms ease;
+      --transition-base: 250ms ease;
+    }
+
+    /* ==========================================================================
+       Base Styles
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ==========================================================================
+       Header
+       ========================================================================== */
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-sm) var(--space-md);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .site-brand {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--color-text);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+
+    .site-brand:hover {
+      color: var(--color-muted);
+    }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .tool-label {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+    }
+
+    .reset-link {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius-sm);
+      transition: color var(--transition-fast), background-color var(--transition-fast);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .reset-link.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .reset-link:hover {
+      color: var(--color-text);
+      background-color: var(--color-bg-alt);
+    }
+
+    /* ==========================================================================
+       Main Container
+       ========================================================================== */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 640px;
+      width: 100%;
+      margin: 0 auto;
+      padding: var(--space-lg) var(--space-md);
+    }
+
+    /* ==========================================================================
+       Tool Container
+       ========================================================================== */
+    .tool {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Progress Indicator */
+    .progress {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      margin-bottom: var(--space-md);
+    }
+
+    .progress-step {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--color-border);
+      transition: background-color var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .progress-step.is-active {
+      background-color: var(--color-text);
+      transform: scale(1.25);
+    }
+
+    .progress-step.is-complete {
+      background-color: var(--color-text);
+    }
+
+    .progress-step.is-clickable {
+      cursor: pointer;
+    }
+
+    .progress-step.is-clickable:hover {
+      background-color: var(--color-muted);
+    }
+
+    .progress-label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+      margin-left: var(--space-xs);
+    }
+
+    /* ==========================================================================
+       Step Content
+       ========================================================================== */
+    .step-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      opacity: 1;
+      transition: opacity var(--transition-fast);
+    }
+
+    .step-content.is-transitioning {
+      opacity: 0;
+    }
+
+    .step-title {
+      font-family: var(--font-heading);
+      font-size: clamp(1.75rem, 5vw, 2.25rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin: 0 0 var(--space-xs) 0;
+    }
+
+    .step-subtitle {
+      font-size: 0.9375rem;
+      color: var(--color-muted);
+      margin: 0 0 var(--space-md) 0;
+    }
+
+    /* ==========================================================================
+       Form Elements
+       ========================================================================== */
+    .form-group {
+      margin-bottom: var(--space-md);
+    }
+
+    .form-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-muted);
+      margin-bottom: var(--space-xs);
+    }
+
+    .form-input {
+      width: 100%;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      padding: 0.75rem 1rem;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--color-text);
+      box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.1);
+    }
+
+    .form-input::placeholder {
+      color: var(--color-muted);
+      opacity: 0.7;
+    }
+
+    .form-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    /* ==========================================================================
+       Options List
+       ========================================================================== */
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      margin-bottom: var(--space-md);
+    }
+
+    .option-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+
+    .option-input {
+      flex: 1;
+    }
+
+    .option-number {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--color-muted);
+      width: 24px;
+      text-align: center;
+    }
+
+    .option-delete {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      color: var(--color-muted);
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      transition: color var(--transition-fast), background-color var(--transition-fast);
+    }
+
+    .option-delete:hover {
+      color: var(--color-text);
+      background-color: var(--color-bg-alt);
+    }
+
+    .option-delete:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .add-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.625rem 1rem;
+      border: 2px dashed var(--color-border);
+      background-color: transparent;
+      color: var(--color-muted);
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      transition: all var(--transition-fast);
+    }
+
+    .add-btn:hover {
+      border-color: var(--color-text);
+      color: var(--color-text);
+    }
+
+    .add-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* ==========================================================================
+       Consideration Chips
+       ========================================================================== */
+    .category-group {
+      margin-bottom: var(--space-md);
+    }
+
+    .category-title {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+      margin: 0 0 var(--space-xs) 0;
+    }
+
+    .chips-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+      padding: 0.5rem 0.875rem;
+      border: 1px solid var(--color-border);
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      cursor: pointer;
+      border-radius: 100px;
+      transition: all var(--transition-fast);
+    }
+
+    .chip:hover {
+      border-color: var(--color-text);
+    }
+
+    .chip.is-selected {
+      background-color: var(--color-text);
+      border-color: var(--color-text);
+      color: var(--color-bg);
+    }
+
+    .chip.is-custom {
+      background-color: var(--color-bg-alt);
+    }
+
+    .chip.is-custom.is-selected {
+      background-color: var(--color-text);
+    }
+
+    .chip-delete {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      margin-left: 0.25rem;
+      margin-right: -0.25rem;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .consideration-count {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--color-muted);
+      margin-top: var(--space-sm);
+    }
+
+    .consideration-count.is-warning {
+      color: var(--color-warning);
+    }
+
+    /* ==========================================================================
+       Weight Slider
+       ========================================================================== */
+    .weight-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .weight-item {
+      padding: var(--space-sm);
+      background-color: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+    }
+
+    .weight-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: var(--space-xs);
+    }
+
+    .weight-label {
+      font-weight: 500;
+      font-size: 0.9375rem;
+    }
+
+    .weight-value {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--color-muted);
+    }
+
+    .weight-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: var(--color-border);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .weight-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      background: var(--color-text);
+      border-radius: 50%;
+      cursor: grab;
+      border: 3px solid var(--color-bg);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      transition: transform var(--transition-fast);
+    }
+
+    .weight-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+    }
+
+    .weight-slider::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      background: var(--color-text);
+      border-radius: 50%;
+      cursor: grab;
+      border: 3px solid var(--color-bg);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    .weight-ticks {
+      display: flex;
+      justify-content: space-between;
+      margin-top: var(--space-xs);
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      color: var(--color-muted);
+    }
+
+    /* ==========================================================================
+       Scoring Matrix
+       ========================================================================== */
+    .scoring-header {
+      text-align: center;
+      margin-bottom: var(--space-md);
+    }
+
+    .scoring-consideration {
+      font-family: var(--font-heading);
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      font-weight: 700;
+      margin: 0 0 var(--space-xs) 0;
+    }
+
+    .scoring-progress {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--color-muted);
+    }
+
+    .scoring-options {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .scoring-option {
+      padding: var(--space-sm);
+      background-color: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+    }
+
+    .scoring-option-label {
+      font-weight: 500;
+      margin-bottom: var(--space-xs);
+    }
+
+    .score-buttons {
+      display: flex;
+      gap: 0.375rem;
+    }
+
+    .score-btn {
+      flex: 1;
+      padding: 0.625rem;
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      font-weight: 500;
+      border: 2px solid var(--color-border);
+      background-color: var(--color-bg);
+      color: var(--color-muted);
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      transition: all var(--transition-fast);
+    }
+
+    .score-btn:hover {
+      border-color: var(--color-text);
+      color: var(--color-text);
+    }
+
+    .score-btn.is-selected {
+      background-color: var(--color-text);
+      border-color: var(--color-text);
+      color: var(--color-bg);
+    }
+
+    .score-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.375rem;
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      color: var(--color-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* ==========================================================================
+       Results
+       ========================================================================== */
+    .results {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .results-header {
+      text-align: center;
+    }
+
+    .results-title {
+      font-family: var(--font-heading);
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 0 0 var(--space-xs) 0;
+    }
+
+    .results-decision {
+      font-size: 1rem;
+      color: var(--color-muted);
+      margin: 0;
+    }
+
+    /* Winner Card */
+    .winner-card {
+      background-color: var(--color-accent);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      text-align: center;
+    }
+
+    .winner-label {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-text);
+      opacity: 0.7;
+      margin: 0 0 var(--space-xs) 0;
+    }
+
+    .winner-name {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 0 0 var(--space-xs) 0;
+    }
+
+    .winner-score {
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      color: var(--color-text);
+      opacity: 0.8;
+    }
+
+    /* Ranked List */
+    .ranked-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+
+    .ranked-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-sm);
+      background-color: var(--color-bg-alt);
+      border-radius: var(--radius-sm);
+    }
+
+    .ranked-item.is-winner {
+      background-color: rgba(255, 226, 39, 0.2);
+    }
+
+    .ranked-position {
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      font-weight: 600;
+      width: 24px;
+      text-align: center;
+    }
+
+    .ranked-name {
+      flex: 1;
+      font-weight: 500;
+    }
+
+    .ranked-score {
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      color: var(--color-muted);
+    }
+
+    .ranked-bar-container {
+      width: 80px;
+      height: 6px;
+      background-color: var(--color-border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .ranked-bar {
+      height: 100%;
+      background-color: var(--color-text);
+      border-radius: 3px;
+      transition: width var(--transition-base);
+    }
+
+    /* Chart Container */
+    .chart-section {
+      margin-top: var(--space-sm);
+    }
+
+    .chart-title {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+      margin: 0 0 var(--space-sm) 0;
+      text-align: center;
+    }
+
+    .bar-chart {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .bar-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .bar-label {
+      font-size: 0.8125rem;
+      font-weight: 500;
+    }
+
+    .bar-segments {
+      display: flex;
+      height: 24px;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background-color: var(--color-border);
+    }
+
+    .bar-segment {
+      height: 100%;
+      transition: width var(--transition-base);
+    }
+
+    .bar-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+      margin-top: var(--space-sm);
+      justify-content: center;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.6875rem;
+      color: var(--color-muted);
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+    }
+
+    /* Chart Colors */
+    .chart-color-1 { background-color: #1A1A1A; }
+    .chart-color-2 { background-color: #3D5A47; }
+    .chart-color-3 { background-color: #0047AB; }
+    .chart-color-4 { background-color: #D97706; }
+    .chart-color-5 { background-color: #7C3AED; }
+    .chart-color-6 { background-color: #059669; }
+    .chart-color-7 { background-color: #DC2626; }
+    .chart-color-8 { background-color: #0891B2; }
+    .chart-color-9 { background-color: #CA8A04; }
+    .chart-color-10 { background-color: #64748B; }
+
+    /* ==========================================================================
+       Navigation
+       ========================================================================== */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: var(--space-md);
+      margin-top: auto;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.875rem 1.25rem;
+      border: 2px solid var(--color-text);
+      background-color: transparent;
+      color: var(--color-text);
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      transition: all var(--transition-fast);
+    }
+
+    .nav-btn:hover,
+    .nav-btn:focus {
+      background-color: var(--color-text);
+      color: var(--color-bg);
+    }
+
+    .nav-btn:focus-visible {
+      outline: 2px solid var(--color-text);
+      outline-offset: 2px;
+    }
+
+    .nav-btn--back {
+      border-color: var(--color-border);
+      color: var(--color-muted);
+      padding: 0.875rem 1rem;
+    }
+
+    .nav-btn--back:hover,
+    .nav-btn--back:focus {
+      border-color: var(--color-text);
+      background-color: transparent;
+      color: var(--color-text);
+    }
+
+    .nav-btn--back.is-hidden {
+      visibility: hidden;
+    }
+
+    .nav-btn--next {
+      background-color: var(--color-text);
+      color: var(--color-bg);
+    }
+
+    .nav-btn--next:hover,
+    .nav-btn--next:focus {
+      background-color: var(--color-accent);
+      border-color: var(--color-accent);
+      color: var(--color-text);
+    }
+
+    .nav-btn--next:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      background-color: var(--color-border);
+      border-color: var(--color-border);
+      color: var(--color-muted);
+    }
+
+    .nav-btn--next:disabled:hover {
+      background-color: var(--color-border);
+      border-color: var(--color-border);
+      color: var(--color-muted);
+    }
+
+    /* Results Actions */
+    .results-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+      padding-top: var(--space-md);
+      margin-top: auto;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .results-actions .nav-btn {
+      flex: 1;
+      justify-content: center;
+      min-width: 120px;
+    }
+
+    /* ==========================================================================
+       Footer
+       ========================================================================== */
+    .site-footer {
+      padding: var(--space-sm) var(--space-md);
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--color-muted);
+    }
+
+    .privacy-note {
+      margin: 0;
+    }
+
+    /* ==========================================================================
+       Responsive
+       ========================================================================== */
+    @media (max-width: 480px) {
+      .site-header {
+        padding: var(--space-xs) var(--space-sm);
+      }
+
+      main {
+        padding: var(--space-md) var(--space-sm);
+      }
+
+      .step-title {
+        font-size: 1.5rem;
+      }
+
+      .nav-btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.75rem;
+      }
+
+      .nav-btn--back {
+        padding: 0.75rem 0.875rem;
+      }
+
+      .score-buttons {
+        flex-wrap: wrap;
+      }
+
+      .score-btn {
+        flex: 0 0 calc(20% - 0.3rem);
+      }
+
+      .ranked-bar-container {
+        width: 60px;
+      }
+
+      .results-actions {
+        flex-direction: column;
+      }
+
+      .results-actions .nav-btn {
+        width: 100%;
+      }
+    }
+
+    /* ==========================================================================
+       Reduced Motion
+       ========================================================================== */
+    @media (prefers-reduced-motion: reduce) {
+      .step-content,
+      .progress-step,
+      .weight-slider::-webkit-slider-thumb {
+        transition: none;
+      }
+    }
+
+    /* ==========================================================================
+       Print Styles
+       ========================================================================== */
+    @media print {
+      body {
+        background: white;
+        font-size: 10pt;
+      }
+
+      .site-header,
+      .site-footer,
+      .nav,
+      .results-actions,
+      .reset-link,
+      button {
+        display: none !important;
+      }
+
+      main {
+        max-width: 6.5in;
+        padding: 0;
+        margin: 0 auto;
+      }
+
+      .results {
+        gap: 0.15in;
+      }
+
+      .winner-card {
+        background: #FFFBEB !important;
+        border: 1pt solid #D4A00A;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .ranked-item {
+        border: 0.5pt solid var(--color-border);
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .bar-segments {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      @page {
+        margin: 0.5in;
+        size: letter portrait;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a href="index.html" class="site-brand" aria-label="Return to home">BS.</a>
+    <div class="header-meta">
+      <span class="tool-label">Decision Assist</span>
+      <button class="reset-link" id="header-reset" type="button">Start over</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="tool" id="tool" role="application" aria-label="Decision Assist tool">
+      <!-- Content rendered by JavaScript -->
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p class="privacy-note">Nothing is saved. All data stays in your browser.</p>
+  </footer>
+
+  <script>
+    (function() {
+      var tool = document.getElementById('tool');
+      var headerReset = document.getElementById('header-reset');
+      if (!tool) return;
+
+      // Consideration categories
+      var CATEGORIES = [
+        {
+          id: 'financial',
+          label: 'Financial',
+          suggestions: ['Upfront cost', 'Ongoing cost', 'Income potential', 'Financial risk']
+        },
+        {
+          id: 'time',
+          label: 'Time',
+          suggestions: ['Time investment required', 'Schedule flexibility', 'Time to results']
+        },
+        {
+          id: 'relationships',
+          label: 'Relationships',
+          suggestions: ['Impact on family', 'Impact on friendships', 'Partner alignment', 'Community/belonging']
+        },
+        {
+          id: 'health',
+          label: 'Health',
+          suggestions: ['Physical health impact', 'Mental health impact', 'Stress level', 'Sleep/recovery']
+        },
+        {
+          id: 'growth',
+          label: 'Growth',
+          suggestions: ['Learning opportunity', 'Career advancement', 'Skill development', 'Challenge level']
+        },
+        {
+          id: 'values',
+          label: 'Values Alignment',
+          suggestions: ['Aligns with core values', 'Sense of meaning/purpose', 'Integrity/authenticity', 'Legacy/long-term impact']
+        },
+        {
+          id: 'practical',
+          label: 'Practical',
+          suggestions: ['Feasibility', 'Reversibility', 'Dependencies/prerequisites', 'Risk of failure']
+        },
+        {
+          id: 'emotional',
+          label: 'Emotional',
+          suggestions: ['Excitement/energy', 'Fear/anxiety', 'Regret minimization', 'Gut feeling']
+        }
+      ];
+
+      var WEIGHT_LABELS = {
+        1: 'Nice to have',
+        2: 'Somewhat important',
+        3: 'Important',
+        4: 'Very important',
+        5: 'Critical'
+      };
+
+      var SCORE_LABELS = {
+        1: 'Poor',
+        2: 'Weak',
+        3: 'Neutral',
+        4: 'Good',
+        5: 'Strong'
+      };
+
+      var CHART_COLORS = [
+        'chart-color-1', 'chart-color-2', 'chart-color-3', 'chart-color-4', 'chart-color-5',
+        'chart-color-6', 'chart-color-7', 'chart-color-8', 'chart-color-9', 'chart-color-10'
+      ];
+
+      // State
+      var state = {
+        step: 'define', // 'define', 'options', 'considerations', 'weighting', 'scoring', 'results'
+        decision: {
+          title: '',
+          context: ''
+        },
+        options: ['', ''],
+        considerations: [], // { id, label, category, isCustom }
+        weights: {}, // consideration id -> weight (1-5)
+        scores: {}, // `${optionIndex}-${considerationId}` -> score (1-5)
+        scoringIndex: 0 // current consideration being scored
+      };
+
+      var STEPS = ['define', 'options', 'considerations', 'weighting', 'scoring', 'results'];
+
+      // Helpers
+      function generateId() {
+        return 'c_' + Math.random().toString(36).substr(2, 9);
+      }
+
+      function getStepIndex(step) {
+        return STEPS.indexOf(step);
+      }
+
+      function canProceed() {
+        switch (state.step) {
+          case 'define':
+            return state.decision.title.trim().length > 0;
+          case 'options':
+            var validOptions = state.options.filter(function(o) { return o.trim().length > 0; });
+            return validOptions.length >= 2;
+          case 'considerations':
+            return state.considerations.length >= 2;
+          case 'weighting':
+            return state.considerations.every(function(c) {
+              return state.weights[c.id] !== undefined;
+            });
+          case 'scoring':
+            var currentConsideration = state.considerations[state.scoringIndex];
+            if (!currentConsideration) return false;
+            var validOptions = state.options.filter(function(o) { return o.trim().length > 0; });
+            return validOptions.every(function(_, i) {
+              return state.scores[i + '-' + currentConsideration.id] !== undefined;
+            });
+          default:
+            return true;
+        }
+      }
+
+      function calculateResults() {
+        var validOptions = state.options
+          .map(function(o, i) { return { label: o.trim(), index: i }; })
+          .filter(function(o) { return o.label.length > 0; });
+
+        var maxPossibleScore = 0;
+        state.considerations.forEach(function(c) {
+          maxPossibleScore += (state.weights[c.id] || 3) * 5;
+        });
+
+        var results = validOptions.map(function(opt) {
+          var totalScore = 0;
+          var breakdown = [];
+
+          state.considerations.forEach(function(c) {
+            var weight = state.weights[c.id] || 3;
+            var score = state.scores[opt.index + '-' + c.id] || 3;
+            var weighted = weight * score;
+            totalScore += weighted;
+            breakdown.push({
+              consideration: c,
+              weight: weight,
+              score: score,
+              weighted: weighted
+            });
+          });
+
+          return {
+            label: opt.label,
+            index: opt.index,
+            totalScore: totalScore,
+            percentage: Math.round((totalScore / maxPossibleScore) * 100),
+            breakdown: breakdown
+          };
+        });
+
+        results.sort(function(a, b) { return b.totalScore - a.totalScore; });
+        return results;
+      }
+
+      // Render
+      function render() {
+        var hasProgress = state.decision.title.trim().length > 0 ||
+                         state.options.some(function(o) { return o.trim().length > 0; }) ||
+                         state.considerations.length > 0;
+        headerReset.classList.toggle('is-visible', hasProgress);
+
+        switch (state.step) {
+          case 'define':
+            renderDefine();
+            break;
+          case 'options':
+            renderOptions();
+            break;
+          case 'considerations':
+            renderConsiderations();
+            break;
+          case 'weighting':
+            renderWeighting();
+            break;
+          case 'scoring':
+            renderScoring();
+            break;
+          case 'results':
+            renderResults();
+            break;
+        }
+      }
+
+      function renderProgress() {
+        var currentIndex = getStepIndex(state.step);
+        var html = '<div class="progress">';
+
+        for (var i = 0; i < STEPS.length; i++) {
+          var isActive = i === currentIndex;
+          var isComplete = i < currentIndex;
+          var isClickable = i < currentIndex;
+
+          html += '<span class="progress-step' +
+                  (isActive ? ' is-active' : '') +
+                  (isComplete ? ' is-complete' : '') +
+                  (isClickable ? ' is-clickable' : '') +
+                  '" data-step="' + i + '"></span>';
+        }
+
+        var stepLabels = ['Define', 'Options', 'Factors', 'Weight', 'Score', 'Results'];
+        html += '<span class="progress-label">' + stepLabels[currentIndex] + '</span>';
+        html += '</div>';
+
+        return html;
+      }
+
+      function attachProgressListeners() {
+        var steps = document.querySelectorAll('.progress-step.is-clickable');
+        steps.forEach(function(step) {
+          step.addEventListener('click', function() {
+            var targetIndex = parseInt(step.dataset.step, 10);
+            state.step = STEPS[targetIndex];
+            if (state.step === 'scoring') {
+              state.scoringIndex = 0;
+            }
+            render();
+          });
+        });
+      }
+
+      function renderDefine() {
+        var html = renderProgress() +
+          '<div class="step-content" id="step-content">' +
+            '<h1 class="step-title">What are you deciding?</h1>' +
+            '<p class="step-subtitle">Name your decision clearly. The more specific, the better.</p>' +
+            '<div class="form-group">' +
+              '<label class="form-label" for="decision-title">Decision</label>' +
+              '<input type="text" class="form-input" id="decision-title" ' +
+                'placeholder="e.g., Take the new job or stay put" ' +
+                'value="' + escapeHtml(state.decision.title) + '">' +
+            '</div>' +
+            '<div class="form-group">' +
+              '<label class="form-label" for="decision-context">Context (optional)</label>' +
+              '<textarea class="form-input form-textarea" id="decision-context" ' +
+                'placeholder="Any background that helps frame this decision...">' +
+                escapeHtml(state.decision.context) + '</textarea>' +
+            '</div>' +
+          '</div>' +
+          '<nav class="nav">' +
+            '<span></span>' +
+            '<button type="button" class="nav-btn nav-btn--next" id="nav-next"' +
+              (canProceed() ? '' : ' disabled') + '>Next &rarr;</button>' +
+          '</nav>';
+
+        tool.innerHTML = html;
+        attachProgressListeners();
+        attachDefineListeners();
+      }
+
+      function attachDefineListeners() {
+        var titleInput = document.getElementById('decision-title');
+        var contextInput = document.getElementById('decision-context');
+        var nextBtn = document.getElementById('nav-next');
+
+        titleInput.addEventListener('input', function() {
+          state.decision.title = titleInput.value;
+          nextBtn.disabled = !canProceed();
+        });
+
+        contextInput.addEventListener('input', function() {
+          state.decision.context = contextInput.value;
+        });
+
+        nextBtn.addEventListener('click', function() {
+          if (canProceed()) {
+            transitionTo('options');
+          }
+        });
+
+        titleInput.focus();
+      }
+
+      function renderOptions() {
+        var optionsHtml = '';
+        var validCount = state.options.filter(function(o) { return o.trim().length > 0; }).length;
+
+        for (var i = 0; i < state.options.length; i++) {
+          var canDelete = state.options.length > 2;
+          optionsHtml += '<div class="option-item">' +
+            '<span class="option-number">' + (i + 1) + '</span>' +
+            '<input type="text" class="form-input option-input" data-index="' + i + '" ' +
+              'placeholder="e.g., Accept the offer" value="' + escapeHtml(state.options[i]) + '">' +
+            '<button type="button" class="option-delete" data-index="' + i + '"' +
+              (canDelete ? '' : ' disabled') + ' aria-label="Remove option">' +
+              '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<path d="M18 6L6 18M6 6l12 12"/>' +
+              '</svg>' +
+            '</button>' +
+          '</div>';
+        }
+
+        var canAddMore = state.options.length < 6;
+
+        var html = renderProgress() +
+          '<div class="step-content" id="step-content">' +
+            '<h1 class="step-title">What are your options?</h1>' +
+            '<p class="step-subtitle">Add the choices you\'re weighing. You can have 2-6 options.</p>' +
+            '<div class="options-list" id="options-list">' + optionsHtml + '</div>' +
+            '<button type="button" class="add-btn" id="add-option"' +
+              (canAddMore ? '' : ' disabled') + '>' +
+              '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<path d="M12 5v14M5 12h14"/>' +
+              '</svg>' +
+              'Add option' +
+            '</button>' +
+          '</div>' +
+          '<nav class="nav">' +
+            '<button type="button" class="nav-btn nav-btn--back" id="nav-back">&larr; Back</button>' +
+            '<button type="button" class="nav-btn nav-btn--next" id="nav-next"' +
+              (canProceed() ? '' : ' disabled') + '>Next &rarr;</button>' +
+          '</nav>';
+
+        tool.innerHTML = html;
+        attachProgressListeners();
+        attachOptionsListeners();
+      }
+
+      function attachOptionsListeners() {
+        var optionInputs = document.querySelectorAll('.option-input');
+        var deleteButtons = document.querySelectorAll('.option-delete');
+        var addBtn = document.getElementById('add-option');
+        var nextBtn = document.getElementById('nav-next');
+        var backBtn = document.getElementById('nav-back');
+
+        optionInputs.forEach(function(input) {
+          input.addEventListener('input', function() {
+            var index = parseInt(input.dataset.index, 10);
+            state.options[index] = input.value;
+            nextBtn.disabled = !canProceed();
+          });
+        });
+
+        deleteButtons.forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            if (state.options.length > 2) {
+              var index = parseInt(btn.dataset.index, 10);
+              state.options.splice(index, 1);
+              render();
+            }
+          });
+        });
+
+        addBtn.addEventListener('click', function() {
+          if (state.options.length < 6) {
+            state.options.push('');
+            render();
+            var inputs = document.querySelectorAll('.option-input');
+            if (inputs.length > 0) {
+              inputs[inputs.length - 1].focus();
+            }
+          }
+        });
+
+        backBtn.addEventListener('click', function() {
+          transitionTo('define');
+        });
+
+        nextBtn.addEventListener('click', function() {
+          if (canProceed()) {
+            transitionTo('considerations');
+          }
+        });
+      }
+
+      function renderConsiderations() {
+        var selectedIds = state.considerations.map(function(c) { return c.id; });
+        var customConsiderations = state.considerations.filter(function(c) { return c.isCustom; });
+
+        var categoriesHtml = '';
+        CATEGORIES.forEach(function(cat) {
+          var chipsHtml = '';
+          cat.suggestions.forEach(function(suggestion) {
+            var id = cat.id + '_' + suggestion.toLowerCase().replace(/[^a-z0-9]/g, '_');
+            var isSelected = selectedIds.indexOf(id) !== -1;
+            chipsHtml += '<button type="button" class="chip' + (isSelected ? ' is-selected' : '') +
+                        '" data-id="' + id + '" data-label="' + escapeHtml(suggestion) +
+                        '" data-category="' + cat.id + '">' + escapeHtml(suggestion) + '</button>';
+          });
+          categoriesHtml += '<div class="category-group">' +
+            '<h3 class="category-title">' + cat.label + '</h3>' +
+            '<div class="chips-container">' + chipsHtml + '</div>' +
+          '</div>';
+        });
+
+        var customChipsHtml = '';
+        customConsiderations.forEach(function(c) {
+          customChipsHtml += '<button type="button" class="chip is-custom is-selected" data-id="' + c.id + '">' +
+            escapeHtml(c.label) +
+            '<span class="chip-delete" aria-hidden="true">&times;</span>' +
+          '</button>';
+        });
+
+        var countClass = '';
+        var countText = state.considerations.length + ' of 2-10 selected';
+        if (state.considerations.length < 2) {
+          countClass = ' is-warning';
+          countText = 'Select at least 2 (' + state.considerations.length + ' selected)';
+        } else if (state.considerations.length >= 10) {
+          countText = 'Maximum reached (10 selected)';
+        }
+
+        var html = renderProgress() +
+          '<div class="step-content" id="step-content">' +
+            '<h1 class="step-title">What matters?</h1>' +
+            '<p class="step-subtitle">Select the factors that are important to this decision.</p>' +
+            categoriesHtml +
+            '<div class="category-group">' +
+              '<h3 class="category-title">Custom</h3>' +
+              '<div class="chips-container" id="custom-chips">' + customChipsHtml + '</div>' +
+              '<div style="margin-top: 0.5rem;">' +
+                '<input type="text" class="form-input" id="custom-input" ' +
+                  'placeholder="Add your own consideration..." style="max-width: 300px;"' +
+                  (state.considerations.length >= 10 ? ' disabled' : '') + '>' +
+              '</div>' +
+            '</div>' +
+            '<p class="consideration-count' + countClass + '">' + countText + '</p>' +
+          '</div>' +
+          '<nav class="nav">' +
+            '<button type="button" class="nav-btn nav-btn--back" id="nav-back">&larr; Back</button>' +
+            '<button type="button" class="nav-btn nav-btn--next" id="nav-next"' +
+              (canProceed() ? '' : ' disabled') + '>Next &rarr;</button>' +
+          '</nav>';
+
+        tool.innerHTML = html;
+        attachProgressListeners();
+        attachConsiderationsListeners();
+      }
+
+      function attachConsiderationsListeners() {
+        var chips = document.querySelectorAll('.chip:not(.is-custom)');
+        var customChips = document.querySelectorAll('.chip.is-custom');
+        var customInput = document.getElementById('custom-input');
+        var nextBtn = document.getElementById('nav-next');
+        var backBtn = document.getElementById('nav-back');
+
+        chips.forEach(function(chip) {
+          chip.addEventListener('click', function() {
+            var id = chip.dataset.id;
+            var label = chip.dataset.label;
+            var category = chip.dataset.category;
+            var index = -1;
+
+            for (var i = 0; i < state.considerations.length; i++) {
+              if (state.considerations[i].id === id) {
+                index = i;
+                break;
+              }
+            }
+
+            if (index !== -1) {
+              state.considerations.splice(index, 1);
+              delete state.weights[id];
+            } else if (state.considerations.length < 10) {
+              state.considerations.push({
+                id: id,
+                label: label,
+                category: category,
+                isCustom: false
+              });
+              state.weights[id] = 3;
+            }
+            render();
+          });
+        });
+
+        customChips.forEach(function(chip) {
+          chip.addEventListener('click', function() {
+            var id = chip.dataset.id;
+            for (var i = 0; i < state.considerations.length; i++) {
+              if (state.considerations[i].id === id) {
+                state.considerations.splice(i, 1);
+                delete state.weights[id];
+                break;
+              }
+            }
+            render();
+          });
+        });
+
+        customInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            var value = customInput.value.trim();
+            if (value.length > 0 && state.considerations.length < 10) {
+              var id = generateId();
+              state.considerations.push({
+                id: id,
+                label: value,
+                category: 'custom',
+                isCustom: true
+              });
+              state.weights[id] = 3;
+              render();
+            }
+          }
+        });
+
+        backBtn.addEventListener('click', function() {
+          transitionTo('options');
+        });
+
+        nextBtn.addEventListener('click', function() {
+          if (canProceed()) {
+            transitionTo('weighting');
+          }
+        });
+      }
+
+      function renderWeighting() {
+        var weightsHtml = '';
+        state.considerations.forEach(function(c) {
+          var weight = state.weights[c.id] || 3;
+          weightsHtml += '<div class="weight-item">' +
+            '<div class="weight-header">' +
+              '<span class="weight-label">' + escapeHtml(c.label) + '</span>' +
+              '<span class="weight-value" id="weight-value-' + c.id + '">' + WEIGHT_LABELS[weight] + '</span>' +
+            '</div>' +
+            '<input type="range" class="weight-slider" data-id="' + c.id + '" ' +
+              'min="1" max="5" step="1" value="' + weight + '">' +
+            '<div class="weight-ticks">' +
+              '<span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>' +
+            '</div>' +
+          '</div>';
+        });
+
+        var html = renderProgress() +
+          '<div class="step-content" id="step-content">' +
+            '<h1 class="step-title">How important is each?</h1>' +
+            '<p class="step-subtitle">Drag to set the weight for each consideration.</p>' +
+            '<div class="weight-list">' + weightsHtml + '</div>' +
+          '</div>' +
+          '<nav class="nav">' +
+            '<button type="button" class="nav-btn nav-btn--back" id="nav-back">&larr; Back</button>' +
+            '<button type="button" class="nav-btn nav-btn--next" id="nav-next">Next &rarr;</button>' +
+          '</nav>';
+
+        tool.innerHTML = html;
+        attachProgressListeners();
+        attachWeightingListeners();
+      }
+
+      function attachWeightingListeners() {
+        var sliders = document.querySelectorAll('.weight-slider');
+        var nextBtn = document.getElementById('nav-next');
+        var backBtn = document.getElementById('nav-back');
+
+        sliders.forEach(function(slider) {
+          slider.addEventListener('input', function() {
+            var id = slider.dataset.id;
+            var value = parseInt(slider.value, 10);
+            state.weights[id] = value;
+            var valueDisplay = document.getElementById('weight-value-' + id);
+            if (valueDisplay) {
+              valueDisplay.textContent = WEIGHT_LABELS[value];
+            }
+          });
+        });
+
+        backBtn.addEventListener('click', function() {
+          transitionTo('considerations');
+        });
+
+        nextBtn.addEventListener('click', function() {
+          state.scoringIndex = 0;
+          transitionTo('scoring');
+        });
+      }
+
+      function renderScoring() {
+        var currentConsideration = state.considerations[state.scoringIndex];
+        if (!currentConsideration) {
+          transitionTo('results');
+          return;
+        }
+
+        var validOptions = state.options
+          .map(function(o, i) { return { label: o.trim(), index: i }; })
+          .filter(function(o) { return o.label.length > 0; });
+
+        var optionsHtml = '';
+        validOptions.forEach(function(opt) {
+          var scoreKey = opt.index + '-' + currentConsideration.id;
+          var currentScore = state.scores[scoreKey];
+
+          var buttonsHtml = '';
+          for (var s = 1; s <= 5; s++) {
+            var isSelected = currentScore === s;
+            buttonsHtml += '<button type="button" class="score-btn' + (isSelected ? ' is-selected' : '') +
+                          '" data-option="' + opt.index + '" data-score="' + s + '">' + s + '</button>';
+          }
+
+          optionsHtml += '<div class="scoring-option">' +
+            '<div class="scoring-option-label">' + escapeHtml(opt.label) + '</div>' +
+            '<div class="score-buttons">' + buttonsHtml + '</div>' +
+            '<div class="score-labels"><span>Poor fit</span><span>Strong fit</span></div>' +
+          '</div>';
+        });
+
+        var html = renderProgress() +
+          '<div class="step-content" id="step-content">' +
+            '<div class="scoring-header">' +
+              '<h1 class="scoring-consideration">' + escapeHtml(currentConsideration.label) + '</h1>' +
+              '<p class="scoring-progress">' + (state.scoringIndex + 1) + ' of ' + state.considerations.length + ' factors</p>' +
+            '</div>' +
+            '<p class="step-subtitle" style="text-align: center;">How well does each option address this?</p>' +
+            '<div class="scoring-options">' + optionsHtml + '</div>' +
+          '</div>' +
+          '<nav class="nav">' +
+            '<button type="button" class="nav-btn nav-btn--back" id="nav-back">&larr; Back</button>' +
+            '<button type="button" class="nav-btn nav-btn--next" id="nav-next"' +
+              (canProceed() ? '' : ' disabled') + '>' +
+              (state.scoringIndex < state.considerations.length - 1 ? 'Next &rarr;' : 'See results &rarr;') +
+            '</button>' +
+          '</nav>';
+
+        tool.innerHTML = html;
+        attachProgressListeners();
+        attachScoringListeners();
+      }
+
+      function attachScoringListeners() {
+        var scoreButtons = document.querySelectorAll('.score-btn');
+        var nextBtn = document.getElementById('nav-next');
+        var backBtn = document.getElementById('nav-back');
+        var currentConsideration = state.considerations[state.scoringIndex];
+
+        scoreButtons.forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            var optionIndex = parseInt(btn.dataset.option, 10);
+            var score = parseInt(btn.dataset.score, 10);
+            var scoreKey = optionIndex + '-' + currentConsideration.id;
+            state.scores[scoreKey] = score;
+
+            // Update UI
+            var container = btn.closest('.scoring-option');
+            container.querySelectorAll('.score-btn').forEach(function(b) {
+              b.classList.toggle('is-selected', b === btn);
+            });
+
+            nextBtn.disabled = !canProceed();
+          });
+        });
+
+        backBtn.addEventListener('click', function() {
+          if (state.scoringIndex > 0) {
+            state.scoringIndex--;
+            render();
+          } else {
+            transitionTo('weighting');
+          }
+        });
+
+        nextBtn.addEventListener('click', function() {
+          if (!canProceed()) return;
+
+          if (state.scoringIndex < state.considerations.length - 1) {
+            state.scoringIndex++;
+            render();
+          } else {
+            transitionTo('results');
+          }
+        });
+      }
+
+      function renderResults() {
+        var results = calculateResults();
+        var winner = results[0];
+        var maxScore = winner ? winner.totalScore : 1;
+
+        // Ranked list
+        var rankedHtml = '';
+        results.forEach(function(r, i) {
+          var barWidth = Math.round((r.totalScore / maxScore) * 100);
+          rankedHtml += '<div class="ranked-item' + (i === 0 ? ' is-winner' : '') + '">' +
+            '<span class="ranked-position">' + (i + 1) + '</span>' +
+            '<span class="ranked-name">' + escapeHtml(r.label) + '</span>' +
+            '<span class="ranked-score">' + r.percentage + '%</span>' +
+            '<div class="ranked-bar-container">' +
+              '<div class="ranked-bar" style="width: ' + barWidth + '%;"></div>' +
+            '</div>' +
+          '</div>';
+        });
+
+        // Stacked bar chart
+        var barChartHtml = '<div class="bar-chart">';
+        results.forEach(function(r) {
+          var segmentsHtml = '';
+          r.breakdown.forEach(function(b, i) {
+            var width = (b.weighted / r.totalScore) * 100;
+            segmentsHtml += '<div class="bar-segment ' + CHART_COLORS[i % CHART_COLORS.length] +
+                           '" style="width: ' + width + '%;" title="' + escapeHtml(b.consideration.label) +
+                           ': ' + b.weighted + '"></div>';
+          });
+          barChartHtml += '<div class="bar-row">' +
+            '<div class="bar-label">' + escapeHtml(r.label) + '</div>' +
+            '<div class="bar-segments">' + segmentsHtml + '</div>' +
+          '</div>';
+        });
+        barChartHtml += '</div>';
+
+        // Legend
+        var legendHtml = '<div class="bar-legend">';
+        state.considerations.forEach(function(c, i) {
+          legendHtml += '<div class="legend-item">' +
+            '<span class="legend-dot ' + CHART_COLORS[i % CHART_COLORS.length] + '"></span>' +
+            '<span>' + escapeHtml(c.label) + '</span>' +
+          '</div>';
+        });
+        legendHtml += '</div>';
+
+        var html = renderProgress() +
+          '<div class="results" id="results">' +
+            '<div class="results-header">' +
+              '<h1 class="results-title">Your Results</h1>' +
+              '<p class="results-decision">' + escapeHtml(state.decision.title) + '</p>' +
+            '</div>' +
+            (winner ? '<div class="winner-card">' +
+              '<p class="winner-label">Top choice</p>' +
+              '<h2 class="winner-name">' + escapeHtml(winner.label) + '</h2>' +
+              '<p class="winner-score">' + winner.percentage + '% weighted score</p>' +
+            '</div>' : '') +
+            '<div class="ranked-list">' + rankedHtml + '</div>' +
+            '<div class="chart-section">' +
+              '<h3 class="chart-title">Score Breakdown by Factor</h3>' +
+              barChartHtml +
+              legendHtml +
+            '</div>' +
+          '</div>' +
+          '<div class="results-actions">' +
+            '<button type="button" class="nav-btn nav-btn--back" id="nav-edit">&larr; Edit scores</button>' +
+            '<button type="button" class="nav-btn" id="nav-print">Print</button>' +
+            '<button type="button" class="nav-btn nav-btn--next" id="nav-new">New decision</button>' +
+          '</div>';
+
+        tool.innerHTML = html;
+        attachProgressListeners();
+        attachResultsListeners();
+      }
+
+      function attachResultsListeners() {
+        var editBtn = document.getElementById('nav-edit');
+        var printBtn = document.getElementById('nav-print');
+        var newBtn = document.getElementById('nav-new');
+
+        editBtn.addEventListener('click', function() {
+          state.scoringIndex = state.considerations.length - 1;
+          transitionTo('scoring');
+        });
+
+        printBtn.addEventListener('click', function() {
+          window.print();
+        });
+
+        newBtn.addEventListener('click', function() {
+          if (confirm('Start a new decision? This will clear all your current data.')) {
+            resetTool();
+          }
+        });
+      }
+
+      function transitionTo(step) {
+        var content = document.getElementById('step-content') || document.getElementById('results');
+
+        if (content && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          content.classList.add('is-transitioning');
+          setTimeout(function() {
+            state.step = step;
+            render();
+          }, 150);
+        } else {
+          state.step = step;
+          render();
+        }
+      }
+
+      function resetTool() {
+        state = {
+          step: 'define',
+          decision: { title: '', context: '' },
+          options: ['', ''],
+          considerations: [],
+          weights: {},
+          scores: {},
+          scoringIndex: 0
+        };
+        render();
+      }
+
+      function escapeHtml(str) {
+        var div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+      }
+
+      // Header reset button
+      headerReset.addEventListener('click', function() {
+        if (confirm('Start over? This will clear all your progress.')) {
+          resetTool();
+        }
+      });
+
+      // Initial render
+      render();
+    })();
+  </script>
+</body>
+</html>
