@@ -6,6 +6,7 @@
     "generate-og": "node generate-og-images.js"
   },
   "dependencies": {
-    "canvas": "^2.11.2"
+    "canvas": "^2.11.2",
+    "sharp": "^0.34.5"
   }
 }
