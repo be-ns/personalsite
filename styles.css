@@ -793,6 +793,16 @@ section:last-of-type {
   border-left-color: var(--color-accent);
 }
 
+.capability-phase {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin-bottom: var(--space-xs);
+}
+
 .capability-lead {
   font-family: var(--font-heading);
   font-size: clamp(1.25rem, 3vw, 1.5rem);
@@ -808,6 +818,23 @@ section:last-of-type {
   line-height: 1.7;
   color: var(--color-muted);
   margin-bottom: 0;
+  max-width: 56ch;
+}
+
+.capability-body em {
+  font-style: normal;
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.capabilities-outro {
+  margin-top: var(--space-xl);
+  padding-left: var(--space-md);
+  border-left: 2px solid var(--color-accent);
+  font-family: var(--font-heading);
+  font-size: clamp(1rem, 2vw, 1.125rem);
+  line-height: 1.5;
+  color: var(--color-text);
   max-width: 56ch;
 }
 
