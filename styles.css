@@ -827,17 +827,6 @@ section:last-of-type {
   font-weight: 600;
 }
 
-.capabilities-outro {
-  margin-top: var(--space-xl);
-  padding-left: var(--space-md);
-  border-left: 2px solid var(--color-accent);
-  font-family: var(--font-heading);
-  font-size: clamp(1rem, 2vw, 1.125rem);
-  line-height: 1.5;
-  color: var(--color-text);
-  max-width: 56ch;
-}
-
 /* ==========================================================================
    Elsewhere Section
    ========================================================================== */
