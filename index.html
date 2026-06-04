@@ -329,7 +329,7 @@
         <span class="contact-email-text">Click to copy email</span>
         <span class="contact-email-icon" aria-hidden="true">→</span>
       </button>
-      <span class="contact-email-status" aria-live="polite"></span>
+      <span class="contact-email-status" aria-live="polite" aria-atomic="true"></span>
 
       <div class="contact-social">
         <a href="https://www.linkedin.com/in/be-ns/" target="_blank" rel="noopener">LinkedIn</a>
@@ -387,6 +387,8 @@
       var menuPanel = document.querySelector('.menu-panel');
       var menuOverlay = document.querySelector('.menu-overlay');
       var menuLinks = document.querySelectorAll('.menu-links a');
+      var mainEl = document.querySelector('main');
+      var footerEl = document.querySelector('footer');
       var menuToggleDefaultLabel = menuToggle ? menuToggle.textContent.trim() : 'Menu';
 
       if (!menuToggle || !menuPanel || !menuOverlay) return;
@@ -405,6 +407,11 @@
         menuToggle.textContent = 'Close';
         menuPanel.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
+        // Take background content out of the tab order and the a11y tree
+        if (mainEl) mainEl.inert = true;
+        if (footerEl) footerEl.inert = true;
+        // Move focus into the dialog
+        if (menuLinks.length) menuLinks[0].focus();
       }
 
       function closeMenu() {
@@ -419,6 +426,8 @@
         menuToggle.textContent = menuToggleDefaultLabel;
         menuPanel.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
+        if (mainEl) mainEl.inert = false;
+        if (footerEl) footerEl.inert = false;
         menuToggle.focus();
       }
 
@@ -435,9 +444,22 @@
         menuLinks[i].onclick = function() { closeMenu(); };
       }
 
-      document.onkeydown = function(e) {
-        if (e.key === 'Escape' && isOpen) closeMenu();
-      };
+      // Escape closes; Tab is trapped within the dialog (toggle + menu links)
+      document.addEventListener('keydown', function(e) {
+        if (!isOpen) return;
+        if (e.key === 'Escape') { closeMenu(); return; }
+        if (e.key !== 'Tab') return;
+        var focusable = [menuToggle].concat(Array.prototype.slice.call(menuLinks));
+        var first = focusable[0];
+        var last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      });
 
       // Scroll animations
       if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
