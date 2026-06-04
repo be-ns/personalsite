@@ -22,8 +22,42 @@
   <meta name="twitter:description" content="Product manager building ecosystems powered by agents. Software that fits how customers think and handles the work they don't have time for.">
   <meta name="twitter:image" content="https://bensiverly.com/images/og-home.png">
 
-  <!-- Favicon -->
+  <!-- Canonical -->
+  <link rel="canonical" href="https://bensiverly.com/">
+
+  <!-- Favicon & PWA -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#0047AB">
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": "https://bensiverly.com/#ben",
+        "name": "Ben Siverly",
+        "url": "https://bensiverly.com/",
+        "jobTitle": "Product Manager",
+        "worksFor": { "@type": "Organization", "name": "AppFolio" },
+        "sameAs": [
+          "https://www.linkedin.com/in/be-ns/",
+          "https://github.com/be-ns"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://bensiverly.com/#website",
+        "url": "https://bensiverly.com/",
+        "name": "Ben Siverly",
+        "description": "Personal site and a workshop of free, private, no-account browser tools.",
+        "author": { "@id": "https://bensiverly.com/#ben" }
+      }
+    ]
+  }
+  </script>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
