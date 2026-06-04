@@ -2151,7 +2151,7 @@
             >
             <span class="input-help" id="zip-help">California ZIP codes supported</span>
             <span class="input-error" id="zip-error" role="alert">Please enter a valid 5-digit zip code</span>
-            <div class="location-display" id="location-display" aria-live="polite">
+            <div class="location-display" id="location-display" aria-live="polite" aria-label="Selected location">
               <span class="location-name" id="location-name"></span>
               <button class="location-change" id="location-change" type="button">Change location</button>
             </div>
@@ -2233,6 +2233,7 @@
       <section class="results-section is-hidden" id="results-section">
         <!-- Populated by JavaScript -->
       </section>
+      <div id="results-status" role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"></div>
     </div>
   </main>
 
@@ -2711,6 +2712,7 @@
         }
 
         findBtn.setAttribute('disabled', 'true');
+        resultsSection.setAttribute('aria-busy', 'true');
 
         dataReadyPromise.then(function() {
           return resolveZipToRegion(zip);
@@ -2722,8 +2724,18 @@
             : [];
           updateLocationDisplay();
           showResults();
+          var status = document.getElementById('results-status');
+          if (status) {
+            if (state.zipResolved && state.zipResolved.regionKey) {
+              var sun = getSunLabel(state.sunLevel).toLowerCase().replace(/\(.*\)/, '').trim();
+              status.textContent = 'Found ' + state.filteredPlants.length + ' plants for ' + sun + ' in ' + getLocationLabel() + '.';
+            } else {
+              status.textContent = 'No plant matches for that location. See the suggestions below.';
+            }
+          }
         }).finally(function() {
           findBtn.removeAttribute('disabled');
+          resultsSection.removeAttribute('aria-busy');
         });
       }
 

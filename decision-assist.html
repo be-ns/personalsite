@@ -1357,6 +1357,7 @@
           optionsHtml += '<div class="option-item">' +
             '<span class="option-number">' + (i + 1) + '</span>' +
             '<input type="text" class="form-input option-input" data-index="' + i + '" ' +
+              'aria-label="Option ' + (i + 1) + '" ' +
               'placeholder="e.g., Accept the offer" value="' + escapeHtml(state.options[i]) + '">' +
             '<button type="button" class="option-delete" data-index="' + i + '"' +
               (canDelete ? '' : ' disabled') + ' aria-label="Remove option">' +
@@ -1487,6 +1488,7 @@
               '<div class="chips-container" id="custom-chips">' + customChipsHtml + '</div>' +
               '<div style="margin-top: 0.5rem;">' +
                 '<input type="text" class="form-input" id="custom-input" ' +
+                  'aria-label="Add your own consideration" ' +
                   'placeholder="Add your own consideration..." style="max-width: 300px;"' +
                   (state.considerations.length >= 10 ? ' disabled' : '') + '>' +
               '</div>' +
@@ -1594,6 +1596,8 @@
               '<span class="weight-value" id="weight-value-' + c.id + '">' + WEIGHT_LABELS[weight] + '</span>' +
             '</div>' +
             '<input type="range" class="weight-slider" data-id="' + c.id + '" ' +
+              'aria-label="Weight for ' + escapeHtml(c.label) + '" ' +
+              'aria-valuetext="' + WEIGHT_LABELS[weight] + '" ' +
               'min="1" max="5" step="1" value="' + weight + '">' +
             '<div class="weight-ticks">' +
               '<span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>' +
@@ -1627,6 +1631,7 @@
             var id = slider.dataset.id;
             var value = parseInt(slider.value, 10);
             state.weights[id] = value;
+            slider.setAttribute('aria-valuetext', WEIGHT_LABELS[value]);
             var valueDisplay = document.getElementById('weight-value-' + id);
             if (valueDisplay) {
               valueDisplay.textContent = WEIGHT_LABELS[value];
@@ -1664,7 +1669,9 @@
           for (var s = 1; s <= 5; s++) {
             var isSelected = currentScore === s;
             buttonsHtml += '<button type="button" class="score-btn' + (isSelected ? ' is-selected' : '') +
-                          '" data-option="' + opt.index + '" data-score="' + s + '">' + s + '</button>';
+                          '" data-option="' + opt.index + '" data-score="' + s + '"' +
+                          ' aria-pressed="' + (isSelected ? 'true' : 'false') + '"' +
+                          ' aria-label="Score ' + s + ' of 5 for ' + escapeHtml(opt.label) + '">' + s + '</button>';
           }
 
           optionsHtml += '<div class="scoring-option">' +

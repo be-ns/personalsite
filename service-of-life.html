@@ -1581,12 +1581,12 @@
             </div>
             <div class="sol-section-actions">
               ${sectionDef.optional ? `
-                <button class="sol-section-btn" title="${section.enabled ? 'Disable' : 'Enable'}" data-action="toggle">
-                  ${section.enabled ? '&#x2713;' : '&#x25CB;'}
+                <button class="sol-section-btn" title="${section.enabled ? 'Disable' : 'Enable'}" aria-label="${section.enabled ? 'Disable' : 'Enable'} section" data-action="toggle">
+                  <span aria-hidden="true">${section.enabled ? '&#x2713;' : '&#x25CB;'}</span>
                 </button>
               ` : ''}
-              <button class="sol-section-btn" title="Move up" data-action="up" ${index === 0 ? 'disabled' : ''}>&#x2191;</button>
-              <button class="sol-section-btn" title="Move down" data-action="down" ${index === state.sections.length - 1 ? 'disabled' : ''}>&#x2193;</button>
+              <button class="sol-section-btn" title="Move up" aria-label="Move section up" data-action="up" ${index === 0 ? 'disabled' : ''}><span aria-hidden="true">&#x2191;</span></button>
+              <button class="sol-section-btn" title="Move down" aria-label="Move section down" data-action="down" ${index === state.sections.length - 1 ? 'disabled' : ''}><span aria-hidden="true">&#x2193;</span></button>
             </div>
           `;
 
@@ -1726,9 +1726,9 @@
             <div class="sol-component-body">
               ${renderComponentForm(component, index)}
               <div class="sol-component-actions">
-                <button class="sol-section-btn" title="Move up" data-action="up" ${index === 0 ? 'disabled' : ''}>&#x2191;</button>
-                <button class="sol-section-btn" title="Move down" data-action="down" ${index === section.components.length - 1 ? 'disabled' : ''}>&#x2193;</button>
-                <button class="sol-section-btn" title="Delete" data-action="delete" style="color: #c00;">&#x2715;</button>
+                <button class="sol-section-btn" title="Move up" aria-label="Move component up" data-action="up" ${index === 0 ? 'disabled' : ''}><span aria-hidden="true">&#x2191;</span></button>
+                <button class="sol-section-btn" title="Move down" aria-label="Move component down" data-action="down" ${index === section.components.length - 1 ? 'disabled' : ''}><span aria-hidden="true">&#x2193;</span></button>
+                <button class="sol-section-btn" title="Delete" aria-label="Delete component" data-action="delete" style="color: #c00;"><span aria-hidden="true">&#x2715;</span></button>
               </div>
             </div>
           `;
