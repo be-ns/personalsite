@@ -29,6 +29,10 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="manifest" href="/site.webmanifest">
   <meta name="theme-color" content="#0047AB">
+  <style>
+    .skip-link { position: absolute; left: 8px; top: -56px; z-index: 1000; padding: 0.6rem 1rem; background: #0047AB; color: #fff; border-radius: 0 0 6px 6px; font: 600 0.95rem/1 system-ui, sans-serif; text-decoration: none; }
+    .skip-link:focus { top: 0; }
+  </style>
 
   <!-- Structured data -->
   <script type="application/ld+json">
@@ -960,7 +964,8 @@
     </div>
   </header>
 
-  <main>
+  <a class="skip-link" href="#main">Skip to content</a>
+<main id="main">
     <div class="tool" id="tool" role="application" aria-label="Memorial Pamphlet Creator">
       <!-- Template Selection -->
       <section>
