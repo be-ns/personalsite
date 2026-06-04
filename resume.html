@@ -87,6 +87,30 @@
       cursor: pointer;
     }
 
+    /* Screen-only list of every tailored version */
+    .versions {
+      max-width: 8.5in;
+      margin: 0 auto 2.5rem;
+      padding: 1rem 0.55in 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem 0.7rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.74rem;
+      color: var(--muted);
+    }
+    .versions .versions-label { color: var(--faint); text-transform: uppercase; letter-spacing: 0.08em; }
+    .versions a {
+      color: var(--cobalt);
+      text-decoration: none;
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      padding: 0.35rem 0.6rem;
+      background: var(--paper);
+    }
+    .versions a:hover { border-color: var(--cobalt); background: #fff; }
+
     /* The printable sheet */
     .sheet {
       background: var(--paper);
@@ -256,7 +280,7 @@
     @page { size: Letter; margin: 0.45in; }
     @media print {
       html, body { background: #fff; }
-      .toolbar { display: none !important; }
+      .toolbar, .versions { display: none !important; }
       .sheet {
         width: auto;
         margin: 0;
@@ -388,6 +412,15 @@
       <p class="projects-row" style="margin-top:0.18rem;">Builds &amp; ships free public tools at <a href="https://bensiverly.com">bensiverly.com</a> (Native Plant Finder, Decision Assist, +3) &mdash; working samples from problem to shipped software.</p>
     </section>
   </div>
+
+  <nav class="versions" aria-label="Download a tailored version">
+    <span class="versions-label">Download a version</span>
+    <a href="Ben-Siverly-Resume.pdf" download>General — Senior PM</a>
+    <a href="Ben-Siverly-Resume-ForwardDeployed.pdf" download>Forward-Deployed PM</a>
+    <a href="Ben-Siverly-Resume-AI-Workflows.pdf" download>AI Workflows &amp; Agents</a>
+    <a href="Ben-Siverly-Resume-Data-Pipelines.pdf" download>Data Platform &amp; Pipelines</a>
+    <a href="Ben-Siverly-Resume-AI-Native.pdf" download>AI-Native Products</a>
+  </nav>
 
   <script>
     (function () {
