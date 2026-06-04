@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ben Siverly — Senior Product Manager · Resume</title>
-  <meta name="description" content="Resume of Ben Siverly, Senior Product Manager. Customer-obsessed PM with a data science foundation, building agentic products grounded in how customers actually think.">
+  <meta name="description" content="Resume of Ben Siverly, Senior Product Manager. Data-fluent PM building agentic AI products and the data pipelines behind them.">
   <meta name="robots" content="noindex">
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -43,15 +43,16 @@
       top: 0;
       z-index: 10;
       display: flex;
-      gap: 0.75rem;
+      flex-wrap: wrap;
+      gap: 0.6rem;
       align-items: center;
       justify-content: center;
-      padding: 0.85rem 1rem;
+      padding: 0.7rem 1rem;
       background: rgba(242, 241, 237, 0.92);
       backdrop-filter: blur(6px);
       border-bottom: 1px solid var(--rule);
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
+      font-size: 0.76rem;
     }
     .toolbar a, .toolbar button {
       font-family: inherit;
@@ -69,6 +70,22 @@
     .toolbar a:hover, .toolbar button:hover { background: var(--ink); color: #fff; }
     .toolbar button.primary:hover { background: var(--cobalt); border-color: var(--cobalt); }
     .toolbar .back { background: transparent; border-color: var(--rule); color: var(--muted); }
+    .role-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      color: var(--muted);
+    }
+    .role-label select {
+      font-family: inherit;
+      font-size: inherit;
+      color: var(--ink);
+      background: var(--paper);
+      border: 1px solid var(--cobalt);
+      border-radius: 4px;
+      padding: 0.4rem 0.5rem;
+      cursor: pointer;
+    }
 
     /* The printable sheet */
     .sheet {
@@ -88,7 +105,7 @@
       align-items: flex-end;
       gap: 1rem;
       border-bottom: 2.5pt solid var(--ink);
-      padding-bottom: 0.42rem;
+      padding-bottom: 0.5rem;
     }
     .name {
       font-family: 'Zilla Slab', serif;
@@ -103,7 +120,7 @@
       font-family: 'JetBrains Mono', monospace;
       font-weight: 500;
       font-size: 9.5pt;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--cobalt);
       margin: 0.45rem 0 0;
@@ -120,7 +137,7 @@
     .contact a:hover { color: var(--cobalt); }
 
     /* ---- Sections ---- */
-    section { margin-top: 0.2rem; }
+    section { margin-top: 0.52rem; }
     .section-title {
       font-family: 'JetBrains Mono', monospace;
       font-size: 8.5pt;
@@ -128,21 +145,29 @@
       letter-spacing: 0.18em;
       text-transform: uppercase;
       color: var(--cobalt);
-      margin: 0 0 0.26rem;
-      padding-bottom: 0.14rem;
+      margin: 0 0 0.36rem;
+      padding-bottom: 0.18rem;
       border-bottom: 1px solid var(--rule);
     }
 
     .summary {
       font-size: 10pt;
-      line-height: 1.33;
+      line-height: 1.48;
       margin: 0;
       color: #2a2a2a;
     }
     .summary strong { font-weight: 600; color: var(--ink); }
+    .focus {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8pt;
+      line-height: 1.5;
+      color: var(--muted);
+      margin: 0.4rem 0 0;
+    }
+    .focus b { color: var(--cobalt); font-weight: 500; }
 
     /* ---- Experience ---- */
-    .job { margin-bottom: 0.28rem; break-inside: avoid; }
+    .job { margin-bottom: 0.55rem; break-inside: avoid; }
     .job:last-child { margin-bottom: 0; }
     .job-head {
       display: flex;
@@ -167,18 +192,18 @@
     .job-sub {
       font-size: 9.5pt;
       color: var(--muted);
-      margin: 0.05rem 0 0.28rem;
+      margin: 0.08rem 0 0.3rem;
     }
     ul.bullets {
-      margin: 0.1rem 0 0;
+      margin: 0.16rem 0 0;
       padding-left: 1.05rem;
       list-style: none;
     }
     ul.bullets li {
       position: relative;
       font-size: 9.7pt;
-      line-height: 1.3;
-      margin-bottom: 0.08rem;
+      line-height: 1.42;
+      margin-bottom: 0.18rem;
       color: #262626;
     }
     ul.bullets li::before {
@@ -193,13 +218,13 @@
     }
     ul.bullets li strong { font-weight: 600; }
 
-    /* ---- Two-up grids (skills / footer) ---- */
+    /* ---- Skills grid ---- */
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.22rem 1.4rem;
+      gap: 0.42rem 1.4rem;
     }
-    .skill-row { font-size: 9.6pt; line-height: 1.32; }
+    .skill-row { font-size: 9.6pt; line-height: 1.44; }
     .skill-row .label {
       font-family: 'JetBrains Mono', monospace;
       font-size: 8pt;
@@ -211,22 +236,13 @@
     }
     .skill-row .val { color: #2a2a2a; }
 
-    .method {
-      font-size: 9.6pt;
-      line-height: 1.38;
-      margin: 0;
-      color: #2a2a2a;
-    }
-    .method b { font-weight: 600; color: var(--ink); }
-    .method .arrow { color: var(--cobalt); font-weight: 600; }
-
     .edu-row, .projects-row {
       font-size: 9.6pt;
       line-height: 1.4;
       margin: 0;
       color: #2a2a2a;
     }
-    .projects-row a { color: var(--cobalt); text-decoration: none; }
+    .projects-row a, .edu-row a { color: var(--cobalt); text-decoration: none; }
 
     @media (max-width: 720px) {
       .sheet { padding: 1.1rem; }
@@ -256,8 +272,17 @@
 <body>
   <div class="toolbar">
     <a class="back" href="index.html">&larr; Back to site</a>
+    <label class="role-label">Tailor for
+      <select id="roleSelect" aria-label="Tailor resume for a role">
+        <option value="master">General — Senior PM</option>
+        <option value="fde">Forward-Deployed PM</option>
+        <option value="ai">AI Workflows &amp; Agents</option>
+        <option value="data">Data Platform &amp; Pipelines</option>
+        <option value="native">AI-Native Products</option>
+      </select>
+    </label>
     <button class="primary" onclick="window.print()">Print / Save as PDF</button>
-    <a href="Ben-Siverly-Resume.pdf" download>Download PDF</a>
+    <a id="dlLink" href="Ben-Siverly-Resume.pdf" download>Download PDF</a>
   </div>
 
   <div class="sheet">
@@ -265,7 +290,7 @@
     <header class="resume-head">
       <div>
         <h1 class="name"><span class="mark">Ben Siverly</span></h1>
-        <p class="title">Senior Product Manager</p>
+        <p class="title" id="roleTitle">Senior Product Manager</p>
       </div>
       <div class="contact">
         San Francisco Bay Area<br>
@@ -275,10 +300,11 @@
       </div>
     </header>
 
-    <!-- ============ SUMMARY ============ -->
+    <!-- ============ SUMMARY (tailored) ============ -->
     <section>
       <h2 class="section-title">Summary</h2>
-      <p class="summary">Product manager with a data-science foundation who builds software that fits how customers think and handles the work they don&rsquo;t have time for. Nine years across applied ML research, early-stage fintech, and vertical SaaS&mdash;going deep on jobs-to-be-done and shipping reliable, measurable products, including agentic systems grounded in a real model of the customer&rsquo;s domain. <strong>Outcomes: $50M+ in assets migrated, vacancies filling 3&ndash;5 days faster, submission rates nearly doubled.</strong></p>
+      <p class="summary" id="roleSummary">Product manager with a data-science foundation who ships software that fits how customers think and automates the work they don&rsquo;t have time for. Nine years from zero-to-one founder to data scientist to PM across fintech and vertical SaaS&mdash;customer-embedded, credible with engineers, fluent in the data. <strong>Outcomes: $50M+ migrated across institutions; vacancies filling 3&ndash;5 days faster, submissions nearly doubled.</strong></p>
+      <p class="focus" id="roleFocus"><b>Focus &mdash;</b> agentic AI products &middot; eval systems &middot; data pipelines &amp; integrations &middot; customer-embedded delivery &middot; SQL/Python</p>
     </section>
 
     <!-- ============ EXPERIENCE ============ -->
@@ -291,9 +317,9 @@
           <span class="job-meta">Jan 2023 &ndash; Present</span>
         </div>
         <ul class="bullets">
-          <li>Led the complete rebuild and launch of the rental application&mdash;a legacy, unsaveable form&mdash;into a modern, resumable, account-based experience; <strong>vacancies now fill 3&ndash;5 days faster and submission rates have nearly doubled</strong>.</li>
-          <li>Built performance reporting and direct integrations into AppFolio&rsquo;s proprietary AI stack, giving property managers clear visibility into their lead funnel for the first time.</li>
-          <li>Drive discovery with a <strong>JTBD &rarr; OOUX &rarr; Spec Kit</strong> method to ship agentic features that reason over a structured model of the domain (leases, deposits, compliance rules) rather than relying on prompt guesswork.</li>
+          <li>Led the end-to-end rebuild and launch of the rental application; <strong>vacancies now fill 3&ndash;5 days faster and submissions nearly doubled</strong>.</li>
+          <li>Shipped reporting and direct integrations into AppFolio&rsquo;s proprietary <strong>AI stack</strong>, giving property managers first-time visibility into their lead funnel.</li>
+          <li>Ship agentic features with a <strong>JTBD &rarr; OOUX &rarr; Spec Kit</strong> method: object models define the agent&rsquo;s tools, and a behavioral spec plus <strong>evals</strong> gate each release.</li>
         </ul>
       </div>
 
@@ -304,8 +330,9 @@
         </div>
         <p class="job-sub">Promoted to Product Manager in 2021 &middot; HSA fintech, SF Bay Area</p>
         <ul class="bullets">
-          <li>Built the APIs and migration flows that moved <strong>$50M+ in HSA assets</strong> from major financial institutions onto the platform&mdash;giving partners a compliant HSA offering without building the infrastructure themselves.</li>
-          <li>Stood up the company&rsquo;s first data-science function, giving an early-stage team visibility into how product decisions moved core metrics; grew the work into product management as the company scaled.</li>
+          <li>Built partner <strong>APIs and migration pipelines</strong> that ingested, validated, and reconciled <strong>$50M+ in assets</strong> across financial institutions with zero data loss.</li>
+          <li>Authored the data model and integration patterns partners used to evaluate and onboard a compliant HSA offering&mdash;no infrastructure build of their own.</li>
+          <li>Stood up the company&rsquo;s first <strong>data-science</strong> function, then grew the work into product management as the company scaled.</li>
         </ul>
       </div>
 
@@ -315,8 +342,8 @@
           <span class="job-meta">Sep 2017 &ndash; Sep 2019</span>
         </div>
         <ul class="bullets">
-          <li>Built an automated evaluation system that ran hundreds of tests against model updates&mdash;replacing gut-feel calls with statistically significant measurement of whether each change actually improved the model.</li>
-          <li>Worked across large-scale consumer-signal data (location, behavioral, real-world) used to model and predict purchasing behavior.</li>
+          <li>Built an automated <strong>model-evaluation system</strong>&mdash;hundreds of tests per model update&mdash;to gate changes on statistical significance, not gut feel.</li>
+          <li>Modeled large-scale consumer signals (location, behavioral, real-world) to predict purchasing behavior.</li>
         </ul>
       </div>
 
@@ -326,15 +353,9 @@
           <span class="job-meta">2016</span>
         </div>
         <ul class="bullets">
-          <li>Solo-founded a men&rsquo;s athletic eCommerce brand: developed a first carbon-neutral athletic fabric (recycled polyester + eucalyptus), built a 20-month P&amp;L / COGS model, and led design, product development, and marketing analytics through launch.</li>
+          <li>Solo-founded a men&rsquo;s athletic eCommerce brand: developed a carbon-neutral performance fabric, built a 20-month P&amp;L model, and led design through launch.</li>
         </ul>
       </div>
-    </section>
-
-    <!-- ============ HOW I WORK ============ -->
-    <section>
-      <h2 class="section-title">How I Work</h2>
-      <p class="method"><b>Deep JTBD <span class="arrow">&rarr;</span> OOUX <span class="arrow">&rarr;</span> Agentic Spec-Driven Development.</b> Start from the customer&rsquo;s real pain, not the technology. Map the system of truth with Object-Oriented UX, then turn it into a Spec Kit (reasoning, constraints, execution) so agents act inside a real model of the customer&rsquo;s world&mdash;no hallucinations, measurable success.</p>
     </section>
 
     <!-- ============ SKILLS ============ -->
@@ -343,35 +364,94 @@
       <div class="grid-2">
         <div class="skill-row">
           <span class="label">Product</span>
-          <span class="val">Jobs-to-be-Done discovery &middot; Object-Oriented UX (OOUX) &middot; agentic / spec-driven development &middot; roadmapping &middot; funnel &amp; conversion optimization &middot; product analytics</span>
+          <span class="val">Agentic AI product &middot; JTBD discovery &middot; object modeling (OOUX) &middot; eval design &middot; roadmaps &middot; funnel &amp; conversion &middot; experimentation</span>
         </div>
         <div class="skill-row">
           <span class="label">Technical</span>
-          <span class="val">APIs &amp; system integration &middot; data modeling &middot; experimentation &amp; statistics &middot; SQL &middot; Python &middot; AI agents / LLM-backed product systems</span>
+          <span class="val">SQL &middot; Python &middot; APIs &amp; system integration &middot; data modeling &middot; ETL / migration pipelines &middot; LLM &amp; agent systems (RAG, tool use, evals)</span>
         </div>
         <div class="skill-row">
           <span class="label">Domains</span>
-          <span class="val">PropTech &amp; vertical SaaS &middot; fintech (HSA / financial data) &middot; applied ML research</span>
+          <span class="val">AI-native &amp; vertical SaaS &middot; fintech (financial data, HSAs) &middot; data platforms &middot; applied ML</span>
         </div>
         <div class="skill-row">
-          <span class="label">Approach</span>
-          <span class="val">Customer-obsessed, data-fluent, ships things that work &middot; comfortable building alongside engineering</span>
+          <span class="label">Strengths</span>
+          <span class="val">Customer-embedded delivery &middot; zero-to-one shipping &middot; technically credible with engineering</span>
         </div>
       </div>
     </section>
 
-    <!-- ============ PROJECTS ============ -->
+    <!-- ============ EDUCATION + PROJECTS ============ -->
     <section>
-      <h2 class="section-title">Selected Projects</h2>
-      <p class="projects-row">Designed and shipped five free, no-account web tools at <a href="https://bensiverly.com">bensiverly.com</a> (Native Plant Finder, Life Strategy Matrix, Decision Assist, and more)&mdash;end-to-end product judgment from problem to working software.</p>
-    </section>
-
-    <!-- ============ EDUCATION ============ -->
-    <section>
-      <h2 class="section-title">Education</h2>
-      <p class="edu-row"><strong>B.A., Communication Studies</strong> &mdash; Westmont College &middot; 2010&ndash;2014<br>
-      <strong>Data Science Immersive, Machine Learning</strong> &mdash; Galvanize &middot; 2017</p>
+      <h2 class="section-title">Education &amp; Selected Work</h2>
+      <p class="edu-row"><strong>B.A., Communication Studies</strong> &mdash; Westmont College &middot; 2010&ndash;2014 &nbsp;|&nbsp; <strong>Data Science Immersive (ML)</strong> &mdash; Galvanize &middot; 2017</p>
+      <p class="projects-row" style="margin-top:0.18rem;">Builds &amp; ships free public tools at <a href="https://bensiverly.com">bensiverly.com</a> (Native Plant Finder, Decision Assist, +3) &mdash; working samples from problem to shipped software.</p>
     </section>
   </div>
+
+  <script>
+    (function () {
+      var VARIANTS = {
+        master: {
+          title: 'Senior Product Manager',
+          summary: 'Product manager with a data-science foundation who ships software that fits how customers think and automates the work they don’t have time for. Nine years from zero-to-one founder to data scientist to PM across fintech and vertical SaaS—customer-embedded, credible with engineers, fluent in the data. <strong>Outcomes: $50M+ migrated across institutions; vacancies filling 3–5 days faster, submissions nearly doubled.</strong>',
+          focus: '<b>Focus —</b> agentic AI products · eval systems · data pipelines &amp; integrations · customer-embedded delivery · SQL/Python',
+          pdf: 'Ben-Siverly-Resume.pdf'
+        },
+        fde: {
+          title: 'Forward-Deployed Product Manager',
+          summary: 'Forward-deployed PM who embeds with customers, scopes the problem, and ships the fix end-to-end. Background as a zero-to-one founder, data scientist, and PM—credible with engineers and CTOs, and comfortable turning ambiguity into execution. <strong>Outcomes: $50M+ in cross-institution migrations; a rebuilt core product filling vacancies 3–5 days faster with submissions nearly doubled.</strong>',
+          focus: '<b>Focus —</b> customer-embedded delivery · zero-to-one shipping · technical credibility with eng/CTOs · agentic AI · ambiguity → execution',
+          pdf: 'Ben-Siverly-Resume-ForwardDeployed.pdf'
+        },
+        ai: {
+          title: 'Senior PM · AI Workflows & Agents',
+          summary: 'PM for agentic AI: I define what an agent owns versus hands back to a human, then gate it with evals before it ships. Data-science foundation (built automated model-evaluation systems); fluent in JTBD, object modeling, and behavioral specs. <strong>Now shipping agentic features on AppFolio’s AI stack; nine years across fintech and vertical SaaS.</strong>',
+          focus: '<b>Focus —</b> agentic workflows · eval frameworks · human-in-the-loop boundaries · RAG / tool use · latency &amp; cost tradeoffs',
+          pdf: 'Ben-Siverly-Resume-AI-Workflows.pdf'
+        },
+        data: {
+          title: 'Senior PM · Data Platform & Pipelines',
+          summary: 'Technical PM for data platforms: I own how data moves, transforms, and lands across systems—with schema validation, reconciliation, quality, and lineage. Built APIs and migration pipelines that moved <strong>$50M+ across financial institutions with zero data loss</strong>. Data-science background, hands-on SQL/Python, and a strong partner to data engineers.',
+          focus: '<b>Focus —</b> ingestion / ETL · schema validation &amp; reconciliation · data quality &amp; lineage · SLAs / reliability · SQL/Python',
+          pdf: 'Ben-Siverly-Resume-Data-Pipelines.pdf'
+        },
+        native: {
+          title: 'Senior PM · AI-Native Products',
+          summary: 'PM built for AI-native teams: data-fluent, technically credible, and shipping agentic products grounded in evals and a real model of the customer’s domain. Nine years from founder to data scientist to PM. <strong>Outcomes: $50M+ migrated across institutions; a rebuilt core product filling vacancies 3–5 days faster with submissions nearly doubled.</strong>',
+          focus: '<b>Focus —</b> AI-native product · evals &amp; model behavior · agentic systems · data fluency · zero-to-one shipping',
+          pdf: 'Ben-Siverly-Resume-AI-Native.pdf'
+        }
+      };
+
+      var titleEl = document.getElementById('roleTitle');
+      var summaryEl = document.getElementById('roleSummary');
+      var focusEl = document.getElementById('roleFocus');
+      var dlEl = document.getElementById('dlLink');
+      var selectEl = document.getElementById('roleSelect');
+
+      function apply(role) {
+        var v = VARIANTS[role] || VARIANTS.master;
+        titleEl.textContent = v.title;
+        summaryEl.innerHTML = v.summary;
+        focusEl.innerHTML = v.focus;
+        dlEl.setAttribute('href', v.pdf);
+        if (selectEl) selectEl.value = VARIANTS[role] ? role : 'master';
+      }
+
+      var params = new URLSearchParams(window.location.search);
+      var initial = params.get('role');
+      apply(VARIANTS[initial] ? initial : 'master');
+
+      if (selectEl) {
+        selectEl.addEventListener('change', function () {
+          apply(this.value);
+          var url = new URL(window.location.href);
+          url.searchParams.set('role', this.value);
+          history.replaceState(null, '', url);
+        });
+      }
+    })();
+  </script>
 </body>
 </html>
