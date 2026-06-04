@@ -1,7 +1,6 @@
 # bensiverly.com
 
 [![CI](https://github.com/be-ns/personalsite/actions/workflows/ci.yml/badge.svg)](https://github.com/be-ns/personalsite/actions/workflows/ci.yml)
-[![Deploy](https://github.com/be-ns/personalsite/actions/workflows/pages.yml/badge.svg)](https://github.com/be-ns/personalsite/actions/workflows/pages.yml)
 [![Live](https://img.shields.io/badge/live-bensiverly.com-0047AB)](https://bensiverly.com)
 [![No build step](https://img.shields.io/badge/build-none-success)](#philosophy)
 [![Dependencies](https://img.shields.io/badge/runtime%20dependencies-0-success)](#philosophy)
@@ -114,9 +113,9 @@ Every push and pull request runs [`.github/workflows/ci.yml`](.github/workflows/
 - **Link checking** with lychee (catches dead internal links and broken assets)
 - **Sitemap/robots sanity** checks
 
-Deployment to GitHub Pages is handled by
-[`.github/workflows/pages.yml`](.github/workflows/pages.yml) on every push to `main`.
-Dependabot keeps the GitHub Actions and the OG-image toolchain up to date.
+The site is served by **GitHub Pages from the `main` branch** behind the custom domain in
+[`CNAME`](CNAME); every push to `main` publishes automatically. Dependabot keeps the GitHub
+Actions and the OG-image toolchain up to date.
 
 ## Tech stack
 
