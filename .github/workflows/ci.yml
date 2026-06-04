@@ -33,11 +33,17 @@ jobs:
       - name: Check links with lychee
         uses: lycheeverse/lychee-action@v2
         with:
+          # Exclude hosts that block automated checkers (LinkedIn returns 999,
+          # font preconnect roots 404) to keep the link check meaningful, not flaky.
           args: >-
             --no-progress
             --max-concurrency 4
-            --accept 200,206,429
+            --max-retries 3
+            --accept 200,206,403,429,999
             --exclude-mail
+            --exclude "linkedin\.com"
+            --exclude "fonts\.gstatic\.com"
+            --exclude "fonts\.googleapis\.com"
             "*.html" "README.md"
           fail: true
         env:
