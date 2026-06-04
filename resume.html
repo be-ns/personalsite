@@ -160,7 +160,7 @@
     .contact a:hover { color: var(--cobalt); }
 
     /* ---- Sections ---- */
-    section { margin-top: 0.52rem; }
+    section { margin-top: 0.42rem; }
     .section-title {
       font-family: 'JetBrains Mono', monospace;
       font-size: 8.5pt;
@@ -168,14 +168,14 @@
       letter-spacing: 0.18em;
       text-transform: uppercase;
       color: var(--cobalt);
-      margin: 0 0 0.36rem;
-      padding-bottom: 0.18rem;
+      margin: 0 0 0.3rem;
+      padding-bottom: 0.16rem;
       border-bottom: 1px solid var(--rule);
     }
 
     .summary {
       font-size: 10pt;
-      line-height: 1.48;
+      line-height: 1.42;
       margin: 0;
       color: #2a2a2a;
     }
@@ -190,7 +190,7 @@
     .focus b { color: var(--cobalt); font-weight: 500; }
 
     /* ---- Experience ---- */
-    .job { margin-bottom: 0.55rem; break-inside: avoid; }
+    .job { margin-bottom: 0.42rem; break-inside: avoid; }
     .job:last-child { margin-bottom: 0; }
     .job-head {
       display: flex;
@@ -225,8 +225,8 @@
     ul.bullets li {
       position: relative;
       font-size: 9.7pt;
-      line-height: 1.42;
-      margin-bottom: 0.18rem;
+      line-height: 1.36;
+      margin-bottom: 0.13rem;
       color: #262626;
     }
     ul.bullets li::before {
@@ -245,9 +245,9 @@
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.42rem 1.4rem;
+      gap: 0.3rem 1.4rem;
     }
-    .skill-row { font-size: 9.6pt; line-height: 1.44; }
+    .skill-row { font-size: 9.6pt; line-height: 1.38; }
     .skill-row .label {
       font-family: 'JetBrains Mono', monospace;
       font-size: 8pt;
@@ -302,6 +302,7 @@
         <option value="ai">AI Workflows &amp; Agents</option>
         <option value="data">Data Platform &amp; Pipelines</option>
         <option value="native">AI-Native Products</option>
+        <option value="box">Box — Sr PM, Workflows</option>
       </select>
     </label>
     <button class="primary" onclick="window.print()">Print / Save as PDF</button>
@@ -342,6 +343,7 @@
         <ul class="bullets">
           <li>Led the end-to-end rebuild and launch of the rental application; <strong>vacancies now fill 3&ndash;5 days faster and submissions nearly doubled</strong>.</li>
           <li>Shipped reporting and direct integrations into AppFolio&rsquo;s proprietary <strong>AI stack</strong>, giving property managers first-time visibility into their lead funnel.</li>
+          <li>Run continuous discovery in <strong>50&ndash;100 customer conversations a year</strong>, turning property managers&rsquo; jobs-to-be-done into roadmap and agent behavior.</li>
           <li>Ship agentic features with a <strong>JTBD &rarr; OOUX &rarr; Spec Kit</strong> method: object models define the agent&rsquo;s tools, and a behavioral spec plus <strong>evals</strong> gate each release.</li>
         </ul>
       </div>
@@ -366,7 +368,6 @@
         </div>
         <ul class="bullets">
           <li>Built an automated <strong>model-evaluation system</strong>&mdash;hundreds of tests per model update&mdash;to gate changes on statistical significance, not gut feel.</li>
-          <li>Modeled large-scale consumer signals (location, behavioral, real-world) to predict purchasing behavior.</li>
         </ul>
       </div>
 
@@ -453,6 +454,12 @@
           summary: 'PM built for AI-native teams: data-fluent, technically credible, and shipping agentic products grounded in evals and a real model of the customer’s domain. Nine years from founder to data scientist to PM. <strong>Outcomes: $50M+ migrated across institutions; a rebuilt core product filling vacancies 3–5 days faster with submissions nearly doubled.</strong>',
           focus: '<b>Focus —</b> AI-native product · evals &amp; model behavior · agentic systems · data fluency · zero-to-one shipping',
           pdf: 'Ben-Siverly-Resume-AI-Native.pdf'
+        },
+        box: {
+          title: 'Senior Product Manager · Workflows',
+          summary: 'AI-first product manager building agentic workflow automation—bridging advanced AI (agentic workflows, LLMs, evals) and real-world business processes. I represent the voice of the customer, partner with engineering on what’s buildable, and champion evaluation frameworks that build trust in AI-driven automation. Founder’s instinct for positioning and adoption; data-fluent and technically credible. <strong>Outcomes: rebuilt a core workflow product (vacancies fill 3–5 days faster, submissions nearly doubled); $50M+ in cross-system integrations.</strong>',
+          focus: '<b>Focus —</b> agentic workflow automation · LLM evaluation frameworks · voice of the customer (JTBD) · GTM enablement · technical partnership with engineering',
+          pdf: 'Ben-Siverly-Resume-Box.pdf'
         }
       };
 
