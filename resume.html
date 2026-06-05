@@ -6,13 +6,21 @@
   <title>Ben Siverly — Senior Product Manager · Resume</title>
   <meta name="description" content="Resume of Ben Siverly, Senior Product Manager. Data-fluent PM building agentic AI products and the data pipelines behind them.">
 
+  <link rel="canonical" href="https://bensiverly.com/resume.html">
+
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#0047AB">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Zilla+Slab:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <style>
+    .skip-link { position: absolute; left: 8px; top: -56px; z-index: 100; padding: 0.6rem 1rem; background: #0047AB; color: #fff; border-radius: 0 0 6px 6px; font: 600 0.95rem/1 'Inter', system-ui, sans-serif; text-decoration: none; }
+    .skip-link:focus { top: 0; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    ::selection { background-color: #FFE227; color: #1A1A1A; }
     :root {
       --ink: #1A1A1A;
       --muted: #555555;
@@ -293,6 +301,7 @@
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
   <div class="toolbar">
     <a class="back" href="index.html">&larr; Back to site</a>
     <label class="role-label">Tailor for
@@ -308,7 +317,9 @@
     <a id="dlLink" href="Ben-Siverly-Resume.pdf" download>Download PDF</a>
   </div>
 
-  <div class="sheet">
+  <p id="resume-status" class="sr-only" aria-live="polite"></p>
+
+  <main id="main" class="sheet">
     <!-- ============ HEADER ============ -->
     <header class="resume-head">
       <div>
@@ -410,7 +421,7 @@
       <p class="edu-row"><strong>B.A., Communication Studies</strong> &mdash; Westmont College &middot; 2010&ndash;2014 &nbsp;|&nbsp; <strong>Data Science Immersive (ML)</strong> &mdash; Galvanize &middot; 2017</p>
       <p class="projects-row" style="margin-top:0.18rem;">Builds &amp; ships free public tools at <a href="https://bensiverly.com">bensiverly.com</a> (Native Plant Finder, Decision Assist, +3) &mdash; working samples from problem to shipped software.</p>
     </section>
-  </div>
+  </main>
 
   <nav class="versions" aria-label="Download a tailored version">
     <span class="versions-label">Download a version</span>
@@ -478,6 +489,11 @@
       if (selectEl) {
         selectEl.addEventListener('change', function () {
           apply(this.value);
+          var statusEl = document.getElementById('resume-status');
+          if (statusEl) {
+            var v = VARIANTS[this.value] || VARIANTS.master;
+            statusEl.textContent = 'Showing resume tailored for ' + v.title + '.';
+          }
           var url = new URL(window.location.href);
           url.searchParams.set('role', this.value);
           history.replaceState(null, '', url);

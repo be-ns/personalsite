@@ -22,8 +22,35 @@
   <meta name="twitter:description" content="Create a simple, dignified memorial pamphlet. Generate a printable PDF.">
   <meta name="twitter:image" content="https://bensiverly.com/images/og-memorial-pamphlet.png">
 
-  <!-- Favicon -->
+  <!-- Canonical -->
+  <link rel="canonical" href="https://bensiverly.com/memorial-pamphlet.html">
+
+  <!-- Favicon & PWA -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#0047AB">
+  <style>
+    .skip-link { position: absolute; left: 8px; top: -56px; z-index: 1000; padding: 0.6rem 1rem; background: #0047AB; color: #fff; border-radius: 0 0 6px 6px; font: 600 0.95rem/1 system-ui, sans-serif; text-decoration: none; }
+    .skip-link:focus { top: 0; }
+    ::selection { background-color: #FFE227; color: #1A1A1A; }
+  </style>
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Memorial Pamphlet Creator",
+    "url": "https://bensiverly.com/memorial-pamphlet.html",
+    "description": "Lay out a simple, dignified memorial-service pamphlet and export a printable PDF. Nothing is stored.",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any",
+    "browserRequirements": "Requires JavaScript",
+    "isAccessibleForFree": true,
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Person", "name": "Ben Siverly", "url": "https://bensiverly.com/" }
+  }
+  </script>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -375,6 +402,11 @@
       outline: none;
       border-color: var(--color-text);
       box-shadow: 0 0 0 2px rgba(26, 26, 26, 0.1);
+    }
+
+    .form-input:focus-visible {
+      outline: 2px solid var(--color-text);
+      outline-offset: 2px;
     }
 
     .form-input::placeholder {
@@ -938,8 +970,9 @@
     </div>
   </header>
 
-  <main>
-    <div class="tool" id="tool" role="application" aria-label="Memorial Pamphlet Creator">
+  <a class="skip-link" href="#main">Skip to content</a>
+<main id="main">
+    <div class="tool" id="tool">
       <!-- Template Selection -->
       <section>
         <div class="section-header">
@@ -1047,7 +1080,7 @@
 
         <div class="photo-uploads">
           <div class="photo-upload">
-            <span class="form-label">Primary Photo (Cover)</span>
+            <label class="form-label" for="photo-primary">Primary Photo (Cover)</label>
             <div class="photo-dropzone" id="photo-primary-dropzone">
               <input type="file" id="photo-primary" accept="image/jpeg,image/png,image/webp" aria-label="Upload primary photo">
               <span class="photo-dropzone-icon">+</span>
@@ -1057,7 +1090,7 @@
           </div>
 
           <div class="photo-upload">
-            <span class="form-label">Secondary Photo (Optional)</span>
+            <label class="form-label" for="photo-secondary">Secondary Photo (Optional)</label>
             <div class="photo-dropzone" id="photo-secondary-dropzone">
               <input type="file" id="photo-secondary" accept="image/jpeg,image/png,image/webp" aria-label="Upload secondary photo">
               <span class="photo-dropzone-icon">+</span>

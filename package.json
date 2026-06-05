@@ -1,9 +1,23 @@
 {
-  "name": "personalsite-og-images",
+  "name": "bensiverly.com",
   "version": "1.0.0",
-  "description": "Generate OG images for bensiverly.com",
+  "description": "Personal website and a small workshop of free, private, no-account browser tools. Hand-written HTML/CSS/JS, no build step, zero runtime dependencies.",
+  "homepage": "https://bensiverly.com",
+  "author": "Ben Siverly",
+  "license": "MIT",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/be-ns/personalsite.git"
+  },
   "scripts": {
+    "serve": "python3 -m http.server 8000",
+    "validate": "htmlhint \"*.html\"",
+    "links": "lychee --no-progress --offline \"*.html\"",
     "generate-og": "node generate-og-images.js"
+  },
+  "devDependencies": {
+    "htmlhint": "^1.1.4"
   },
   "dependencies": {
     "canvas": "^2.11.2",

@@ -22,8 +22,35 @@
   <meta name="twitter:description" content="Find native plants that thrive in your area. Support local pollinators and reduce maintenance.">
   <meta name="twitter:image" content="https://bensiverly.com/images/og-native-plant-finder.png">
 
-  <!-- Favicon -->
+  <!-- Canonical -->
+  <link rel="canonical" href="https://bensiverly.com/native-plant-finder.html">
+
+  <!-- Favicon & PWA -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#0047AB">
+  <style>
+    .skip-link { position: absolute; left: 8px; top: -56px; z-index: 1000; padding: 0.6rem 1rem; background: #0047AB; color: #fff; border-radius: 0 0 6px 6px; font: 600 0.95rem/1 system-ui, sans-serif; text-decoration: none; }
+    .skip-link:focus { top: 0; }
+    ::selection { background-color: #FFE227; color: #1A1A1A; }
+  </style>
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Native Plant Finder",
+    "url": "https://bensiverly.com/native-plant-finder.html",
+    "description": "Find native plants for your location and sun conditions to support local pollinators with less water and maintenance.",
+    "applicationCategory": "ReferenceApplication",
+    "operatingSystem": "Any",
+    "browserRequirements": "Requires JavaScript",
+    "isAccessibleForFree": true,
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Person", "name": "Ben Siverly", "url": "https://bensiverly.com/" }
+  }
+  </script>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -334,6 +361,11 @@
       box-shadow: 0 0 0 3px rgba(30, 58, 47, 0.08);
     }
 
+    .input-text:focus-visible {
+      outline: 2px solid var(--color-text);
+      outline-offset: 2px;
+    }
+
     .input-text.is-invalid {
       border-color: #DC2626;
     }
@@ -434,6 +466,11 @@
       border-radius: 3px;
       outline: none;
       cursor: pointer;
+    }
+
+    .sun-slider-input:focus-visible {
+      outline: 2px solid var(--color-text);
+      outline-offset: 4px;
     }
 
     .sun-slider-input::-webkit-slider-thumb {
@@ -2093,8 +2130,9 @@
     </div>
   </header>
 
-  <main>
-    <div class="tool" id="tool" role="application" aria-label="Native Plant Finder tool">
+  <a class="skip-link" href="#main">Skip to content</a>
+<main id="main">
+    <div class="tool" id="tool">
       <!-- Input Section -->
       <section class="input-section" id="input-section">
         <div class="input-header">
@@ -2106,7 +2144,7 @@
         <div class="input-grid">
           <div class="input-group">
             <label class="input-label" for="zip-input">
-              <svg class="input-label-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg aria-hidden="true" class="input-label-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                 <circle cx="12" cy="10" r="3"></circle>
               </svg>
@@ -2124,7 +2162,7 @@
             >
             <span class="input-help" id="zip-help">California ZIP codes supported</span>
             <span class="input-error" id="zip-error" role="alert">Please enter a valid 5-digit zip code</span>
-            <div class="location-display" id="location-display" aria-live="polite">
+            <div class="location-display" id="location-display" aria-live="polite" aria-label="Selected location">
               <span class="location-name" id="location-name"></span>
               <button class="location-change" id="location-change" type="button">Change location</button>
             </div>
@@ -2132,7 +2170,7 @@
 
           <div class="input-group">
             <label class="input-label" for="sun-input">
-              <svg class="input-label-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg aria-hidden="true" class="input-label-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="5"></circle>
                 <line x1="12" y1="1" x2="12" y2="3"></line>
                 <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -2164,7 +2202,7 @@
               </div>
               <div class="sun-slider-labels">
                 <span class="sun-slider-label">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M17 18a5 5 0 0 0-10 0"></path>
                     <line x1="12" y1="9" x2="12" y2="2"></line>
                     <line x1="4.22" y1="10.22" x2="5.64" y2="11.64"></line>
@@ -2175,7 +2213,7 @@
                   Shade
                 </span>
                 <span class="sun-slider-label">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="5"></circle>
                     <line x1="12" y1="1" x2="12" y2="3"></line>
                     <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -2194,7 +2232,7 @@
         </div>
 
         <button type="button" class="find-btn" id="find-btn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
@@ -2206,13 +2244,14 @@
       <section class="results-section is-hidden" id="results-section">
         <!-- Populated by JavaScript -->
       </section>
+      <div id="results-status" role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"></div>
     </div>
   </main>
 
   <footer class="site-footer">
     <div class="footer-content">
       <p class="privacy-note">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
           <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
         </svg>
@@ -2381,28 +2420,28 @@
 
       // Icons SVG paths
       var ICONS = {
-        heart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>',
-        heartFilled: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>',
-        droplet: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>',
-        bird: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 7h.01M3.4 18H12a8 8 0 0 0 8-8V7a4 4 0 0 0-7.28-2.28L2 20"></path></svg>',
-        hummingbird: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8c-2 0-4 1-5 3l-4 1 2 2-3 5 5-3 2 2 1-4c2-1 3-3 3-5 0-1.5-1-2-1-2"/><path d="M16 6c1-1 3-2 5-1-1 2-2 4-3 5"/><circle cx="13" cy="9" r="0.5" fill="currentColor"/></svg>',
-        butterfly: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><path d="M4.5 8.5c-2-2-2-5 1-6s5 2 6.5 5.5c-1.5 3.5-3.5 6.5-6.5 5.5s-3-4-1-6"/><path d="M19.5 8.5c2-2 2-5-1-6s-5 2-6.5 5.5c1.5 3.5 3.5 6.5 6.5 5.5s3-4 1-6"/></svg>',
-        feather: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line x1="16" y1="8" x2="2" y2="22"></line><line x1="17.5" y1="15" x2="9" y2="15"></line></svg>',
-        bee: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="14" rx="5" ry="6"/><path d="M12 8V6M9 7l-1-2M15 7l1-2"/><path d="M8 12h8M8 15h8"/><path d="M7 13c-2-1-4 0-4 2s2 2 3 1M17 13c2-1 4 0 4 2s-2 2-3 1"/></svg>',
-        bug: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="6" width="8" height="14" rx="4"></rect><path d="M19 8l-3 1M5 8l3 1M19 16l-3-1M5 16l3-1M19 12h-3M5 12h3"/><path d="M10 3l1 3M14 3l-1 3"/></svg>',
-        leaf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 21c3-3 6-6 6-12 0-4 3-6 8.5-6-1 5.5-3 8.5-7 8.5-6 0-9 3-9 6"/><path d="M6.5 21c3-6 9-9 14.5-9"/></svg>',
-        check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>',
-        deer: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="14" rx="4" ry="5"/><circle cx="12" cy="7" r="3"/><path d="M9 5V3L7 1M15 5V3l2-2"/><path d="M8 19v2M16 19v2"/></svg>',
-        plant: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 20h10M10 20c0-3.37 2-6 2-8s-2-4.5-2-6.5c0 2 2 4.5 2 6.5s-2 4.63-2 8zM12 14c1.5 0 4.5-1.5 4.5-5.5 0 4-3 5.5-4.5 5.5zm0 0c-1.5 0-4.5-1.5-4.5-5.5 0 4 3 5.5 4.5 5.5z"></path></svg>',
-        layers: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>',
-        download: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>',
-        printer: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>',
-        share: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>',
-        store: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>',
-        external: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>',
-        x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
-        mapPin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>',
-        info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>'
+        heart: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>',
+        heartFilled: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>',
+        droplet: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>',
+        bird: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 7h.01M3.4 18H12a8 8 0 0 0 8-8V7a4 4 0 0 0-7.28-2.28L2 20"></path></svg>',
+        hummingbird: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8c-2 0-4 1-5 3l-4 1 2 2-3 5 5-3 2 2 1-4c2-1 3-3 3-5 0-1.5-1-2-1-2"/><path d="M16 6c1-1 3-2 5-1-1 2-2 4-3 5"/><circle cx="13" cy="9" r="0.5" fill="currentColor"/></svg>',
+        butterfly: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><path d="M4.5 8.5c-2-2-2-5 1-6s5 2 6.5 5.5c-1.5 3.5-3.5 6.5-6.5 5.5s-3-4-1-6"/><path d="M19.5 8.5c2-2 2-5-1-6s-5 2-6.5 5.5c1.5 3.5 3.5 6.5 6.5 5.5s3-4 1-6"/></svg>',
+        feather: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line x1="16" y1="8" x2="2" y2="22"></line><line x1="17.5" y1="15" x2="9" y2="15"></line></svg>',
+        bee: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="14" rx="5" ry="6"/><path d="M12 8V6M9 7l-1-2M15 7l1-2"/><path d="M8 12h8M8 15h8"/><path d="M7 13c-2-1-4 0-4 2s2 2 3 1M17 13c2-1 4 0 4 2s-2 2-3 1"/></svg>',
+        bug: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="6" width="8" height="14" rx="4"></rect><path d="M19 8l-3 1M5 8l3 1M19 16l-3-1M5 16l3-1M19 12h-3M5 12h3"/><path d="M10 3l1 3M14 3l-1 3"/></svg>',
+        leaf: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 21c3-3 6-6 6-12 0-4 3-6 8.5-6-1 5.5-3 8.5-7 8.5-6 0-9 3-9 6"/><path d="M6.5 21c3-6 9-9 14.5-9"/></svg>',
+        check: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>',
+        deer: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="14" rx="4" ry="5"/><circle cx="12" cy="7" r="3"/><path d="M9 5V3L7 1M15 5V3l2-2"/><path d="M8 19v2M16 19v2"/></svg>',
+        plant: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 20h10M10 20c0-3.37 2-6 2-8s-2-4.5-2-6.5c0 2 2 4.5 2 6.5s-2 4.63-2 8zM12 14c1.5 0 4.5-1.5 4.5-5.5 0 4-3 5.5-4.5 5.5zm0 0c-1.5 0-4.5-1.5-4.5-5.5 0 4 3 5.5 4.5 5.5z"></path></svg>',
+        layers: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>',
+        download: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>',
+        printer: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>',
+        share: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>',
+        store: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>',
+        external: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>',
+        x: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
+        mapPin: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>',
+        info: '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>'
       };
 
       var dataReadyPromise = initializeData();
@@ -2684,6 +2723,7 @@
         }
 
         findBtn.setAttribute('disabled', 'true');
+        resultsSection.setAttribute('aria-busy', 'true');
 
         dataReadyPromise.then(function() {
           return resolveZipToRegion(zip);
@@ -2695,8 +2735,18 @@
             : [];
           updateLocationDisplay();
           showResults();
+          var status = document.getElementById('results-status');
+          if (status) {
+            if (state.zipResolved && state.zipResolved.regionKey) {
+              var sun = getSunLabel(state.sunLevel).toLowerCase().replace(/\(.*\)/, '').trim();
+              status.textContent = 'Found ' + state.filteredPlants.length + ' plants for ' + sun + ' in ' + getLocationLabel() + '.';
+            } else {
+              status.textContent = 'No plant matches for that location. See the suggestions below.';
+            }
+          }
         }).finally(function() {
           findBtn.removeAttribute('disabled');
+          resultsSection.removeAttribute('aria-busy');
         });
       }
 
@@ -2787,7 +2837,7 @@
               'to find native plants for your California location.' +
             '</p>' +
             '<button type="button" class="find-btn" id="try-again-btn">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>' +
+              '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>' +
               'Try Another Zip' +
             '</button>' +
           '</div>';
@@ -3433,27 +3483,6 @@
         });
 
         html += '</ul></div>';
-        return html;
-      }
-
-      // ==========================================================================
-      // Export Section
-      // ==========================================================================
-      function renderExportSection() {
-        var html = '' +
-          '<div class="export-section">' +
-            '<h4 class="export-title">Save Your Plant List</h4>' +
-            '<button type="button" class="export-btn" id="export-pdf-btn">' +
-              ICONS.download + ' Download PDF' +
-            '</button>' +
-            '<button type="button" class="export-btn export-btn--secondary" id="print-btn">' +
-              ICONS.printer + ' Print' +
-            '</button>' +
-            '<button type="button" class="export-btn export-btn--secondary" id="share-btn">' +
-              ICONS.share + ' Share' +
-            '</button>' +
-          '</div>';
-
         return html;
       }
 

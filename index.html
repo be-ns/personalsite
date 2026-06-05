@@ -22,8 +22,46 @@
   <meta name="twitter:description" content="Product manager building ecosystems powered by agents. Software that fits how customers think and handles the work they don't have time for.">
   <meta name="twitter:image" content="https://bensiverly.com/images/og-home.png">
 
-  <!-- Favicon -->
+  <!-- Canonical -->
+  <link rel="canonical" href="https://bensiverly.com/">
+
+  <!-- Favicon & PWA -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#0047AB">
+  <style>
+    .skip-link { position: absolute; left: 8px; top: -56px; z-index: 1000; padding: 0.6rem 1rem; background: #0047AB; color: #fff; border-radius: 0 0 6px 6px; font: 600 0.95rem/1 system-ui, sans-serif; text-decoration: none; }
+    .skip-link:focus { top: 0; }
+  </style>
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": "https://bensiverly.com/#ben",
+        "name": "Ben Siverly",
+        "url": "https://bensiverly.com/",
+        "jobTitle": "Product Manager",
+        "worksFor": { "@type": "Organization", "name": "AppFolio" },
+        "sameAs": [
+          "https://www.linkedin.com/in/be-ns/",
+          "https://github.com/be-ns"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://bensiverly.com/#website",
+        "url": "https://bensiverly.com/",
+        "name": "Ben Siverly",
+        "description": "Personal site and a workshop of free, private, no-account browser tools.",
+        "author": { "@id": "https://bensiverly.com/#ben" }
+      }
+    ]
+  }
+  </script>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,6 +71,9 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <!-- Scroll progress -->
+  <div class="scroll-progress" aria-hidden="true"></div>
+
   <!-- Page Loader -->
   <div class="page-loader" aria-hidden="true">
     <div class="page-loader__dot"></div>
@@ -59,10 +100,12 @@
   </nav>
   <div class="menu-overlay" aria-hidden="true"></div>
 
-  <main>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <main id="main">
     <!-- Hero Section -->
     <section class="hero" aria-labelledby="hero-heading">
-      <h1 id="hero-heading" class="hero-headline">Product manager.<br>Builder. Gardener.</h1>
+      <h1 id="hero-heading" class="hero-headline">Product manager.<br>Builder. <span class="hero-accent">Gardener</span>.</h1>
       <div class="hero-content">
         <p>I build software that helps people do their jobs. The way I think about it: ecosystems powered by agents, where the AI handles the real work and the product fits how customers actually think. I spend a lot of time in the data, looking for what customers want but can&rsquo;t find yet. Currently a PM at AppFolio, doing this for property managers. Before that: startup life, data science, and a winding path through ecommerce and small business.</p>
         <p>I care about shipping things that actually work, staying close to my family, and building a few quiet tools that might outlast me. Proud future ancestor of the Choctaw Nation of Oklahoma. Probably the most optimistic person you'll meet.</p>
@@ -289,7 +332,7 @@
         <span class="contact-email-text">Click to copy email</span>
         <span class="contact-email-icon" aria-hidden="true">→</span>
       </button>
-      <span class="contact-email-status" aria-live="polite"></span>
+      <span class="contact-email-status" aria-live="polite" aria-atomic="true"></span>
 
       <div class="contact-social">
         <a href="https://www.linkedin.com/in/be-ns/" target="_blank" rel="noopener">LinkedIn</a>
@@ -347,6 +390,8 @@
       var menuPanel = document.querySelector('.menu-panel');
       var menuOverlay = document.querySelector('.menu-overlay');
       var menuLinks = document.querySelectorAll('.menu-links a');
+      var mainEl = document.querySelector('main');
+      var footerEl = document.querySelector('footer');
       var menuToggleDefaultLabel = menuToggle ? menuToggle.textContent.trim() : 'Menu';
 
       if (!menuToggle || !menuPanel || !menuOverlay) return;
@@ -365,6 +410,11 @@
         menuToggle.textContent = 'Close';
         menuPanel.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
+        // Take background content out of the tab order and the a11y tree
+        if (mainEl) mainEl.inert = true;
+        if (footerEl) footerEl.inert = true;
+        // Move focus into the dialog
+        if (menuLinks.length) menuLinks[0].focus();
       }
 
       function closeMenu() {
@@ -379,6 +429,8 @@
         menuToggle.textContent = menuToggleDefaultLabel;
         menuPanel.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
+        if (mainEl) mainEl.inert = false;
+        if (footerEl) footerEl.inert = false;
         menuToggle.focus();
       }
 
@@ -395,9 +447,22 @@
         menuLinks[i].onclick = function() { closeMenu(); };
       }
 
-      document.onkeydown = function(e) {
-        if (e.key === 'Escape' && isOpen) closeMenu();
-      };
+      // Escape closes; Tab is trapped within the dialog (toggle + menu links)
+      document.addEventListener('keydown', function(e) {
+        if (!isOpen) return;
+        if (e.key === 'Escape') { closeMenu(); return; }
+        if (e.key !== 'Tab') return;
+        var focusable = [menuToggle].concat(Array.prototype.slice.call(menuLinks));
+        var first = focusable[0];
+        var last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      });
 
       // Scroll animations
       if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -523,19 +588,27 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
 
-      // Header scroll effect
+      // Header scroll effect + scroll progress
       var header = document.querySelector('.site-header');
+      var scrollProgress = document.querySelector('.scroll-progress');
       var scrollThreshold = 50;
 
       function updateHeaderState() {
-        if (window.scrollY > scrollThreshold) {
+        var y = window.scrollY || window.pageYOffset || 0;
+        if (y > scrollThreshold) {
           header.classList.add('is-scrolled');
         } else {
           header.classList.remove('is-scrolled');
         }
+        if (scrollProgress) {
+          var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          var pct = docHeight > 0 ? (y / docHeight) * 100 : 0;
+          scrollProgress.style.width = pct + '%';
+        }
       }
 
       window.addEventListener('scroll', updateHeaderState, { passive: true });
+      window.addEventListener('resize', updateHeaderState, { passive: true });
       updateHeaderState();
 
     })();

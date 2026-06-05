@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  html:
+    name: Validate HTML
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Lint HTML with htmlhint
+        run: npx --yes htmlhint@1 "*.html"
+
+  links:
+    name: Check links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check links with lychee
+        uses: lycheeverse/lychee-action@v2
+        with:
+          # Exclude hosts that block automated checkers (LinkedIn returns 999,
+          # font preconnect roots 404) to keep the link check meaningful, not flaky.
+          args: >-
+            --no-progress
+            --max-concurrency 4
+            --max-retries 3
+            --accept 200,206,403,429,999
+            --exclude-mail
+            --exclude "linkedin\.com"
+            --exclude "fonts\.gstatic\.com"
+            --exclude "fonts\.googleapis\.com"
+            "*.html" "README.md"
+          fail: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  sanity:
+    name: Sitemap & robots sanity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate sitemap.xml is well-formed
+        run: |
+          python3 -c "import xml.dom.minidom,sys; xml.dom.minidom.parse('sitemap.xml'); print('sitemap.xml is well-formed')"
+      - name: Ensure every HTML page is in the sitemap
+        run: |
+          missing=0
+          for f in *.html; do
+            # index.html is represented by the bare domain in the sitemap
+            if [ "$f" = "index.html" ]; then
+              grep -q "<loc>https://bensiverly.com/</loc>" sitemap.xml || { echo "::error::index (/) missing from sitemap"; missing=1; }
+              continue
+            fi
+            grep -q "$f" sitemap.xml || { echo "::error::$f missing from sitemap.xml"; missing=1; }
+          done
+          [ "$missing" -eq 0 ] && echo "All pages present in sitemap.xml"
+          exit $missing
+      - name: Ensure robots.txt references the sitemap
+        run: |
+          grep -q "Sitemap: https://bensiverly.com/sitemap.xml" robots.txt

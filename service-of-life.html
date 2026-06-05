@@ -22,8 +22,34 @@
   <meta name="twitter:description" content="Build a liturgy for a memorial or celebration of life.">
   <meta name="twitter:image" content="https://bensiverly.com/images/og-service-of-life.png">
 
-  <!-- Favicon -->
+  <!-- Canonical -->
+  <link rel="canonical" href="https://bensiverly.com/service-of-life.html">
+
+  <!-- Favicon & PWA -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#0047AB">
+  <style>
+    .skip-link { position: absolute; left: 8px; top: -56px; z-index: 1000; padding: 0.6rem 1rem; background: #0047AB; color: #fff; border-radius: 0 0 6px 6px; font: 600 0.95rem/1 system-ui, sans-serif; text-decoration: none; }
+    .skip-link:focus { top: 0; }
+  </style>
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Service of Life Builder",
+    "url": "https://bensiverly.com/service-of-life.html",
+    "description": "Assemble an order of service or liturgy for a memorial or celebration of life, then print a clean PDF.",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any",
+    "browserRequirements": "Requires JavaScript",
+    "isAccessibleForFree": true,
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Person", "name": "Ben Siverly", "url": "https://bensiverly.com/" }
+  }
+  </script>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -190,6 +216,13 @@
     .sol-textarea:focus {
       outline: none;
       border-color: var(--color-text);
+    }
+
+    .sol-input:focus-visible,
+    .sol-select:focus-visible,
+    .sol-textarea:focus-visible {
+      outline: 2px solid var(--color-text);
+      outline-offset: 2px;
     }
 
     .sol-textarea {
@@ -957,35 +990,36 @@
     <a class="page-link" href="index.html">Back to home</a>
   </header>
 
-  <main>
+  <a class="skip-link" href="#main">Skip to content</a>
+<main id="main">
     <section class="sol-hero" aria-labelledby="sol-heading">
       <h1 id="sol-heading">Service of Life Builder</h1>
       <p>Build an Anglican-shaped memorial or funeral liturgy, then print a clean order-of-service.</p>
     </section>
 
     <!-- Mobile Tabs -->
-    <div class="sol-mobile-tabs" role="tablist">
-      <button class="sol-mobile-tab is-active" role="tab" aria-selected="true" data-tab="build">Build</button>
-      <button class="sol-mobile-tab" role="tab" aria-selected="false" data-tab="preview">Preview</button>
+    <div class="sol-mobile-tabs" role="tablist" aria-label="View">
+      <button class="sol-mobile-tab is-active" role="tab" id="mtab-build" aria-controls="mpanel-build" aria-selected="true" tabindex="0" data-tab="build">Build</button>
+      <button class="sol-mobile-tab" role="tab" id="mtab-preview" aria-controls="mpanel-preview" aria-selected="false" tabindex="-1" data-tab="preview">Preview</button>
     </div>
 
     <div class="sol-layout">
       <!-- Builder Panel -->
-      <div class="sol-builder is-active" role="tabpanel" aria-label="Service builder">
+      <div class="sol-builder is-active" id="mpanel-build" role="tabpanel" aria-label="Service builder">
         <div class="sol-builder-header">
           <h2 class="sol-builder-title">Build Your Service</h2>
         </div>
 
         <!-- Steps Navigation -->
         <nav class="sol-steps" role="tablist" aria-label="Builder steps">
-          <button class="sol-step-btn is-active" role="tab" data-step="basics">Basics</button>
-          <button class="sol-step-btn" role="tab" data-step="structure">Structure</button>
-          <button class="sol-step-btn" role="tab" data-step="content">Content</button>
-          <button class="sol-step-btn" role="tab" data-step="export">Export</button>
+          <button class="sol-step-btn is-active" role="tab" id="tab-basics" aria-controls="step-basics" aria-selected="true" tabindex="0" data-step="basics">Basics</button>
+          <button class="sol-step-btn" role="tab" id="tab-structure" aria-controls="step-structure" aria-selected="false" tabindex="-1" data-step="structure">Structure</button>
+          <button class="sol-step-btn" role="tab" id="tab-content" aria-controls="step-content" aria-selected="false" tabindex="-1" data-step="content">Content</button>
+          <button class="sol-step-btn" role="tab" id="tab-export" aria-controls="step-export" aria-selected="false" tabindex="-1" data-step="export">Export</button>
         </nav>
 
         <!-- Step 1: Basics -->
-        <div class="sol-step-content is-active" id="step-basics" role="tabpanel">
+        <div class="sol-step-content is-active" id="step-basics" role="tabpanel" aria-labelledby="tab-basics">
           <div class="sol-form-group">
             <label class="sol-label" for="service-type">Service Type</label>
             <select class="sol-select" id="service-type">
@@ -1027,7 +1061,7 @@
         </div>
 
         <!-- Step 2: Structure -->
-        <div class="sol-step-content" id="step-structure" role="tabpanel">
+        <div class="sol-step-content" id="step-structure" role="tabpanel" aria-labelledby="tab-structure">
           <p style="color: var(--color-muted); font-size: 0.875rem; margin-bottom: var(--space-md);">
             Drag sections to reorder. Click the edit button to add content to each section.
           </p>
@@ -1037,7 +1071,7 @@
         </div>
 
         <!-- Step 3: Content (Section Editor) -->
-        <div class="sol-step-content" id="step-content" role="tabpanel">
+        <div class="sol-step-content" id="step-content" role="tabpanel" aria-labelledby="tab-content">
           <div id="section-selector">
             <p style="color: var(--color-muted); font-size: 0.875rem; margin-bottom: var(--space-md);">
               Select a section to edit its content.
@@ -1070,7 +1104,7 @@
         </div>
 
         <!-- Step 4: Export -->
-        <div class="sol-step-content" id="step-export" role="tabpanel">
+        <div class="sol-step-content" id="step-export" role="tabpanel" aria-labelledby="tab-export">
           <div class="sol-actions">
             <button class="sol-action-btn sol-action-btn--primary" id="print-btn">
               <span class="sol-action-icon">&#x1F5A8;</span>
@@ -1098,7 +1132,7 @@
       </div>
 
       <!-- Preview Panel -->
-      <div class="sol-preview" role="tabpanel" aria-label="Service preview">
+      <div class="sol-preview" id="mpanel-preview" role="tabpanel" aria-label="Service preview">
         <div class="sol-preview-header">
           <h2 class="sol-preview-title">Preview</h2>
           <div class="sol-preview-toggles">
@@ -1381,23 +1415,52 @@
       // Event Handlers
       // ==========================================================================
 
+      function activateMobileTab(tab) {
+        const tabName = tab.dataset.tab;
+        elements.mobileTabs.forEach(t => {
+          const active = t === tab;
+          t.classList.toggle('is-active', active);
+          t.setAttribute('aria-selected', active ? 'true' : 'false');
+          t.setAttribute('tabindex', active ? '0' : '-1');
+        });
+
+        if (tabName === 'build') {
+          elements.builder.classList.add('is-active');
+          elements.preview.classList.remove('is-active');
+        } else {
+          elements.builder.classList.remove('is-active');
+          elements.preview.classList.add('is-active');
+        }
+      }
+
+      // Roving-tabindex keyboard support for a tablist (ArrowLeft/Right/Up/Down, Home, End)
+      function addTablistKeyboard(tabs, onActivate) {
+        const list = Array.prototype.slice.call(tabs);
+        list.forEach((tab, i) => {
+          tab.addEventListener('keydown', e => {
+            let idx = null;
+            switch (e.key) {
+              case 'ArrowRight':
+              case 'ArrowDown': idx = (i + 1) % list.length; break;
+              case 'ArrowLeft':
+              case 'ArrowUp': idx = (i - 1 + list.length) % list.length; break;
+              case 'Home': idx = 0; break;
+              case 'End': idx = list.length - 1; break;
+              default: return;
+            }
+            e.preventDefault();
+            list[idx].focus();
+            onActivate(list[idx]);
+          });
+        });
+      }
+
       function initEventListeners() {
         // Mobile tabs
         elements.mobileTabs.forEach(tab => {
-          tab.addEventListener('click', () => {
-            const tabName = tab.dataset.tab;
-            elements.mobileTabs.forEach(t => t.classList.remove('is-active'));
-            tab.classList.add('is-active');
-
-            if (tabName === 'build') {
-              elements.builder.classList.add('is-active');
-              elements.preview.classList.remove('is-active');
-            } else {
-              elements.builder.classList.remove('is-active');
-              elements.preview.classList.add('is-active');
-            }
-          });
+          tab.addEventListener('click', () => activateMobileTab(tab));
         });
+        addTablistKeyboard(elements.mobileTabs, activateMobileTab);
 
         // Step navigation
         elements.stepBtns.forEach(btn => {
@@ -1406,6 +1469,7 @@
             setStep(step);
           });
         });
+        addTablistKeyboard(elements.stepBtns, btn => setStep(btn.dataset.step));
 
         // Form inputs
         elements.serviceType.addEventListener('change', () => {
@@ -1513,7 +1577,10 @@
       function setStep(step) {
         currentStep = step;
         elements.stepBtns.forEach(btn => {
-          btn.classList.toggle('is-active', btn.dataset.step === step);
+          const active = btn.dataset.step === step;
+          btn.classList.toggle('is-active', active);
+          btn.setAttribute('aria-selected', active ? 'true' : 'false');
+          btn.setAttribute('tabindex', active ? '0' : '-1');
         });
         elements.stepContents.forEach(content => {
           content.classList.toggle('is-active', content.id === 'step-' + step);
@@ -1554,12 +1621,12 @@
             </div>
             <div class="sol-section-actions">
               ${sectionDef.optional ? `
-                <button class="sol-section-btn" title="${section.enabled ? 'Disable' : 'Enable'}" data-action="toggle">
-                  ${section.enabled ? '&#x2713;' : '&#x25CB;'}
+                <button class="sol-section-btn" title="${section.enabled ? 'Disable' : 'Enable'}" aria-label="${section.enabled ? 'Disable' : 'Enable'} section" data-action="toggle">
+                  <span aria-hidden="true">${section.enabled ? '&#x2713;' : '&#x25CB;'}</span>
                 </button>
               ` : ''}
-              <button class="sol-section-btn" title="Move up" data-action="up" ${index === 0 ? 'disabled' : ''}>&#x2191;</button>
-              <button class="sol-section-btn" title="Move down" data-action="down" ${index === state.sections.length - 1 ? 'disabled' : ''}>&#x2193;</button>
+              <button class="sol-section-btn" title="Move up" aria-label="Move section up" data-action="up" ${index === 0 ? 'disabled' : ''}><span aria-hidden="true">&#x2191;</span></button>
+              <button class="sol-section-btn" title="Move down" aria-label="Move section down" data-action="down" ${index === state.sections.length - 1 ? 'disabled' : ''}><span aria-hidden="true">&#x2193;</span></button>
             </div>
           `;
 
@@ -1699,9 +1766,9 @@
             <div class="sol-component-body">
               ${renderComponentForm(component, index)}
               <div class="sol-component-actions">
-                <button class="sol-section-btn" title="Move up" data-action="up" ${index === 0 ? 'disabled' : ''}>&#x2191;</button>
-                <button class="sol-section-btn" title="Move down" data-action="down" ${index === section.components.length - 1 ? 'disabled' : ''}>&#x2193;</button>
-                <button class="sol-section-btn" title="Delete" data-action="delete" style="color: #c00;">&#x2715;</button>
+                <button class="sol-section-btn" title="Move up" aria-label="Move component up" data-action="up" ${index === 0 ? 'disabled' : ''}><span aria-hidden="true">&#x2191;</span></button>
+                <button class="sol-section-btn" title="Move down" aria-label="Move component down" data-action="down" ${index === section.components.length - 1 ? 'disabled' : ''}><span aria-hidden="true">&#x2193;</span></button>
+                <button class="sol-section-btn" title="Delete" aria-label="Delete component" data-action="delete" style="color: #c00;"><span aria-hidden="true">&#x2715;</span></button>
               </div>
             </div>
           `;
