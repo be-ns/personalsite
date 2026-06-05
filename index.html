@@ -71,6 +71,9 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <!-- Scroll progress -->
+  <div class="scroll-progress" aria-hidden="true"></div>
+
   <!-- Page Loader -->
   <div class="page-loader" aria-hidden="true">
     <div class="page-loader__dot"></div>
@@ -102,7 +105,7 @@
   <main id="main">
     <!-- Hero Section -->
     <section class="hero" aria-labelledby="hero-heading">
-      <h1 id="hero-heading" class="hero-headline">Product manager.<br>Builder. Gardener.</h1>
+      <h1 id="hero-heading" class="hero-headline">Product manager.<br>Builder. <span class="hero-accent">Gardener</span>.</h1>
       <div class="hero-content">
         <p>I build software that helps people do their jobs. The way I think about it: ecosystems powered by agents, where the AI handles the real work and the product fits how customers actually think. I spend a lot of time in the data, looking for what customers want but can&rsquo;t find yet. Currently a PM at AppFolio, doing this for property managers. Before that: startup life, data science, and a winding path through ecommerce and small business.</p>
         <p>I care about shipping things that actually work, staying close to my family, and building a few quiet tools that might outlast me. Proud future ancestor of the Choctaw Nation of Oklahoma. Probably the most optimistic person you'll meet.</p>
@@ -585,19 +588,27 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
 
-      // Header scroll effect
+      // Header scroll effect + scroll progress
       var header = document.querySelector('.site-header');
+      var scrollProgress = document.querySelector('.scroll-progress');
       var scrollThreshold = 50;
 
       function updateHeaderState() {
-        if (window.scrollY > scrollThreshold) {
+        var y = window.scrollY || window.pageYOffset || 0;
+        if (y > scrollThreshold) {
           header.classList.add('is-scrolled');
         } else {
           header.classList.remove('is-scrolled');
         }
+        if (scrollProgress) {
+          var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          var pct = docHeight > 0 ? (y / docHeight) * 100 : 0;
+          scrollProgress.style.width = pct + '%';
+        }
       }
 
       window.addEventListener('scroll', updateHeaderState, { passive: true });
+      window.addEventListener('resize', updateHeaderState, { passive: true });
       updateHeaderState();
 
     })();
