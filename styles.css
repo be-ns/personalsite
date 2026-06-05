@@ -1525,6 +1525,11 @@ footer {
   cursor: pointer;
 }
 
+.score-slider input[type="range"]:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 4px;
+}
+
 .score-slider input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;

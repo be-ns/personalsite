@@ -360,6 +360,11 @@
       box-shadow: 0 0 0 3px rgba(30, 58, 47, 0.08);
     }
 
+    .input-text:focus-visible {
+      outline: 2px solid var(--color-text);
+      outline-offset: 2px;
+    }
+
     .input-text.is-invalid {
       border-color: #DC2626;
     }
@@ -460,6 +465,11 @@
       border-radius: 3px;
       outline: none;
       cursor: pointer;
+    }
+
+    .sun-slider-input:focus-visible {
+      outline: 2px solid var(--color-text);
+      outline-offset: 4px;
     }
 
     .sun-slider-input::-webkit-slider-thumb {

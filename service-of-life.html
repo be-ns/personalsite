@@ -218,6 +218,13 @@
       border-color: var(--color-text);
     }
 
+    .sol-input:focus-visible,
+    .sol-select:focus-visible,
+    .sol-textarea:focus-visible {
+      outline: 2px solid var(--color-text);
+      outline-offset: 2px;
+    }
+
     .sol-textarea {
       min-height: 100px;
       resize: vertical;
@@ -991,28 +998,28 @@
     </section>
 
     <!-- Mobile Tabs -->
-    <div class="sol-mobile-tabs" role="tablist">
-      <button class="sol-mobile-tab is-active" role="tab" aria-selected="true" data-tab="build">Build</button>
-      <button class="sol-mobile-tab" role="tab" aria-selected="false" data-tab="preview">Preview</button>
+    <div class="sol-mobile-tabs" role="tablist" aria-label="View">
+      <button class="sol-mobile-tab is-active" role="tab" id="mtab-build" aria-controls="mpanel-build" aria-selected="true" tabindex="0" data-tab="build">Build</button>
+      <button class="sol-mobile-tab" role="tab" id="mtab-preview" aria-controls="mpanel-preview" aria-selected="false" tabindex="-1" data-tab="preview">Preview</button>
     </div>
 
     <div class="sol-layout">
       <!-- Builder Panel -->
-      <div class="sol-builder is-active" role="tabpanel" aria-label="Service builder">
+      <div class="sol-builder is-active" id="mpanel-build" role="tabpanel" aria-label="Service builder">
         <div class="sol-builder-header">
           <h2 class="sol-builder-title">Build Your Service</h2>
         </div>
 
         <!-- Steps Navigation -->
         <nav class="sol-steps" role="tablist" aria-label="Builder steps">
-          <button class="sol-step-btn is-active" role="tab" data-step="basics">Basics</button>
-          <button class="sol-step-btn" role="tab" data-step="structure">Structure</button>
-          <button class="sol-step-btn" role="tab" data-step="content">Content</button>
-          <button class="sol-step-btn" role="tab" data-step="export">Export</button>
+          <button class="sol-step-btn is-active" role="tab" id="tab-basics" aria-controls="step-basics" aria-selected="true" tabindex="0" data-step="basics">Basics</button>
+          <button class="sol-step-btn" role="tab" id="tab-structure" aria-controls="step-structure" aria-selected="false" tabindex="-1" data-step="structure">Structure</button>
+          <button class="sol-step-btn" role="tab" id="tab-content" aria-controls="step-content" aria-selected="false" tabindex="-1" data-step="content">Content</button>
+          <button class="sol-step-btn" role="tab" id="tab-export" aria-controls="step-export" aria-selected="false" tabindex="-1" data-step="export">Export</button>
         </nav>
 
         <!-- Step 1: Basics -->
-        <div class="sol-step-content is-active" id="step-basics" role="tabpanel">
+        <div class="sol-step-content is-active" id="step-basics" role="tabpanel" aria-labelledby="tab-basics">
           <div class="sol-form-group">
             <label class="sol-label" for="service-type">Service Type</label>
             <select class="sol-select" id="service-type">
@@ -1054,7 +1061,7 @@
         </div>
 
         <!-- Step 2: Structure -->
-        <div class="sol-step-content" id="step-structure" role="tabpanel">
+        <div class="sol-step-content" id="step-structure" role="tabpanel" aria-labelledby="tab-structure">
           <p style="color: var(--color-muted); font-size: 0.875rem; margin-bottom: var(--space-md);">
             Drag sections to reorder. Click the edit button to add content to each section.
           </p>
@@ -1064,7 +1071,7 @@
         </div>
 
         <!-- Step 3: Content (Section Editor) -->
-        <div class="sol-step-content" id="step-content" role="tabpanel">
+        <div class="sol-step-content" id="step-content" role="tabpanel" aria-labelledby="tab-content">
           <div id="section-selector">
             <p style="color: var(--color-muted); font-size: 0.875rem; margin-bottom: var(--space-md);">
               Select a section to edit its content.
@@ -1097,7 +1104,7 @@
         </div>
 
         <!-- Step 4: Export -->
-        <div class="sol-step-content" id="step-export" role="tabpanel">
+        <div class="sol-step-content" id="step-export" role="tabpanel" aria-labelledby="tab-export">
           <div class="sol-actions">
             <button class="sol-action-btn sol-action-btn--primary" id="print-btn">
               <span class="sol-action-icon">&#x1F5A8;</span>
@@ -1125,7 +1132,7 @@
       </div>
 
       <!-- Preview Panel -->
-      <div class="sol-preview" role="tabpanel" aria-label="Service preview">
+      <div class="sol-preview" id="mpanel-preview" role="tabpanel" aria-label="Service preview">
         <div class="sol-preview-header">
           <h2 class="sol-preview-title">Preview</h2>
           <div class="sol-preview-toggles">
@@ -1408,23 +1415,52 @@
       // Event Handlers
       // ==========================================================================
 
+      function activateMobileTab(tab) {
+        const tabName = tab.dataset.tab;
+        elements.mobileTabs.forEach(t => {
+          const active = t === tab;
+          t.classList.toggle('is-active', active);
+          t.setAttribute('aria-selected', active ? 'true' : 'false');
+          t.setAttribute('tabindex', active ? '0' : '-1');
+        });
+
+        if (tabName === 'build') {
+          elements.builder.classList.add('is-active');
+          elements.preview.classList.remove('is-active');
+        } else {
+          elements.builder.classList.remove('is-active');
+          elements.preview.classList.add('is-active');
+        }
+      }
+
+      // Roving-tabindex keyboard support for a tablist (ArrowLeft/Right/Up/Down, Home, End)
+      function addTablistKeyboard(tabs, onActivate) {
+        const list = Array.prototype.slice.call(tabs);
+        list.forEach((tab, i) => {
+          tab.addEventListener('keydown', e => {
+            let idx = null;
+            switch (e.key) {
+              case 'ArrowRight':
+              case 'ArrowDown': idx = (i + 1) % list.length; break;
+              case 'ArrowLeft':
+              case 'ArrowUp': idx = (i - 1 + list.length) % list.length; break;
+              case 'Home': idx = 0; break;
+              case 'End': idx = list.length - 1; break;
+              default: return;
+            }
+            e.preventDefault();
+            list[idx].focus();
+            onActivate(list[idx]);
+          });
+        });
+      }
+
       function initEventListeners() {
         // Mobile tabs
         elements.mobileTabs.forEach(tab => {
-          tab.addEventListener('click', () => {
-            const tabName = tab.dataset.tab;
-            elements.mobileTabs.forEach(t => t.classList.remove('is-active'));
-            tab.classList.add('is-active');
-
-            if (tabName === 'build') {
-              elements.builder.classList.add('is-active');
-              elements.preview.classList.remove('is-active');
-            } else {
-              elements.builder.classList.remove('is-active');
-              elements.preview.classList.add('is-active');
-            }
-          });
+          tab.addEventListener('click', () => activateMobileTab(tab));
         });
+        addTablistKeyboard(elements.mobileTabs, activateMobileTab);
 
         // Step navigation
         elements.stepBtns.forEach(btn => {
@@ -1433,6 +1469,7 @@
             setStep(step);
           });
         });
+        addTablistKeyboard(elements.stepBtns, btn => setStep(btn.dataset.step));
 
         // Form inputs
         elements.serviceType.addEventListener('change', () => {
@@ -1540,7 +1577,10 @@
       function setStep(step) {
         currentStep = step;
         elements.stepBtns.forEach(btn => {
-          btn.classList.toggle('is-active', btn.dataset.step === step);
+          const active = btn.dataset.step === step;
+          btn.classList.toggle('is-active', active);
+          btn.setAttribute('aria-selected', active ? 'true' : 'false');
+          btn.setAttribute('tabindex', active ? '0' : '-1');
         });
         elements.stepContents.forEach(content => {
           content.classList.toggle('is-active', content.id === 'step-' + step);
