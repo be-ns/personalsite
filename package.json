@@ -20,7 +20,7 @@
     "htmlhint": "^1.1.4"
   },
   "dependencies": {
-    "canvas": "^2.11.2",
+    "canvas": "^3.2.3",
     "sharp": "^0.34.5"
   }
 }
