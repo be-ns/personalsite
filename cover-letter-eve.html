@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ben Siverly · Cover Letter · Eve</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Zilla+Slab:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #1A1A1A; --muted: #555; --faint: #777; --rule: #D9D9D6;
+      --cobalt: #0047AB; --accent: #FFE227; --paper: #fff; --bg: #F2F1ED;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; background: var(--bg); color: var(--ink);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+    }
+    .toolbar {
+      position: sticky; top: 0; z-index: 10; display: flex; gap: 0.6rem;
+      align-items: center; justify-content: center; padding: 0.7rem 1rem;
+      background: rgba(242,241,237,0.92); backdrop-filter: blur(6px);
+      border-bottom: 1px solid var(--rule); font-family: 'JetBrains Mono', monospace; font-size: 0.76rem;
+    }
+    .toolbar a, .toolbar button {
+      font-family: inherit; font-size: inherit; color: var(--ink); text-decoration: none;
+      background: var(--paper); border: 1px solid var(--ink); border-radius: 4px;
+      padding: 0.45rem 0.85rem; cursor: pointer; transition: background 150ms ease, color 150ms ease;
+    }
+    .toolbar button.primary { background: var(--accent); }
+    .toolbar a:hover, .toolbar button:hover { background: var(--ink); color: #fff; }
+    .toolbar .back { background: transparent; border-color: var(--rule); color: var(--muted); }
+
+    .sheet {
+      background: var(--paper); width: 8.5in; max-width: 100%;
+      margin: 1.5rem auto; padding: 0.9in; box-shadow: 0 4px 24px rgba(0,0,0,0.10); border-radius: 2px;
+    }
+    .letterhead {
+      display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem;
+      border-bottom: 2.5pt solid var(--ink); padding-bottom: 0.5rem; margin-bottom: 1.1rem;
+    }
+    .name {
+      font-family: 'Zilla Slab', serif; font-weight: 700; font-size: 22pt; line-height: 1;
+      margin: 0; letter-spacing: -0.01em;
+    }
+    .name .mark { box-shadow: inset 0 -0.26em 0 var(--accent); }
+    .lh-title {
+      font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 8.5pt;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--cobalt); margin: 0.4rem 0 0;
+    }
+    .contact {
+      font-family: 'JetBrains Mono', monospace; font-size: 8pt; line-height: 1.7;
+      color: var(--muted); text-align: right; white-space: nowrap;
+    }
+    .contact a { color: var(--muted); text-decoration: none; }
+
+    .meta { font-size: 10.5pt; color: var(--muted); margin: 0 0 1rem; line-height: 1.5; }
+    .salutation { font-size: 11pt; margin: 0 0 0.75rem; }
+    .body p { font-size: 10.7pt; line-height: 1.46; margin: 0 0 0.72rem; color: #222; }
+    .signoff { font-size: 11pt; margin: 1rem 0 0; line-height: 1.6; }
+    .signoff .sig {
+      font-family: 'Zilla Slab', serif; font-weight: 700; font-size: 13pt; display: block; margin-top: 0.1rem;
+    }
+
+    @media (max-width: 720px) {
+      .sheet { padding: 1.1rem; }
+      .letterhead { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+      .contact { text-align: left; white-space: normal; }
+    }
+    @page { size: Letter; margin: 0.9in; }
+    @media print {
+      html, body { background: #fff; }
+      .toolbar { display: none !important; }
+      .sheet { width: auto; margin: 0; padding: 0; box-shadow: none; border-radius: 0; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <a class="back" href="resume.html?role=eve">&larr; Résumé</a>
+    <button class="primary" onclick="window.print()">Print / Save as PDF</button>
+    <a href="Ben-Siverly-Cover-Letter-Eve.pdf" download>Download PDF</a>
+  </div>
+
+  <div class="sheet">
+    <header class="letterhead">
+      <div>
+        <h1 class="name"><span class="mark">Ben Siverly</span></h1>
+        <p class="lh-title">Senior Product Manager, Applied AI</p>
+      </div>
+      <div class="contact">
+        San Mateo, CA<br>
+        <a href="mailto:benjaminsiverly@gmail.com">benjaminsiverly@gmail.com</a><br>
+        <a href="https://www.linkedin.com/in/be-ns/">linkedin.com/in/be-ns</a><br>
+        <a href="https://bensiverly.com">bensiverly.com</a>
+      </div>
+    </header>
+
+    <p class="meta">June 4, 2026<br>Eve &middot; San Mateo, CA</p>
+
+    <p class="salutation">Dear Eve team,</p>
+
+    <div class="body">
+      <p>In law, a hallucinated citation isn&rsquo;t a rough draft, it&rsquo;s malpractice. The hard part of legal AI is the part I work on every day: making an agent trustworthy enough to stand on real stakes. I ship agentic AI gated by evaluation suites, with a person in the loop wherever a wrong answer carries a cost. That is why I&rsquo;m applying for the Lead Product Manager role.</p>
+
+      <p>At AppFolio I build agentic features for property managers and own the trust layer. I set what an agent is allowed to do, gate every release behind an evaluation suite, and keep a human in the loop on the calls that carry risk. I came to product from data science, so model choice, grounding, and prompt-response design are things I reason about directly, not hand off. I also rebuilt our core product from the ground up, and it now fills vacancies three to five days faster with submissions nearly doubled.</p>
+
+      <p>I raise the bar by example: clean specs, sharp decisions, and a quality line engineers and designers can build against. I have real 0-to-1 range. I founded a company and built a startup&rsquo;s first data function from nothing, and I ship in close partnership with engineering and design. Ambiguous, accuracy-critical problems are where I do my best work, which is the whole game in legal AI.</p>
+
+      <p>Eve is AI-native and works with the same labs I learn from, which is exactly where I want to build. I&rsquo;m in San Mateo and glad to be on-site. Hand me a case-critical surface and you can stop worrying about whether the AI holds up.</p>
+    </div>
+
+    <p class="signoff">Thank you for your time,
+      <span class="sig">Ben Siverly</span>
+    </p>
+  </div>
+</body>
+</html>
