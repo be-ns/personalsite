@@ -89,6 +89,11 @@
 
   <!-- Menu Panel -->
   <nav id="menu-panel" class="menu-panel" role="dialog" aria-modal="true" aria-label="Primary navigation" aria-hidden="true">
+    <button type="button" class="menu-close" aria-label="Close menu">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M6 6 L18 18 M18 6 L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
     <ul class="menu-links" role="list">
       <li><a href="#hero-heading" data-section="hero-heading">Intro</a></li>
       <li><a href="#work-heading" data-section="work-heading">Work</a></li>
@@ -389,10 +394,10 @@
       var siteHeader = document.querySelector('.site-header');
       var menuPanel = document.querySelector('.menu-panel');
       var menuOverlay = document.querySelector('.menu-overlay');
+      var menuClose = document.querySelector('.menu-close');
       var menuLinks = document.querySelectorAll('.menu-links a');
       var mainEl = document.querySelector('main');
       var footerEl = document.querySelector('footer');
-      var menuToggleDefaultLabel = menuToggle ? menuToggle.textContent.trim() : 'Menu';
 
       if (!menuToggle || !menuPanel || !menuOverlay) return;
 
@@ -407,14 +412,14 @@
         if (siteHeader) siteHeader.classList.add('is-menu-open');
         menuToggle.setAttribute('aria-expanded', 'true');
         menuToggle.setAttribute('aria-label', 'Close menu');
-        menuToggle.textContent = 'Close';
         menuPanel.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
         // Take background content out of the tab order and the a11y tree
         if (mainEl) mainEl.inert = true;
         if (footerEl) footerEl.inert = true;
         // Move focus into the dialog
-        if (menuLinks.length) menuLinks[0].focus();
+        if (menuClose) menuClose.focus();
+        else if (menuLinks.length) menuLinks[0].focus();
       }
 
       function closeMenu() {
@@ -426,7 +431,6 @@
         if (siteHeader) siteHeader.classList.remove('is-menu-open');
         menuToggle.setAttribute('aria-expanded', 'false');
         menuToggle.setAttribute('aria-label', 'Open menu');
-        menuToggle.textContent = menuToggleDefaultLabel;
         menuPanel.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
         if (mainEl) mainEl.inert = false;
@@ -442,17 +446,18 @@
       };
 
       menuOverlay.onclick = closeMenu;
+      if (menuClose) menuClose.onclick = closeMenu;
 
       for (var i = 0; i < menuLinks.length; i++) {
         menuLinks[i].onclick = function() { closeMenu(); };
       }
 
-      // Escape closes; Tab is trapped within the dialog (toggle + menu links)
+      // Escape closes; Tab is trapped within the dialog (close button + menu links)
       document.addEventListener('keydown', function(e) {
         if (!isOpen) return;
         if (e.key === 'Escape') { closeMenu(); return; }
         if (e.key !== 'Tab') return;
-        var focusable = [menuToggle].concat(Array.prototype.slice.call(menuLinks));
+        var focusable = (menuClose ? [menuClose] : []).concat(Array.prototype.slice.call(menuLinks));
         var first = focusable[0];
         var last = focusable[focusable.length - 1];
         if (e.shiftKey && document.activeElement === first) {
