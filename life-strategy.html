@@ -225,6 +225,89 @@
     }
 
     /* ==========================================================================
+       Intro / Start screen
+       ========================================================================== */
+    .intro {
+      max-width: 30rem;
+      margin: 0 auto;
+      padding: var(--space-lg) 0;
+      width: 100%;
+      opacity: 1;
+      transition: opacity var(--transition-fast);
+    }
+
+    .intro.is-transitioning {
+      opacity: 0;
+    }
+
+    .intro-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+      margin: 0 0 var(--space-sm) 0;
+    }
+
+    .intro-title {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: clamp(1.75rem, 5vw, 2.5rem);
+      line-height: 1.15;
+      margin: 0 0 var(--space-md) 0;
+      color: var(--color-text);
+    }
+
+    .intro-lead {
+      font-size: 1.0625rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      margin: 0 0 var(--space-lg) 0;
+    }
+
+    .intro-steps {
+      list-style: none;
+      margin: 0 0 var(--space-lg) 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .intro-steps li {
+      display: flex;
+      gap: var(--space-sm);
+      align-items: baseline;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: var(--color-text);
+    }
+
+    .intro-step-num {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--color-muted);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      min-width: 1.5rem;
+      height: 1.5rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .intro-privacy {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      line-height: 1.5;
+      color: var(--color-muted);
+      border-top: 1px solid var(--color-border);
+      padding-top: var(--space-md);
+      margin: 0 0 var(--space-lg) 0;
+    }
+
+    /* ==========================================================================
        Score Card - The hero of each scoring step
        ========================================================================== */
     .score-card {
@@ -248,8 +331,16 @@
       font-size: clamp(2.5rem, 8vw, 3.5rem);
       font-weight: 700;
       line-height: 1.1;
-      margin: 0 0 var(--space-lg) 0;
+      margin: 0 0 var(--space-sm) 0;
       color: var(--color-text);
+    }
+
+    .score-hint {
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      color: var(--color-muted);
+      max-width: 22rem;
+      margin: 0 0 var(--space-lg) 0;
     }
 
     /* Slider */
@@ -359,6 +450,17 @@
     .slider-tick.is-active {
       color: var(--color-text);
       font-weight: 500;
+    }
+
+    .slider-scale {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 2px;
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-muted);
     }
 
     /* ==========================================================================
@@ -1193,7 +1295,7 @@
 
       // State
       var state = {
-        step: 'importance', // 'importance', 'satisfaction', 'results', 'print'
+        step: 'intro', // 'intro', 'importance', 'satisfaction', 'results', 'print'
         categoryIndex: 0,
         scores: categories.map(function(c) {
           return { id: c.id, label: c.label, importance: null, satisfaction: null };
@@ -1282,13 +1384,42 @@
         });
         headerReset.classList.toggle('is-visible', hasAnyScore || state.step === 'results' || state.step === 'print');
 
-        if (state.step === 'importance' || state.step === 'satisfaction') {
+        if (state.step === 'intro') {
+          renderIntro();
+        } else if (state.step === 'importance' || state.step === 'satisfaction') {
           renderScoring();
         } else if (state.step === 'results') {
           renderResults();
         } else if (state.step === 'print') {
           renderPrint();
         }
+      }
+
+      function renderIntro() {
+        var html = '' +
+          '<div class="intro" id="intro-card">' +
+            '<p class="intro-eyebrow">Life Strategy Matrix</p>' +
+            '<h1 class="intro-title">See where your life is out of balance.</h1>' +
+            '<p class="intro-lead">A quick self-assessment that maps eight areas of your life by how much they matter to you and how they’re actually going.</p>' +
+            '<ol class="intro-steps">' +
+              '<li><span class="intro-step-num">1</span><span>Rate eight areas — Health, Work, Family, and five more — first on importance, then on satisfaction. Each from 1 to 6.</span></li>' +
+              '<li><span class="intro-step-num">2</span><span>See your answers plotted on a matrix that sorts each area into Invest, Maintain, Rebalance, or Release.</span></li>' +
+              '<li><span class="intro-step-num">3</span><span>Get one clear priority and a one-page plan you can print and keep.</span></li>' +
+            '</ol>' +
+            '<p class="intro-privacy">Nothing is saved. Everything stays in your browser.</p>' +
+            '<nav class="nav">' +
+              '<span></span>' +
+              '<button type="button" class="nav-btn nav-btn--next" id="intro-begin">Begin &rarr;</button>' +
+            '</nav>' +
+          '</div>';
+
+        tool.innerHTML = html;
+
+        var beginBtn = document.getElementById('intro-begin');
+        beginBtn.addEventListener('click', function() {
+          transitionTo('importance');
+        });
+        beginBtn.focus();
       }
 
       function renderScoring() {
@@ -1312,6 +1443,9 @@
           '</div>' +
           '<div class="score-card" id="score-card">' +
             '<h1 class="category-name">' + category.label + '</h1>' +
+            '<p class="score-hint">' + (isImportance
+              ? 'How much does this area matter in your life right now?'
+              : 'How is this area actually going right now?') + '</p>' +
             '<div class="slider-container">' +
               '<div class="slider-value' + (isUnset ? ' is-unset' : '') + '" id="slider-value">' + displayValue + '</div>' +
               '<div class="slider-track">' +
@@ -1326,6 +1460,10 @@
                 '<span class="slider-tick' + (currentValue === 4 ? ' is-active' : '') + '" data-value="4">4</span>' +
                 '<span class="slider-tick' + (currentValue === 5 ? ' is-active' : '') + '" data-value="5">5</span>' +
                 '<span class="slider-tick' + (currentValue === 6 ? ' is-active' : '') + '" data-value="6">6</span>' +
+              '</div>' +
+              '<div class="slider-scale" aria-hidden="true">' +
+                '<span>' + (isImportance ? 'Not important' : 'Struggling') + '</span>' +
+                '<span>' + (isImportance ? 'Essential' : 'Thriving') + '</span>' +
               '</div>' +
             '</div>' +
           '</div>' +
@@ -1460,7 +1598,8 @@
       function transitionTo(step) {
         var card = document.getElementById('score-card');
         var results = document.querySelector('.results');
-        var target = card || results;
+        var intro = document.getElementById('intro-card');
+        var target = card || results || intro;
 
         if (target && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
           target.classList.add('is-transitioning');
@@ -1783,7 +1922,7 @@
       }
 
       function resetTool() {
-        state.step = 'importance';
+        state.step = 'intro';
         state.categoryIndex = 0;
         state.scores = categories.map(function(c) {
           return { id: c.id, label: c.label, importance: null, satisfaction: null };

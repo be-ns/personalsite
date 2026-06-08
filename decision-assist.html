@@ -274,6 +274,70 @@
     }
 
     /* ==========================================================================
+       Intro / Start screen
+       ========================================================================== */
+    .intro-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+      margin: 0 0 var(--space-sm) 0;
+    }
+
+    .intro-lead {
+      font-size: 1.0625rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      margin: 0 0 var(--space-lg) 0;
+      max-width: 32rem;
+    }
+
+    .intro-steps {
+      list-style: none;
+      margin: 0 0 var(--space-lg) 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      max-width: 32rem;
+    }
+
+    .intro-steps li {
+      display: flex;
+      gap: var(--space-sm);
+      align-items: baseline;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: var(--color-text);
+    }
+
+    .intro-step-num {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--color-muted);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      min-width: 1.5rem;
+      height: 1.5rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .intro-privacy {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      line-height: 1.5;
+      color: var(--color-muted);
+      border-top: 1px solid var(--color-border);
+      padding-top: var(--space-md);
+      margin: 0 0 var(--space-lg) 0;
+      max-width: 32rem;
+    }
+
+    /* ==========================================================================
        Form Elements
        ========================================================================== */
     .form-group {
@@ -1153,7 +1217,7 @@
 
       // State
       var state = {
-        step: 'define', // 'define', 'options', 'considerations', 'weighting', 'scoring', 'results'
+        step: 'intro', // 'intro', 'define', 'options', 'considerations', 'weighting', 'scoring', 'results'
         decision: {
           title: '',
           context: ''
@@ -1248,6 +1312,11 @@
                          state.considerations.length > 0;
         headerReset.classList.toggle('is-visible', hasProgress);
 
+        if (state.step === 'intro') {
+          renderIntro();
+          return;
+        }
+
         switch (state.step) {
           case 'define':
             renderDefine();
@@ -1305,6 +1374,35 @@
             render();
           });
         });
+      }
+
+      function renderIntro() {
+        var html = '' +
+          '<div class="step-content" id="step-content">' +
+            '<p class="intro-eyebrow">Decision Assist</p>' +
+            '<h1 class="step-title">Think a hard decision all the way through.</h1>' +
+            '<p class="intro-lead">A structured way to compare your options against what actually matters to you — and see which one comes out ahead.</p>' +
+            '<ol class="intro-steps">' +
+              '<li><span class="intro-step-num">1</span><span>Name the decision you’re facing.</span></li>' +
+              '<li><span class="intro-step-num">2</span><span>List the options you’re weighing.</span></li>' +
+              '<li><span class="intro-step-num">3</span><span>Pick the factors that matter — and how much each one weighs.</span></li>' +
+              '<li><span class="intro-step-num">4</span><span>Score every option against each factor.</span></li>' +
+              '<li><span class="intro-step-num">5</span><span>See your options ranked, with the math shown.</span></li>' +
+            '</ol>' +
+            '<p class="intro-privacy">Nothing is saved. Everything stays in your browser.</p>' +
+          '</div>' +
+          '<nav class="nav">' +
+            '<span></span>' +
+            '<button type="button" class="nav-btn nav-btn--next" id="intro-begin">Begin &rarr;</button>' +
+          '</nav>';
+
+        tool.innerHTML = html;
+
+        var beginBtn = document.getElementById('intro-begin');
+        beginBtn.addEventListener('click', function() {
+          transitionTo('define');
+        });
+        beginBtn.focus();
       }
 
       function renderDefine() {
@@ -1871,7 +1969,7 @@
 
       function resetTool() {
         state = {
-          step: 'define',
+          step: 'intro',
           decision: { title: '', context: '' },
           options: ['', ''],
           considerations: [],
