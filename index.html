@@ -346,6 +346,12 @@
         <span class="contact-divider" aria-hidden="true">/</span>
         <a href="resume.html">Résumé</a>
       </div>
+
+      <button class="ai-wink" type="button" aria-label="Generate a thought with AI">
+        <span class="ai-wink-spark" aria-hidden="true">✨</span>
+        <span class="ai-wink-label">Ask the AI</span>
+      </button>
+      <p class="ai-wink-output" role="status" aria-live="polite"></p>
     </section>
   </main>
 
@@ -615,6 +621,68 @@
       window.addEventListener('scroll', updateHeaderState, { passive: true });
       window.addEventListener('resize', updateHeaderState, { passive: true });
       updateHeaderState();
+
+      // Cursor-aware glow on tool cards — track the pointer as CSS custom props.
+      // Skipped when motion isn't welcome; the focus-within fallback still glows.
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        var glowCards = document.querySelectorAll('.tool-featured');
+        glowCards.forEach(function(card) {
+          card.addEventListener('pointermove', function(e) {
+            var rect = card.getBoundingClientRect();
+            card.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width) * 100 + '%');
+            card.style.setProperty('--my', ((e.clientY - rect.top) / rect.height) * 100 + '%');
+          }, { passive: true });
+        });
+      }
+
+      // The self-aware wink — play the AI-UI genre straight, then drop the act.
+      var wink = document.querySelector('.ai-wink');
+      if (wink) {
+        var winkOut = document.querySelector('.ai-wink-output');
+        var thoughts = [
+          'Consulting the frontier…',
+          'Aligning incentives…',
+          'Touching grass…',
+          'Synthesizing optimism…'
+        ];
+        var punchline = 'Just kidding — no model required. Email me and a real human (me) answers.';
+        var winkBusy = false;
+
+        wink.addEventListener('click', function() {
+          if (winkBusy) return;
+          winkBusy = true;
+
+          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            winkOut.classList.remove('is-thinking');
+            winkOut.textContent = punchline;
+            winkBusy = false;
+            return;
+          }
+
+          var i = 0;
+          winkOut.classList.add('is-thinking');
+          winkOut.textContent = thoughts[0];
+          var ticker = setInterval(function() {
+            i++;
+            if (i < thoughts.length) {
+              winkOut.textContent = thoughts[i];
+            } else {
+              clearInterval(ticker);
+              winkOut.classList.remove('is-thinking');
+              winkOut.textContent = punchline;
+              winkBusy = false;
+            }
+          }, 750);
+        });
+      }
+
+      // A nod to the field guide that inspired this pass.
+      try {
+        console.log(
+          '%c✨ built by a human (mostly). performative-ui not included.',
+          'color:#0047AB;font-weight:600;'
+        );
+      } catch (e) {}
 
     })();
   </script>
