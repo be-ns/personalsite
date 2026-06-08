@@ -78,6 +78,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 
 body {
@@ -422,12 +423,29 @@ section:last-of-type {
    ========================================================================== */
 
 .hero {
+  position: relative;
   margin-bottom: var(--space-3xl);
   padding-bottom: var(--space-xl);
   border-bottom: 1px solid var(--color-border);
 }
 
+/* Hero depth — a soft on-brand mesh, static (not "breathing").
+   The aurora trope without the purple-pink circus. */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: -12% -10% 25%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(42% 52% at 12% 8%, rgba(0, 71, 171, 0.07), transparent 70%),
+    radial-gradient(38% 46% at 88% 0%, rgba(255, 226, 39, 0.12), transparent 70%),
+    radial-gradient(46% 56% at 72% 64%, rgba(13, 115, 119, 0.05), transparent 72%);
+  filter: blur(8px);
+}
+
 .hero-headline {
+  position: relative;
   margin-bottom: var(--space-lg);
   line-height: 1.1;
 }
@@ -475,11 +493,11 @@ section:last-of-type {
 .hero-link-arrow {
   color: var(--color-cobalt);
   font-weight: 400;
-  transition: transform var(--transition-fast);
+  transition: transform 280ms var(--ease-spring);
 }
 
 .hero-link:hover .hero-link-arrow {
-  transform: translateX(4px);
+  transform: translateX(6px);
 }
 
 /* Signature accent — a highlighter swipe behind a hero word */
@@ -536,6 +554,29 @@ section:last-of-type {
 @keyframes drawAccent {
   from { background-size: 0% 0.34em; }
   to { background-size: 100% 0.34em; }
+}
+
+/* One-shot shimmer — a single gloss across the headline after it settles.
+   The catalog mocks the *perpetual* loop; firing it once reads as polish. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-headline::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      105deg,
+      transparent 38%,
+      rgba(255, 255, 255, 0.72) 50%,
+      transparent 62%
+    );
+    transform: translateX(-130%);
+    animation: heroShimmer 1.1s var(--ease-out) 1.9s 1 forwards;
+  }
+}
+
+@keyframes heroShimmer {
+  to { transform: translateX(130%); }
 }
 
 /* ==========================================================================
@@ -689,6 +730,29 @@ section:last-of-type {
   opacity: 1;
 }
 
+/* Cursor-aware glow — a warm spotlight that tracks the pointer inside the card.
+   --mx/--my are set in JS; default to center so keyboard focus still glows. */
+.tool-featured::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    260px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(255, 226, 39, 0.18),
+    transparent 60%
+  );
+  transition: opacity var(--transition-base);
+}
+
+.tool-featured:hover::after,
+.tool-featured:focus-within::after {
+  opacity: 1;
+}
+
 .tool-featured:hover,
 .tool-featured:focus {
   background: linear-gradient(135deg, var(--color-bg-alt) 0%, var(--color-bg) 100%);
@@ -800,11 +864,11 @@ section:last-of-type {
 }
 
 .tool-featured-cta span:last-child {
-  transition: transform var(--transition-fast);
+  transition: transform 280ms var(--ease-spring);
 }
 
 .tool-featured:hover .tool-featured-cta span:last-child {
-  transform: translateX(4px);
+  transform: translateX(6px);
 }
 
 /* Upcoming/In-Progress Tools - Clean Card List */
@@ -1022,11 +1086,11 @@ section:last-of-type {
 
 .contact-email-icon {
   display: inline-block;
-  transition: transform var(--transition-fast);
+  transition: transform 280ms var(--ease-spring);
 }
 
 .contact-email:hover .contact-email-icon {
-  transform: translateX(2px);
+  transform: translateX(5px);
 }
 
 .contact-email-status {
@@ -1060,6 +1124,60 @@ section:last-of-type {
 .contact-divider {
   color: var(--color-muted);
   opacity: 0.5;
+}
+
+/* The self-aware wink — one knowing nod to the AI-UI genre I build in.
+   Plays the "✨ Generate" + "thinking…" tropes straight, then drops the act. */
+.ai-wink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: var(--space-lg);
+  padding: 0.4rem 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 100px;
+  cursor: pointer;
+  transition: color var(--transition-fast),
+              border-color var(--transition-fast),
+              transform 280ms var(--ease-spring);
+}
+
+.ai-wink:hover,
+.ai-wink:focus-visible {
+  color: var(--color-text);
+  border-color: var(--color-text);
+  transform: translateY(-1px);
+}
+
+.ai-wink:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+.ai-wink-spark {
+  font-size: 0.85rem;
+  line-height: 1;
+  animation: live-pulse 2.4s ease-in-out infinite;
+}
+
+.ai-wink-output {
+  display: block;
+  min-height: 1.25rem;
+  margin-top: var(--space-sm);
+  font-size: 0.9375rem;
+  color: var(--color-muted);
+}
+
+.ai-wink-output.is-thinking {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
 }
 
 /* ==========================================================================
