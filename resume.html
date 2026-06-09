@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ben Siverly — Senior Product Manager · Resume</title>
-  <meta name="description" content="Resume of Ben Siverly, Senior Product Manager. Data-fluent PM building agentic AI products and the data pipelines behind them.">
+  <meta name="description" content="Resume of Ben Siverly, Senior Product Manager. AI-Native and General versions, each downloadable as a one-page PDF.">
 
   <link rel="canonical" href="https://bensiverly.com/resume.html">
 
@@ -94,7 +94,7 @@
       cursor: pointer;
     }
 
-    /* Screen-only list of every tailored version */
+    /* Screen-only list of downloadable versions */
     .versions {
       max-width: 8.5in;
       margin: 0 auto 2.5rem;
@@ -168,7 +168,7 @@
     .contact a:hover { color: var(--cobalt); }
 
     /* ---- Sections ---- */
-    section { margin-top: 0.52rem; }
+    section { margin-top: 0.55rem; }
     .section-title {
       font-family: 'JetBrains Mono', monospace;
       font-size: 8.5pt;
@@ -187,15 +187,6 @@
       margin: 0;
       color: #2a2a2a;
     }
-    .summary strong { font-weight: 600; color: var(--ink); }
-    .focus {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 8pt;
-      line-height: 1.5;
-      color: var(--muted);
-      margin: 0.4rem 0 0;
-    }
-    .focus b { color: var(--cobalt); font-weight: 500; }
 
     /* ---- Experience ---- */
     .job { margin-bottom: 0.55rem; break-inside: avoid; }
@@ -220,56 +211,25 @@
       color: var(--faint);
       white-space: nowrap;
     }
-    .job-sub {
-      font-size: 9.5pt;
-      color: var(--muted);
-      margin: 0.08rem 0 0.3rem;
-    }
     ul.bullets {
       margin: 0.16rem 0 0;
       padding-left: 1.05rem;
-      list-style: none;
+      list-style: disc;
     }
     ul.bullets li {
-      position: relative;
       font-size: 9.7pt;
       line-height: 1.42;
       margin-bottom: 0.18rem;
       color: #262626;
     }
-    ul.bullets li::before {
-      content: "";
-      position: absolute;
-      left: -0.85rem;
-      top: 0.42em;
-      width: 4px;
-      height: 4px;
-      background: var(--cobalt);
-      border-radius: 50%;
-    }
-    ul.bullets li strong { font-weight: 600; }
-
-    /* ---- Skills grid ---- */
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.42rem 1.4rem;
-    }
-    .skill-row { font-size: 9.6pt; line-height: 1.44; }
-    .skill-row .label {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 8pt;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
+    ul.bullets li::marker {
       color: var(--cobalt);
-      display: block;
-      margin-bottom: 0.05rem;
+      font-size: 0.85em;
     }
-    .skill-row .val { color: #2a2a2a; }
 
-    .edu-row, .projects-row {
-      font-size: 9.6pt;
-      line-height: 1.4;
+    .skills-row, .projects-row, .edu-row {
+      font-size: 9.7pt;
+      line-height: 1.44;
       margin: 0;
       color: #2a2a2a;
     }
@@ -280,7 +240,6 @@
       .resume-head { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
       .contact { text-align: left; white-space: normal; }
       .name { font-size: 22pt; }
-      .grid-2 { grid-template-columns: 1fr; }
     }
 
     /* ---- Print / PDF ---- */
@@ -306,15 +265,12 @@
     <a class="back" href="index.html">&larr; Back to site</a>
     <label class="role-label">Tailor for
       <select id="roleSelect" aria-label="Tailor resume for a role">
-        <option value="master">General — Senior PM</option>
-        <option value="fde">Forward-Deployed PM</option>
-        <option value="ai">AI Workflows &amp; Agents</option>
-        <option value="data">Data Platform &amp; Pipelines</option>
-        <option value="native">AI-Native Products</option>
+        <option value="ai-native">AI-Native (primary)</option>
+        <option value="general">General</option>
       </select>
     </label>
     <button class="primary" onclick="window.print()">Print / Save as PDF</button>
-    <a id="dlLink" href="Ben-Siverly-Resume.pdf" download>Download PDF</a>
+    <a id="dlLink" href="Ben-Siverly-Resume-AI-Native.pdf" download>Download PDF</a>
   </div>
 
   <p id="resume-status" class="sr-only" aria-live="polite"></p>
@@ -324,7 +280,7 @@
     <header class="resume-head">
       <div>
         <h1 class="name"><span class="mark">Ben Siverly</span></h1>
-        <p class="title" id="roleTitle">Senior Product Manager</p>
+        <p class="title" id="roleTitle">Senior Product Manager · AI-Native Products</p>
       </div>
       <div class="contact">
         San Francisco Bay Area<br>
@@ -334,11 +290,10 @@
       </div>
     </header>
 
-    <!-- ============ SUMMARY (tailored) ============ -->
+    <!-- ============ SUMMARY ============ -->
     <section>
       <h2 class="section-title">Summary</h2>
-      <p class="summary" id="roleSummary">Product manager with a data-science foundation who ships software that fits how customers think and automates the work they don&rsquo;t have time for. Nine years from zero-to-one founder to data scientist to PM across fintech and vertical SaaS&mdash;customer-embedded, credible with engineers, fluent in the data. <strong>Outcomes: $50M+ migrated across institutions; vacancies filling 3&ndash;5 days faster, submissions nearly doubled.</strong></p>
-      <p class="focus" id="roleFocus"><b>Focus &mdash;</b> agentic AI products &middot; eval systems &middot; data pipelines &amp; integrations &middot; customer-embedded delivery &middot; SQL/Python</p>
+      <p class="summary">Data scientist turned product manager. I own the rental application product line at AppFolio, 8–9M applications a year across 20k+ property managers, with sole responsibility for strategy and execution. Outside work I build Brava, a recruiting platform for youth athletes. <span id="summaryTail">I ship agentic features behind evals, and I’ve killed work that didn’t earn its keep.</span></p>
     </section>
 
     <!-- ============ EXPERIENCE ============ -->
@@ -347,47 +302,39 @@
 
       <div class="job">
         <div class="job-head">
-          <h3 class="job-company">AppFolio &mdash; <span class="job-role">Product Manager &middot; Rental Applications</span></h3>
-          <span class="job-meta">Jan 2023 &ndash; Present</span>
+          <h3 class="job-company">AppFolio &middot; <span class="job-role">Product Manager, Rental Applications</span></h3>
+          <span class="job-meta">Jan 2023 – Present</span>
         </div>
-        <ul class="bullets">
-          <li>Led the end-to-end rebuild and launch of the rental application; <strong>vacancies now fill 3&ndash;5 days faster and submissions nearly doubled</strong>.</li>
-          <li>Shipped reporting and direct integrations into AppFolio&rsquo;s proprietary <strong>AI stack</strong>, giving property managers first-time visibility into their lead funnel.</li>
-          <li>Ship agentic features with a <strong>JTBD &rarr; OOUX &rarr; Spec Kit</strong> method: object models define the agent&rsquo;s tools, and a behavioral spec plus <strong>evals</strong> gate each release.</li>
+        <ul class="bullets" id="appfolioBullets">
+          <li data-bullet="sole-pm">Sole PM for the application line: strategy and roadmap across applicant and property-manager experiences, three stakeholder types, two codebases that have to move in concert. The payer and the user are different people; the product has to serve both.</li>
+          <li data-bullet="rebuild">Rebuilt the rental application end to end. Submission rates went from 44% to ~75%; properties on the new flow fill vacancies 3–5 days faster than offline workflows.</li>
+          <li data-bullet="ai-review">Shipped AI review of submitted applications: incomplete files trigger an automatic request for missing info inside the authenticated app rather than email or text, keeping every applicant interaction auditable for screening compliance.</li>
+          <li data-bullet="zillow">Led the Zillow prefill partnership to 70% customer enablement, then made the case to wind it down when the data showed removing friction lowered applicant quality. Some friction is good friction.</li>
+          <li data-bullet="calls">Run 50–100 direct customer calls a year and synthesize them with AI into a ranked pipeline of discovery endpoints.</li>
+          <li data-bullet="sdd">Introduced spec-driven development across product and design: object models define the agent’s tools, behavioral specs and evals gate each release.</li>
         </ul>
       </div>
 
       <div class="job">
         <div class="job-head">
-          <h3 class="job-company">Lively &mdash; <span class="job-role">Product Manager &larr; Data Scientist</span></h3>
-          <span class="job-meta">Nov 2019 &ndash; Dec 2022</span>
+          <h3 class="job-company">Lively &middot; <span class="job-role">Data Scientist &rarr; Product Manager</span></h3>
+          <span class="job-meta">Nov 2019 – Dec 2022</span>
         </div>
-        <p class="job-sub">Promoted to Product Manager in 2021 &middot; HSA fintech, SF Bay Area</p>
         <ul class="bullets">
-          <li>Built partner <strong>APIs and migration pipelines</strong> that ingested, validated, and reconciled <strong>$50M+ in assets</strong> across financial institutions with zero data loss.</li>
-          <li>Authored the data model and integration patterns partners used to evaluate and onboard a compliant HSA offering&mdash;no infrastructure build of their own.</li>
-          <li>Stood up the company&rsquo;s first <strong>data-science</strong> function, then grew the work into product management as the company scaled.</li>
+          <li>Built partner APIs and migration pipelines that moved $50M+ in HSA assets across financial institutions with zero data loss.</li>
+          <li>Authored the data model and integration patterns partners used to launch a compliant HSA offering without building their own infrastructure.</li>
+          <li>Stood up the company’s first data-science function; promoted to PM in 2021 as the work became the roadmap.</li>
         </ul>
       </div>
 
       <div class="job">
         <div class="job-head">
-          <h3 class="job-company">Oracle &mdash; <span class="job-role">Data Scientist, Applied Research</span></h3>
-          <span class="job-meta">Sep 2017 &ndash; Sep 2019</span>
+          <h3 class="job-company">Oracle &middot; <span class="job-role">Data Scientist, Applied Research</span></h3>
+          <span class="job-meta">Sep 2017 – Sep 2019</span>
         </div>
         <ul class="bullets">
-          <li>Built an automated <strong>model-evaluation system</strong>&mdash;hundreds of tests per model update&mdash;to gate changes on statistical significance, not gut feel.</li>
-          <li>Modeled large-scale consumer signals (location, behavioral, real-world) to predict purchasing behavior.</li>
-        </ul>
-      </div>
-
-      <div class="job">
-        <div class="job-head">
-          <h3 class="job-company">Seifer, LLC &mdash; <span class="job-role">Founder</span></h3>
-          <span class="job-meta">2016</span>
-        </div>
-        <ul class="bullets">
-          <li>Solo-founded a men&rsquo;s athletic eCommerce brand: developed a carbon-neutral performance fabric, built a 20-month P&amp;L model, and led design through launch.</li>
+          <li>Built an automated model-evaluation system, hundreds of tests per model update, gating releases on statistical significance rather than gut feel.</li>
+          <li>Modeled large-scale consumer location and behavioral signals to predict purchasing.</li>
         </ul>
       </div>
     </section>
@@ -395,107 +342,80 @@
     <!-- ============ SKILLS ============ -->
     <section>
       <h2 class="section-title">Skills</h2>
-      <div class="grid-2">
-        <div class="skill-row">
-          <span class="label">Product</span>
-          <span class="val">Agentic AI product &middot; JTBD discovery &middot; object modeling (OOUX) &middot; eval design &middot; roadmaps &middot; funnel &amp; conversion &middot; experimentation</span>
-        </div>
-        <div class="skill-row">
-          <span class="label">Technical</span>
-          <span class="val">SQL &middot; Python &middot; APIs &amp; system integration &middot; data modeling &middot; ETL / migration pipelines &middot; LLM &amp; agent systems (RAG, tool use, evals)</span>
-        </div>
-        <div class="skill-row">
-          <span class="label">Domains</span>
-          <span class="val">AI-native &amp; vertical SaaS &middot; fintech (financial data, HSAs) &middot; data platforms &middot; applied ML</span>
-        </div>
-        <div class="skill-row">
-          <span class="label">Strengths</span>
-          <span class="val">Customer-embedded delivery &middot; zero-to-one shipping &middot; technically credible with engineering</span>
-        </div>
-      </div>
+      <p class="skills-row">Agentic AI product · eval design · JTBD · OOUX · experimentation · SQL · Python · APIs &amp; data pipelines · LLM systems (RAG, tool use)</p>
     </section>
 
-    <!-- ============ EDUCATION + PROJECTS ============ -->
+    <!-- ============ SELECTED WORK ============ -->
     <section>
-      <h2 class="section-title">Education &amp; Selected Work</h2>
-      <p class="edu-row"><strong>B.A., Communication Studies</strong> &mdash; Westmont College &middot; 2010&ndash;2014 &nbsp;|&nbsp; <strong>Data Science Immersive (ML)</strong> &mdash; Galvanize &middot; 2017</p>
-      <p class="projects-row" style="margin-top:0.18rem;">Builds &amp; ships free public tools at <a href="https://bensiverly.com">bensiverly.com</a> (Native Plant Finder, Decision Assist, +3) &mdash; working samples from problem to shipped software.</p>
+      <h2 class="section-title">Selected Work</h2>
+      <p class="projects-row">Brava (<a href="https://bravamade.com">bravamade.com</a>) — recruiting profiles for women’s soccer athletes, built with my brother. Coach-verified stats, benchmark rankings, an AI-assisted production pipeline. Designed and shipped end to end: research, product, brand.</p>
+    </section>
+
+    <!-- ============ EDUCATION ============ -->
+    <section>
+      <h2 class="section-title">Education</h2>
+      <p class="edu-row">B.A. Communication Studies, Westmont College · Data Science Immersive (ML), Galvanize</p>
     </section>
   </main>
 
-  <nav class="versions" aria-label="Download a tailored version">
+  <nav class="versions" aria-label="Download a version">
     <span class="versions-label">Download a version</span>
-    <a href="Ben-Siverly-Resume.pdf" download>General — Senior PM</a>
-    <a href="Ben-Siverly-Resume-ForwardDeployed.pdf" download>Forward-Deployed PM</a>
-    <a href="Ben-Siverly-Resume-AI-Workflows.pdf" download>AI Workflows &amp; Agents</a>
-    <a href="Ben-Siverly-Resume-Data-Pipelines.pdf" download>Data Platform &amp; Pipelines</a>
-    <a href="Ben-Siverly-Resume-AI-Native.pdf" download>AI-Native Products</a>
+    <a href="Ben-Siverly-Resume-AI-Native.pdf" download>AI-Native (primary)</a>
+    <a href="Ben-Siverly-Resume.pdf" download>General</a>
   </nav>
 
   <script>
     (function () {
-      var VARIANTS = {
-        master: {
+      var VERSIONS = {
+        'ai-native': {
+          title: 'Senior Product Manager · AI-Native Products',
+          summaryTail: 'I ship agentic features behind evals, and I’ve killed work that didn’t earn its keep.',
+          bulletOrder: ['sole-pm', 'rebuild', 'ai-review', 'zillow', 'calls', 'sdd'],
+          pdf: 'Ben-Siverly-Resume-AI-Native.pdf',
+          label: 'AI-Native (primary)'
+        },
+        'general': {
           title: 'Senior Product Manager',
-          summary: 'Product manager with a data-science foundation who ships software that fits how customers think and automates the work they don’t have time for. Nine years from zero-to-one founder to data scientist to PM across fintech and vertical SaaS—customer-embedded, credible with engineers, fluent in the data. <strong>Outcomes: $50M+ migrated across institutions; vacancies filling 3–5 days faster, submissions nearly doubled.</strong>',
-          focus: '<b>Focus —</b> agentic AI products · eval systems · data pipelines &amp; integrations · customer-embedded delivery · SQL/Python',
-          pdf: 'Ben-Siverly-Resume.pdf'
-        },
-        fde: {
-          title: 'Forward-Deployed Product Manager',
-          summary: 'Forward-deployed PM who embeds with customers, scopes the problem, and ships the fix end-to-end. Background as a zero-to-one founder, data scientist, and PM—credible with engineers and CTOs, and comfortable turning ambiguity into execution. <strong>Outcomes: $50M+ in cross-institution migrations; a rebuilt core product filling vacancies 3–5 days faster with submissions nearly doubled.</strong>',
-          focus: '<b>Focus —</b> customer-embedded delivery · zero-to-one shipping · technical credibility with eng/CTOs · agentic AI · ambiguity → execution',
-          pdf: 'Ben-Siverly-Resume-ForwardDeployed.pdf'
-        },
-        ai: {
-          title: 'Senior PM · AI Workflows & Agents',
-          summary: 'PM for agentic AI: I define what an agent owns versus hands back to a human, then gate it with evals before it ships. Data-science foundation (built automated model-evaluation systems); fluent in JTBD, object modeling, and behavioral specs. <strong>Now shipping agentic features on AppFolio’s AI stack; nine years across fintech and vertical SaaS.</strong>',
-          focus: '<b>Focus —</b> agentic workflows · eval frameworks · human-in-the-loop boundaries · RAG / tool use · latency &amp; cost tradeoffs',
-          pdf: 'Ben-Siverly-Resume-AI-Workflows.pdf'
-        },
-        data: {
-          title: 'Senior PM · Data Platform & Pipelines',
-          summary: 'Technical PM for data platforms: I own how data moves, transforms, and lands across systems—with schema validation, reconciliation, quality, and lineage. Built APIs and migration pipelines that moved <strong>$50M+ across financial institutions with zero data loss</strong>. Data-science background, hands-on SQL/Python, and a strong partner to data engineers.',
-          focus: '<b>Focus —</b> ingestion / ETL · schema validation &amp; reconciliation · data quality &amp; lineage · SLAs / reliability · SQL/Python',
-          pdf: 'Ben-Siverly-Resume-Data-Pipelines.pdf'
-        },
-        native: {
-          title: 'Senior PM · AI-Native Products',
-          summary: 'PM built for AI-native teams: data-fluent, technically credible, and shipping agentic products grounded in evals and a real model of the customer’s domain. Nine years from founder to data scientist to PM. <strong>Outcomes: $50M+ migrated across institutions; a rebuilt core product filling vacancies 3–5 days faster with submissions nearly doubled.</strong>',
-          focus: '<b>Focus —</b> AI-native product · evals &amp; model behavior · agentic systems · data fluency · zero-to-one shipping',
-          pdf: 'Ben-Siverly-Resume-AI-Native.pdf'
+          summaryTail: 'Nine years from data science to product across fintech and vertical SaaS, customer-embedded and fluent in the data.',
+          bulletOrder: ['rebuild', 'sole-pm', 'ai-review', 'zillow', 'calls', 'sdd'],
+          pdf: 'Ben-Siverly-Resume.pdf',
+          label: 'General'
         }
       };
 
       var titleEl = document.getElementById('roleTitle');
-      var summaryEl = document.getElementById('roleSummary');
-      var focusEl = document.getElementById('roleFocus');
+      var tailEl = document.getElementById('summaryTail');
+      var listEl = document.getElementById('appfolioBullets');
       var dlEl = document.getElementById('dlLink');
       var selectEl = document.getElementById('roleSelect');
 
-      function apply(role) {
-        var v = VARIANTS[role] || VARIANTS.master;
+      function apply(version) {
+        var v = VERSIONS[version] || VERSIONS['ai-native'];
         titleEl.textContent = v.title;
-        summaryEl.innerHTML = v.summary;
-        focusEl.innerHTML = v.focus;
+        tailEl.textContent = v.summaryTail;
+        v.bulletOrder.forEach(function (key) {
+          var li = listEl.querySelector('[data-bullet="' + key + '"]');
+          if (li) listEl.appendChild(li);
+        });
         dlEl.setAttribute('href', v.pdf);
-        if (selectEl) selectEl.value = VARIANTS[role] ? role : 'master';
+        if (selectEl) selectEl.value = VERSIONS[version] ? version : 'ai-native';
       }
 
       var params = new URLSearchParams(window.location.search);
-      var initial = params.get('role');
-      apply(VARIANTS[initial] ? initial : 'master');
+      var initial = params.get('version') || params.get('role');
+      apply(VERSIONS[initial] ? initial : 'ai-native');
 
       if (selectEl) {
         selectEl.addEventListener('change', function () {
           apply(this.value);
           var statusEl = document.getElementById('resume-status');
           if (statusEl) {
-            var v = VARIANTS[this.value] || VARIANTS.master;
-            statusEl.textContent = 'Showing resume tailored for ' + v.title + '.';
+            var v = VERSIONS[this.value] || VERSIONS['ai-native'];
+            statusEl.textContent = 'Showing the ' + v.label + ' resume.';
           }
           var url = new URL(window.location.href);
-          url.searchParams.set('role', this.value);
+          url.searchParams.delete('role');
+          url.searchParams.set('version', this.value);
           history.replaceState(null, '', url);
         });
       }
