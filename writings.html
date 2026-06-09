@@ -408,6 +408,18 @@
       background-color: transparent;
     }
 
+    .prose-title a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .prose-title a:hover {
+      text-decoration: underline;
+      text-decoration-color: var(--color-accent);
+      text-decoration-thickness: 2px;
+      text-underline-offset: 3px;
+    }
+
     .prose-date {
       font-family: var(--font-mono);
       font-size: 0.75rem;
@@ -667,6 +679,18 @@ is the part that gets the garden.</div>
 
         <article class="prose-item">
           <header class="prose-item-header">
+            <h2 class="prose-title"><a href="nobody-claps.html">Nobody Claps</a></h2>
+            <span class="prose-date">June 2026</span>
+          </header>
+          <p class="prose-excerpt">The work is unglamorous. The table, the bath, errands with a kid on my hip. Nobody claps. That's how I know it's working.</p>
+          <a class="prose-read-more" href="nobody-claps.html">
+            <span>Read</span>
+            <span aria-hidden="true">&rarr;</span>
+          </a>
+        </article>
+
+        <article class="prose-item">
+          <header class="prose-item-header">
             <h2 class="prose-title">On Building Things That Last</h2>
             <span class="prose-date">Coming soon</span>
           </header>
@@ -679,14 +703,6 @@ is the part that gets the garden.</div>
             <span class="prose-date">Coming soon</span>
           </header>
           <p class="prose-excerpt">Why I tore out my lawn and what grew in its place, both in the soil and in my understanding of home.</p>
-        </article>
-
-        <article class="prose-item">
-          <header class="prose-item-header">
-            <h2 class="prose-title">Notes on Fatherhood</h2>
-            <span class="prose-date">Coming soon</span>
-          </header>
-          <p class="prose-excerpt">Small observations from the first years of raising children, written mostly to remember.</p>
         </article>
 
       </div>

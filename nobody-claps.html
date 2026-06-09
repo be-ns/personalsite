@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nobody Claps — Ben Siverly</title>
+  <meta name="description" content="A short essay on fatherhood: raising children without passing on fear, reading a father's labs while holding a newborn, and the unglamorous work nobody claps for.">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Nobody Claps — Ben Siverly">
+  <meta property="og:description" content="On raising children without passing on fear, caring for a father in decline, and the unglamorous work nobody claps for.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://bensiverly.com/nobody-claps.html">
+  <meta property="og:image" content="https://bensiverly.com/images/og-writings.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Nobody Claps — an essay by Ben Siverly">
+  <meta property="article:published_time" content="2026-06-09">
+  <meta property="article:author" content="Ben Siverly">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Nobody Claps — Ben Siverly">
+  <meta name="twitter:description" content="On raising children without passing on fear, caring for a father in decline, and the unglamorous work nobody claps for.">
+  <meta name="twitter:image" content="https://bensiverly.com/images/og-writings.png">
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://bensiverly.com/nobody-claps.html">
+
+  <!-- Favicon & PWA -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#0047AB">
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Nobody Claps",
+    "description": "A short essay on fatherhood: raising children without passing on fear, reading a father's labs while holding a newborn, and the unglamorous work nobody claps for.",
+    "articleSection": "Prose",
+    "inLanguage": "en",
+    "datePublished": "2026-06-09",
+    "dateModified": "2026-06-09",
+    "url": "https://bensiverly.com/nobody-claps.html",
+    "mainEntityOfPage": "https://bensiverly.com/nobody-claps.html",
+    "image": "https://bensiverly.com/images/og-writings.png",
+    "isPartOf": { "@type": "CollectionPage", "name": "Writings", "url": "https://bensiverly.com/writings.html" },
+    "author": { "@type": "Person", "name": "Ben Siverly", "url": "https://bensiverly.com/" },
+    "publisher": { "@type": "Person", "name": "Ben Siverly", "url": "https://bensiverly.com/" }
+  }
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Zilla+Slab:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       CSS Variables
+       ========================================================================== */
+    :root {
+      --color-bg: #FDFCFA;
+      --color-bg-warm: #FAF9F7;
+      --color-text: #1A1A1A;
+      --color-accent: #FFE227;
+      --color-cobalt: #0047AB;
+      --color-muted: #666666;
+      --color-border: #E5E5E5;
+      --color-border-light: rgba(0, 0, 0, 0.06);
+
+      --font-heading: 'Zilla Slab', Georgia, serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+      --space-xs: 0.5rem;
+      --space-sm: 1rem;
+      --space-md: 1.5rem;
+      --space-lg: 2.5rem;
+      --space-xl: 4rem;
+      --space-2xl: 6rem;
+
+      --max-width: 680px;
+      --measure: 37rem;
+      --padding-x: 1.5rem;
+
+      --radius-sm: 4px;
+      --transition-fast: 150ms ease;
+    }
+
+    /* ==========================================================================
+       Base
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 1.0625rem;
+      line-height: 1.7;
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    ::selection {
+      background-color: var(--color-accent);
+      color: #1A1A1A;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 8px;
+      top: -56px;
+      z-index: 1000;
+      padding: 0.6rem 1rem;
+      background: var(--color-cobalt);
+      color: #fff;
+      border-radius: 0 0 6px 6px;
+      font: 600 0.95rem/1 system-ui, sans-serif;
+      text-decoration: none;
+    }
+
+    .skip-link:focus { top: 0; }
+
+    /* ==========================================================================
+       Header
+       ========================================================================== */
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-sm) var(--padding-x);
+      border-bottom: 1px solid var(--color-border-light);
+      background-color: var(--color-bg);
+    }
+
+    .site-brand {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-text);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    .page-link {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-muted);
+      text-decoration: none;
+      padding: 0.5rem;
+      border-radius: var(--radius-sm);
+      transition: color var(--transition-fast), background-color var(--transition-fast);
+    }
+
+    .page-link:hover,
+    .page-link:focus {
+      color: var(--color-text);
+      background-color: var(--color-bg-warm);
+    }
+
+    /* ==========================================================================
+       Article
+       ========================================================================== */
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: var(--space-xl) var(--padding-x);
+    }
+
+    .article {
+      max-width: var(--measure);
+      margin: 0 auto;
+    }
+
+    .article-header {
+      margin-bottom: var(--space-lg);
+    }
+
+    .article-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--color-cobalt);
+      margin-bottom: var(--space-md);
+    }
+
+    .article-title {
+      font-family: var(--font-heading);
+      font-size: clamp(2.25rem, 6vw, 3.25rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+      color: var(--color-text);
+    }
+
+    .article-title::after {
+      content: "";
+      display: block;
+      width: 44px;
+      height: 3px;
+      margin-top: var(--space-md);
+      background-color: var(--color-accent);
+      border-radius: 2px;
+    }
+
+    .article-meta {
+      margin-top: var(--space-md);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+    }
+
+    .article-body {
+      font-family: var(--font-heading);
+      font-size: 1.1875rem;
+      font-weight: 400;
+      line-height: 1.85;
+      color: #2A2622;
+    }
+
+    .article-body p {
+      margin-bottom: var(--space-md);
+    }
+
+    .article-body p:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .article-body p.lead {
+      font-size: 1.3125rem;
+      line-height: 1.7;
+      color: var(--color-text);
+    }
+
+    .article-end {
+      width: 36px;
+      height: 2px;
+      margin: var(--space-xl) 0 0;
+      background-color: var(--color-border);
+    }
+
+    /* ==========================================================================
+       Article footer nav
+       ========================================================================== */
+    .article-nav {
+      max-width: var(--measure);
+      margin: var(--space-xl) auto 0;
+      padding-top: var(--space-lg);
+      border-top: 1px solid var(--color-border-light);
+    }
+
+    .back-to-writings {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text);
+      text-decoration: none;
+      transition: gap var(--transition-fast);
+    }
+
+    .back-to-writings:hover {
+      gap: 0.75rem;
+    }
+
+    .back-to-writings span:first-child {
+      color: var(--color-cobalt);
+    }
+
+    /* ==========================================================================
+       Footer
+       ========================================================================== */
+    footer {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: var(--space-lg) var(--padding-x) var(--space-2xl);
+      width: 100%;
+    }
+
+    .copyright {
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      color: var(--color-muted);
+    }
+
+    /* ==========================================================================
+       Responsive
+       ========================================================================== */
+    @media (min-width: 640px) {
+      :root { --padding-x: 2rem; }
+    }
+
+    @media (min-width: 768px) {
+      :root { --padding-x: 2.5rem; }
+
+      .article-body { font-size: 1.25rem; }
+      .article-body p.lead { font-size: 1.4375rem; }
+    }
+
+    /* ==========================================================================
+       Reduced motion
+       ========================================================================== */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ==========================================================================
+       Print
+       ========================================================================== */
+    @media print {
+      .site-header,
+      .article-nav {
+        display: none;
+      }
+
+      main {
+        padding: 0.5in;
+        max-width: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a href="/" class="site-brand" aria-label="Return to home">BS.</a>
+    <a href="writings.html" class="page-link">&larr; Writings</a>
+  </header>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <main id="main">
+    <article class="article">
+      <header class="article-header">
+        <p class="article-eyebrow">Prose</p>
+        <h1 class="article-title">Nobody Claps</h1>
+        <p class="article-meta">June 2026</p>
+      </header>
+
+      <div class="article-body">
+        <p class="lead">My daughter has my dark circles. The same ones I studied in mirrors as a boy and wished away. On her face I feel only tenderness, and something in me settles: what I carried alone, she won't.</p>
+
+        <p>I used to treat being a good dad as a knowledge problem. I've modeled my kids' genetics down to the allele, the coin flips and the certainties, because the math is the one part I can't change. So I'm changing everything else: the garden, the food, the sunscreen, the early bedtimes. But kids can't read protocols. They read faces. I don't want my daughter sensing her dad is afraid. I want her growing up thinking vegetables and movement are just what life tastes like.</p>
+
+        <p>My wife told me once she wasn't getting the whole me. That sentence reorganized my year. I quit the scroll, the noise, the convenient escape hatches, so that when I walk through the door, all of me arrives. It isn't a spectacular season for my career either, and that's on purpose. I decided the bill for full-tilt ambition wasn't getting sent to a four-year-old and a baby.</p>
+
+        <p>Fathering runs in both directions now. I read my father's labs with the same hands that hold my newborn son. It's brutal. It's also curriculum. I'm learning to show up for a father in decline at the exact moment I'm becoming the father someone will one day show up for. And my daughter watches how I treat my dad. She's taking notes I'll never see.</p>
+
+        <p>We named her Ayla, the halo around the moon. We named him Evren, the universe. Big names, I know. But I want to build something that outlasts me, and the two most durable things I'll ever make are asleep down the hall. The work is unglamorous. The table, the bath, errands with a kid on my hip. Nobody claps. That's how I know it's working.</p>
+
+        <div class="article-end" aria-hidden="true"></div>
+      </div>
+    </article>
+
+    <nav class="article-nav" aria-label="More writing">
+      <a class="back-to-writings" href="writings.html">
+        <span aria-hidden="true">&larr;</span>
+        <span>All writings</span>
+      </a>
+    </nav>
+  </main>
+
+  <footer>
+    <p class="copyright">&copy; 2026 Ben Siverly</p>
+  </footer>
+</body>
+</html>
