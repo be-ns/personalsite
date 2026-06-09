@@ -4,12 +4,6 @@
   "defaultRegionKey": "ca_ecoregion_north-coast",
   "defaultDisplayName": "North Coast",
   "zips": {
-    "95501": {
-      "city": "Eureka",
-      "county": "Humboldt",
-      "regionKey": "ca_ecoregion_north-coast",
-      "displayName": "Eureka, CA"
-    },
     "96001": {
       "city": "Redding",
       "county": "Shasta",

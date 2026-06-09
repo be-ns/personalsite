@@ -9,12 +9,6 @@
       "county": "San Diego",
       "regionKey": "ca_ecoregion_south-coast",
       "displayName": "Chula Vista, CA"
-    },
-    "92101": {
-      "city": "San Diego",
-      "county": "San Diego",
-      "regionKey": "ca_ecoregion_south-coast",
-      "displayName": "San Diego, CA"
     }
   }
 }

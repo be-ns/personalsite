@@ -4,17 +4,23 @@
   "defaultRegionKey": "ca_ecoregion_central-valley",
   "defaultDisplayName": "Central Valley",
   "zips": {
-    "95814": {
-      "city": "Sacramento",
-      "county": "Sacramento",
-      "regionKey": "ca_ecoregion_central-valley",
-      "displayName": "Sacramento, CA"
-    },
     "95404": {
       "city": "Santa Rosa",
       "county": "Sonoma",
       "regionKey": "ca_ecoregion_north-coast",
       "displayName": "Santa Rosa, CA"
+    },
+    "95501": {
+      "city": "Eureka",
+      "county": "Humboldt",
+      "regionKey": "ca_ecoregion_north-coast",
+      "displayName": "Eureka, CA"
+    },
+    "95814": {
+      "city": "Sacramento",
+      "county": "Sacramento",
+      "regionKey": "ca_ecoregion_central-valley",
+      "displayName": "Sacramento, CA"
     }
   }
 }
