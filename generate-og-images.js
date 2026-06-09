@@ -1,6 +1,5 @@
 const sharp = require('sharp');
 const fs = require('fs');
-const path = require('path');
 
 // OG image dimensions (standard)
 const WIDTH = 1200;
@@ -231,9 +230,15 @@ function createAbstractBuffer(palette, config = {}) {
   return buffer;
 }
 
+// Perceived luminance (ITU-R BT.709) of a #rrggbb color, 0-255
+function luminance(hex) {
+  const { r, g, b } = hexToRgb(hex);
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
 // Create SVG overlay for text
 function createTextOverlay(config, palette) {
-  const isDark = palette.background.match(/^#[0-4]/);
+  const isDark = luminance(palette.background) < 128;
   const textColor = isDark ? '#ffffff' : '#1a1a1a';
   const subtitleColor = isDark ? 'rgba(255,255,255,0.7)' : 'rgba(26,26,26,0.6)';
   const bgColor = palette.background;
