@@ -12,15 +12,13 @@
   },
   "scripts": {
     "serve": "python3 -m http.server 8000",
+    "test": "node --test",
     "validate": "htmlhint \"*.html\"",
     "links": "lychee --no-progress --offline \"*.html\"",
     "generate-og": "node generate-og-images.js"
   },
   "devDependencies": {
-    "htmlhint": "^1.1.4"
-  },
-  "dependencies": {
-    "canvas": "^2.11.2",
+    "htmlhint": "^1.1.4",
     "sharp": "^0.34.5"
   }
 }

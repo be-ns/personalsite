@@ -1257,12 +1257,12 @@
 
   <script>
     (function() {
-      var tool = document.getElementById('tool');
-      var headerReset = document.getElementById('header-reset');
+      const tool = document.getElementById('tool');
+      const headerReset = document.getElementById('header-reset');
       if (!tool) return;
 
       // Categories
-      var categories = [
+      const categories = [
         { id: 'health', label: 'Health' },
         { id: 'work', label: 'Work' },
         { id: 'family', label: 'Family' },
@@ -1274,7 +1274,7 @@
       ];
 
       // Quadrant definitions
-      var quadrants = {
+      const quadrants = {
         maintain: {
           label: 'Maintain',
           note: "Keep doing what you're doing."
@@ -1294,7 +1294,7 @@
       };
 
       // State
-      var state = {
+      const state = {
         step: 'intro', // 'intro', 'importance', 'satisfaction', 'results', 'print'
         categoryIndex: 0,
         scores: categories.map(function(c) {
@@ -1311,9 +1311,9 @@
       }
 
       function getQuadrant(score) {
-        var midpoint = 3.5;
-        var highImp = score.importance >= midpoint;
-        var highSat = score.satisfaction >= midpoint;
+        const midpoint = 3.5;
+        const highImp = score.importance >= midpoint;
+        const highSat = score.satisfaction >= midpoint;
         if (highImp && highSat) return 'maintain';
         if (highImp && !highSat) return 'invest';
         if (!highImp && highSat) return 'rebalance';
@@ -1325,23 +1325,23 @@
       }
 
       function getPointPosition(value) {
-        var padding = 10;
-        var normalized = (value - 1) / 5;
+        const padding = 10;
+        const normalized = (value - 1) / 5;
         return padding + normalized * (100 - 2 * padding);
       }
 
       function getFocus() {
-        var buckets = { maintain: [], invest: [], rebalance: [], release: [] };
+        const buckets = { maintain: [], invest: [], rebalance: [], release: [] };
         state.scores.forEach(function(s) {
           if (s.importance === null || s.satisfaction === null) return;
-          var q = getQuadrant(s);
-          var gap = (s.importance - 3.5) + (3.5 - s.satisfaction);
+          const q = getQuadrant(s);
+          const gap = (s.importance - 3.5) + (3.5 - s.satisfaction);
           buckets[q].push({ score: s, gap: gap });
         });
 
         if (buckets.invest.length) {
           buckets.invest.sort(function(a, b) { return b.gap - a.gap; });
-          var focus = buckets.invest[0].score;
+          const focus = buckets.invest[0].score;
           return {
             category: focus.label,
             message: "It's important to you but you're not satisfied. This is where to invest energy. What's one thing you can do this week?"
@@ -1350,7 +1350,7 @@
 
         if (buckets.rebalance.length) {
           buckets.rebalance.sort(function(a, b) { return b.score.satisfaction - a.score.satisfaction; });
-          var focus = buckets.rebalance[0].score;
+          const focus = buckets.rebalance[0].score;
           return {
             category: focus.label,
             message: "You're putting time in and it's going well, but it's less important right now. Can you ease back to make space for what matters more?"
@@ -1358,11 +1358,11 @@
         }
 
         // Fallback: category furthest from center
-        var sorted = state.scores.slice().filter(function(s) {
+        const sorted = state.scores.slice().filter(function(s) {
           return s.importance !== null && s.satisfaction !== null;
         }).sort(function(a, b) {
-          var distA = Math.abs(a.importance - 3.5) + Math.abs(a.satisfaction - 3.5);
-          var distB = Math.abs(b.importance - 3.5) + Math.abs(b.satisfaction - 3.5);
+          const distA = Math.abs(a.importance - 3.5) + Math.abs(a.satisfaction - 3.5);
+          const distB = Math.abs(b.importance - 3.5) + Math.abs(b.satisfaction - 3.5);
           return distB - distA;
         });
 
@@ -1379,7 +1379,7 @@
       // Render
       function render() {
         // Update header reset visibility
-        var hasAnyScore = state.scores.some(function(s) {
+        const hasAnyScore = state.scores.some(function(s) {
           return s.importance !== null || s.satisfaction !== null;
         });
         headerReset.classList.toggle('is-visible', hasAnyScore || state.step === 'results' || state.step === 'print');
@@ -1396,7 +1396,7 @@
       }
 
       function renderIntro() {
-        var html = '' +
+        const html = '' +
           '<div class="intro" id="intro-card">' +
             '<p class="intro-eyebrow">Life Strategy Matrix</p>' +
             '<h1 class="intro-title">See where your life is out of balance.</h1>' +
@@ -1415,7 +1415,7 @@
 
         tool.innerHTML = html;
 
-        var beginBtn = document.getElementById('intro-begin');
+        const beginBtn = document.getElementById('intro-begin');
         beginBtn.addEventListener('click', function() {
           transitionTo('importance');
         });
@@ -1423,20 +1423,20 @@
       }
 
       function renderScoring() {
-        var isImportance = state.step === 'importance';
-        var category = state.scores[state.categoryIndex];
-        var currentValue = isImportance ? category.importance : category.satisfaction;
-        var displayValue = currentValue !== null ? currentValue : '—';
-        var isUnset = currentValue === null;
+        const isImportance = state.step === 'importance';
+        const category = state.scores[state.categoryIndex];
+        const currentValue = isImportance ? category.importance : category.satisfaction;
+        const displayValue = currentValue !== null ? currentValue : '—';
+        const isUnset = currentValue === null;
 
-        var phase = isImportance ? 'Importance' : 'Satisfaction';
-        var count = (state.categoryIndex + 1) + ' of ' + categories.length;
+        const phase = isImportance ? 'Importance' : 'Satisfaction';
+        const count = (state.categoryIndex + 1) + ' of ' + categories.length;
 
-        var isFirstCategory = state.step === 'importance' && state.categoryIndex === 0;
-        var isLastCategory = state.step === 'satisfaction' && state.categoryIndex === categories.length - 1;
-        var nextLabel = isLastCategory ? 'See results' : 'Next →';
+        const isFirstCategory = state.step === 'importance' && state.categoryIndex === 0;
+        const isLastCategory = state.step === 'satisfaction' && state.categoryIndex === categories.length - 1;
+        const nextLabel = isLastCategory ? 'See results' : 'Next →';
 
-        var html = '' +
+        const html = '' +
           '<div class="progress">' +
             '<span class="progress-phase">' + phase + '</span>' +
             '<span class="progress-count">' + count + '</span>' +
@@ -1480,15 +1480,15 @@
       }
 
       function attachScoringListeners() {
-        var slider = document.getElementById('slider-input');
-        var valueDisplay = document.getElementById('slider-value');
-        var ticks = document.getElementById('slider-ticks');
-        var card = document.getElementById('score-card');
-        var isImportance = state.step === 'importance';
-        var category = state.scores[state.categoryIndex];
+        const slider = document.getElementById('slider-input');
+        const valueDisplay = document.getElementById('slider-value');
+        const ticks = document.getElementById('slider-ticks');
+        const card = document.getElementById('score-card');
+        const isImportance = state.step === 'importance';
+        const category = state.scores[state.categoryIndex];
 
         function updateValue(val) {
-          var num = Number(val);
+          const num = Number(val);
           if (isImportance) {
             category.importance = num;
           } else {
@@ -1499,7 +1499,7 @@
           slider.setAttribute('aria-valuenow', num);
 
           // Update tick highlights
-          var tickEls = ticks.querySelectorAll('.slider-tick');
+          const tickEls = ticks.querySelectorAll('.slider-tick');
           tickEls.forEach(function(t) {
             t.classList.toggle('is-active', Number(t.dataset.value) === num);
           });
@@ -1511,7 +1511,7 @@
 
         ticks.addEventListener('click', function(e) {
           if (e.target.classList.contains('slider-tick')) {
-            var val = e.target.dataset.value;
+            const val = e.target.dataset.value;
             slider.value = val;
             updateValue(val);
           }
@@ -1523,7 +1523,7 @@
 
         document.getElementById('nav-next').addEventListener('click', function() {
           // Save current value if not set
-          var currentValue = isImportance ? category.importance : category.satisfaction;
+          const currentValue = isImportance ? category.importance : category.satisfaction;
           if (currentValue === null) {
             updateValue(slider.value);
           }
@@ -1579,7 +1579,7 @@
             transitionTo('results');
           } else {
             // Find first incomplete
-            for (var i = 0; i < state.scores.length; i++) {
+            for (let i = 0; i < state.scores.length; i++) {
               if (state.scores[i].importance === null) {
                 state.categoryIndex = i;
                 transitionTo('importance');
@@ -1596,10 +1596,10 @@
       }
 
       function transitionTo(step) {
-        var card = document.getElementById('score-card');
-        var results = document.querySelector('.results');
-        var intro = document.getElementById('intro-card');
-        var target = card || results || intro;
+        const card = document.getElementById('score-card');
+        const results = document.querySelector('.results');
+        const intro = document.getElementById('intro-card');
+        const target = card || results || intro;
 
         if (target && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
           target.classList.add('is-transitioning');
@@ -1614,15 +1614,15 @@
       }
 
       function renderResults() {
-        var focus = getFocus();
-        var buckets = { maintain: [], invest: [], rebalance: [], release: [] };
+        const focus = getFocus();
+        const buckets = { maintain: [], invest: [], rebalance: [], release: [] };
         state.scores.forEach(function(s) {
           if (s.importance !== null && s.satisfaction !== null) {
             buckets[getQuadrant(s)].push(s.label);
           }
         });
 
-        var html = '' +
+        const html = '' +
           '<div class="progress">' +
             '<span class="progress-phase">Your Matrix</span>' +
           '</div>' +
@@ -1659,7 +1659,7 @@
       }
 
       function buildQuadrantBlock(title, items) {
-        var list = items.length ? items.map(function(i) {
+        const list = items.length ? items.map(function(i) {
           return '<li>' + i + '</li>';
         }).join('') : '<li class="is-empty">None</li>';
         return '' +
@@ -1670,15 +1670,15 @@
       }
 
       function buildMatrix(container, showTooltip) {
-        var svgNS = 'http://www.w3.org/2000/svg';
-        var svg = document.createElementNS(svgNS, 'svg');
+        const svgNS = 'http://www.w3.org/2000/svg';
+        const svg = document.createElementNS(svgNS, 'svg');
         svg.setAttribute('viewBox', '0 0 100 100');
         svg.setAttribute('role', 'img');
         svg.setAttribute('aria-label', 'Life strategy matrix showing your scores');
         svg.classList.add('matrix-svg');
 
         // Quadrant backgrounds
-        var quads = [
+        const quads = [
           { x: 0, y: 0, w: 50, h: 50, cls: 'quadrant-rebalance' },
           { x: 50, y: 0, w: 50, h: 50, cls: 'quadrant-maintain' },
           { x: 0, y: 50, w: 50, h: 50, cls: 'quadrant-release' },
@@ -1686,7 +1686,7 @@
         ];
 
         quads.forEach(function(q) {
-          var rect = document.createElementNS(svgNS, 'rect');
+          const rect = document.createElementNS(svgNS, 'rect');
           rect.setAttribute('x', q.x);
           rect.setAttribute('y', q.y);
           rect.setAttribute('width', q.w);
@@ -1696,7 +1696,7 @@
         });
 
         // Border
-        var border = document.createElementNS(svgNS, 'rect');
+        const border = document.createElementNS(svgNS, 'rect');
         border.setAttribute('x', 0);
         border.setAttribute('y', 0);
         border.setAttribute('width', 100);
@@ -1707,7 +1707,7 @@
         svg.appendChild(border);
 
         // Center lines
-        var vLine = document.createElementNS(svgNS, 'line');
+        const vLine = document.createElementNS(svgNS, 'line');
         vLine.setAttribute('x1', 50);
         vLine.setAttribute('y1', 0);
         vLine.setAttribute('x2', 50);
@@ -1717,7 +1717,7 @@
         vLine.setAttribute('stroke-dasharray', '2,2');
         svg.appendChild(vLine);
 
-        var hLine = document.createElementNS(svgNS, 'line');
+        const hLine = document.createElementNS(svgNS, 'line');
         hLine.setAttribute('x1', 0);
         hLine.setAttribute('y1', 50);
         hLine.setAttribute('x2', 100);
@@ -1728,7 +1728,7 @@
         svg.appendChild(hLine);
 
         // Labels
-        var labels = [
+        const labels = [
           { text: 'Rebalance', x: 4, y: 6, anchor: 'start' },
           { text: 'Maintain', x: 96, y: 6, anchor: 'end' },
           { text: 'Release', x: 4, y: 97, anchor: 'start' },
@@ -1736,7 +1736,7 @@
         ];
 
         labels.forEach(function(l) {
-          var text = document.createElementNS(svgNS, 'text');
+          const text = document.createElementNS(svgNS, 'text');
           text.setAttribute('x', l.x);
           text.setAttribute('y', l.y);
           text.setAttribute('text-anchor', l.anchor);
@@ -1748,10 +1748,10 @@
         // Points
         state.scores.forEach(function(s) {
           if (s.importance === null || s.satisfaction === null) return;
-          var x = getPointPosition(s.importance);
-          var y = 100 - getPointPosition(s.satisfaction);
+          const x = getPointPosition(s.importance);
+          const y = 100 - getPointPosition(s.satisfaction);
 
-          var group = document.createElementNS(svgNS, 'g');
+          const group = document.createElementNS(svgNS, 'g');
           group.classList.add('matrix-point');
           group.setAttribute('data-id', s.id);
           group.setAttribute('data-label', s.label);
@@ -1761,14 +1761,14 @@
           group.setAttribute('role', 'button');
           group.setAttribute('aria-label', s.label + ': ' + s.importance + ' importance, ' + s.satisfaction + ' satisfaction');
 
-          var circle = document.createElementNS(svgNS, 'circle');
+          const circle = document.createElementNS(svgNS, 'circle');
           circle.setAttribute('cx', x);
           circle.setAttribute('cy', y);
           circle.setAttribute('r', '3');
           circle.classList.add('matrix-point-dot');
           group.appendChild(circle);
 
-          var text = document.createElementNS(svgNS, 'text');
+          const text = document.createElementNS(svgNS, 'text');
           text.setAttribute('x', x);
           text.setAttribute('y', y - 5);
           text.setAttribute('text-anchor', 'middle');
@@ -1783,24 +1783,24 @@
         container.appendChild(svg);
 
         if (showTooltip) {
-          var tooltip = document.createElement('div');
+          const tooltip = document.createElement('div');
           tooltip.className = 'matrix-tooltip';
           container.appendChild(tooltip);
 
           // Event listeners for tooltips
-          var points = container.querySelectorAll('.matrix-point');
+          const points = container.querySelectorAll('.matrix-point');
           points.forEach(function(point) {
             function showTip() {
               state.highlightedId = point.dataset.id;
               updateMatrixHighlight(container);
 
-              var label = point.dataset.label;
-              var imp = point.dataset.importance;
-              var sat = point.dataset.satisfaction;
+              const label = point.dataset.label;
+              const imp = point.dataset.importance;
+              const sat = point.dataset.satisfaction;
               tooltip.innerHTML = '<strong>' + label + '</strong><span>' + imp + '/6 importance · ' + sat + '/6 satisfaction</span>';
 
-              var rect = point.getBoundingClientRect();
-              var containerRect = container.getBoundingClientRect();
+              const rect = point.getBoundingClientRect();
+              const containerRect = container.getBoundingClientRect();
               tooltip.style.left = (rect.left - containerRect.left + rect.width / 2) + 'px';
               tooltip.style.top = (rect.top - containerRect.top - 8) + 'px';
               tooltip.classList.add('is-visible');
@@ -1818,7 +1818,7 @@
       }
 
       function updateMatrixHighlight(container) {
-        var points = container.querySelectorAll('.matrix-point');
+        const points = container.querySelectorAll('.matrix-point');
         points.forEach(function(point) {
           point.classList.toggle('is-active', point.dataset.id === state.highlightedId);
         });
@@ -1837,16 +1837,16 @@
       }
 
       function renderPrint() {
-        var focus = getFocus();
-        var buckets = { maintain: [], invest: [], rebalance: [], release: [] };
+        const focus = getFocus();
+        const buckets = { maintain: [], invest: [], rebalance: [], release: [] };
         state.scores.forEach(function(s) {
           if (s.importance !== null && s.satisfaction !== null) {
             buckets[getQuadrant(s)].push(s.label);
           }
         });
 
-        var tableRows = state.scores.map(function(s) {
-          var q = getQuadrant(s);
+        const tableRows = state.scores.map(function(s) {
+          const q = getQuadrant(s);
           return '' +
             '<tr>' +
               '<td>' + s.label + '</td>' +
@@ -1856,7 +1856,7 @@
             '</tr>';
         }).join('');
 
-        var html = '' +
+        const html = '' +
           '<div class="print-view">' +
             '<div class="print-header">' +
               '<h1 class="print-title">Life Strategy Matrix</h1>' +
@@ -1914,8 +1914,8 @@
           window.print();
         });
 
-        var dateInput = document.getElementById('print-date');
-        var dateOutput = document.getElementById('print-date-output');
+        const dateInput = document.getElementById('print-date');
+        const dateOutput = document.getElementById('print-date-output');
         dateInput.addEventListener('input', function() {
           dateOutput.textContent = dateInput.value;
         });
@@ -1941,14 +1941,13 @@
       // Keyboard navigation
       document.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && (state.step === 'importance' || state.step === 'satisfaction')) {
-          var nextBtn = document.getElementById('nav-next');
+          const nextBtn = document.getElementById('nav-next');
           if (nextBtn && document.activeElement !== nextBtn) {
             nextBtn.click();
           }
         }
       });
 
-      // Initial render
       render();
     })();
   </script>

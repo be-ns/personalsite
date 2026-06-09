@@ -269,14 +269,14 @@
         <option value="general">General</option>
       </select>
     </label>
-    <button class="primary" onclick="window.print()">Print / Save as PDF</button>
+    <button class="primary" type="button" id="printBtn">Print / Save as PDF</button>
     <a id="dlLink" href="Ben-Siverly-Resume-AI-Native.pdf" download>Download PDF</a>
   </div>
 
   <p id="resume-status" class="sr-only" aria-live="polite"></p>
 
   <main id="main" class="sheet">
-    <!-- ============ HEADER ============ -->
+    <!-- HEADER -->
     <header class="resume-head">
       <div>
         <h1 class="name"><span class="mark">Ben Siverly</span></h1>
@@ -290,13 +290,13 @@
       </div>
     </header>
 
-    <!-- ============ SUMMARY ============ -->
+    <!-- SUMMARY -->
     <section>
       <h2 class="section-title">Summary</h2>
       <p class="summary">Data scientist turned product manager. I own the rental application product line at AppFolio, 8–9M applications a year across 20k+ property managers, with sole responsibility for strategy and execution. Outside work I build Brava, a recruiting platform for youth athletes. <span id="summaryTail">I ship agentic features behind evals, and I’ve killed work that didn’t earn its keep.</span></p>
     </section>
 
-    <!-- ============ EXPERIENCE ============ -->
+    <!-- EXPERIENCE -->
     <section>
       <h2 class="section-title">Experience</h2>
 
@@ -339,19 +339,19 @@
       </div>
     </section>
 
-    <!-- ============ SKILLS ============ -->
+    <!-- SKILLS -->
     <section>
       <h2 class="section-title">Skills</h2>
       <p class="skills-row">Agentic AI product · eval design · JTBD · OOUX · experimentation · SQL · Python · APIs &amp; data pipelines · LLM systems (RAG, tool use)</p>
     </section>
 
-    <!-- ============ SELECTED WORK ============ -->
+    <!-- SELECTED WORK -->
     <section>
       <h2 class="section-title">Selected Work</h2>
       <p class="projects-row">Brava (<a href="https://bravamade.com">bravamade.com</a>) — recruiting profiles for women’s soccer athletes, built with my brother. Coach-verified stats, benchmark rankings, an AI-assisted production pipeline. Designed and shipped end to end: research, product, brand.</p>
     </section>
 
-    <!-- ============ EDUCATION ============ -->
+    <!-- EDUCATION -->
     <section>
       <h2 class="section-title">Education</h2>
       <p class="edu-row">B.A. Communication Studies, Westmont College · Data Science Immersive (ML), Galvanize</p>
@@ -366,7 +366,7 @@
 
   <script>
     (function () {
-      var VERSIONS = {
+      const VERSIONS = {
         'ai-native': {
           title: 'Senior Product Manager · AI-Native Products',
           summaryTail: 'I ship agentic features behind evals, and I’ve killed work that didn’t earn its keep.',
@@ -383,37 +383,42 @@
         }
       };
 
-      var titleEl = document.getElementById('roleTitle');
-      var tailEl = document.getElementById('summaryTail');
-      var listEl = document.getElementById('appfolioBullets');
-      var dlEl = document.getElementById('dlLink');
-      var selectEl = document.getElementById('roleSelect');
+      const titleEl = document.getElementById('roleTitle');
+      const tailEl = document.getElementById('summaryTail');
+      const listEl = document.getElementById('appfolioBullets');
+      const dlEl = document.getElementById('dlLink');
+      const selectEl = document.getElementById('roleSelect');
 
       function apply(version) {
-        var v = VERSIONS[version] || VERSIONS['ai-native'];
+        const v = VERSIONS[version] || VERSIONS['ai-native'];
         titleEl.textContent = v.title;
         tailEl.textContent = v.summaryTail;
         v.bulletOrder.forEach(function (key) {
-          var li = listEl.querySelector('[data-bullet="' + key + '"]');
+          const li = listEl.querySelector('[data-bullet="' + key + '"]');
           if (li) listEl.appendChild(li);
         });
         dlEl.setAttribute('href', v.pdf);
         if (selectEl) selectEl.value = VERSIONS[version] ? version : 'ai-native';
       }
 
-      var params = new URLSearchParams(window.location.search);
-      var initial = params.get('version') || params.get('role');
+      const params = new URLSearchParams(window.location.search);
+      const initial = params.get('version') || params.get('role');
       apply(VERSIONS[initial] ? initial : 'ai-native');
+
+      const printBtn = document.getElementById('printBtn');
+      if (printBtn) {
+        printBtn.addEventListener('click', function () { window.print(); });
+      }
 
       if (selectEl) {
         selectEl.addEventListener('change', function () {
           apply(this.value);
-          var statusEl = document.getElementById('resume-status');
+          const statusEl = document.getElementById('resume-status');
           if (statusEl) {
-            var v = VERSIONS[this.value] || VERSIONS['ai-native'];
+            const v = VERSIONS[this.value] || VERSIONS['ai-native'];
             statusEl.textContent = 'Showing the ' + v.label + ' resume.';
           }
-          var url = new URL(window.location.href);
+          const url = new URL(window.location.href);
           url.searchParams.delete('role');
           url.searchParams.set('version', this.value);
           history.replaceState(null, '', url);

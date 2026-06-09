@@ -1180,7 +1180,7 @@
   <script>
     (function() {
       // State
-      var state = {
+      const state = {
         template: 'classic',
         paperSize: 'letter',
         photoPrimary: null,
@@ -1189,30 +1189,30 @@
       };
 
       // Paper dimensions in points (72 points per inch)
-      var PAPER_SIZES = {
+      const PAPER_SIZES = {
         letter: { width: 612, height: 792, name: 'letter' },
         a4: { width: 595.28, height: 841.89, name: 'a4' }
       };
 
       // Field limits
-      var CHAR_LIMITS = {
+      const CHAR_LIMITS = {
         shortObituary: 1800,
         orderOfService: 2000
       };
 
       // Elements
-      var templateCards = document.querySelectorAll('.template-card');
-      var paperButtons = document.querySelectorAll('#paper-size .option-btn');
-      var previewEl = document.getElementById('pamphlet-preview');
-      var spreadFront = document.getElementById('spread-front');
-      var spreadBack = document.getElementById('spread-back');
-      var toggleSpreadBtn = document.getElementById('toggle-spread');
-      var generateBtn = document.getElementById('btn-generate');
-      var resetBtn = document.getElementById('btn-reset');
-      var headerReset = document.getElementById('header-reset');
+      const templateCards = document.querySelectorAll('.template-card');
+      const paperButtons = document.querySelectorAll('#paper-size .option-btn');
+      const previewEl = document.getElementById('pamphlet-preview');
+      const spreadFront = document.getElementById('spread-front');
+      const spreadBack = document.getElementById('spread-back');
+      const toggleSpreadBtn = document.getElementById('toggle-spread');
+      const generateBtn = document.getElementById('btn-generate');
+      const resetBtn = document.getElementById('btn-reset');
+      const headerReset = document.getElementById('header-reset');
 
       // Form fields
-      var fields = ['fullName', 'datesLine', 'serviceTitle', 'serviceDateTime',
+      const fields = ['fullName', 'datesLine', 'serviceTitle', 'serviceDateTime',
                     'serviceLocation', 'shortObituary', 'orderOfService', 'closingLine'];
 
       // Initialize
@@ -1256,7 +1256,7 @@
       // Form listeners
       function attachFormListeners() {
         fields.forEach(function(fieldId) {
-          var input = document.getElementById(fieldId);
+          const input = document.getElementById(fieldId);
           if (input) {
             input.addEventListener('input', function() {
               updatePreview();
@@ -1267,14 +1267,14 @@
       }
 
       function updateCharCount(fieldId) {
-        var input = document.getElementById(fieldId);
-        var countEl = document.getElementById(fieldId + '-count');
+        const input = document.getElementById(fieldId);
+        const countEl = document.getElementById(fieldId + '-count');
         if (!input || !countEl) return;
 
-        var limit = CHAR_LIMITS[fieldId];
+        const limit = CHAR_LIMITS[fieldId];
         if (!limit) return;
 
-        var count = input.value.length;
+        const count = input.value.length;
         countEl.textContent = count.toLocaleString() + ' / ' + limit.toLocaleString();
 
         countEl.classList.remove('is-warning', 'is-over');
@@ -1292,8 +1292,8 @@
       }
 
       function setupPhotoDropzone(inputId, type) {
-        var input = document.getElementById(inputId);
-        var dropzone = document.getElementById(inputId + '-dropzone');
+        const input = document.getElementById(inputId);
+        const dropzone = document.getElementById(inputId + '-dropzone');
 
         if (!input || !dropzone) return;
 
@@ -1325,7 +1325,7 @@
 
       function handlePhotoFile(file, type) {
         // Validate file type
-        var validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
         if (!validTypes.includes(file.type)) {
           alert('Please select a JPG, PNG, or WebP image.');
           return;
@@ -1337,15 +1337,15 @@
           return;
         }
 
-        var reader = new FileReader();
+        const reader = new FileReader();
         reader.onload = function(e) {
-          var img = new Image();
+          const img = new Image();
           img.onload = function() {
             // Resize if needed (max 2400px)
-            var canvas = document.createElement('canvas');
-            var maxDim = 2400;
-            var width = img.width;
-            var height = img.height;
+            const canvas = document.createElement('canvas');
+            const maxDim = 2400;
+            let width = img.width;
+            let height = img.height;
 
             if (width > maxDim || height > maxDim) {
               if (width > height) {
@@ -1359,10 +1359,10 @@
 
             canvas.width = width;
             canvas.height = height;
-            var ctx = canvas.getContext('2d');
+            const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
 
-            var dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
 
             if (type === 'primary') {
               state.photoPrimary = dataUrl;
@@ -1379,9 +1379,9 @@
       }
 
       function updatePhotoPreview(type) {
-        var dropzoneId = type === 'primary' ? 'photo-primary-dropzone' : 'photo-secondary-dropzone';
-        var dropzone = document.getElementById(dropzoneId);
-        var photoData = type === 'primary' ? state.photoPrimary : state.photoSecondary;
+        const dropzoneId = type === 'primary' ? 'photo-primary-dropzone' : 'photo-secondary-dropzone';
+        const dropzone = document.getElementById(dropzoneId);
+        const photoData = type === 'primary' ? state.photoPrimary : state.photoSecondary;
 
         if (!dropzone) return;
 
@@ -1392,15 +1392,7 @@
             '<img src="' + photoData + '" alt="' + type + ' photo" class="photo-preview">' +
             '<button type="button" class="photo-remove" data-type="' + type + '" aria-label="Remove photo">&times;</button>';
 
-          // Reattach listeners
-          var newInput = dropzone.querySelector('input');
-          newInput.addEventListener('change', function(e) {
-            if (e.target.files && e.target.files[0]) {
-              handlePhotoFile(e.target.files[0], type);
-            }
-          });
-
-          var removeBtn = dropzone.querySelector('.photo-remove');
+          const removeBtn = dropzone.querySelector('.photo-remove');
           removeBtn.addEventListener('click', function(e) {
             e.stopPropagation();
             removePhoto(type);
@@ -1412,15 +1404,15 @@
             '<span class="photo-dropzone-icon">+</span>' +
             '<span class="photo-dropzone-text">Click or drag to upload</span>' +
             '<span class="photo-dropzone-hint">JPG, PNG, or WebP</span>';
-
-          // Reattach input listener
-          var newInput = dropzone.querySelector('input');
-          newInput.addEventListener('change', function(e) {
-            if (e.target.files && e.target.files[0]) {
-              handlePhotoFile(e.target.files[0], type);
-            }
-          });
         }
+
+        // innerHTML replaced the input either way; reattach its listener
+        const newInput = dropzone.querySelector('input');
+        newInput.addEventListener('change', function(e) {
+          if (e.target.files && e.target.files[0]) {
+            handlePhotoFile(e.target.files[0], type);
+          }
+        });
       }
 
       function removePhoto(type) {
@@ -1435,14 +1427,14 @@
 
       // Update preview
       function updatePreview() {
-        var fullName = document.getElementById('fullName').value || 'Full Name';
-        var datesLine = document.getElementById('datesLine').value || 'Dates';
-        var serviceTitle = document.getElementById('serviceTitle').value || 'In Loving Memory';
-        var serviceDateTime = document.getElementById('serviceDateTime').value;
-        var serviceLocation = document.getElementById('serviceLocation').value;
-        var shortObituary = document.getElementById('shortObituary').value;
-        var orderOfService = document.getElementById('orderOfService').value;
-        var closingLine = document.getElementById('closingLine').value || 'Forever in our hearts.';
+        const fullName = document.getElementById('fullName').value || 'Full Name';
+        const datesLine = document.getElementById('datesLine').value || 'Dates';
+        const serviceTitle = document.getElementById('serviceTitle').value || 'In Loving Memory';
+        const serviceDateTime = document.getElementById('serviceDateTime').value;
+        const serviceLocation = document.getElementById('serviceLocation').value;
+        const shortObituary = document.getElementById('shortObituary').value;
+        const orderOfService = document.getElementById('orderOfService').value;
+        const closingLine = document.getElementById('closingLine').value || 'Forever in our hearts.';
 
         // Update preview elements
         document.getElementById('preview-name').textContent = fullName;
@@ -1454,7 +1446,7 @@
         document.getElementById('preview-service-location').textContent = serviceLocation;
 
         // Obituary
-        var obituaryEl = document.getElementById('preview-obituary');
+        const obituaryEl = document.getElementById('preview-obituary');
         if (shortObituary) {
           obituaryEl.innerHTML = escapeHtml(shortObituary);
         } else {
@@ -1462,7 +1454,7 @@
         }
 
         // Order of service
-        var orderEl = document.getElementById('preview-order');
+        const orderEl = document.getElementById('preview-order');
         if (orderOfService) {
           orderEl.innerHTML = escapeHtml(orderOfService);
         } else {
@@ -1470,14 +1462,14 @@
         }
 
         // Photos
-        var photoPrimaryEl = document.getElementById('preview-photo-primary');
+        const photoPrimaryEl = document.getElementById('preview-photo-primary');
         if (state.photoPrimary) {
           photoPrimaryEl.innerHTML = '<img src="' + state.photoPrimary + '" alt="Primary photo" class="panel-photo">';
         } else {
           photoPrimaryEl.innerHTML = '<div class="panel-photo-placeholder">Photo</div>';
         }
 
-        var photoSecondaryEl = document.getElementById('preview-photo-secondary');
+        const photoSecondaryEl = document.getElementById('preview-photo-secondary');
         if (state.photoSecondary) {
           photoSecondaryEl.innerHTML = '<img src="' + state.photoSecondary + '" alt="Secondary photo" class="panel-photo panel-photo--secondary">';
         } else {
@@ -1486,7 +1478,7 @@
       }
 
       function escapeHtml(text) {
-        var div = document.createElement('div');
+        const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML.replace(/\n/g, '<br>');
       }
@@ -1523,7 +1515,7 @@
 
       function resetForm() {
         fields.forEach(function(fieldId) {
-          var input = document.getElementById(fieldId);
+          const input = document.getElementById(fieldId);
           if (input) {
             if (fieldId === 'serviceTitle') {
               input.value = 'In Loving Memory';
@@ -1546,7 +1538,7 @@
 
       // PDF Generation
       function generatePDF() {
-        var fullName = document.getElementById('fullName').value.trim();
+        const fullName = document.getElementById('fullName').value.trim();
 
         if (!fullName) {
           alert('Please enter the full name to generate the PDF.');
@@ -1559,7 +1551,7 @@
 
         // Load jsPDF if not already loaded
         if (typeof window.jspdf === 'undefined') {
-          var script = document.createElement('script');
+          const script = document.createElement('script');
           script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
           script.onload = function() {
             createPDF();
@@ -1577,37 +1569,37 @@
 
       function createPDF() {
         try {
-          var jsPDF = window.jspdf.jsPDF;
-          var paper = PAPER_SIZES[state.paperSize];
+          const jsPDF = window.jspdf.jsPDF;
+          const paper = PAPER_SIZES[state.paperSize];
 
           // Create PDF in landscape for bi-fold (will print on both sides)
-          var doc = new jsPDF({
+          const doc = new jsPDF({
             orientation: 'landscape',
             unit: 'pt',
             format: [paper.height, paper.width] // Swap for landscape
           });
 
-          var pageWidth = paper.height; // Landscape
-          var pageHeight = paper.width;
-          var panelWidth = pageWidth / 2;
-          var margin = 36; // 0.5 inch margin
-          var contentWidth = panelWidth - (margin * 2);
+          const pageWidth = paper.height; // Landscape
+          const pageHeight = paper.width;
+          const panelWidth = pageWidth / 2;
+          const margin = 36; // 0.5 inch margin
+          const contentWidth = panelWidth - (margin * 2);
 
           // Get form values
-          var fullName = document.getElementById('fullName').value.trim() || 'Name';
-          var datesLine = document.getElementById('datesLine').value.trim();
-          var serviceTitle = document.getElementById('serviceTitle').value.trim() || 'In Loving Memory';
-          var serviceDateTime = document.getElementById('serviceDateTime').value.trim();
-          var serviceLocation = document.getElementById('serviceLocation').value.trim();
-          var shortObituary = document.getElementById('shortObituary').value.trim();
-          var orderOfService = document.getElementById('orderOfService').value.trim();
-          var closingLine = document.getElementById('closingLine').value.trim() || 'Forever in our hearts.';
+          const fullName = document.getElementById('fullName').value.trim() || 'Name';
+          const datesLine = document.getElementById('datesLine').value.trim();
+          const serviceTitle = document.getElementById('serviceTitle').value.trim() || 'In Loving Memory';
+          const serviceDateTime = document.getElementById('serviceDateTime').value.trim();
+          const serviceLocation = document.getElementById('serviceLocation').value.trim();
+          const shortObituary = document.getElementById('shortObituary').value.trim();
+          const orderOfService = document.getElementById('orderOfService').value.trim();
+          const closingLine = document.getElementById('closingLine').value.trim() || 'Forever in our hearts.';
 
           // Colors for modern template
-          var isModern = state.template === 'modern';
-          var coverBg = isModern ? [26, 26, 26] : [250, 249, 247];
-          var coverText = isModern ? [255, 255, 255] : [26, 26, 26];
-          var coverMuted = isModern ? [180, 180, 180] : [102, 102, 102];
+          const isModern = state.template === 'modern';
+          const coverBg = isModern ? [26, 26, 26] : [250, 249, 247];
+          const coverText = isModern ? [255, 255, 255] : [26, 26, 26];
+          const coverMuted = isModern ? [180, 180, 180] : [102, 102, 102];
 
           // ============================================
           // PAGE 1: Outside spread (Back cover | Front cover)
@@ -1618,14 +1610,14 @@
           doc.setFillColor(250, 249, 247);
           doc.rect(0, 0, panelWidth, pageHeight, 'F');
 
-          var backCenterX = panelWidth / 2;
-          var backY = pageHeight - margin - 100;
+          const backCenterX = panelWidth / 2;
+          const backY = pageHeight - margin - 100;
 
           // Secondary photo on back (if exists)
           if (state.photoSecondary) {
             try {
-              var imgHeight = 80;
-              var imgWidth = 100;
+              const imgHeight = 80;
+              const imgWidth = 100;
               doc.addImage(state.photoSecondary, 'JPEG',
                 backCenterX - imgWidth/2, margin + 40, imgWidth, imgHeight);
             } catch (e) {
@@ -1637,7 +1629,7 @@
           doc.setTextColor(26, 26, 26);
           doc.setFont('helvetica', 'italic');
           doc.setFontSize(14);
-          var closingLines = doc.splitTextToSize(closingLine, contentWidth);
+          const closingLines = doc.splitTextToSize(closingLine, contentWidth);
           doc.text(closingLines, backCenterX, backY, { align: 'center' });
 
           // Service info
@@ -1648,7 +1640,7 @@
             doc.text(serviceDateTime, backCenterX, backY + 30, { align: 'center' });
           }
           if (serviceLocation) {
-            var locLines = doc.splitTextToSize(serviceLocation, contentWidth - 20);
+            const locLines = doc.splitTextToSize(serviceLocation, contentWidth - 20);
             doc.text(locLines, backCenterX, backY + 45, { align: 'center' });
           }
 
@@ -1656,8 +1648,8 @@
           doc.setFillColor(coverBg[0], coverBg[1], coverBg[2]);
           doc.rect(panelWidth, 0, panelWidth, pageHeight, 'F');
 
-          var frontCenterX = panelWidth + (panelWidth / 2);
-          var coverY = margin + 60;
+          const frontCenterX = panelWidth + (panelWidth / 2);
+          const coverY = margin + 60;
 
           // Service title
           doc.setTextColor(coverMuted[0], coverMuted[1], coverMuted[2]);
@@ -1666,11 +1658,11 @@
           doc.text(serviceTitle, frontCenterX, coverY, { align: 'center' });
 
           // Primary photo
-          var photoY = coverY + 20;
+          let photoY = coverY + 20;
           if (state.photoPrimary) {
             try {
-              var imgWidth = isModern ? 140 : 120;
-              var imgHeight = isModern ? 160 : 140;
+              const imgWidth = isModern ? 140 : 120;
+              const imgHeight = isModern ? 160 : 140;
               doc.addImage(state.photoPrimary, 'JPEG',
                 frontCenterX - imgWidth/2, photoY, imgWidth, imgHeight);
               photoY += imgHeight + 20;
@@ -1686,7 +1678,7 @@
           doc.setTextColor(coverText[0], coverText[1], coverText[2]);
           doc.setFont('helvetica', 'bold');
           doc.setFontSize(isModern ? 24 : 20);
-          var nameLines = doc.splitTextToSize(fullName, contentWidth);
+          const nameLines = doc.splitTextToSize(fullName, contentWidth);
           doc.text(nameLines, frontCenterX, photoY, { align: 'center' });
 
           // Dates
@@ -1726,7 +1718,7 @@
             doc.setTextColor(26, 26, 26);
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(10);
-            var obituaryLines = doc.splitTextToSize(shortObituary, contentWidth);
+            const obituaryLines = doc.splitTextToSize(shortObituary, contentWidth);
             doc.text(obituaryLines, margin, margin + 35);
           }
 
@@ -1747,7 +1739,7 @@
             doc.setTextColor(26, 26, 26);
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(10);
-            var orderLines = doc.splitTextToSize(orderOfService, contentWidth);
+            const orderLines = doc.splitTextToSize(orderOfService, contentWidth);
             doc.text(orderLines, panelWidth + margin, margin + 35);
           }
 
@@ -1757,11 +1749,11 @@
           doc.line(panelWidth, 0, panelWidth, pageHeight);
 
           // Generate filename
-          var nameParts = fullName.split(' ');
-          var lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : nameParts[0];
-          var firstName = nameParts[0];
-          var today = new Date().toISOString().split('T')[0];
-          var filename = lastName + '_' + firstName + '_Memorial_Pamphlet_' + today + '.pdf';
+          const nameParts = fullName.split(' ');
+          const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : nameParts[0];
+          const firstName = nameParts[0];
+          const today = new Date().toISOString().split('T')[0];
+          let filename = lastName + '_' + firstName + '_Memorial_Pamphlet_' + today + '.pdf';
           filename = filename.replace(/[^a-zA-Z0-9_\-\.]/g, '_');
 
           doc.save(filename);
@@ -1775,7 +1767,6 @@
         }
       }
 
-      // Initialize on load
       init();
     })();
   </script>

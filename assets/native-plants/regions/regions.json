@@ -34,13 +34,6 @@
       "rainfallInches": 30,
       "notes": "Rolling foothills with cold winters, warm summers, and diverse microclimates.",
       "nurseryIds": ["elderberry_farms", "calflora"]
-    },
-    "ca_ecoregion_desert_sonoran": {
-      "name": "Sonoran Desert",
-      "usdaZone": "10a",
-      "rainfallInches": 6,
-      "notes": "Arid desert with intense sun and very low annual rainfall.",
-      "nurseryIds": ["ocotillo_nursery", "theodore_payne"]
     }
   }
 }

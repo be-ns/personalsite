@@ -699,11 +699,11 @@ is the part that gets the garden.</div>
 
   <script>
     (function() {
-      var poetryTab = document.getElementById('poetry-tab');
-      var proseTab = document.getElementById('prose-tab');
-      var poetryPanel = document.getElementById('poetry-panel');
-      var prosePanel = document.getElementById('prose-panel');
-      var body = document.body;
+      const poetryTab = document.getElementById('poetry-tab');
+      const proseTab = document.getElementById('prose-tab');
+      const poetryPanel = document.getElementById('poetry-panel');
+      const prosePanel = document.getElementById('prose-panel');
+      const body = document.body;
 
       function switchMode(mode) {
         if (mode === 'poetry') {
@@ -742,10 +742,10 @@ is the part that gets the garden.</div>
       });
 
       // Keyboard navigation
-      var tabs = [poetryTab, proseTab];
+      const tabs = [poetryTab, proseTab];
       tabs.forEach(function(tab, index) {
         tab.addEventListener('keydown', function(e) {
-          var nextIndex = null;
+          let nextIndex = null;
           if (e.key === 'ArrowRight') {
             nextIndex = (index + 1) % tabs.length;
           } else if (e.key === 'ArrowLeft') {

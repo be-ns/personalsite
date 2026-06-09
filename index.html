@@ -366,12 +366,6 @@
         <span class="contact-divider" aria-hidden="true">/</span>
         <a href="resume.html">Résumé</a>
       </div>
-
-      <button class="ai-wink" type="button" aria-label="Generate a thought with AI">
-        <span class="ai-wink-spark" aria-hidden="true">✨</span>
-        <span class="ai-wink-label">Ask the AI</span>
-      </button>
-      <p class="ai-wink-output" role="status" aria-live="polite"></p>
     </section>
   </main>
 
@@ -382,13 +376,13 @@
   <script>
     // Page Loader
     (function() {
-      var loader = document.querySelector('.page-loader');
+      const loader = document.querySelector('.page-loader');
       if (!loader) return;
 
-      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      var animationDuration = reduceMotion ? 150 : 600;
-      var fadeOutDuration = reduceMotion ? 150 : 200;
-      var maxTimeout = 900;
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const animationDuration = reduceMotion ? 150 : 600;
+      const fadeOutDuration = reduceMotion ? 150 : 200;
+      const maxTimeout = 900;
 
       document.body.style.overflow = 'hidden';
 
@@ -402,7 +396,7 @@
         }, fadeOutDuration);
       }
 
-      var animationTimer = setTimeout(removeLoader, animationDuration);
+      const animationTimer = setTimeout(removeLoader, animationDuration);
 
       setTimeout(function() {
         clearTimeout(animationTimer);
@@ -415,19 +409,18 @@
     })();
 
     (function() {
-      // Menu elements
-      var menuToggle = document.querySelector('.menu-toggle');
-      var siteHeader = document.querySelector('.site-header');
-      var menuPanel = document.querySelector('.menu-panel');
-      var menuOverlay = document.querySelector('.menu-overlay');
-      var menuClose = document.querySelector('.menu-close');
-      var menuLinks = document.querySelectorAll('.menu-links a');
-      var mainEl = document.querySelector('main');
-      var footerEl = document.querySelector('footer');
+      const menuToggle = document.querySelector('.menu-toggle');
+      const siteHeader = document.querySelector('.site-header');
+      const menuPanel = document.querySelector('.menu-panel');
+      const menuOverlay = document.querySelector('.menu-overlay');
+      const menuClose = document.querySelector('.menu-close');
+      const menuLinks = document.querySelectorAll('.menu-links a');
+      const mainEl = document.querySelector('main');
+      const footerEl = document.querySelector('footer');
 
       if (!menuToggle || !menuPanel || !menuOverlay) return;
 
-      var isOpen = false;
+      let isOpen = false;
 
       function openMenu() {
         if (isOpen) return;
@@ -474,7 +467,7 @@
       menuOverlay.onclick = closeMenu;
       if (menuClose) menuClose.onclick = closeMenu;
 
-      for (var i = 0; i < menuLinks.length; i++) {
+      for (let i = 0; i < menuLinks.length; i++) {
         menuLinks[i].onclick = function() { closeMenu(); };
       }
 
@@ -483,9 +476,9 @@
         if (!isOpen) return;
         if (e.key === 'Escape') { closeMenu(); return; }
         if (e.key !== 'Tab') return;
-        var focusable = (menuClose ? [menuClose] : []).concat(Array.prototype.slice.call(menuLinks));
-        var first = focusable[0];
-        var last = focusable[focusable.length - 1];
+        const focusable = (menuClose ? [menuClose] : []).concat(Array.prototype.slice.call(menuLinks));
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
         if (e.shiftKey && document.activeElement === first) {
           e.preventDefault();
           last.focus();
@@ -497,17 +490,17 @@
 
       // Scroll animations
       if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        var animateElements = document.querySelectorAll('.work-position, .tool-featured, .tool-upcoming, .capability, .elsewhere-item, section > .section-header');
+        const animateElements = document.querySelectorAll('.work-position, .tool-featured, .capability, .elsewhere-item, section > .section-header');
 
         animateElements.forEach(function(el) {
           el.classList.add('animate-on-scroll');
         });
 
-        var observer = new IntersectionObserver(function(entries) {
+        const observer = new IntersectionObserver(function(entries) {
           entries.forEach(function(entry) {
             if (entry.isIntersecting) {
-              var siblings = entry.target.parentElement.querySelectorAll('.animate-on-scroll');
-              var delay = 0;
+              const siblings = entry.target.parentElement.querySelectorAll('.animate-on-scroll');
+              let delay = 0;
               siblings.forEach(function(sibling, i) {
                 if (sibling === entry.target) delay = i * 75;
               });
@@ -528,16 +521,15 @@
       }
 
       // Copy email button
-      var emailButton = document.querySelector('.contact-email');
+      const emailButton = document.querySelector('.contact-email');
       if (emailButton) {
-        var emailStatus = document.querySelector('.contact-email-status');
-        var emailText = emailButton.querySelector('.contact-email-text');
-        var encodedEmail = emailButton.getAttribute('data-email');
-        var statusTimeout = null;
+        const emailStatus = document.querySelector('.contact-email-status');
+        const emailText = emailButton.querySelector('.contact-email-text');
+        const encodedEmail = emailButton.getAttribute('data-email');
+        let statusTimeout = null;
 
         function setEmailStatus(message, duration) {
           if (emailStatus) {
-            // Clear any existing timeout
             if (statusTimeout) {
               clearTimeout(statusTimeout);
             }
@@ -545,7 +537,6 @@
             emailStatus.textContent = message;
             emailStatus.classList.add('is-visible');
 
-            // Auto-hide after duration (default 3 seconds)
             statusTimeout = setTimeout(function() {
               emailStatus.classList.remove('is-visible');
             }, duration || 3000);
@@ -561,9 +552,8 @@
         }
 
         function onCopySuccess(email) {
-          // Update button text temporarily
           if (emailText) {
-            var originalText = emailText.textContent;
+            const originalText = emailText.textContent;
             emailText.textContent = 'Copied!';
             setTimeout(function() {
               emailText.textContent = originalText;
@@ -577,7 +567,7 @@
         }
 
         function copyEmail() {
-          var email = decodeEmail();
+          const email = decodeEmail();
           if (!email) {
             setEmailStatus("Couldn't find the email address", 4000);
             return;
@@ -592,7 +582,7 @@
             return;
           }
 
-          var tempInput = document.createElement('textarea');
+          const tempInput = document.createElement('textarea');
           tempInput.value = email;
           tempInput.setAttribute('readonly', '');
           tempInput.style.position = 'absolute';
@@ -620,20 +610,20 @@
       });
 
       // Header scroll effect + scroll progress
-      var header = document.querySelector('.site-header');
-      var scrollProgress = document.querySelector('.scroll-progress');
-      var scrollThreshold = 50;
+      const header = document.querySelector('.site-header');
+      const scrollProgress = document.querySelector('.scroll-progress');
+      const scrollThreshold = 50;
 
       function updateHeaderState() {
-        var y = window.scrollY || window.pageYOffset || 0;
+        const y = window.scrollY || window.pageYOffset || 0;
         if (y > scrollThreshold) {
           header.classList.add('is-scrolled');
         } else {
           header.classList.remove('is-scrolled');
         }
         if (scrollProgress) {
-          var docHeight = document.documentElement.scrollHeight - window.innerHeight;
-          var pct = docHeight > 0 ? (y / docHeight) * 100 : 0;
+          const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          const pct = docHeight > 0 ? (y / docHeight) * 100 : 0;
           scrollProgress.style.width = pct + '%';
         }
       }
@@ -642,67 +632,18 @@
       window.addEventListener('resize', updateHeaderState, { passive: true });
       updateHeaderState();
 
-      // Cursor-aware glow on tool cards — track the pointer as CSS custom props.
-      // Skipped when motion isn't welcome; the focus-within fallback still glows.
+      // Cursor-aware glow on tool cards. Skipped under reduced motion;
+      // the focus-within fallback in CSS still glows.
       if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        var glowCards = document.querySelectorAll('.tool-featured');
+        const glowCards = document.querySelectorAll('.tool-featured');
         glowCards.forEach(function(card) {
           card.addEventListener('pointermove', function(e) {
-            var rect = card.getBoundingClientRect();
+            const rect = card.getBoundingClientRect();
             card.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width) * 100 + '%');
             card.style.setProperty('--my', ((e.clientY - rect.top) / rect.height) * 100 + '%');
           }, { passive: true });
         });
       }
-
-      // The self-aware wink — play the AI-UI genre straight, then drop the act.
-      var wink = document.querySelector('.ai-wink');
-      if (wink) {
-        var winkOut = document.querySelector('.ai-wink-output');
-        var thoughts = [
-          'Consulting the frontier…',
-          'Aligning incentives…',
-          'Touching grass…',
-          'Synthesizing optimism…'
-        ];
-        var punchline = 'Just kidding — no model required. Email me and a real human (me) answers.';
-        var winkBusy = false;
-
-        wink.addEventListener('click', function() {
-          if (winkBusy) return;
-          winkBusy = true;
-
-          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            winkOut.classList.remove('is-thinking');
-            winkOut.textContent = punchline;
-            winkBusy = false;
-            return;
-          }
-
-          var i = 0;
-          winkOut.classList.add('is-thinking');
-          winkOut.textContent = thoughts[0];
-          var ticker = setInterval(function() {
-            i++;
-            if (i < thoughts.length) {
-              winkOut.textContent = thoughts[i];
-            } else {
-              clearInterval(ticker);
-              winkOut.classList.remove('is-thinking');
-              winkOut.textContent = punchline;
-              winkBusy = false;
-            }
-          }, 750);
-        });
-      }
-
-      // A nod to the field guide that inspired this pass.
-      try {
-        console.log(
-          '%c✨ built by a human (mostly). performative-ui not included.',
-          'color:#0047AB;font-weight:600;'
-        );
-      } catch (e) {}
 
     })();
   </script>

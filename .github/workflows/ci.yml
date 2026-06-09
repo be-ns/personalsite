@@ -49,27 +49,18 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  sanity:
-    name: Sitemap & robots sanity
+  test:
+    name: Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      # Page invariants, internal links, sitemap coverage, script syntax,
+      # and plant-dataset integrity. Zero dependencies — just node:test.
+      - name: Run test suite
+        run: node --test
       - name: Validate sitemap.xml is well-formed
         run: |
-          python3 -c "import xml.dom.minidom,sys; xml.dom.minidom.parse('sitemap.xml'); print('sitemap.xml is well-formed')"
-      - name: Ensure every HTML page is in the sitemap
-        run: |
-          missing=0
-          for f in *.html; do
-            # index.html is represented by the bare domain in the sitemap
-            if [ "$f" = "index.html" ]; then
-              grep -q "<loc>https://bensiverly.com/</loc>" sitemap.xml || { echo "::error::index (/) missing from sitemap"; missing=1; }
-              continue
-            fi
-            grep -q "$f" sitemap.xml || { echo "::error::$f missing from sitemap.xml"; missing=1; }
-          done
-          [ "$missing" -eq 0 ] && echo "All pages present in sitemap.xml"
-          exit $missing
-      - name: Ensure robots.txt references the sitemap
-        run: |
-          grep -q "Sitemap: https://bensiverly.com/sitemap.xml" robots.txt
+          python3 -c "import xml.dom.minidom; xml.dom.minidom.parse('sitemap.xml'); print('sitemap.xml is well-formed')"

@@ -1146,12 +1146,12 @@
 
   <script>
     (function() {
-      var tool = document.getElementById('tool');
-      var headerReset = document.getElementById('header-reset');
+      const tool = document.getElementById('tool');
+      const headerReset = document.getElementById('header-reset');
       if (!tool) return;
 
       // Consideration categories
-      var CATEGORIES = [
+      const CATEGORIES = [
         {
           id: 'financial',
           label: 'Financial',
@@ -1194,7 +1194,7 @@
         }
       ];
 
-      var WEIGHT_LABELS = {
+      const WEIGHT_LABELS = {
         1: 'Nice to have',
         2: 'Somewhat important',
         3: 'Important',
@@ -1202,7 +1202,7 @@
         5: 'Critical'
       };
 
-      var SCORE_LABELS = {
+      const SCORE_LABELS = {
         1: 'Poor',
         2: 'Weak',
         3: 'Neutral',
@@ -1210,13 +1210,13 @@
         5: 'Strong'
       };
 
-      var CHART_COLORS = [
+      const CHART_COLORS = [
         'chart-color-1', 'chart-color-2', 'chart-color-3', 'chart-color-4', 'chart-color-5',
         'chart-color-6', 'chart-color-7', 'chart-color-8', 'chart-color-9', 'chart-color-10'
       ];
 
       // State
-      var state = {
+      let state = {
         step: 'intro', // 'intro', 'define', 'options', 'considerations', 'weighting', 'scoring', 'results'
         decision: {
           title: '',
@@ -1229,7 +1229,7 @@
         scoringIndex: 0 // current consideration being scored
       };
 
-      var STEPS = ['define', 'options', 'considerations', 'weighting', 'scoring', 'results'];
+      const STEPS = ['define', 'options', 'considerations', 'weighting', 'scoring', 'results'];
 
       // Helpers
       function generateId() {
@@ -1244,45 +1244,47 @@
         switch (state.step) {
           case 'define':
             return state.decision.title.trim().length > 0;
-          case 'options':
-            var validOptions = state.options.filter(function(o) { return o.trim().length > 0; });
+          case 'options': {
+            const validOptions = state.options.filter(function(o) { return o.trim().length > 0; });
             return validOptions.length >= 2;
+          }
           case 'considerations':
             return state.considerations.length >= 2;
           case 'weighting':
             return state.considerations.every(function(c) {
               return state.weights[c.id] !== undefined;
             });
-          case 'scoring':
-            var currentConsideration = state.considerations[state.scoringIndex];
+          case 'scoring': {
+            const currentConsideration = state.considerations[state.scoringIndex];
             if (!currentConsideration) return false;
-            var validOptions = state.options.filter(function(o) { return o.trim().length > 0; });
+            const validOptions = state.options.filter(function(o) { return o.trim().length > 0; });
             return validOptions.every(function(_, i) {
               return state.scores[i + '-' + currentConsideration.id] !== undefined;
             });
+          }
           default:
             return true;
         }
       }
 
       function calculateResults() {
-        var validOptions = state.options
+        const validOptions = state.options
           .map(function(o, i) { return { label: o.trim(), index: i }; })
           .filter(function(o) { return o.label.length > 0; });
 
-        var maxPossibleScore = 0;
+        let maxPossibleScore = 0;
         state.considerations.forEach(function(c) {
           maxPossibleScore += (state.weights[c.id] || 3) * 5;
         });
 
-        var results = validOptions.map(function(opt) {
-          var totalScore = 0;
-          var breakdown = [];
+        const results = validOptions.map(function(opt) {
+          let totalScore = 0;
+          const breakdown = [];
 
           state.considerations.forEach(function(c) {
-            var weight = state.weights[c.id] || 3;
-            var score = state.scores[opt.index + '-' + c.id] || 3;
-            var weighted = weight * score;
+            const weight = state.weights[c.id] || 3;
+            const score = state.scores[opt.index + '-' + c.id] || 3;
+            const weighted = weight * score;
             totalScore += weighted;
             breakdown.push({
               consideration: c,
@@ -1307,7 +1309,7 @@
 
       // Render
       function render() {
-        var hasProgress = state.decision.title.trim().length > 0 ||
+        const hasProgress = state.decision.title.trim().length > 0 ||
                          state.options.some(function(o) { return o.trim().length > 0; }) ||
                          state.considerations.length > 0;
         headerReset.classList.toggle('is-visible', hasProgress);
@@ -1340,13 +1342,13 @@
       }
 
       function renderProgress() {
-        var currentIndex = getStepIndex(state.step);
-        var html = '<div class="progress">';
+        const currentIndex = getStepIndex(state.step);
+        let html = '<div class="progress">';
 
-        for (var i = 0; i < STEPS.length; i++) {
-          var isActive = i === currentIndex;
-          var isComplete = i < currentIndex;
-          var isClickable = i < currentIndex;
+        for (let i = 0; i < STEPS.length; i++) {
+          const isActive = i === currentIndex;
+          const isComplete = i < currentIndex;
+          const isClickable = i < currentIndex;
 
           html += '<span class="progress-step' +
                   (isActive ? ' is-active' : '') +
@@ -1355,7 +1357,7 @@
                   '" data-step="' + i + '"></span>';
         }
 
-        var stepLabels = ['Define', 'Options', 'Factors', 'Weight', 'Score', 'Results'];
+        const stepLabels = ['Define', 'Options', 'Factors', 'Weight', 'Score', 'Results'];
         html += '<span class="progress-label">' + stepLabels[currentIndex] + '</span>';
         html += '</div>';
 
@@ -1363,10 +1365,10 @@
       }
 
       function attachProgressListeners() {
-        var steps = document.querySelectorAll('.progress-step.is-clickable');
+        const steps = document.querySelectorAll('.progress-step.is-clickable');
         steps.forEach(function(step) {
           step.addEventListener('click', function() {
-            var targetIndex = parseInt(step.dataset.step, 10);
+            const targetIndex = parseInt(step.dataset.step, 10);
             state.step = STEPS[targetIndex];
             if (state.step === 'scoring') {
               state.scoringIndex = 0;
@@ -1377,7 +1379,7 @@
       }
 
       function renderIntro() {
-        var html = '' +
+        const html = '' +
           '<div class="step-content" id="step-content">' +
             '<p class="intro-eyebrow">Decision Assist</p>' +
             '<h1 class="step-title">Think a hard decision all the way through.</h1>' +
@@ -1398,7 +1400,7 @@
 
         tool.innerHTML = html;
 
-        var beginBtn = document.getElementById('intro-begin');
+        const beginBtn = document.getElementById('intro-begin');
         beginBtn.addEventListener('click', function() {
           transitionTo('define');
         });
@@ -1406,7 +1408,7 @@
       }
 
       function renderDefine() {
-        var html = renderProgress() +
+        const html = renderProgress() +
           '<div class="step-content" id="step-content">' +
             '<h1 class="step-title">What are you deciding?</h1>' +
             '<p class="step-subtitle">Name your decision clearly. The more specific, the better.</p>' +
@@ -1435,9 +1437,9 @@
       }
 
       function attachDefineListeners() {
-        var titleInput = document.getElementById('decision-title');
-        var contextInput = document.getElementById('decision-context');
-        var nextBtn = document.getElementById('nav-next');
+        const titleInput = document.getElementById('decision-title');
+        const contextInput = document.getElementById('decision-context');
+        const nextBtn = document.getElementById('nav-next');
 
         titleInput.addEventListener('input', function() {
           state.decision.title = titleInput.value;
@@ -1458,11 +1460,11 @@
       }
 
       function renderOptions() {
-        var optionsHtml = '';
-        var validCount = state.options.filter(function(o) { return o.trim().length > 0; }).length;
+        let optionsHtml = '';
+        const validCount = state.options.filter(function(o) { return o.trim().length > 0; }).length;
 
-        for (var i = 0; i < state.options.length; i++) {
-          var canDelete = state.options.length > 2;
+        for (let i = 0; i < state.options.length; i++) {
+          const canDelete = state.options.length > 2;
           optionsHtml += '<div class="option-item">' +
             '<span class="option-number">' + (i + 1) + '</span>' +
             '<input type="text" class="form-input option-input" data-index="' + i + '" ' +
@@ -1477,9 +1479,9 @@
           '</div>';
         }
 
-        var canAddMore = state.options.length < 6;
+        const canAddMore = state.options.length < 6;
 
-        var html = renderProgress() +
+        const html = renderProgress() +
           '<div class="step-content" id="step-content">' +
             '<h1 class="step-title">What are your options?</h1>' +
             '<p class="step-subtitle">Add the choices you\'re weighing. You can have 2-6 options.</p>' +
@@ -1504,15 +1506,15 @@
       }
 
       function attachOptionsListeners() {
-        var optionInputs = document.querySelectorAll('.option-input');
-        var deleteButtons = document.querySelectorAll('.option-delete');
-        var addBtn = document.getElementById('add-option');
-        var nextBtn = document.getElementById('nav-next');
-        var backBtn = document.getElementById('nav-back');
+        const optionInputs = document.querySelectorAll('.option-input');
+        const deleteButtons = document.querySelectorAll('.option-delete');
+        const addBtn = document.getElementById('add-option');
+        const nextBtn = document.getElementById('nav-next');
+        const backBtn = document.getElementById('nav-back');
 
         optionInputs.forEach(function(input) {
           input.addEventListener('input', function() {
-            var index = parseInt(input.dataset.index, 10);
+            const index = parseInt(input.dataset.index, 10);
             state.options[index] = input.value;
             nextBtn.disabled = !canProceed();
           });
@@ -1521,7 +1523,7 @@
         deleteButtons.forEach(function(btn) {
           btn.addEventListener('click', function() {
             if (state.options.length > 2) {
-              var index = parseInt(btn.dataset.index, 10);
+              const index = parseInt(btn.dataset.index, 10);
               state.options.splice(index, 1);
               render();
             }
@@ -1532,7 +1534,7 @@
           if (state.options.length < 6) {
             state.options.push('');
             render();
-            var inputs = document.querySelectorAll('.option-input');
+            const inputs = document.querySelectorAll('.option-input');
             if (inputs.length > 0) {
               inputs[inputs.length - 1].focus();
             }
@@ -1551,15 +1553,15 @@
       }
 
       function renderConsiderations() {
-        var selectedIds = state.considerations.map(function(c) { return c.id; });
-        var customConsiderations = state.considerations.filter(function(c) { return c.isCustom; });
+        const selectedIds = state.considerations.map(function(c) { return c.id; });
+        const customConsiderations = state.considerations.filter(function(c) { return c.isCustom; });
 
-        var categoriesHtml = '';
+        let categoriesHtml = '';
         CATEGORIES.forEach(function(cat) {
-          var chipsHtml = '';
+          let chipsHtml = '';
           cat.suggestions.forEach(function(suggestion) {
-            var id = cat.id + '_' + suggestion.toLowerCase().replace(/[^a-z0-9]/g, '_');
-            var isSelected = selectedIds.indexOf(id) !== -1;
+            const id = cat.id + '_' + suggestion.toLowerCase().replace(/[^a-z0-9]/g, '_');
+            const isSelected = selectedIds.indexOf(id) !== -1;
             chipsHtml += '<button type="button" class="chip' + (isSelected ? ' is-selected' : '') +
                         '" data-id="' + id + '" data-label="' + escapeHtml(suggestion) +
                         '" data-category="' + cat.id + '">' + escapeHtml(suggestion) + '</button>';
@@ -1570,7 +1572,7 @@
           '</div>';
         });
 
-        var customChipsHtml = '';
+        let customChipsHtml = '';
         customConsiderations.forEach(function(c) {
           customChipsHtml += '<button type="button" class="chip is-custom is-selected" data-id="' + c.id + '">' +
             escapeHtml(c.label) +
@@ -1578,8 +1580,8 @@
           '</button>';
         });
 
-        var countClass = '';
-        var countText = state.considerations.length + ' of 2-10 selected';
+        let countClass = '';
+        let countText = state.considerations.length + ' of 2-10 selected';
         if (state.considerations.length < 2) {
           countClass = ' is-warning';
           countText = 'Select at least 2 (' + state.considerations.length + ' selected)';
@@ -1587,7 +1589,7 @@
           countText = 'Maximum reached (10 selected)';
         }
 
-        var html = renderProgress() +
+        const html = renderProgress() +
           '<div class="step-content" id="step-content">' +
             '<h1 class="step-title">What matters?</h1>' +
             '<p class="step-subtitle">Select the factors that are important to this decision.</p>' +
@@ -1616,20 +1618,20 @@
       }
 
       function attachConsiderationsListeners() {
-        var chips = document.querySelectorAll('.chip:not(.is-custom)');
-        var customChips = document.querySelectorAll('.chip.is-custom');
-        var customInput = document.getElementById('custom-input');
-        var nextBtn = document.getElementById('nav-next');
-        var backBtn = document.getElementById('nav-back');
+        const chips = document.querySelectorAll('.chip:not(.is-custom)');
+        const customChips = document.querySelectorAll('.chip.is-custom');
+        const customInput = document.getElementById('custom-input');
+        const nextBtn = document.getElementById('nav-next');
+        const backBtn = document.getElementById('nav-back');
 
         chips.forEach(function(chip) {
           chip.addEventListener('click', function() {
-            var id = chip.dataset.id;
-            var label = chip.dataset.label;
-            var category = chip.dataset.category;
-            var index = -1;
+            const id = chip.dataset.id;
+            const label = chip.dataset.label;
+            const category = chip.dataset.category;
+            let index = -1;
 
-            for (var i = 0; i < state.considerations.length; i++) {
+            for (let i = 0; i < state.considerations.length; i++) {
               if (state.considerations[i].id === id) {
                 index = i;
                 break;
@@ -1654,8 +1656,8 @@
 
         customChips.forEach(function(chip) {
           chip.addEventListener('click', function() {
-            var id = chip.dataset.id;
-            for (var i = 0; i < state.considerations.length; i++) {
+            const id = chip.dataset.id;
+            for (let i = 0; i < state.considerations.length; i++) {
               if (state.considerations[i].id === id) {
                 state.considerations.splice(i, 1);
                 delete state.weights[id];
@@ -1669,9 +1671,9 @@
         customInput.addEventListener('keypress', function(e) {
           if (e.key === 'Enter') {
             e.preventDefault();
-            var value = customInput.value.trim();
+            const value = customInput.value.trim();
             if (value.length > 0 && state.considerations.length < 10) {
-              var id = generateId();
+              const id = generateId();
               state.considerations.push({
                 id: id,
                 label: value,
@@ -1696,9 +1698,9 @@
       }
 
       function renderWeighting() {
-        var weightsHtml = '';
+        let weightsHtml = '';
         state.considerations.forEach(function(c) {
-          var weight = state.weights[c.id] || 3;
+          const weight = state.weights[c.id] || 3;
           weightsHtml += '<div class="weight-item">' +
             '<div class="weight-header">' +
               '<span class="weight-label">' + escapeHtml(c.label) + '</span>' +
@@ -1714,7 +1716,7 @@
           '</div>';
         });
 
-        var html = renderProgress() +
+        const html = renderProgress() +
           '<div class="step-content" id="step-content">' +
             '<h1 class="step-title">How important is each?</h1>' +
             '<p class="step-subtitle">Drag to set the weight for each consideration.</p>' +
@@ -1731,17 +1733,17 @@
       }
 
       function attachWeightingListeners() {
-        var sliders = document.querySelectorAll('.weight-slider');
-        var nextBtn = document.getElementById('nav-next');
-        var backBtn = document.getElementById('nav-back');
+        const sliders = document.querySelectorAll('.weight-slider');
+        const nextBtn = document.getElementById('nav-next');
+        const backBtn = document.getElementById('nav-back');
 
         sliders.forEach(function(slider) {
           slider.addEventListener('input', function() {
-            var id = slider.dataset.id;
-            var value = parseInt(slider.value, 10);
+            const id = slider.dataset.id;
+            const value = parseInt(slider.value, 10);
             state.weights[id] = value;
             slider.setAttribute('aria-valuetext', WEIGHT_LABELS[value]);
-            var valueDisplay = document.getElementById('weight-value-' + id);
+            const valueDisplay = document.getElementById('weight-value-' + id);
             if (valueDisplay) {
               valueDisplay.textContent = WEIGHT_LABELS[value];
             }
@@ -1759,24 +1761,24 @@
       }
 
       function renderScoring() {
-        var currentConsideration = state.considerations[state.scoringIndex];
+        const currentConsideration = state.considerations[state.scoringIndex];
         if (!currentConsideration) {
           transitionTo('results');
           return;
         }
 
-        var validOptions = state.options
+        const validOptions = state.options
           .map(function(o, i) { return { label: o.trim(), index: i }; })
           .filter(function(o) { return o.label.length > 0; });
 
-        var optionsHtml = '';
+        let optionsHtml = '';
         validOptions.forEach(function(opt) {
-          var scoreKey = opt.index + '-' + currentConsideration.id;
-          var currentScore = state.scores[scoreKey];
+          const scoreKey = opt.index + '-' + currentConsideration.id;
+          const currentScore = state.scores[scoreKey];
 
-          var buttonsHtml = '';
-          for (var s = 1; s <= 5; s++) {
-            var isSelected = currentScore === s;
+          let buttonsHtml = '';
+          for (let s = 1; s <= 5; s++) {
+            const isSelected = currentScore === s;
             buttonsHtml += '<button type="button" class="score-btn' + (isSelected ? ' is-selected' : '') +
                           '" data-option="' + opt.index + '" data-score="' + s + '"' +
                           ' aria-pressed="' + (isSelected ? 'true' : 'false') + '"' +
@@ -1790,7 +1792,7 @@
           '</div>';
         });
 
-        var html = renderProgress() +
+        const html = renderProgress() +
           '<div class="step-content" id="step-content">' +
             '<div class="scoring-header">' +
               '<h1 class="scoring-consideration">' + escapeHtml(currentConsideration.label) + '</h1>' +
@@ -1813,20 +1815,20 @@
       }
 
       function attachScoringListeners() {
-        var scoreButtons = document.querySelectorAll('.score-btn');
-        var nextBtn = document.getElementById('nav-next');
-        var backBtn = document.getElementById('nav-back');
-        var currentConsideration = state.considerations[state.scoringIndex];
+        const scoreButtons = document.querySelectorAll('.score-btn');
+        const nextBtn = document.getElementById('nav-next');
+        const backBtn = document.getElementById('nav-back');
+        const currentConsideration = state.considerations[state.scoringIndex];
 
         scoreButtons.forEach(function(btn) {
           btn.addEventListener('click', function() {
-            var optionIndex = parseInt(btn.dataset.option, 10);
-            var score = parseInt(btn.dataset.score, 10);
-            var scoreKey = optionIndex + '-' + currentConsideration.id;
+            const optionIndex = parseInt(btn.dataset.option, 10);
+            const score = parseInt(btn.dataset.score, 10);
+            const scoreKey = optionIndex + '-' + currentConsideration.id;
             state.scores[scoreKey] = score;
 
             // Update UI
-            var container = btn.closest('.scoring-option');
+            const container = btn.closest('.scoring-option');
             container.querySelectorAll('.score-btn').forEach(function(b) {
               b.classList.toggle('is-selected', b === btn);
             });
@@ -1857,14 +1859,14 @@
       }
 
       function renderResults() {
-        var results = calculateResults();
-        var winner = results[0];
-        var maxScore = winner ? winner.totalScore : 1;
+        const results = calculateResults();
+        const winner = results[0];
+        const maxScore = winner ? winner.totalScore : 1;
 
         // Ranked list
-        var rankedHtml = '';
+        let rankedHtml = '';
         results.forEach(function(r, i) {
-          var barWidth = Math.round((r.totalScore / maxScore) * 100);
+          const barWidth = Math.round((r.totalScore / maxScore) * 100);
           rankedHtml += '<div class="ranked-item' + (i === 0 ? ' is-winner' : '') + '">' +
             '<span class="ranked-position">' + (i + 1) + '</span>' +
             '<span class="ranked-name">' + escapeHtml(r.label) + '</span>' +
@@ -1876,11 +1878,11 @@
         });
 
         // Stacked bar chart
-        var barChartHtml = '<div class="bar-chart">';
+        let barChartHtml = '<div class="bar-chart">';
         results.forEach(function(r) {
-          var segmentsHtml = '';
+          let segmentsHtml = '';
           r.breakdown.forEach(function(b, i) {
-            var width = (b.weighted / r.totalScore) * 100;
+            const width = (b.weighted / r.totalScore) * 100;
             segmentsHtml += '<div class="bar-segment ' + CHART_COLORS[i % CHART_COLORS.length] +
                            '" style="width: ' + width + '%;" title="' + escapeHtml(b.consideration.label) +
                            ': ' + b.weighted + '"></div>';
@@ -1893,7 +1895,7 @@
         barChartHtml += '</div>';
 
         // Legend
-        var legendHtml = '<div class="bar-legend">';
+        let legendHtml = '<div class="bar-legend">';
         state.considerations.forEach(function(c, i) {
           legendHtml += '<div class="legend-item">' +
             '<span class="legend-dot ' + CHART_COLORS[i % CHART_COLORS.length] + '"></span>' +
@@ -1902,7 +1904,7 @@
         });
         legendHtml += '</div>';
 
-        var html = renderProgress() +
+        const html = renderProgress() +
           '<div class="results" id="results">' +
             '<div class="results-header">' +
               '<h1 class="results-title">Your Results</h1>' +
@@ -1932,9 +1934,9 @@
       }
 
       function attachResultsListeners() {
-        var editBtn = document.getElementById('nav-edit');
-        var printBtn = document.getElementById('nav-print');
-        var newBtn = document.getElementById('nav-new');
+        const editBtn = document.getElementById('nav-edit');
+        const printBtn = document.getElementById('nav-print');
+        const newBtn = document.getElementById('nav-new');
 
         editBtn.addEventListener('click', function() {
           state.scoringIndex = state.considerations.length - 1;
@@ -1953,7 +1955,7 @@
       }
 
       function transitionTo(step) {
-        var content = document.getElementById('step-content') || document.getElementById('results');
+        const content = document.getElementById('step-content') || document.getElementById('results');
 
         if (content && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
           content.classList.add('is-transitioning');
@@ -1981,7 +1983,7 @@
       }
 
       function escapeHtml(str) {
-        var div = document.createElement('div');
+        const div = document.createElement('div');
         div.textContent = str;
         return div.innerHTML;
       }
@@ -1993,7 +1995,6 @@
         }
       });
 
-      // Initial render
       render();
     })();
   </script>
