@@ -18,7 +18,7 @@ jobs:
     name: Validate HTML
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -29,7 +29,7 @@ jobs:
     name: Check links
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Check links with lychee
         uses: lycheeverse/lychee-action@v2
         with:
@@ -53,7 +53,7 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-node@v4
         with:
           node-version: 20
