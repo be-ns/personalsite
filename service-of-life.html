@@ -2220,13 +2220,13 @@
 
       // Page loader
       (function() {
-        var loader = document.querySelector('.page-loader');
+        const loader = document.querySelector('.page-loader');
         if (!loader) return;
 
-        var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        var animationDuration = reduceMotion ? 150 : 600;
-        var fadeOutDuration = reduceMotion ? 150 : 200;
-        var maxTimeout = 900;
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const animationDuration = reduceMotion ? 150 : 600;
+        const fadeOutDuration = reduceMotion ? 150 : 200;
+        const maxTimeout = 900;
 
         document.body.style.overflow = 'hidden';
 
@@ -2240,7 +2240,7 @@
           }, fadeOutDuration);
         }
 
-        var animationTimer = setTimeout(removeLoader, animationDuration);
+        const animationTimer = setTimeout(removeLoader, animationDuration);
 
         setTimeout(function() {
           clearTimeout(animationTimer);
