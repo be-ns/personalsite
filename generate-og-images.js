@@ -403,7 +403,7 @@ const pages = [
     outputPath: './images/og-nobody-claps.png',
   },
   {
-    title: 'Come Down',
+    title: 'come down',
     subtitle: 'Moving like water toward what can hold you',
     eyebrow: 'Poem',
     accentColor: tokens.teal,
@@ -412,7 +412,7 @@ const pages = [
     outputPath: './images/og-come-down.png',
   },
   {
-    title: 'Hot pig summer',
+    title: 'hot pig summer',
     subtitle: 'Straw houses, a hard winter, the compost pile',
     eyebrow: 'Poem',
     accentColor: tokens.teal,
@@ -428,6 +428,15 @@ const pages = [
     washes: literaryWashes,
     seed: 2425,
     outputPath: './images/og-the-room-love-needs-to-breathe.png',
+  },
+  {
+    title: 'milk',
+    subtitle: 'Three borrowed hours, a kitchen full of kids',
+    eyebrow: 'Poem',
+    accentColor: tokens.teal,
+    washes: literaryWashes,
+    seed: 2829,
+    outputPath: './images/og-milk.png',
   },
 ];
 
