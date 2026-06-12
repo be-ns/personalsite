@@ -87,6 +87,9 @@ body {
   line-height: 1.7;
   color: var(--color-text);
   background-color: var(--color-bg);
+  /* iOS Safari ignores overflow-x on html alone; both are needed
+     to stop horizontal panning */
+  overflow-x: clip;
 }
 
 /* ==========================================================================
@@ -449,6 +452,9 @@ section:last-of-type {
   position: relative;
   margin-bottom: var(--space-lg);
   line-height: 1.1;
+  /* Contain the ::after shimmer sweep — its translateX(±130%) otherwise
+     parks scrollable overflow off the right edge on iOS Safari */
+  overflow-x: clip;
 }
 
 .hero-content {
