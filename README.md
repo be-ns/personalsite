@@ -31,6 +31,7 @@ Each tool is one self-contained HTML file.
 | [Native Plant Finder](https://bensiverly.com/native-plant-finder.html) | Find California native plants for your ZIP code and sun conditions, with local nursery suggestions. |
 | [Memorial Pamphlet Creator](https://bensiverly.com/memorial-pamphlet.html) | Lay out a simple, dignified memorial-service pamphlet and export a printable PDF. |
 | [Service of Life Builder](https://bensiverly.com/service-of-life.html) | Assemble an order of service for a memorial or celebration of life. |
+| [Memorial Preferences Worksheet](https://bensiverly.com/memorial-preferences.html) | A one-page form to print and fill out by hand — record service wishes on paper, no screen required. |
 | [Decision Assist](https://bensiverly.com/decision-assist.html) | A weighted-criteria decision matrix: score your options against what matters most. |
 | [Writings](https://bensiverly.com/writings.html) | Poetry and prose. |
 
@@ -43,6 +44,7 @@ life-strategy.html         Self-contained tools, each one file
 native-plant-finder.html   (HTML + scoped CSS + JS)
 memorial-pamphlet.html
 service-of-life.html
+memorial-preferences.html
 decision-assist.html
 writings.html              Poetry and prose
 resume.html                One-page resume with downloadable PDFs

@@ -367,6 +367,16 @@ const pages = [
     outputPath: './images/og-service-of-life.png',
   },
   {
+    title: 'Memorial Preferences Worksheet',
+    subtitle: 'Record service wishes by hand, on paper',
+    eyebrow: 'Tool',
+    badge: 'Live',
+    accentColor: tokens.teal,
+    washes: tealWashes,
+    seed: 3031,
+    outputPath: './images/og-memorial-preferences.png',
+  },
+  {
     title: 'Ben Siverly',
     subtitle: 'AI Native Product Builder',
     eyebrow: 'Résumé',
