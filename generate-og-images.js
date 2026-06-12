@@ -367,6 +367,15 @@ const pages = [
     outputPath: './images/og-service-of-life.png',
   },
   {
+    title: 'Ben Siverly',
+    subtitle: 'Senior Product Manager — one page, two versions',
+    eyebrow: 'Résumé',
+    accentColor: tokens.cobalt,
+    washes: brandWashes,
+    seed: 2627,
+    outputPath: './images/og-resume.png',
+  },
+  {
     title: 'Writings',
     subtitle: 'Words about life, memory, and paying attention',
     eyebrow: 'Poetry & Prose',
