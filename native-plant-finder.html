@@ -274,11 +274,11 @@
     .input-section {
       margin-bottom: var(--space-lg);
       text-align: center;
-      padding: var(--space-xl) 0 var(--space-lg);
+      padding: var(--space-lg) 0;
     }
 
     .input-header {
-      margin-bottom: var(--space-xl);
+      margin-bottom: var(--space-lg);
     }
 
     .input-title {
@@ -387,6 +387,43 @@
 
     .input-error.is-visible {
       display: block;
+    }
+
+    /* Example ZIP quick-picks */
+    .zip-examples {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.375rem;
+      margin-top: 0.125rem;
+    }
+
+    .zip-examples-label {
+      font-size: 0.6875rem;
+      color: var(--color-text-tertiary);
+    }
+
+    .zip-example-btn {
+      font-family: var(--font-body);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      padding: 0.25rem 0.5rem;
+      border: 1px solid var(--color-border);
+      background: var(--color-bg-card);
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      border-radius: 100px;
+      transition: all var(--transition-fast);
+    }
+
+    .zip-example-btn:hover {
+      border-color: var(--color-accent-primary);
+      color: var(--color-accent-primary);
+    }
+
+    .zip-example-btn:focus-visible {
+      outline: 2px solid var(--color-accent-primary);
+      outline-offset: 2px;
     }
 
     /* Location Display */
@@ -2161,6 +2198,12 @@
               aria-describedby="zip-help zip-error"
             >
             <span class="input-help" id="zip-help">California ZIP codes supported</span>
+            <div class="zip-examples" aria-label="Example locations">
+              <span class="zip-examples-label">Try:</span>
+              <button type="button" class="zip-example-btn" data-zip="94110">San Francisco</button>
+              <button type="button" class="zip-example-btn" data-zip="90210">Los Angeles</button>
+              <button type="button" class="zip-example-btn" data-zip="95814">Sacramento</button>
+            </div>
             <span class="input-error" id="zip-error" role="alert">Please enter a valid 5-digit zip code</span>
             <div class="location-display" id="location-display" aria-live="polite" aria-label="Selected location">
               <span class="location-name" id="location-name"></span>
@@ -2702,6 +2745,18 @@
       locationChange.addEventListener('click', function() {
         resetTool();
         zipInput.focus();
+      });
+
+      // Example ZIP quick-picks: fill the input and search in one tap
+      document.querySelectorAll('.zip-example-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          const zip = btn.getAttribute('data-zip');
+          zipInput.value = zip;
+          state.zipCode = zip;
+          zipInput.classList.remove('is-invalid');
+          zipError.classList.remove('is-visible');
+          handleFind();
+        });
       });
 
       // ==========================================================================

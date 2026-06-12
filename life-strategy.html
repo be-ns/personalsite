@@ -307,6 +307,47 @@
       margin: 0 0 var(--space-lg) 0;
     }
 
+    .intro-cta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+      margin: 0 0 var(--space-lg) 0;
+    }
+
+    .intro-cta .nav-btn {
+      padding: 1rem 2rem;
+      font-size: 0.875rem;
+    }
+
+    .intro-cta-note {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-muted);
+    }
+
+    .intro-example {
+      margin: 0 0 var(--space-lg) 0;
+    }
+
+    .intro-example-label {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+      margin: 0 0 var(--space-xs) 0;
+    }
+
+    .intro-example-caption {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      color: var(--color-muted);
+      margin: var(--space-xs) 0 0 0;
+    }
+
     /* ==========================================================================
        Score Card - The hero of each scoring step
        ========================================================================== */
@@ -363,6 +404,39 @@
 
     .slider-value.is-unset {
       color: var(--color-border);
+    }
+
+    .slider-value-label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-muted);
+      min-height: 1.25rem;
+      margin-top: -0.25rem;
+    }
+
+    .slider-value-label.is-hint {
+      color: var(--color-text);
+      animation: hint-fade 2s ease-in-out infinite;
+    }
+
+    @keyframes hint-fade {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.45; }
+    }
+
+    @keyframes thumb-pulse {
+      0%, 100% { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); }
+      50% { box-shadow: 0 0 0 9px rgba(255, 226, 39, 0.55); }
+    }
+
+    .slider-input.is-unset::-webkit-slider-thumb {
+      animation: thumb-pulse 1.8s ease-in-out infinite;
+    }
+
+    .slider-input.is-unset::-moz-range-thumb {
+      animation: thumb-pulse 1.8s ease-in-out infinite;
     }
 
     .slider-track {
@@ -531,6 +605,15 @@
       background-color: var(--color-accent);
       border-color: var(--color-accent);
       color: var(--color-text);
+    }
+
+    .nav-btn--next:disabled,
+    .nav-btn--next:disabled:hover,
+    .nav-btn--next:disabled:focus {
+      background-color: var(--color-border);
+      border-color: var(--color-border);
+      color: var(--color-muted);
+      cursor: not-allowed;
     }
 
     .nav-center {
@@ -1014,6 +1097,12 @@
       .slider-input::-webkit-slider-thumb {
         transition: none;
       }
+
+      .slider-input.is-unset::-webkit-slider-thumb,
+      .slider-input.is-unset::-moz-range-thumb,
+      .slider-value-label.is-hint {
+        animation: none;
+      }
     }
 
     /* ==========================================================================
@@ -1273,6 +1362,27 @@
         { id: 'rest', label: 'Rest' }
       ];
 
+      // Sample scores used to render the example matrix on the intro screen
+      const EXAMPLE_SCORES = [
+        { id: 'ex-health', label: 'Health', importance: 6, satisfaction: 2 },
+        { id: 'ex-work', label: 'Work', importance: 5, satisfaction: 5 },
+        { id: 'ex-family', label: 'Family', importance: 6, satisfaction: 5 },
+        { id: 'ex-creativity', label: 'Creativity', importance: 2, satisfaction: 5 },
+        { id: 'ex-rest', label: 'Rest', importance: 2, satisfaction: 2 }
+      ];
+
+      // Word labels shown under the big number while scoring
+      const VALUE_LABELS = {
+        importance: {
+          1: 'Not important', 2: 'Low priority', 3: 'Somewhat important',
+          4: 'Important', 5: 'Very important', 6: 'Essential'
+        },
+        satisfaction: {
+          1: 'Struggling', 2: 'Rough', 3: 'Getting by',
+          4: 'Okay', 5: 'Going well', 6: 'Thriving'
+        }
+      };
+
       // Quadrant definitions
       const quadrants = {
         maintain: {
@@ -1401,19 +1511,26 @@
             '<p class="intro-eyebrow">Life Strategy Matrix</p>' +
             '<h1 class="intro-title">See where your life is out of balance.</h1>' +
             '<p class="intro-lead">A quick self-assessment that maps eight areas of your life by how much they matter to you and how they’re actually going.</p>' +
+            '<div class="intro-cta">' +
+              '<button type="button" class="nav-btn nav-btn--next" id="intro-begin">Begin &rarr;</button>' +
+              '<span class="intro-cta-note">About 3 minutes &middot; Nothing is saved</span>' +
+            '</div>' +
+            '<div class="intro-example">' +
+              '<p class="intro-example-label">Example result</p>' +
+              '<div class="matrix-container" id="intro-example-matrix"></div>' +
+              '<p class="intro-example-caption">Your eight areas get plotted by importance and satisfaction. Whatever lands in the Invest corner — important to you but not going well — is where to focus next.</p>' +
+            '</div>' +
             '<ol class="intro-steps">' +
               '<li><span class="intro-step-num">1</span><span>Rate eight areas — Health, Work, Family, and five more — first on importance, then on satisfaction. Each from 1 to 6.</span></li>' +
               '<li><span class="intro-step-num">2</span><span>See your answers plotted on a matrix that sorts each area into Invest, Maintain, Rebalance, or Release.</span></li>' +
               '<li><span class="intro-step-num">3</span><span>Get one clear priority and a one-page plan you can print and keep.</span></li>' +
             '</ol>' +
             '<p class="intro-privacy">Nothing is saved. Everything stays in your browser.</p>' +
-            '<nav class="nav">' +
-              '<span></span>' +
-              '<button type="button" class="nav-btn nav-btn--next" id="intro-begin">Begin &rarr;</button>' +
-            '</nav>' +
           '</div>';
 
         tool.innerHTML = html;
+
+        buildMatrix(document.getElementById('intro-example-matrix'), false, EXAMPLE_SCORES);
 
         const beginBtn = document.getElementById('intro-begin');
         beginBtn.addEventListener('click', function() {
@@ -1448,10 +1565,15 @@
               : 'How is this area actually going right now?') + '</p>' +
             '<div class="slider-container">' +
               '<div class="slider-value' + (isUnset ? ' is-unset' : '') + '" id="slider-value">' + displayValue + '</div>' +
+              '<div class="slider-value-label' + (isUnset ? ' is-hint' : '') + '" id="slider-value-label">' +
+                (isUnset ? 'Drag the dot or tap a number' : VALUE_LABELS[state.step][currentValue]) +
+              '</div>' +
               '<div class="slider-track">' +
-                '<input type="range" class="slider-input" id="slider-input" min="1" max="6" step="1" value="' + (currentValue || 3) + '" ' +
+                '<input type="range" class="slider-input' + (isUnset ? ' is-unset' : '') + '" id="slider-input" ' +
+                  'min="1" max="6" step="' + (isUnset ? '0.5' : '1') + '" value="' + (currentValue || 3.5) + '" ' +
                   'aria-label="' + phase + ' rating for ' + category.label + '" ' +
-                  'aria-valuemin="1" aria-valuemax="6" aria-valuenow="' + (currentValue || 3) + '">' +
+                  'aria-valuemin="1" aria-valuemax="6" aria-valuenow="' + (currentValue || 3.5) + '"' +
+                  (isUnset ? ' aria-valuetext="Not set yet"' : '') + '>' +
               '</div>' +
               '<div class="slider-ticks" id="slider-ticks">' +
                 '<span class="slider-tick' + (currentValue === 1 ? ' is-active' : '') + '" data-value="1">1</span>' +
@@ -1472,7 +1594,7 @@
             '<div class="nav-center">' +
               '<button type="button" class="skip-btn" id="nav-skip">Skip</button>' +
             '</div>' +
-            '<button type="button" class="nav-btn nav-btn--next" id="nav-next">' + nextLabel + '</button>' +
+            '<button type="button" class="nav-btn nav-btn--next" id="nav-next"' + (isUnset ? ' disabled' : '') + '>' + nextLabel + '</button>' +
           '</nav>';
 
         tool.innerHTML = html;
@@ -1482,13 +1604,18 @@
       function attachScoringListeners() {
         const slider = document.getElementById('slider-input');
         const valueDisplay = document.getElementById('slider-value');
+        const valueLabel = document.getElementById('slider-value-label');
         const ticks = document.getElementById('slider-ticks');
-        const card = document.getElementById('score-card');
+        const nextBtn = document.getElementById('nav-next');
         const isImportance = state.step === 'importance';
         const category = state.scores[state.categoryIndex];
 
         function updateValue(val) {
-          const num = Number(val);
+          // The slider starts floating at 3.5 (step 0.5); the first interaction
+          // snaps it to a whole number and switches to integer steps.
+          const num = Math.round(Number(val));
+          slider.step = '1';
+          slider.value = num;
           if (isImportance) {
             category.importance = num;
           } else {
@@ -1496,7 +1623,12 @@
           }
           valueDisplay.textContent = num;
           valueDisplay.classList.remove('is-unset');
+          valueLabel.textContent = VALUE_LABELS[state.step][num];
+          valueLabel.classList.remove('is-hint');
+          slider.classList.remove('is-unset');
           slider.setAttribute('aria-valuenow', num);
+          slider.setAttribute('aria-valuetext', num + ', ' + VALUE_LABELS[state.step][num]);
+          nextBtn.disabled = false;
 
           // Update tick highlights
           const tickEls = ticks.querySelectorAll('.slider-tick');
@@ -1521,12 +1653,9 @@
           goBack();
         });
 
-        document.getElementById('nav-next').addEventListener('click', function() {
-          // Save current value if not set
+        nextBtn.addEventListener('click', function() {
           const currentValue = isImportance ? category.importance : category.satisfaction;
-          if (currentValue === null) {
-            updateValue(slider.value);
-          }
+          if (currentValue === null) return;
           goNext();
         });
 
@@ -1669,7 +1798,8 @@
           '</div>';
       }
 
-      function buildMatrix(container, showTooltip) {
+      function buildMatrix(container, showTooltip, scoresOverride) {
+        const scores = scoresOverride || state.scores;
         const svgNS = 'http://www.w3.org/2000/svg';
         const svg = document.createElementNS(svgNS, 'svg');
         svg.setAttribute('viewBox', '0 0 100 100');
@@ -1746,7 +1876,7 @@
         });
 
         // Points
-        state.scores.forEach(function(s) {
+        scores.forEach(function(s) {
           if (s.importance === null || s.satisfaction === null) return;
           const x = getPointPosition(s.importance);
           const y = 100 - getPointPosition(s.satisfaction);
@@ -1757,8 +1887,10 @@
           group.setAttribute('data-label', s.label);
           group.setAttribute('data-importance', s.importance);
           group.setAttribute('data-satisfaction', s.satisfaction);
-          group.setAttribute('tabindex', '0');
-          group.setAttribute('role', 'button');
+          if (showTooltip) {
+            group.setAttribute('tabindex', '0');
+            group.setAttribute('role', 'button');
+          }
           group.setAttribute('aria-label', s.label + ': ' + s.importance + ' importance, ' + s.satisfaction + ' satisfaction');
 
           const circle = document.createElementNS(svgNS, 'circle');

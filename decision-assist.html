@@ -337,6 +337,60 @@
       max-width: 32rem;
     }
 
+    .intro-cta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+      margin: 0 0 var(--space-lg) 0;
+    }
+
+    .intro-cta .nav-btn {
+      padding: 1rem 2rem;
+      font-size: 0.875rem;
+    }
+
+    .intro-cta-note {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-muted);
+    }
+
+    .intro-example {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      max-width: 32rem;
+      margin: 0 0 var(--space-lg) 0;
+    }
+
+    .intro-example-label {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+      margin: 0;
+    }
+
+    .intro-example .winner-card {
+      padding: var(--space-sm);
+    }
+
+    .intro-example .winner-name {
+      font-size: 1.25rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .intro-example-caption {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      color: var(--color-muted);
+      margin: 0;
+    }
+
     /* ==========================================================================
        Form Elements
        ========================================================================== */
@@ -1384,6 +1438,39 @@
             '<p class="intro-eyebrow">Decision Assist</p>' +
             '<h1 class="step-title">Think a hard decision all the way through.</h1>' +
             '<p class="intro-lead">A structured way to compare your options against what actually matters to you — and see which one comes out ahead.</p>' +
+            '<div class="intro-cta">' +
+              '<button type="button" class="nav-btn nav-btn--next" id="intro-begin">Begin &rarr;</button>' +
+              '<span class="intro-cta-note">About 5 minutes &middot; Nothing is saved</span>' +
+            '</div>' +
+            '<div class="intro-example" aria-hidden="true">' +
+              '<p class="intro-example-label">Example result</p>' +
+              '<div class="winner-card">' +
+                '<p class="winner-label">Top choice</p>' +
+                '<p class="winner-name">Take the new job</p>' +
+                '<p class="winner-score">78% weighted score</p>' +
+              '</div>' +
+              '<div class="ranked-list">' +
+                '<div class="ranked-item is-winner">' +
+                  '<span class="ranked-position">1</span>' +
+                  '<span class="ranked-name">Take the new job</span>' +
+                  '<span class="ranked-score">78%</span>' +
+                  '<div class="ranked-bar-container"><div class="ranked-bar" style="width: 100%;"></div></div>' +
+                '</div>' +
+                '<div class="ranked-item">' +
+                  '<span class="ranked-position">2</span>' +
+                  '<span class="ranked-name">Stay and renegotiate</span>' +
+                  '<span class="ranked-score">64%</span>' +
+                  '<div class="ranked-bar-container"><div class="ranked-bar" style="width: 82%;"></div></div>' +
+                '</div>' +
+                '<div class="ranked-item">' +
+                  '<span class="ranked-position">3</span>' +
+                  '<span class="ranked-name">Go freelance</span>' +
+                  '<span class="ranked-score">51%</span>' +
+                  '<div class="ranked-bar-container"><div class="ranked-bar" style="width: 65%;"></div></div>' +
+                '</div>' +
+              '</div>' +
+              '<p class="intro-example-caption">Every option is scored against the factors you chose, weighted by how much each one matters to you — so the ranking reflects your priorities, not a coin flip.</p>' +
+            '</div>' +
             '<ol class="intro-steps">' +
               '<li><span class="intro-step-num">1</span><span>Name the decision you’re facing.</span></li>' +
               '<li><span class="intro-step-num">2</span><span>List the options you’re weighing.</span></li>' +
@@ -1392,11 +1479,7 @@
               '<li><span class="intro-step-num">5</span><span>See your options ranked, with the math shown.</span></li>' +
             '</ol>' +
             '<p class="intro-privacy">Nothing is saved. Everything stays in your browser.</p>' +
-          '</div>' +
-          '<nav class="nav">' +
-            '<span></span>' +
-            '<button type="button" class="nav-btn nav-btn--next" id="intro-begin">Begin &rarr;</button>' +
-          '</nav>';
+          '</div>';
 
         tool.innerHTML = html;
 

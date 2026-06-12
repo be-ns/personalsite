@@ -616,6 +616,18 @@
       padding: var(--space-xl) var(--space-md);
     }
 
+    .sol-preview-empty .sol-action-btn {
+      margin: var(--space-sm) auto 0;
+      max-width: 16rem;
+    }
+
+    .sol-sample-note {
+      font-size: 0.8125rem;
+      color: var(--color-muted);
+      margin: var(--space-xs) 0 0 0;
+      text-align: center;
+    }
+
     /* Service Preview */
     .sol-service {
       font-size: 0.9375rem;
@@ -1058,6 +1070,12 @@
             <label class="sol-label" for="officiant">Officiant</label>
             <input type="text" class="sol-input" id="officiant" placeholder="e.g., The Rev. Jane Doe">
           </div>
+
+          <div class="sol-form-group">
+            <button class="sol-add-btn" id="load-sample-basics" type="button">
+              <span>&#x2606;</span> Load a sample service to see how it works
+            </button>
+          </div>
         </div>
 
         <!-- Step 2: Structure -->
@@ -1144,6 +1162,8 @@
         <div class="sol-preview-content" id="preview-content">
           <div class="sol-preview-empty">
             <p>Enter the name of the deceased to begin.</p>
+            <button class="sol-action-btn sol-action-btn--primary" id="load-sample-btn" type="button">Or load a sample service</button>
+            <p class="sol-sample-note">A complete example you can edit or clear.</p>
           </div>
         </div>
       </div>
@@ -1559,6 +1579,19 @@
 
         elements.importFile.addEventListener('change', handleFileImport);
         elements.importConfirm.addEventListener('click', confirmImport);
+
+        // Sample service loaders. The preview button is re-created whenever the
+        // empty state renders, so listen on the container instead.
+        elements.previewContent.addEventListener('click', (e) => {
+          if (e.target.closest('#load-sample-btn')) {
+            loadSampleService();
+          }
+        });
+
+        const sampleBasicsBtn = document.getElementById('load-sample-basics');
+        if (sampleBasicsBtn) {
+          sampleBasicsBtn.addEventListener('click', loadSampleService);
+        }
 
         // Toggle rubrics
         elements.toggleRubrics.addEventListener('change', () => {
@@ -1997,7 +2030,11 @@
         const content = elements.previewContent;
 
         if (!state.meta.name_of_deceased) {
-          content.innerHTML = '<div class="sol-preview-empty"><p>Enter the name of the deceased to begin.</p></div>';
+          content.innerHTML = '<div class="sol-preview-empty">' +
+            '<p>Enter the name of the deceased to begin.</p>' +
+            '<button class="sol-action-btn sol-action-btn--primary" id="load-sample-btn" type="button">Or load a sample service</button>' +
+            '<p class="sol-sample-note">A complete example you can edit or clear.</p>' +
+          '</div>';
           return;
         }
 
@@ -2160,6 +2197,94 @@
         populateForm();
         renderPreview();
         alert('Service duplicated.');
+      }
+
+      function starterComponent(key) {
+        const block = STARTER_BLOCKS[key];
+        return {
+          component_type: block.type,
+          payload: JSON.parse(JSON.stringify(block.payload))
+        };
+      }
+
+      function buildSampleService() {
+        const sample = createEmptyService();
+        sample.service_type = 'memorial';
+        sample.meta = {
+          name_of_deceased: 'Margaret Anne Walker',
+          date_time: 'Saturday, June 20, 2026 at 2:00 PM',
+          location: "St. Luke's Episcopal Church",
+          officiant: 'The Rev. Sarah Bennett'
+        };
+
+        const componentsBySection = {
+          gathering: [
+            starterComponent('welcome'),
+            starterComponent('opening_prayer'),
+            {
+              component_type: 'music_item',
+              payload: { title: 'Amazing Grace', kind: 'hymn', details: 'Hymnal #671', performer: 'Congregation' }
+            }
+          ],
+          word: [
+            {
+              component_type: 'reading_ref',
+              payload: { label: 'First Reading', citation: 'Psalm 23', reader_name: 'James Walker', full_text: '' }
+            },
+            {
+              component_type: 'reading_ref',
+              payload: { label: 'Gospel Reading', citation: 'John 11:25-26', reader_name: '', full_text: '' }
+            },
+            {
+              component_type: 'tribute_slot',
+              payload: { speaker: 'Emily Walker', prompt: 'Remembrances from her daughter', time_limit_minutes: 5 }
+            }
+          ],
+          prayers: [
+            starterComponent('lord_prayer'),
+            {
+              component_type: 'silence',
+              payload: { label: 'A moment of silence', duration_seconds: 30 }
+            }
+          ],
+          commendation: [
+            starterComponent('commendation')
+          ],
+          dismissal: [
+            starterComponent('blessing'),
+            starterComponent('dismissal_text')
+          ]
+        };
+
+        sample.sections = SERVICE_TYPES.memorial.sections.map(sectionId => ({
+          section_id: sectionId,
+          label_override: null,
+          enabled: !SECTIONS[sectionId].optional,
+          components: componentsBySection[sectionId] || []
+        }));
+
+        return sample;
+      }
+
+      function loadSampleService() {
+        const hasContent = state.meta.name_of_deceased ||
+          state.sections.some(s => s.components.length > 0);
+        if (hasContent && !confirm('Replace your current draft with the sample service?')) {
+          return;
+        }
+
+        state = buildSampleService();
+        saveState(state);
+        populateForm();
+        renderSectionsList();
+        renderSectionsEditList();
+        renderPreview();
+
+        // On mobile, switch to the preview tab so the sample is visible
+        const previewTab = document.querySelector('.sol-mobile-tab[data-tab="preview"]');
+        if (previewTab && window.matchMedia('(max-width: 899px)').matches) {
+          activateMobileTab(previewTab);
+        }
       }
 
       function resetService() {
