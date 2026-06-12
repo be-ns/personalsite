@@ -368,7 +368,7 @@ const pages = [
   },
   {
     title: 'Ben Siverly',
-    subtitle: 'Senior Product Manager — one page, two versions',
+    subtitle: 'AI Native Product Builder',
     eyebrow: 'Résumé',
     accentColor: tokens.cobalt,
     washes: brandWashes,
