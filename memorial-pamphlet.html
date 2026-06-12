@@ -228,6 +228,20 @@
       margin: var(--space-sm) 0 0 0;
     }
 
+    .example-cta {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      margin-top: var(--space-sm);
+    }
+
+    .example-cta-note {
+      font-size: 0.8125rem;
+      color: var(--color-muted);
+      max-width: 28rem;
+    }
+
     /* ==========================================================================
        Template Picker
        ========================================================================== */
@@ -986,6 +1000,10 @@
         <div class="section-header">
           <h1 class="section-title">Create a Memorial Pamphlet</h1>
           <p class="section-subtitle">Choose a template, add the details, and generate a printable PDF to hand out at a service or memorial.</p>
+          <div class="example-cta">
+            <button type="button" class="btn btn--small" id="btn-example">See an example</button>
+            <span class="example-cta-note">Fills the form with sample content so you can see the finished pamphlet. Replace it with your own details.</span>
+          </div>
           <p class="section-note">Everything you type stays on your device. Nothing is uploaded or saved.</p>
         </div>
 
@@ -1505,6 +1523,50 @@
         // Reset
         resetBtn.addEventListener('click', confirmReset);
         headerReset.addEventListener('click', confirmReset);
+
+        // Example loader
+        const exampleBtn = document.getElementById('btn-example');
+        if (exampleBtn) {
+          exampleBtn.addEventListener('click', loadExample);
+        }
+      }
+
+      const EXAMPLE_DATA = {
+        fullName: 'Eleanor Grace Whitman',
+        datesLine: 'March 3, 1942 — May 18, 2026',
+        serviceTitle: 'In Loving Memory',
+        serviceDateTime: 'Saturday, May 30, 2026 at 11:00 AM',
+        serviceLocation: 'Grace Community Chapel, 415 Oak Avenue',
+        shortObituary: 'Eleanor Grace Whitman passed away peacefully at home, surrounded by family. Born in Sacramento, she spent forty years as a schoolteacher, where generations of students knew her for her patience, her reading corner, and her unshakeable belief that every child could learn.\n\nShe is survived by her three children, seven grandchildren, and a garden full of roses she tended every morning. She will be remembered for her kindness, her laugh, and the way she made everyone feel like the most important person in the room.',
+        orderOfService: 'Prelude — "Morning Has Broken"\nWelcome and Opening Prayer\nHymn — "Amazing Grace"\nScripture Reading — Psalm 23\nEulogy — Daniel Whitman\nTime of Remembrance\nClosing Prayer\nPostlude',
+        closingLine: 'Her light remains in all of us.'
+      };
+
+      function loadExample() {
+        const hasContent = fields.some(function(fieldId) {
+          const input = document.getElementById(fieldId);
+          if (!input) return false;
+          if (fieldId === 'serviceTitle') return input.value !== 'In Loving Memory' && input.value !== '';
+          return input.value.trim() !== '';
+        });
+        if (hasContent && !confirm('Replace what you\'ve entered with the example content?')) {
+          return;
+        }
+
+        fields.forEach(function(fieldId) {
+          const input = document.getElementById(fieldId);
+          if (input && EXAMPLE_DATA[fieldId] !== undefined) {
+            input.value = EXAMPLE_DATA[fieldId];
+          }
+        });
+
+        Object.keys(CHAR_LIMITS).forEach(updateCharCount);
+        updatePreview();
+
+        const preview = document.getElementById('pamphlet-preview');
+        if (preview) {
+          preview.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
       }
 
       function confirmReset() {
