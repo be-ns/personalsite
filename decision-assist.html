@@ -252,11 +252,37 @@
       display: flex;
       flex-direction: column;
       opacity: 1;
-      transition: opacity var(--transition-fast);
+      transform: translateX(0);
+      transition: opacity var(--transition-fast), transform var(--transition-fast);
     }
 
     .step-content.is-transitioning {
       opacity: 0;
+    }
+
+    /* Directional transitions between scoring factors: the old factor slides
+       out one way and the new one slides in from the other, so advancing
+       reads as forward motion rather than a reset. */
+    .step-content.is-exit-fwd {
+      opacity: 0;
+      transform: translateX(-28px);
+    }
+
+    .step-content.is-exit-back {
+      opacity: 0;
+      transform: translateX(28px);
+    }
+
+    .step-content.is-enter-fwd {
+      opacity: 0;
+      transform: translateX(28px);
+      transition: none;
+    }
+
+    .step-content.is-enter-back {
+      opacity: 0;
+      transform: translateX(-28px);
+      transition: none;
     }
 
     .step-title {
@@ -1036,6 +1062,20 @@
       background-color: var(--color-border);
       border-color: var(--color-border);
       color: var(--color-muted);
+    }
+
+    .nav-progress {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-muted);
+      text-align: center;
+    }
+
+    .nav-progress strong {
+      color: var(--color-text);
+      font-weight: 500;
     }
 
     /* Results Actions */
@@ -1886,6 +1926,7 @@
           '</div>' +
           '<nav class="nav">' +
             '<button type="button" class="nav-btn nav-btn--back" id="nav-back">&larr; Back</button>' +
+            '<span class="nav-progress">Factor <strong>' + (state.scoringIndex + 1) + '</strong> of ' + state.considerations.length + '</span>' +
             '<button type="button" class="nav-btn nav-btn--next" id="nav-next"' +
               (canProceed() ? '' : ' disabled') + '>' +
               (state.scoringIndex < state.considerations.length - 1 ? 'Next &rarr;' : 'See results &rarr;') +
@@ -1922,8 +1963,9 @@
 
         backBtn.addEventListener('click', function() {
           if (state.scoringIndex > 0) {
-            state.scoringIndex--;
-            render();
+            transitionScoringFactor('back', function() {
+              state.scoringIndex--;
+            });
           } else {
             transitionTo('weighting');
           }
@@ -1933,12 +1975,49 @@
           if (!canProceed()) return;
 
           if (state.scoringIndex < state.considerations.length - 1) {
-            state.scoringIndex++;
-            render();
+            transitionScoringFactor('forward', function() {
+              state.scoringIndex++;
+            });
           } else {
             transitionTo('results');
           }
         });
+      }
+
+      // Slide between scoring factors so advancing reads as motion, not a
+      // sudden reset. `mutate` updates state between the exit and enter halves.
+      let factorTransitionInFlight = false;
+
+      function transitionScoringFactor(direction, mutate) {
+        if (factorTransitionInFlight) return;
+
+        const content = document.getElementById('step-content');
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        if (!content || reduceMotion) {
+          mutate();
+          render();
+          return;
+        }
+
+        const exitClass = direction === 'forward' ? 'is-exit-fwd' : 'is-exit-back';
+        const enterClass = direction === 'forward' ? 'is-enter-fwd' : 'is-enter-back';
+
+        factorTransitionInFlight = true;
+        content.classList.add(exitClass);
+        setTimeout(function() {
+          mutate();
+          render();
+          factorTransitionInFlight = false;
+          const fresh = document.getElementById('step-content');
+          if (!fresh) return;
+          fresh.classList.add(enterClass);
+          // Force a layout pass so the enter position applies before animating in
+          void fresh.offsetWidth;
+          requestAnimationFrame(function() {
+            fresh.classList.remove(enterClass);
+          });
+        }, 160);
       }
 
       function renderResults() {
