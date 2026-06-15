@@ -33,10 +33,10 @@ const VERSIONS = [
     const page = await browser.newPage();
     await page.goto(`http://localhost:${PORT}/resume.html?version=${v.q}`, { waitUntil: 'networkidle0' });
     await page.emulateMediaType('print');
-    // Neutralize the stylesheet's @page margin so it can't stack with the
-    // margins we set here (double margins were forcing a 2nd page).
-    await page.addStyleTag({ content: '@page { margin: 0 !important; }' });
-    await page.pdf({ path: path.join(ROOT, v.out), format: 'Letter', printBackground: true, margin: { top: '0.4in', bottom: '0.4in', left: '0.4in', right: '0.4in' } });
+    // Use the page's own @page rules (size + margin) — the exact path a browser
+    // takes when you Print / Save as PDF. Keeps the downloadable PDF identical to
+    // what anyone gets printing the live page, so "one page" means one page there too.
+    await page.pdf({ path: path.join(ROOT, v.out), preferCSSPageSize: true, printBackground: true });
     await page.close();
     console.log('wrote', v.out);
   }

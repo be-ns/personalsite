@@ -517,6 +517,46 @@ section:last-of-type {
   border-radius: 1px;
 }
 
+/* Hero layout — text + portrait. Stacked on mobile (photo on top),
+   side-by-side on wider screens (photo to the right). */
+.hero-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.hero-subhead {
+  margin: 0 0 var(--space-lg);
+  max-width: 580px;
+  font-size: 1.35rem;
+  line-height: 1.35;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.hero-photo {
+  order: -1;
+  align-self: center;
+  width: clamp(170px, 46vw, 200px);
+  height: auto;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+@media (min-width: 760px) {
+  .hero-grid {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--space-2xl);
+  }
+  .hero-text { flex: 1; min-width: 0; }
+  .hero-photo {
+    order: 1;
+    align-self: flex-start;
+    width: 240px;
+  }
+}
+
 /* Scroll progress — a thin cobalt→accent line at the very top */
 .scroll-progress {
   position: fixed;
@@ -534,13 +574,17 @@ section:last-of-type {
 /* Entrance choreography + accent draw — only when motion is welcome */
 @media (prefers-reduced-motion: no-preference) {
   .hero-headline,
+  .hero-subhead,
+  .hero-photo,
   .hero-content,
   .hero-nav .hero-link {
     opacity: 0;
     animation: heroRise 0.85s var(--ease-out) both;
   }
 
+  .hero-photo { animation-delay: 0.28s; }
   .hero-headline { animation-delay: 0.35s; }
+  .hero-subhead { animation-delay: 0.44s; }
   .hero-content { animation-delay: 0.5s; }
   .hero-nav .hero-link:nth-child(1) { animation-delay: 0.64s; }
   .hero-nav .hero-link:nth-child(2) { animation-delay: 0.72s; }

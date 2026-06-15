@@ -169,6 +169,13 @@
       color: var(--cobalt);
       margin: 0.45rem 0 0;
     }
+    .title-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8pt;
+      letter-spacing: 0.04em;
+      color: var(--faint);
+      margin: 0.22rem 0 0;
+    }
     .contact {
       font-family: 'JetBrains Mono', monospace;
       font-size: 8pt;
@@ -210,7 +217,15 @@
       margin: 0;
       line-height: 1.2;
     }
+    .job-company a { color: inherit; text-decoration: none; }
+    .job-company a:hover { color: var(--cobalt); }
     .job-role { font-weight: 600; color: var(--ink); }
+    .job-desc {
+      font-size: 8.5pt;
+      color: var(--muted);
+      margin: 0.04rem 0 0.12rem;
+      line-height: 1.3;
+    }
     .job-meta {
       font-family: 'JetBrains Mono', monospace;
       font-size: 8.5pt;
@@ -250,7 +265,7 @@
     }
 
     /* ---- Print / PDF ---- */
-    @page { size: Letter; margin: 0.4in; }
+    @page { size: Letter; margin: 0.35in; }
     @media print {
       html, body { background: #fff; }
       .toolbar, .versions { display: none !important; }
@@ -263,6 +278,16 @@
       }
       a { color: inherit; text-decoration: none; }
       .job, section { break-inside: avoid; }
+      /* Tighten vertical rhythm so the sheet clears one Letter page with
+         headroom on the CSS @page path (what browsers actually print). */
+      section { margin-top: 0.42rem; }
+      .job { margin-bottom: 0.4rem; }
+      ul.bullets li { line-height: 1.34; margin-bottom: 0.09rem; }
+      .skills-row, .projects-row, .edu-row { line-height: 1.34; }
+      .projects-row + .projects-row { margin-top: 0.22rem; }
+      .job-desc { margin: 0.02rem 0 0.08rem; line-height: 1.25; }
+      .name { font-size: 22pt; }
+      .job-company { font-size: 11.5pt; }
     }
   </style>
 </head>
@@ -288,6 +313,7 @@
       <div>
         <h1 class="name"><span class="mark">Ben Siverly</span></h1>
         <p class="title" id="roleTitle">Senior Product Manager · AI-Native Products</p>
+        <p class="title-tag">Technical PM · recovering data scientist</p>
       </div>
       <div class="contact">
         San Francisco Bay Area<br>
@@ -303,36 +329,39 @@
 
       <div class="job">
         <div class="job-head">
-          <h3 class="job-company">AppFolio &middot; <span class="job-role">Product Manager, Rental Applications</span></h3>
+          <h3 class="job-company"><a href="https://www.appfolio.com" target="_blank" rel="noopener">AppFolio</a> &middot; <span class="job-role">Product Manager, Rental Applications</span></h3>
           <span class="job-meta">Jan 2023 – Present</span>
         </div>
+        <p class="job-desc">Property-management software for 20k+ residential operators.</p>
         <ul class="bullets" id="appfolioBullets">
           <li data-bullet="rebuild">Rebuilt the rental application end to end. Submission rates went from 44% to 70% with a zero change-failure rate, and properties on the new flow fill vacancies 3.4 days faster than offline workflows.</li>
           <li data-bullet="ai-review">Shipped follow-up for incomplete applications inside the authenticated app, not over email or text, so every interaction stays auditable for screening compliance. Customer satisfaction scores on rental applications rose 18% after it shipped; AI to trigger the follow-ups automatically is next.</li>
           <li data-bullet="zillow">Built an API for securely moving applicant PII between platforms to pre-fill rental applications. We launched with Zillow as the first use case and got to 70% customer adoption. Pushed to wind it down when the frictionless path buried property managers in unqualified applicants.</li>
           <li data-bullet="sole-pm">Sole PM for the application line: strategy and roadmap across the applicant and property-manager experiences, three stakeholder types, and two codebases that have to move together. The payer and the user are different people, and the product has to serve both.</li>
-          <li data-bullet="calls">Built a validated jobs-to-be-done map from 50–100 customer calls a year, synthesized with AI, that ties each product bet directly to filling vacancies — the outcome the business runs on.</li>
+          <li data-bullet="calls">Built a validated jobs-to-be-done map from 50–100 customer calls a year, synthesized with AI, that ties each product bet directly to filling vacancies.</li>
           <li data-bullet="sdd">Pioneering a spec-driven way of building with my team: we write down how the product should behave, pressure-test it before any code, and gate every release behind tests and evals.</li>
         </ul>
       </div>
 
       <div class="job">
         <div class="job-head">
-          <h3 class="job-company">Lively &middot; <span class="job-role">Data Scientist &rarr; Product Manager</span></h3>
+          <h3 class="job-company"><a href="https://livelyme.com" target="_blank" rel="noopener">Lively</a> &middot; <span class="job-role">Data Scientist &rarr; Product Manager</span></h3>
           <span class="job-meta">Nov 2019 – Dec 2022</span>
         </div>
+        <p class="job-desc">Modern HSA platform for tax-advantaged health spending.</p>
         <ul class="bullets">
           <li>Built the partner APIs and migration pipelines that moved $50M+ in HSA assets across financial institutions with zero data loss, cutting the work from two migration teams down to one.</li>
-          <li>Built the platform under it — money movement across banks and card networks, processor integrations, ledgers, and the data model partners built on — so they could offer compliant HSA accounts without building the infrastructure themselves.</li>
+          <li>Built the platform under it: money movement across banks and card networks, processor integrations, ledgers, and the data model partners built on. That let them offer compliant HSA accounts without building the infrastructure themselves.</li>
           <li>Stood up the company’s first data-science function and data-services platform; promoted to PM in 2021 as the work became the roadmap.</li>
         </ul>
       </div>
 
       <div class="job">
         <div class="job-head">
-          <h3 class="job-company">Oracle &middot; <span class="job-role">Data Scientist, Applied Research</span></h3>
+          <h3 class="job-company"><a href="https://www.oracle.com" target="_blank" rel="noopener">Oracle</a> &middot; <span class="job-role">Data Scientist, Applied Research</span></h3>
           <span class="job-meta">Sep 2017 – Sep 2019</span>
         </div>
+        <p class="job-desc">Enterprise software; consumer-data research in Data Cloud.</p>
         <ul class="bullets">
           <li>Rebuilt the model-validation methodology on a representative U.S. population sample, correcting a data skew that had been distorting how we measured model performance.</li>
           <li>Automated the ad-viewability data pipeline with Python and the JIRA API, replacing extraction and cleaning that had taken two analysts full-time.</li>
@@ -343,8 +372,8 @@
     <!-- SELECTED WORK -->
     <section>
       <h2 class="section-title">Selected Work</h2>
-      <p class="projects-row">Brava (<a href="https://bravamade.com">bravamade.com</a>) — recruiting profiles for women’s soccer athletes outside the major metros, built with my brother. Coach-verified stats, benchmark rankings, an AI-assisted production pipeline. Designed and shipped end to end: research, product, brand.</p>
-      <p class="projects-row">AbiertoClaw (<a href="https://github.com/be-ns/AbiertoClaw">github.com/be-ns/AbiertoClaw</a>) — open-source AI assistant over iMessage, built on parental leave to run our family calendar without touching the baby-leave budget. Swappable model sources, a complexity router, and a daily best-free-model picker keep it free by default.</p>
+      <p class="projects-row">Brava (<a href="https://bravamade.com">bravamade.com</a>). Recruiting profiles for women’s soccer athletes outside the major metros, built with my brother. Coach-verified stats, benchmark rankings, an AI-assisted production pipeline. Designed and shipped end to end: research, product, brand.</p>
+      <p class="projects-row">AbiertoClaw (<a href="https://github.com/be-ns/AbiertoClaw">github.com/be-ns/AbiertoClaw</a>). Open-source AI assistant over iMessage, built on parental leave to run our family calendar without touching the baby-leave budget. Swappable model sources, a complexity router, and a daily best-free-model picker keep it free by default.</p>
     </section>
 
     <!-- SKILLS -->
