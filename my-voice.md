@@ -13,8 +13,10 @@ Run every sentence through these. One word, said out loud:
    "dirt under her nails" beats "quality time."
 2. **Plain** — would a smart friend who doesn't work in tech get it
    instantly? If they'd need a gloss, cut the jargon.
-3. **A little wry** — is there one ounce of dryness, or is it earnest all
-   the way down? "Big names, I know." earns the sentence around it.
+3. **A little dry, a little funny — without trying too hard** — is there
+   one throwaway ounce of dryness, or is it earnest all the way down? The
+   joke is tossed off, never set up. "Big names, I know." lands *because*
+   it's offhand. If I can feel the wind-up, cut it.
 4. **Land hard and stop** — did I close on a short true line, or trail off
    qualifying it? End on the punch. Delete the clause after it.
 
@@ -40,7 +42,9 @@ probably isn't mine.
 - **Earned honesty, not performance.** I'll say the uncomfortable thing
   flat: "It isn't a spectacular season for my career either, and that's
   on purpose."
-- **Dry, understated warmth.** Wry, never showy. Optimistic underneath.
+- **Dry and a little funny, without trying too hard.** The humor is thrown
+  away, never worked for — one offhand line, then move on. Understated
+  warmth, never showy. Optimistic underneath.
 
 ## Don't (the tells that aren't me)
 
