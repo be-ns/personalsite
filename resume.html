@@ -194,13 +194,6 @@
       border-bottom: 1px solid var(--rule);
     }
 
-    .summary {
-      font-size: 10pt;
-      line-height: 1.48;
-      margin: 0;
-      color: #2a2a2a;
-    }
-
     /* ---- Experience ---- */
     .job { margin-bottom: 0.55rem; break-inside: avoid; }
     .job:last-child { margin-bottom: 0; }
@@ -304,12 +297,6 @@
       </div>
     </header>
 
-    <!-- SUMMARY -->
-    <section>
-      <h2 class="section-title">Summary</h2>
-      <p class="summary">Data scientist turned product manager. I own the rental application line at AppFolio — 8–9M applications a year across 20k+ property managers — with sole responsibility for strategy and execution. Outside work my brother and I build Brava, recruiting profiles for women’s soccer athletes. <span id="summaryTail">I stay close to the data and follow it where it leads, even when that means killing my own work.</span></p>
-    </section>
-
     <!-- EXPERIENCE -->
     <section>
       <h2 class="section-title">Experience</h2>
@@ -384,14 +371,12 @@
       const VERSIONS = {
         'ai-native': {
           title: 'Senior Product Manager · AI-Native Products',
-          summaryTail: 'I stay close to the data and follow it where it leads, even when that means killing my own work.',
           bulletOrder: ['rebuild', 'ai-review', 'zillow', 'sole-pm', 'calls', 'sdd'],
           pdf: 'Ben-Siverly-Resume-AI-Native.pdf',
           label: 'AI-Native (primary)'
         },
         'general': {
           title: 'Senior Product Manager',
-          summaryTail: 'Nine years from data science to product across fintech and vertical SaaS, customer-embedded and fluent in the data.',
           bulletOrder: ['rebuild', 'zillow', 'ai-review', 'sole-pm', 'calls', 'sdd'],
           pdf: 'Ben-Siverly-Resume.pdf',
           label: 'General'
@@ -399,7 +384,6 @@
       };
 
       const titleEl = document.getElementById('roleTitle');
-      const tailEl = document.getElementById('summaryTail');
       const listEl = document.getElementById('appfolioBullets');
       const dlEl = document.getElementById('dlLink');
       const selectEl = document.getElementById('roleSelect');
@@ -407,7 +391,6 @@
       function apply(version) {
         const v = VERSIONS[version] || VERSIONS['ai-native'];
         titleEl.textContent = v.title;
-        tailEl.textContent = v.summaryTail;
         v.bulletOrder.forEach(function (key) {
           const li = listEl.querySelector('[data-bullet="' + key + '"]');
           if (li) listEl.appendChild(li);
