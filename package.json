@@ -15,10 +15,12 @@
     "test": "node --test",
     "validate": "htmlhint \"*.html\"",
     "links": "lychee --no-progress --offline \"*.html\"",
-    "generate-og": "node generate-og-images.js"
+    "generate-og": "node generate-og-images.js",
+    "generate-resume-pdf": "node render-resume-pdf.js"
   },
   "devDependencies": {
     "htmlhint": "^1.1.4",
+    "puppeteer": "^25.1.0",
     "sharp": "^0.34.5"
   }
 }
