@@ -307,7 +307,7 @@
     <!-- SUMMARY -->
     <section>
       <h2 class="section-title">Summary</h2>
-      <p class="summary">Data scientist turned product manager. I own the rental application product line at AppFolio, 8–9M applications a year across 20k+ property managers, with sole responsibility for strategy and execution. Outside work my brother and I build Brava, recruiting profiles for women’s soccer athletes. <span id="summaryTail">I build AI features behind evals, and I’ve killed work that didn’t earn its keep.</span></p>
+      <p class="summary">Data scientist turned product manager. I own the rental application line at AppFolio — 8–9M applications a year across 20k+ property managers — with sole responsibility for strategy and execution. Outside work my brother and I build Brava, recruiting profiles for women’s soccer athletes. <span id="summaryTail">I stay close to the data and follow it where it leads, even when that means killing my own work.</span></p>
     </section>
 
     <!-- EXPERIENCE -->
@@ -320,11 +320,11 @@
           <span class="job-meta">Jan 2023 – Present</span>
         </div>
         <ul class="bullets" id="appfolioBullets">
-          <li data-bullet="sole-pm">Sole PM for the application line: strategy and roadmap across applicant and property-manager experiences, three stakeholder types, two codebases that have to move in concert. The payer and the user are different people; the product has to serve both.</li>
-          <li data-bullet="rebuild">Rebuilt the rental application end to end. Submission rates climbed meaningfully; properties on the new flow fill vacancies 3–5 days faster than offline workflows.</li>
-          <li data-bullet="ai-review">Shipped follow-up for incomplete applications inside the authenticated app, not email or text, keeping every interaction auditable for screening compliance; AI review to trigger those requests automatically is next.</li>
-          <li data-bullet="zillow">Led the Zillow prefill partnership to 70% customer enablement, then made the case to wind it down when the data showed removing friction lowered applicant quality. Some friction is good friction.</li>
-          <li data-bullet="calls">Run 50–100 direct customer calls a year and synthesize them with AI into a ranked pipeline of discovery endpoints.</li>
+          <li data-bullet="rebuild">Rebuilt the rental application end to end. Submission rates went from 44% to 70% with a zero change-failure rate, and properties on the new flow fill vacancies 3.4 days faster than offline workflows.</li>
+          <li data-bullet="ai-review">Shipped follow-up for incomplete applications inside the authenticated app, not over email or text, so every interaction stays auditable for screening compliance. AI to trigger those requests automatically is next.</li>
+          <li data-bullet="zillow">Took the Zillow prefill partnership to 70% customer enablement, then made the case to wind it down when the data showed removing friction was lowering applicant quality.</li>
+          <li data-bullet="sole-pm">Sole PM for the application line: strategy and roadmap across the applicant and property-manager experiences, three stakeholder types, and two codebases that have to move together. The payer and the user are different people, and the product has to serve both.</li>
+          <li data-bullet="calls">Turn 50–100 direct customer calls a year into a ranked, AI-synthesized pipeline of the problems worth solving next.</li>
           <li data-bullet="sdd">Pioneering Spec-Driven Development with my team: object models feed the specs, adversarial review hardens them before planning, and behavioral specs and evals gate each release.</li>
         </ul>
       </div>
@@ -347,16 +347,10 @@
           <span class="job-meta">Sep 2017 – Sep 2019</span>
         </div>
         <ul class="bullets">
-          <li>Built an automated model-evaluation system, hundreds of tests per model update, gating releases on statistical significance rather than gut feel.</li>
+          <li>Built the research team's automated model-evaluation framework, hundreds of tests per model update, validating new methods on statistical significance rather than gut feel and cutting model-build costs.</li>
           <li>Modeled large-scale consumer location and behavioral signals to predict purchasing.</li>
         </ul>
       </div>
-    </section>
-
-    <!-- SKILLS -->
-    <section>
-      <h2 class="section-title">Skills</h2>
-      <p class="skills-row">Agentic AI product · eval design · JTBD · OOUX · experimentation · SQL · Python · APIs &amp; data pipelines · LLM systems (RAG, tool use)</p>
     </section>
 
     <!-- SELECTED WORK -->
@@ -364,6 +358,12 @@
       <h2 class="section-title">Selected Work</h2>
       <p class="projects-row">Brava (<a href="https://bravamade.com">bravamade.com</a>) — recruiting profiles for women’s soccer athletes outside the major metros, built with my brother. Coach-verified stats, benchmark rankings, an AI-assisted production pipeline. Designed and shipped end to end: research, product, brand.</p>
       <p class="projects-row">AbiertoClaw (<a href="https://github.com/be-ns/AbiertoClaw">github.com/be-ns/AbiertoClaw</a>) — open-source AI assistant over iMessage, built on parental leave to run our family calendar without touching the baby-leave budget. Swappable model sources, a complexity router, and a daily best-free-model picker keep it free by default.</p>
+    </section>
+
+    <!-- SKILLS -->
+    <section>
+      <h2 class="section-title">Skills</h2>
+      <p class="skills-row">OOUX · experimentation · SQL · Python · APIs &amp; data pipelines · LLM systems (RAG, tool use)</p>
     </section>
 
     <!-- EDUCATION -->
@@ -384,15 +384,15 @@
       const VERSIONS = {
         'ai-native': {
           title: 'Senior Product Manager · AI-Native Products',
-          summaryTail: 'I build AI features behind evals, and I’ve killed work that didn’t earn its keep.',
-          bulletOrder: ['sole-pm', 'rebuild', 'ai-review', 'zillow', 'calls', 'sdd'],
+          summaryTail: 'I stay close to the data and follow it where it leads, even when that means killing my own work.',
+          bulletOrder: ['rebuild', 'ai-review', 'zillow', 'sole-pm', 'calls', 'sdd'],
           pdf: 'Ben-Siverly-Resume-AI-Native.pdf',
           label: 'AI-Native (primary)'
         },
         'general': {
           title: 'Senior Product Manager',
           summaryTail: 'Nine years from data science to product across fintech and vertical SaaS, customer-embedded and fluent in the data.',
-          bulletOrder: ['rebuild', 'sole-pm', 'ai-review', 'zillow', 'calls', 'sdd'],
+          bulletOrder: ['rebuild', 'zillow', 'ai-review', 'sole-pm', 'calls', 'sdd'],
           pdf: 'Ben-Siverly-Resume.pdf',
           label: 'General'
         }
