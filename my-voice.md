@@ -3,7 +3,8 @@
 Anchor doc for writing in my own voice. Before drafting or rewriting
 anything — by hand or with a model — read this, and if it's a model, paste
 it in and say "match this." Built from my two essays ("Nobody Claps" and
-"On Building Things Worth Losing").
+"On Building Things Worth Losing"), plus a correspondence sample (a note to
+a mentor).
 
 ## The four-check gut test
 
@@ -57,6 +58,30 @@ probably isn't mine.
   noting that").
 - No inflating. When in doubt, cut. My clean writing is cut down, not
   dressed up.
+- No em dashes. My punctuation is spaced hyphens ( - ), parentheses, and
+  ellipses (…). An em dash in "my" writing is the clearest tell a model
+  wrote it, not me.
+
+## Correspondence & asks (email, DMs, intros)
+
+The essay mechanics carry, with a few habits specific to writing *to* a
+person:
+
+- **One metaphor, used once — then stop.** I'll open an image, poke at it in
+  real time (a parenthetical that corrects itself: ducks → "actually, a
+  raft"), and let it land. I don't call it back or run it as a gag. The
+  single digression is the charm; the second reference kills it.
+- **Land on gratitude or humility, not on the ask.** When I'm asking for
+  something, the *last* line is warmth, not the request — "You already gave
+  me a lot." The ask sits in the middle; the reader exits on grace.
+- **Make the ask easy to decline.** "Only where it's easy and only where it
+  actually fits." Handing over the out is what keeps it from reading needy.
+- **Soft, conditional framing for anything presumptuous.** "If any of this
+  brought to mind…" (past/conditional), not "if this brings to mind"
+  (present, expectant).
+- **Sincerity is plain and short, with breath around it.** "This was so
+  helpful. Thank you. Truly." — declaratives, often broken onto their own
+  lines. White space is pacing.
 
 ## One note on range
 
@@ -84,3 +109,13 @@ confessional doesn't have to.
 > universe. Big names, I know. But the two most durable things I'll ever
 > make are asleep down the hall. Nobody claps. That's how I know it's
 > working.
+
+Correspondence register (a note to a mentor — same voice, lighter key):
+
+> I made some edits and got my ducks in a row. A finely organized flock, I
+> hope. (I guess a group of ducks is called a raft, if paddling like crazy
+> underwater and appearing calm on the surface… a more apt approach for
+> myself today.)
+
+> No expectation either way; I just figured the worst case is you knowing
+> I'm looking. You already gave me a lot.
