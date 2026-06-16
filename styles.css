@@ -517,8 +517,8 @@ section:last-of-type {
   border-radius: 1px;
 }
 
-/* Hero layout — text + portrait. Stacked on mobile (photo on top),
-   side-by-side on wider screens (photo to the right). */
+/* Hero layout — text + portrait. Photo sits centered on top at every
+   width (like mobile); it just grows a little on wider screens. */
 .hero-grid {
   display: flex;
   flex-direction: column;
@@ -544,15 +544,7 @@ section:last-of-type {
 }
 
 @media (min-width: 760px) {
-  .hero-grid {
-    flex-direction: row;
-    align-items: flex-start;
-    gap: var(--space-2xl);
-  }
-  .hero-text { flex: 1; min-width: 0; }
   .hero-photo {
-    order: 1;
-    align-self: flex-start;
     width: 240px;
   }
 }
