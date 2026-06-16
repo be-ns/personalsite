@@ -1146,17 +1146,31 @@
       }
 
       // ---- Start-up --------------------------------------------------------
-      function unsupported() {
-        return !(window.AudioContext || window.webkitAudioContext) ||
-          !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia;
+      // Returns an actionable message when start can't proceed, or '' when it
+      // can. The blocked-mic case matters most on iPhone: when Safari has
+      // Camera & Microphone set to Deny, it removes navigator.mediaDevices
+      // entirely (rather than rejecting), which can look like an unsupported
+      // browser. Guide the fix instead of telling people to switch browsers.
+      function startupBlock() {
+        if (!(window.AudioContext || window.webkitAudioContext)) {
+          return 'This browser doesn’t support Web Audio. Try a recent Chrome, Edge, or Safari.';
+        }
+        if (!window.isSecureContext) {
+          return 'The microphone only works over a secure (https) connection. Open this page at https://bensiverly.com/vocoder.html and try again.';
+        }
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          return 'Your browser is blocking the microphone. On iPhone: tap the “AA” button (or the camera icon) in the address bar and allow Microphone — or open Settings ▸ Safari ▸ Camera & Microphone and set it to Ask. Then reload this page.';
+        }
+        return '';
       }
 
       async function start() {
-        startError.textContent = '';
-        if (unsupported()) {
-          startError.textContent = 'This browser can’t reach the microphone or Web Audio. Try a recent Chrome, Edge, or Safari.';
+        const block = startupBlock();
+        if (block) {
+          startError.textContent = block;
           return;
         }
+        startError.textContent = '';
         startBtn.disabled = true;
         startBtn.textContent = 'Starting…';
         try {
