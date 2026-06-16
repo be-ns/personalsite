@@ -34,7 +34,9 @@ test('sitemap.xml lists every page and nothing else', () => {
   const listed = [...sitemap.matchAll(/<loc>https:\/\/bensiverly\.com\/([^<]*)<\/loc>/g)]
     .map((m) => m[1] || 'index.html')
     .sort();
-  assert.deepEqual(listed, htmlPages());
+  // 404.html is the error page - intentionally noindex and kept out of the sitemap.
+  const indexable = htmlPages().filter((p) => p !== '404.html');
+  assert.deepEqual(listed, indexable);
 });
 
 test('robots.txt points at the sitemap', () => {
