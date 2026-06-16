@@ -377,6 +377,16 @@ const pages = [
     outputPath: './images/og-memorial-preferences.png',
   },
   {
+    title: 'Choir',
+    subtitle: 'Sing into it and a synth choir harmonizes you',
+    eyebrow: 'Tool',
+    badge: 'New',
+    accentColor: tokens.cobalt,
+    washes: brandWashes,
+    seed: 3637,
+    outputPath: './images/og-vocoder.png',
+  },
+  {
     title: 'Ben Siverly',
     subtitle: 'AI Native Product Builder',
     eyebrow: 'Résumé',
