@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 — Ben Siverly</title>
+  <meta name="description" content="That page doesn't exist. Head back home.">
+  <meta name="robots" content="noindex">
+
+  <!-- Favicon & PWA -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#0047AB">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Zilla+Slab:wght@600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+
+  <style>
+    .nf {
+      min-height: 70vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      max-width: 40rem;
+      margin: 0 auto;
+      padding: 4rem 1.5rem;
+    }
+    .nf-code {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      letter-spacing: 0.06em;
+      color: var(--color-muted);
+      margin: 0 0 1.25rem;
+    }
+    .nf-line {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: clamp(1.9rem, 6vw, 3rem);
+      line-height: 1.08;
+      letter-spacing: -0.01em;
+      color: var(--color-text);
+      margin: 0 0 1rem;
+    }
+    .nf-line .mark {
+      background: linear-gradient(180deg, transparent 60%, var(--color-accent) 60%);
+      padding: 0 0.04em;
+    }
+    .nf-sub {
+      font-family: var(--font-body);
+      font-size: 1.1rem;
+      line-height: 1.55;
+      color: #3A3A3A;
+      margin: 0 0 2rem;
+      max-width: 32rem;
+    }
+    .nf-back {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      color: var(--color-cobalt);
+      text-decoration: none;
+      border-bottom: 2px solid var(--color-accent);
+      padding-bottom: 2px;
+      align-self: flex-start;
+    }
+    .nf-back:hover { background: var(--color-accent-subtle); }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a href="/" class="site-brand" aria-label="Return home">BS.</a>
+  </header>
+
+  <main id="main">
+    <section class="nf">
+      <p class="nf-code">Error 404</p>
+      <h1 class="nf-line">My initials are BS.<br>The work <span class="mark">isn&rsquo;t</span>.</h1>
+      <p class="nf-sub">This page is, though - it doesn&rsquo;t exist. Let&rsquo;s get you back to the work.</p>
+      <a class="nf-back" href="/">&larr; Back home</a>
+    </section>
+  </main>
+
+  <footer>
+    <p class="copyright">&copy; 2026 Ben Siverly</p>
+  </footer>
+</body>
+</html>

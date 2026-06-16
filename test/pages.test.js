@@ -14,7 +14,10 @@ for (const page of htmlPages()) {
     assert.match(html, /<meta name="viewport"/, 'has a viewport');
     assert.match(html, /<title>[^<]+<\/title>/, 'has a non-empty title');
     assert.match(html, /<meta name="description" content="[^"]+"/, 'has a meta description');
-    assert.match(html, /<link rel="canonical" href="https:\/\/bensiverly\.com\//, 'has a canonical URL');
+    // The 404 error page is noindex, so it intentionally carries no canonical URL.
+    if (page !== '404.html') {
+      assert.match(html, /<link rel="canonical" href="https:\/\/bensiverly\.com\//, 'has a canonical URL');
+    }
   });
 
   // The wizard-style tools render their h1 per screen from JS; everything else
