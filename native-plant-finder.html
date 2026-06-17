@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Native Plant Finder — Ben Siverly</title>
+  <title>Native Plant Finder · Ben Siverly</title>
   <meta name="description" content="Find native plants that thrive in your area with minimal effort. Support local pollinators, birds, and beneficial insects while reducing water and maintenance.">
 
   <!-- Open Graph -->
-  <meta property="og:title" content="Native Plant Finder — Ben Siverly">
+  <meta property="og:title" content="Native Plant Finder · Ben Siverly">
   <meta property="og:description" content="Find native plants that thrive in your area. Support local pollinators and reduce maintenance.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://bensiverly.com/native-plant-finder.html">
   <meta property="og:image" content="https://bensiverly.com/images/og-native-plant-finder.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Native Plant Finder — Ben Siverly">
+  <meta property="og:image:alt" content="Native Plant Finder · Ben Siverly">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Native Plant Finder — Ben Siverly">
+  <meta name="twitter:title" content="Native Plant Finder · Ben Siverly">
   <meta name="twitter:description" content="Find native plants that thrive in your area. Support local pollinators and reduce maintenance.">
   <meta name="twitter:image" content="https://bensiverly.com/images/og-native-plant-finder.png">
 
@@ -2454,11 +2454,11 @@
 
       // Detailed explanations for each category (shown in tooltips)
       const categoryExplanations = {
-        canopy_tree: "Large trees that form the uppermost layer of your garden. They provide shade, sequester carbon, and create the foundational structure that other plants grow around. Think of them as the 'ceiling' of your outdoor room.",
-        small_tree: "Mid-sized trees that add vertical interest without dominating the space. Perfect for smaller yards, they offer seasonal flowers, fall color, and food for birds while fitting under power lines.",
-        tall_shrub: "These workhorses create natural screens, windbreaks, and wildlife corridors. Plant them along property lines or group them to create private garden 'rooms' that shelter smaller plants.",
-        low_shrub: "The colorful middle layer that brings flowers and fragrance to eye and nose level. These are your showstoppers for seasonal interest and pollinator support.",
-        ground_cover: "The finishing touch that ties everything together. Ground covers suppress weeds, prevent erosion, and create a living mulch that keeps soil cool and moist for other plants."
+        canopy_tree: "The big trees at the top of the garden. They throw shade, store carbon, and give everything else something to grow around. The ceiling of the yard.",
+        small_tree: "Mid-sized trees that add height without taking over. Good for small yards. Seasonal flowers, fall color, food for birds, and they fit under power lines.",
+        tall_shrub: "These do the heavy lifting: screens, windbreaks, cover for wildlife. Plant them along a property line or group them to shelter smaller plants.",
+        low_shrub: "The middle layer, where the flowers and fragrance land at eye and nose level. Most of your seasonal color and pollinator food lives here.",
+        ground_cover: "The layer that ties it together. Ground covers crowd out weeds, hold soil in place, and keep the ground cool and moist for everything above them."
       };
 
       // Icons SVG paths
@@ -3567,7 +3567,7 @@
         const locationName = state.zipResolved && state.zipResolved.displayName ? state.zipResolved.displayName : state.zipCode;
         const shareData = {
           title: 'Native Plants for ' + locationName,
-          text: 'Check out these ' + state.displayedPlants.length + ' California native plants perfect for ' + getSunLabel(state.sunLevel).toLowerCase() + ' in ' + regionName + '!',
+          text: state.displayedPlants.length + ' California native plants for ' + getSunLabel(state.sunLevel).toLowerCase() + ' in ' + regionName + '.',
           url: window.location.href
         };
 

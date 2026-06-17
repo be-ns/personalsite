@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Life Strategy Matrix — Ben Siverly</title>
+  <title>Life Strategy Matrix · Ben Siverly</title>
   <meta name="description" content="Score 8 life areas on importance and satisfaction. See where to invest your energy. Print a one-page plan.">
 
   <!-- Open Graph -->
-  <meta property="og:title" content="Life Strategy Matrix — Ben Siverly">
+  <meta property="og:title" content="Life Strategy Matrix · Ben Siverly">
   <meta property="og:description" content="Score 8 life areas on importance and satisfaction. See where to invest your energy.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://bensiverly.com/life-strategy.html">
   <meta property="og:image" content="https://bensiverly.com/images/og-life-strategy.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Life Strategy Matrix — Ben Siverly">
+  <meta property="og:image:alt" content="Life Strategy Matrix · Ben Siverly">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Life Strategy Matrix — Ben Siverly">
+  <meta name="twitter:title" content="Life Strategy Matrix · Ben Siverly">
   <meta name="twitter:description" content="Score 8 life areas on importance and satisfaction. See where to invest your energy.">
   <meta name="twitter:image" content="https://bensiverly.com/images/og-life-strategy.png">
 
@@ -1518,10 +1518,10 @@
             '<div class="intro-example">' +
               '<p class="intro-example-label">Example result</p>' +
               '<div class="matrix-container" id="intro-example-matrix"></div>' +
-              '<p class="intro-example-caption">Your eight areas get plotted by importance and satisfaction. Whatever lands in the Invest corner — important to you but not going well — is where to focus next.</p>' +
+              '<p class="intro-example-caption">Your eight areas get plotted by importance and satisfaction. Whatever lands in the Invest corner (important to you but not going well) is where to focus next.</p>' +
             '</div>' +
             '<ol class="intro-steps">' +
-              '<li><span class="intro-step-num">1</span><span>Rate eight areas — Health, Work, Family, and five more — first on importance, then on satisfaction. Each from 1 to 6.</span></li>' +
+              '<li><span class="intro-step-num">1</span><span>Rate eight areas (Health, Work, Family, and five more), first on importance, then on satisfaction. Each from 1 to 6.</span></li>' +
               '<li><span class="intro-step-num">2</span><span>See your answers plotted on a matrix that sorts each area into Invest, Maintain, Rebalance, or Release.</span></li>' +
               '<li><span class="intro-step-num">3</span><span>Get one clear priority and a one-page plan you can print and keep.</span></li>' +
             '</ol>' +
@@ -1543,7 +1543,7 @@
         const isImportance = state.step === 'importance';
         const category = state.scores[state.categoryIndex];
         const currentValue = isImportance ? category.importance : category.satisfaction;
-        const displayValue = currentValue !== null ? currentValue : '—';
+        const displayValue = currentValue !== null ? currentValue : '–';
         const isUnset = currentValue === null;
 
         const phase = isImportance ? 'Importance' : 'Satisfaction';
@@ -1982,8 +1982,8 @@
           return '' +
             '<tr>' +
               '<td>' + s.label + '</td>' +
-              '<td>' + (s.importance || '—') + '/6</td>' +
-              '<td>' + (s.satisfaction || '—') + '/6</td>' +
+              '<td>' + (s.importance || '–') + '/6</td>' +
+              '<td>' + (s.satisfaction || '–') + '/6</td>' +
               '<td class="recommendation-cell recommendation-' + q + '">' + quadrants[q].label + '</td>' +
             '</tr>';
         }).join('');
