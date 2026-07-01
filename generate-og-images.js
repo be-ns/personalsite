@@ -404,6 +404,15 @@ const pages = [
     outputPath: './images/og-building-things-worth-losing.png',
   },
   {
+    title: 'Serotiny',
+    subtitle: 'A father, a daughter, a dying phone full of everything',
+    eyebrow: 'Short Story · Draft',
+    accentColor: tokens.teal,
+    washes: literaryWashes,
+    seed: 1920,
+    outputPath: './images/og-serotiny.png',
+  },
+  {
     title: 'Nobody Claps',
     subtitle: 'The unglamorous work nobody claps for',
     eyebrow: 'Essay',
