@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Writings — Ben Siverly</title>
-  <meta name="description" content="Poetry and prose by Ben Siverly. Words about life, memory, and paying attention.">
+  <meta name="description" content="Poetry, prose, and short stories by Ben Siverly. Words about life, memory, and paying attention.">
 
   <!-- Open Graph -->
   <meta property="og:title" content="Writings — Ben Siverly">
-  <meta property="og:description" content="Poetry and prose. Words about life, memory, and paying attention.">
+  <meta property="og:description" content="Poetry, prose, and short stories. Words about life, memory, and paying attention.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://bensiverly.com/writings.html">
   <meta property="og:image" content="https://bensiverly.com/images/og-writings.png">
@@ -19,7 +19,7 @@
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Writings — Ben Siverly">
-  <meta name="twitter:description" content="Poetry and prose. Words about life, memory, and paying attention.">
+  <meta name="twitter:description" content="Poetry, prose, and short stories. Words about life, memory, and paying attention.">
   <meta name="twitter:image" content="https://bensiverly.com/images/og-writings.png">
 
   <!-- Canonical -->
@@ -42,7 +42,7 @@
     "@type": "CollectionPage",
     "name": "Writings — Ben Siverly",
     "url": "https://bensiverly.com/writings.html",
-    "description": "Poetry and prose by Ben Siverly. Words about life, memory, and paying attention.",
+    "description": "Poetry, prose, and short stories by Ben Siverly. Words about life, memory, and paying attention.",
     "author": { "@type": "Person", "name": "Ben Siverly", "url": "https://bensiverly.com/" }
   }
   </script>
@@ -489,8 +489,20 @@
 
     @media (max-width: 479px) {
       .mode-btn {
-        padding: 0.5rem 1rem;
+        padding: 0.5rem 0.875rem;
         font-size: 0.6875rem;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .mode-toggle {
+        gap: 2px;
+      }
+
+      .mode-btn {
+        padding: 0.5rem 0.5rem;
+        font-size: 0.625rem;
+        letter-spacing: 0.02em;
       }
     }
 
@@ -538,7 +550,7 @@
 <main id="main">
     <header class="page-header">
       <h1 class="page-title">Writings</h1>
-      <p class="page-intro">Words I've put together about life, memory, and paying attention. Some poetry, some prose.</p>
+      <p class="page-intro">Words I've put together about life, memory, and paying attention. Some poetry, some prose, some longer stories.</p>
 
       <div class="mode-toggle" role="tablist" aria-label="Writing type">
         <button class="mode-btn is-active" role="tab" aria-selected="true" aria-controls="poetry-panel" id="poetry-tab" data-mode="poetry">
@@ -546,6 +558,9 @@
         </button>
         <button class="mode-btn" role="tab" aria-selected="false" aria-controls="prose-panel" id="prose-tab" data-mode="prose">
           Prose
+        </button>
+        <button class="mode-btn" role="tab" aria-selected="false" aria-controls="stories-panel" id="stories-tab" data-mode="stories">
+          Short Stories
         </button>
       </div>
     </header>
@@ -617,18 +632,6 @@ High-performer. High-potential.</p>
 
         <article class="prose-item">
           <header class="prose-item-header">
-            <h2 class="prose-title"><a href="serotiny.html">Serotiny</a></h2>
-            <span class="prose-date">Draft &mdash; July 2026</span>
-          </header>
-          <p class="prose-excerpt">A father loads a dying phone with everything he knows, for a daughter who is leaving, and who doesn't want it.</p>
-          <a class="prose-read-more" href="serotiny.html">
-            <span>Read</span>
-            <span aria-hidden="true">&rarr;</span>
-          </a>
-        </article>
-
-        <article class="prose-item">
-          <header class="prose-item-header">
             <h2 class="prose-title"><a href="nobody-claps.html">Nobody Claps</a></h2>
             <span class="prose-date">June 2026</span>
           </header>
@@ -661,6 +664,25 @@ High-performer. High-potential.</p>
 
       </div>
     </section>
+
+    <!-- Short Stories Section -->
+    <section class="writings-section story-section" id="stories-panel" role="tabpanel" aria-labelledby="stories-tab" hidden>
+      <div class="prose-list">
+
+        <article class="prose-item">
+          <header class="prose-item-header">
+            <h2 class="prose-title"><a href="serotiny.html">Serotiny</a></h2>
+            <span class="prose-date">Draft &mdash; July 2026</span>
+          </header>
+          <p class="prose-excerpt">A father loads a dying phone with everything he knows, for a daughter who is leaving, and who doesn't want it.</p>
+          <a class="prose-read-more" href="serotiny.html">
+            <span>Read</span>
+            <span aria-hidden="true">&rarr;</span>
+          </a>
+        </article>
+
+      </div>
+    </section>
   </main>
 
   <footer>
@@ -669,51 +691,36 @@ High-performer. High-potential.</p>
 
   <script>
     (function() {
-      const poetryTab = document.getElementById('poetry-tab');
-      const proseTab = document.getElementById('prose-tab');
-      const poetryPanel = document.getElementById('poetry-panel');
-      const prosePanel = document.getElementById('prose-panel');
+      const tabs = Array.from(document.querySelectorAll('.mode-btn'));
+      const panels = Array.from(document.querySelectorAll('.writings-section'));
       const body = document.body;
 
       function switchMode(mode) {
-        if (mode === 'poetry') {
-          poetryTab.classList.add('is-active');
-          poetryTab.setAttribute('aria-selected', 'true');
-          proseTab.classList.remove('is-active');
-          proseTab.setAttribute('aria-selected', 'false');
+        tabs.forEach(function(tab) {
+          const isActive = tab.dataset.mode === mode;
+          tab.classList.toggle('is-active', isActive);
+          tab.setAttribute('aria-selected', String(isActive));
+        });
 
-          poetryPanel.classList.add('is-visible');
-          poetryPanel.removeAttribute('hidden');
-          prosePanel.classList.remove('is-visible');
-          prosePanel.setAttribute('hidden', '');
+        panels.forEach(function(panel) {
+          const isVisible = panel.id === mode + '-panel';
+          panel.classList.toggle('is-visible', isVisible);
+          if (isVisible) {
+            panel.removeAttribute('hidden');
+          } else {
+            panel.setAttribute('hidden', '');
+          }
+        });
 
-          body.classList.add('poetry-mode');
-        } else {
-          proseTab.classList.add('is-active');
-          proseTab.setAttribute('aria-selected', 'true');
-          poetryTab.classList.remove('is-active');
-          poetryTab.setAttribute('aria-selected', 'false');
-
-          prosePanel.classList.add('is-visible');
-          prosePanel.removeAttribute('hidden');
-          poetryPanel.classList.remove('is-visible');
-          poetryPanel.setAttribute('hidden', '');
-
-          body.classList.remove('poetry-mode');
-        }
+        body.classList.toggle('poetry-mode', mode === 'poetry');
       }
 
-      poetryTab.addEventListener('click', function() {
-        switchMode('poetry');
-      });
-
-      proseTab.addEventListener('click', function() {
-        switchMode('prose');
-      });
-
-      // Keyboard navigation
-      const tabs = [poetryTab, proseTab];
       tabs.forEach(function(tab, index) {
+        tab.addEventListener('click', function() {
+          switchMode(tab.dataset.mode);
+        });
+
+        // Keyboard navigation
         tab.addEventListener('keydown', function(e) {
           let nextIndex = null;
           if (e.key === 'ArrowRight') {
@@ -734,7 +741,7 @@ High-performer. High-potential.</p>
       });
 
       // Initialize with poetry mode
-      body.classList.add('poetry-mode');
+      switchMode('poetry');
     })();
   </script>
 </body>
