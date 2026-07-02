@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "htmlhint": "^1.1.4",
-    "puppeteer": "^25.1.0",
-    "sharp": "^0.34.5"
+    "puppeteer": "^25.3.0",
+    "sharp": "^0.35.3"
   }
 }
