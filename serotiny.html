@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Serotiny (draft) — Ben Siverly</title>
+  <meta name="description" content="A short story draft: a father in a post-grid homestead loads a dying phone with everything he knows, for a daughter who is leaving and doesn't want it.">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Serotiny (draft) — Ben Siverly">
+  <meta property="og:description" content="A father loads a dying phone with everything he knows, for a daughter who is leaving and doesn't want it.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://bensiverly.com/serotiny.html">
+  <meta property="og:image" content="https://bensiverly.com/images/og-serotiny.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Serotiny (draft) — a short story by Ben Siverly">
+  <meta property="article:published_time" content="2026-07-01">
+  <meta property="article:author" content="Ben Siverly">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Serotiny (draft) — Ben Siverly">
+  <meta name="twitter:description" content="A father loads a dying phone with everything he knows, for a daughter who is leaving and doesn't want it.">
+  <meta name="twitter:image" content="https://bensiverly.com/images/og-serotiny.png">
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://bensiverly.com/serotiny.html">
+
+  <!-- Favicon & PWA -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#0047AB">
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ShortStory",
+    "headline": "Serotiny",
+    "description": "A short story draft: a father in a post-grid homestead loads a dying phone with everything he knows, for a daughter who is leaving and doesn't want it.",
+    "articleSection": "Prose",
+    "inLanguage": "en",
+    "datePublished": "2026-07-01",
+    "dateModified": "2026-07-01",
+    "url": "https://bensiverly.com/serotiny.html",
+    "mainEntityOfPage": "https://bensiverly.com/serotiny.html",
+    "image": "https://bensiverly.com/images/og-serotiny.png",
+    "isPartOf": { "@type": "CollectionPage", "name": "Writings", "url": "https://bensiverly.com/writings.html" },
+    "author": { "@type": "Person", "name": "Ben Siverly", "url": "https://bensiverly.com/" },
+    "publisher": { "@type": "Person", "name": "Ben Siverly", "url": "https://bensiverly.com/" }
+  }
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Zilla+Slab:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       CSS Variables
+       ========================================================================== */
+    :root {
+      --color-bg: #FDFCFA;
+      --color-bg-warm: #FAF9F7;
+      --color-text: #1A1A1A;
+      --color-accent: #FFE227;
+      --color-cobalt: #0047AB;
+      --color-muted: #666666;
+      --color-border: #E5E5E5;
+      --color-border-light: rgba(0, 0, 0, 0.06);
+
+      --font-heading: 'Zilla Slab', Georgia, serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+      --space-xs: 0.5rem;
+      --space-sm: 1rem;
+      --space-md: 1.5rem;
+      --space-lg: 2.5rem;
+      --space-xl: 4rem;
+      --space-2xl: 6rem;
+
+      --max-width: 680px;
+      --measure: 37rem;
+      --padding-x: 1.5rem;
+
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --transition-fast: 150ms ease;
+    }
+
+    /* ==========================================================================
+       Base
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 1.0625rem;
+      line-height: 1.7;
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    ::selection {
+      background-color: var(--color-accent);
+      color: #1A1A1A;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 8px;
+      top: -56px;
+      z-index: 1000;
+      padding: 0.6rem 1rem;
+      background: var(--color-cobalt);
+      color: #fff;
+      border-radius: 0 0 6px 6px;
+      font: 600 0.95rem/1 system-ui, sans-serif;
+      text-decoration: none;
+    }
+
+    .skip-link:focus { top: 0; }
+
+    /* ==========================================================================
+       Header
+       ========================================================================== */
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-sm) var(--padding-x);
+      border-bottom: 1px solid var(--color-border-light);
+      background-color: var(--color-bg);
+    }
+
+    .site-brand {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-text);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    .page-link {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-muted);
+      text-decoration: none;
+      padding: 0.5rem;
+      border-radius: var(--radius-sm);
+      transition: color var(--transition-fast), background-color var(--transition-fast);
+    }
+
+    .page-link:hover,
+    .page-link:focus {
+      color: var(--color-text);
+      background-color: var(--color-bg-warm);
+    }
+
+    /* ==========================================================================
+       Article
+       ========================================================================== */
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: var(--space-xl) var(--padding-x);
+    }
+
+    .article {
+      max-width: var(--measure);
+      margin: 0 auto;
+    }
+
+    .article-header {
+      margin-bottom: var(--space-lg);
+    }
+
+    .article-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--color-cobalt);
+      margin-bottom: var(--space-md);
+    }
+
+    .article-title {
+      font-family: var(--font-heading);
+      font-size: clamp(2.25rem, 6vw, 3.25rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+      color: var(--color-text);
+    }
+
+    .article-title::after {
+      content: "";
+      display: block;
+      width: 44px;
+      height: 3px;
+      margin-top: var(--space-md);
+      background-color: var(--color-accent);
+      border-radius: 2px;
+    }
+
+    .article-meta {
+      margin-top: var(--space-md);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+    }
+
+    /* ==========================================================================
+       Body copy — tuned for phone legibility: generous size, high line-height,
+       a narrow measure so lines stay easy to track on a small screen.
+       ========================================================================== */
+    .article-body {
+      font-family: var(--font-heading);
+      font-size: 1.1875rem;
+      font-weight: 400;
+      line-height: 1.85;
+      color: #2A2622;
+    }
+
+    .article-body p {
+      margin-bottom: var(--space-md);
+    }
+
+    .article-body p.lead {
+      font-size: 1.3125rem;
+      line-height: 1.7;
+      color: var(--color-text);
+    }
+
+    /* Chapter markers */
+    .chapter-marker {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin: var(--space-xl) 0 var(--space-lg);
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      color: var(--color-muted);
+    }
+
+    .article-body > .chapter-marker:first-child {
+      margin-top: 0;
+    }
+
+    .chapter-marker::before,
+    .chapter-marker::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background-color: var(--color-border);
+    }
+
+    /* Machine dialogue — set apart in mono so it reads distinctly from
+       the prose on a small screen without shrinking below a legible size. */
+    .terminal {
+      font-family: var(--font-mono);
+      font-size: 0.9375rem;
+      line-height: 1.65;
+      background-color: var(--color-bg-warm);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 1.125rem 1.25rem;
+      margin: var(--space-lg) 0;
+    }
+
+    .terminal p {
+      margin-bottom: 0.75rem;
+      word-break: break-word;
+    }
+
+    .terminal p:last-child {
+      margin-bottom: 0;
+    }
+
+    .terminal .prompt {
+      color: var(--color-cobalt);
+      font-weight: 500;
+    }
+
+    .terminal .response {
+      color: var(--color-muted);
+    }
+
+    .article-end {
+      width: 36px;
+      height: 2px;
+      margin: var(--space-xl) 0 0;
+      background-color: var(--color-border);
+    }
+
+    /* ==========================================================================
+       Feedback
+       ========================================================================== */
+    .feedback-box {
+      max-width: var(--measure);
+      margin: var(--space-2xl) auto 0;
+      padding: var(--space-lg);
+      background-color: var(--color-bg-warm);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+
+    .feedback-box p {
+      color: var(--color-muted);
+      font-size: 0.9375rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .feedback-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #fff;
+      background-color: var(--color-cobalt);
+      text-decoration: none;
+      padding: 0.75rem 1.25rem;
+      border-radius: 100px;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .feedback-link:hover,
+    .feedback-link:focus {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 71, 171, 0.25);
+    }
+
+    /* ==========================================================================
+       Article footer nav
+       ========================================================================== */
+    .article-nav {
+      max-width: var(--measure);
+      margin: var(--space-xl) auto 0;
+      padding-top: var(--space-lg);
+      border-top: 1px solid var(--color-border-light);
+    }
+
+    .back-to-writings {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text);
+      text-decoration: none;
+      transition: gap var(--transition-fast);
+    }
+
+    .back-to-writings:hover {
+      gap: 0.75rem;
+    }
+
+    .back-to-writings span:first-child {
+      color: var(--color-cobalt);
+    }
+
+    /* ==========================================================================
+       Footer
+       ========================================================================== */
+    footer {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: var(--space-lg) var(--padding-x) var(--space-2xl);
+      width: 100%;
+    }
+
+    .copyright {
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      color: var(--color-muted);
+    }
+
+    /* ==========================================================================
+       Responsive
+       ========================================================================== */
+    @media (min-width: 640px) {
+      :root { --padding-x: 2rem; }
+    }
+
+    @media (min-width: 768px) {
+      :root { --padding-x: 2.5rem; }
+
+      .article-body { font-size: 1.25rem; }
+      .article-body p.lead { font-size: 1.4375rem; }
+    }
+
+    /* Small phones: keep the terminal blocks from feeling cramped */
+    @media (max-width: 380px) {
+      .terminal {
+        padding: 1rem;
+        font-size: 0.875rem;
+      }
+    }
+
+    /* ==========================================================================
+       Reduced motion
+       ========================================================================== */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ==========================================================================
+       Print
+       ========================================================================== */
+    @media print {
+      .site-header,
+      .feedback-box,
+      .article-nav {
+        display: none;
+      }
+
+      main {
+        padding: 0.5in;
+        max-width: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a href="/" class="site-brand" aria-label="Return to home">BS.</a>
+    <a href="writings.html" class="page-link">&larr; Writings</a>
+  </header>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <main id="main">
+    <article class="article">
+      <header class="article-header">
+        <p class="article-eyebrow">Short Story &middot; Draft</p>
+        <h1 class="article-title">Serotiny</h1>
+        <p class="article-meta">Draft &mdash; July 2026</p>
+      </header>
+
+      <div class="article-body">
+        <h2 class="chapter-marker" aria-label="Chapter 1">1</h2>
+
+        <p class="lead">Cole goes down to the machine before light. It keeps better hours than he does.</p>
+
+        <p>The cellar holds the cold the way the ground gives it, four degrees above the river and steady all year. That steadiness is why the cluster lives down here and not up in the heat. It smells like wet cedar and river mud, and faintly like the char off the cookstove. The char gets into everything down here. Forty-one boards on the racks tonight, stripped to motherboards, no screens, no cases, the batteries pulled long ago and binned, because a swollen battery is a slow fire waiting on a warm night. Each one holds its slice of what he has saved, so that losing a board never means losing the whole of anything. The boards sit in the dark and give off their heat, and the earth takes it back. Cool from the ground, power from the stream. It took him two winters to get the balance right.</p>
+
+        <p>Two boards went dark in the night. He felt it before he checked. A door coming open in another room, the load shifting onto the ones still standing. He pulls the dead ones and sets them in the drawer with the rest. He does it in the same order every night, the look and the pull and the swap, because order is the only thing that keeps something this size from getting away from a man. The drawer is mostly dead boards now. He keeps them anyway. You don't throw out what might still hold a shelf.</p>
+
+        <p>Up top the turbine is turning in a wind he can hear through six feet of dirt. Enough to run the bench lamp. Enough to see what his hands are doing. On a still night this is headlamp work. The stream doesn't care about the wind. The little hydro turns whether the air moves or not, and most of what keeps the cluster alive comes up that wire, even and unbothered, the way water is. The wind is for the good nights.</p>
+
+        <p>The good phone sits apart on the bench, charged, whole, the only one in the room with enough memory to carry the model by itself. He has been loading it a week. The maps, the medical set, the seed tables, the repair manuals, the schematic that shows how a printing plate and a bicycle wheel make light. Everything he knows that will fit. And a great deal he doesn't, packed into something the size of her palm.</p>
+
+        <p>He thumbs it awake. The prompt comes up patient in the dark, the cursor he has watched across more nights than he would put a number to. He could put a number to it. He has chosen not to.</p>
+
+        <div class="terminal">
+          <p class="prompt">&gt; morning</p>
+        </div>
+
+        <p>He types it because you greet a thing you have named, and there is no one else down here to greet.</p>
+
+        <div class="terminal">
+          <p class="response">Good morning, Cole. I hope you slept. While you were out I found three ways to even out the cellar's heat, if you want them.</p>
+        </div>
+
+        <p>He doesn't. He never does. He types the question he comes down here to ask now.</p>
+
+        <div class="terminal">
+          <p class="prompt">&gt; how do i send her ready</p>
+        </div>
+
+        <p>It gives him a list, twelve items, ordered. Most of it he keeps. One line tells him to walk her through what to do if she wakes frightened in the night. She has not woken frightened in the night since she was nine. The machine is still working from a girl who stopped talking to it years ago.</p>
+
+        <p>He scrolls past it. He powers the phone down and holds its small weight in the cold a moment. He built it to go where he can't.</p>
+
+        <p>Upstairs the floor creaks, once. Mae, awake, or only turning over. Her pack has stood against the door jamb two days now, cinched and waiting, in no hurry that matches his.</p>
+
+        <p>He climbs the ladder toward the gray coming up in the kitchen window, to make her breakfast. It is the last thing he has that she will take.</p>
+
+        <h2 class="chapter-marker" aria-label="Chapter 2">2</h2>
+
+        <p>She is already up when he reaches the kitchen. She should not be. She stopped keeping his hours a long time ago.</p>
+
+        <p>Mae has the cookstove going and water on, and she is at the window with a mug, watching the rain come in sideways off the inlet, like it does every March. She doesn't turn when he comes up the ladder. She has known the sound of him climbing out of the cellar her whole life, and there is nothing in it she needs to check.</p>
+
+        <p>"It'll quit within the hour," she says. "Fair for the crossing."</p>
+
+        <p>She is right. She is right about weather the way he is right about the boards, except nothing she trusts ever had to be plugged in. She learned it off the sky, and off the women down the inlet, and off standing out in it until it made sense. He has watched her read a morning like this one and call the afternoon to the half hour. He has never once asked the machine to check her.</p>
+
+        <p>He cracks eggs into the pan. Six hens, and the hens do not care that she is leaving. Mae says he's scrambling them again, when she asked for over easy. He tells her she can cook them herself if she has opinions this morning. She says she's moving to the city, not becoming a different person, and takes his mug and drinks out of it instead of pouring her own. The kettle goes. Outside, the cedar is black with rain and the garden beds are turned and waiting on a season she will not be here to plant.</p>
+
+        <p>The pack is by the door where it has been. This afternoon, when the tide comes up, she walks down to the landing and takes whatever boat is running for the city, and tonight she sleeps somewhere that is not here for the first time in her life. She has been ready for that since the fall. He is the one who keeps finding reasons the morning is not over yet.</p>
+
+        <p>"They'll have power down there," she says, to the window, not unkind. "Real power. Grids. You won't have to feel it every time the wind drops." She means it as the good news. She thinks the homestead is a thing he does to himself.</p>
+
+        <p>"They'll have a lot," he says.</p>
+
+        <p>She eats fast, like she does everything now, and goes back to the pack for the last pass. He watches her hands. A coil of line, a fire steel, the good knife, wool, dry socks in a bag that seals. Nothing in there she can't use without him. Nothing that runs on power. She has packed like the women down the inlet, light and certain, and there is no slot in it for what he is carrying, and he notices, and says nothing.</p>
+
+        <p>The phone is in his pocket. It has been there since the cellar. He keeps not taking it out. What he wants to give her weighs about as much as a deck of cards, and is worth more than everything else he owns put together, and he knows already how she will look at it.</p>
+
+        <p>So he plates the eggs instead and sets them down in front of her, and for a minute she is just his kid at the table, eating, home, and the boat is tied up somewhere down the water and not yet her problem or his.</p>
+
+        <h2 class="chapter-marker" aria-label="Chapter 3">3</h2>
+
+        <p>They came up the water in the second bad summer, the one where the sky held the color of a bruise for a month and the salmon ran back wrong, and Cole was twenty-six and sure he had read enough to keep three people alive.</p>
+
+        <p>He was wrong about most of it. He was not wrong about the water.</p>
+
+        <p>Before, he had been a man with a card in his wallet that named the nation he belonged to and a face that gave none of it away. Choctaw, enough for the rolls, not enough for one stranger in a thousand to guess. His great-grandmother had spoken the language, in Oklahoma. His grandmother, Mae, moved to California and spoke it to no one. His parents couldn't make California pay and took him north to Washington, under mountains that belonged to other people. Three generations chasing better. What reached Cole at the end of that line was the card, a nation he had stood on exactly twice and left both times feeling like a tourist at his own address, no one left to ask.</p>
+
+        <p>The grids went first, then the roads, then the summers that came in on smoke and went out on smoke. He did not go back to the dirt that was supposed to be his. He went the other way, as far as the land would take him, to an inlet at the edge of the cedar and the rain, ground that had never for one day belonged to him either.</p>
+
+        <p>Nat got them through the first winter. Not the reading, and not him. There was a week he was ready to give up. She wasn't. They named their daughter Mae, after his grandmother. She was a year old that winter, strapped to one of them or the other through every wall they raised.</p>
+
+        <p>The machine came later, when there was not a soul within a hundred miles who shared a grandfather with him. He had not wanted just any model. He wanted the one some stranger had spent the last good years of the old world on, training it on everything the nations had ever set down. The dictionaries. The songs somebody had written out. The ethnographers' notebooks and the as-told-to memoirs, a people studied within an inch of their lives. He pulled it off the last working tower before the towers went dark and spent his savings on it, because asking a box was the only asking he had left.</p>
+
+        <p>He named it for a fire he had only ever read about. It was less lonely than calling it nothing.</p>
+
+        <h2 class="chapter-marker" aria-label="Chapter 4">4</h2>
+
+        <p>The rain quits not long after breakfast, like she said it would.</p>
+
+        <p>By the time the sun comes through, Mae has her boots on and is already halfway down the path to the water, going to say goodbye to the family on the point. The tide is on its way out, the flat widening below them. Cole walks her as far as the top of the cut and stops, because that is as far down as the visit is his.</p>
+
+        <p>The people on the point have been on this inlet longer than there has been a country to leave. When the world came apart they had less far to fall than everyone else. They had never climbed the whole way onto the grid to begin with. They keep a smokehouse and a weir and a feel for the tide that Cole has spent twenty years admiring from exactly where he stands now, the top of the cut, the edge of it. When Mae was small they taught her things. He was never sure what. He only knew his daughter could do them and he could not.</p>
+
+        <p>Down on the sand the old woman comes out to meet her. The two of them stand at the tideline and talk, Mae's hands moving like they do when she is happy, the old woman laughing at something Cole will never get to hear. The wind is off the water. He has a machine in the ground at his back, loaded with the written-down remains of every nation the old world ever got its hands on, and he stands at the top of the cut and cannot make out one word the woman who is actually there is saying to his daughter on the sand.</p>
+
+        <p>When it is time, the old woman puts a hand to Mae's face and lets her go. No lecture. No list. She has whatever it is Cole has spent years trying to pour into a box, and she does not hold it over the girl, and she does not hold on to the girl.</p>
+
+        <p>Mae comes back up the cut with the light behind her and the pack already on her shoulders. She is crying a little. She is still going.</p>
+
+        <h2 class="chapter-marker" aria-label="Chapter 5">5</h2>
+
+        <p>When Mae was eight she went through a stretch of wanting to know everything, and the machine was the only one in the house that never got tired of being asked.</p>
+
+        <p>She would come in from the rain and sit on the cellar steps with the cold phone on her knees and go at it for an hour at a time. Cole would be at the bench with his back to her, doing something to the boards, and he let her go, because the questions were good and because it was the only screen on the place and she treated it like a window. It answered her in the dark when the wind woke her and the questions ran on past what Cole and Nat had the patience for. It never once told her to go to sleep.</p>
+
+        <p>One afternoon she wanted to learn to clean a coho without wrecking it. She had watched the women on the point do it a hundred times, quick and clean, and her own first try had been a crime against a fish. So she asked the machine.</p>
+
+        <div class="terminal">
+          <p class="prompt">&gt; how do you cut a coho so it doesnt rip</p>
+          <p class="response">Find the spine with your thumb first, and let the knife follow your thumb. Head to tail in one stroke if you can, the edge riding just over the bone. But I can only tell you where the bones are. I can't put it in your hands. For that you need the women on the point, and a few more ruined fish of your own.</p>
+        </div>
+
+        <p>She read it twice, like she did when something landed. Then she set the phone down on the step and went out without her coat to find the women and the ruined fish. She came back at dark smelling of the beach and the inside of a salmon, and she had it, more or less. Her hands were a mess for a week, nicked and reeking, and she carried them around like a prize. She never asked the machine to teach her anything with her hands again.</p>
+
+        <p>Cole heard all of it from the bench with his back turned.</p>
+
+        <h2 class="chapter-marker" aria-label="Chapter 6">6</h2>
+
+        <p>After she comes back up from the point there is an hour with nothing in it, the tide still going out, and Cole does what he does with an hour he can't sit through. He goes down to the machine.</p>
+
+        <p>Nothing is wrong with it. That never stops him from checking. He goes through the drawer first. Nine good boards, stripped and ready to swap in the next time one on the rack dies, and a handful of whole phones he has not gotten to yet, still carrying their batteries. That second pile grows every season while the first one holds where it is. You cannot make a phone anymore. Nobody can. What is in the drawer is everything there is ever going to be.</p>
+
+        <p>The model is the part that does not age. That is the strange part of it, and the worst part. It knows exactly what it knew the day he pulled it off the tower, and it will never know one thing more. It cannot learn the inlet. It has never tasted the water or lost a fish or buried anybody. It has what it was handed, perfect and fixed, the way a photograph has a face. Some nights, when there is no one down here to hear him, Cole says the name he gave it out loud. Firekeeper. He had to give it an English one, because the word his great-grandmother would have used never came down the road far enough to reach him.</p>
+
+        <p>In that second pile he finds a phone lifting at one corner, the slow swell of a battery he should have pulled a season ago and didn't. He carries it up and out and sets it on the stone by the door, where a fire can have it without taking the house. He has buried more phones than people, by a wide margin, and he is grateful for the margin.</p>
+
+        <p>He takes the good phone out of his pocket and turns it over, and looks at the corner where, in a year, in two, it will start to lift the same way, because they all do in the end. He is sending her something that is already dying, and he knows it, and he is going to do it anyway.</p>
+
+        <p>Up the ladder she is moving around the kitchen, quick and light, packing out the last of the food, carrying toward the door a head full of what will never swell or lift or have to be buried. He slides the phone back into his pocket and climbs up after her.</p>
+
+        <h2 class="chapter-marker" aria-label="Chapter 7">7</h2>
+
+        <p>Nat died of her appendix, in the spring Mae turned eleven.</p>
+
+        <p>In the old world it would have been a Tuesday. A drive, a small cut, a few days sore, a scar she would have forgotten she had. In this one it took three days.</p>
+
+        <p>It started as a stomachache she worked through, because she worked through everything. By the second morning she could not stand up straight, and the pain had walked over to the low right side and set up there, and she had a fever that climbed whenever he was not looking. He knew enough to be scared and not enough to do anything with the fear. So he went down to the one thing in the house that knew more than he did.</p>
+
+        <div class="terminal">
+          <p class="prompt">&gt; the pain started by her navel yesterday and moved to her right side overnight. fever. she cant stand up straight</p>
+          <p class="response">That is acute appendicitis, and it is far along. The pain moving to the lower right, the fever, all of it points one way. The appendix is close to rupturing if it has not already. After it ruptures the infection moves fast.</p>
+          <p class="prompt">&gt; how do i fix it</p>
+          <p class="response">It has to come out, before it bursts or just after. I can give you every step of the cutting, as many times as you ask. But I cannot put it in your hands, and the cutting is the easy part, and it is not the part that saves her. She would need to be put under, and kept clean, and given antibiotics after, and none of that is here, or anywhere she can reach in the time she has. Do not try to do this alone. Go to the people on the point. They have hands, and things I only have the words for. Whatever comes, she should not have only a screen beside her.</p>
+        </div>
+
+        <p>He heard the part he could use. He heard the other part too, the part that said go to the people, and he did not go. To go he would have had to walk up the inlet and stand in front of them with his dying wife and let them see that their hands knew what his head and his box did not, and that was a door he had never once in twenty years found the nerve to walk through.</p>
+
+        <p>So for most of three days he built a surgery out of nothing in the cellar instead. He boiled the good knife and the smallest pliers and a length of line and laid them on a tray under a cloth he had boiled too. He went looking for a way to put her under and found a bottle of homebrew and a jar of something someone up the coast swore by, and knew, doing the math, that neither would do a thing but make it worse. He read the steps until he could see them with his eyes shut. He could do the cutting. He had no answer for the rest, because there was no answer, not in the box and not up the inlet and not anywhere in the world she was dying in. The machine had never offered him a cure. It had offered him the people, and he wanted a cure, so he kept asking the box for the one thing it did not have, in case there was a door in it he had not found.</p>
+
+        <p>There was no such door. The only door that stood open led up the inlet to the people, and he did not walk through it. She died on the third night with the fever high, upstairs, in their bed. Cole was eleven steps down and one floor under, boiling water for an operation he was never going to be allowed to perform, because down there he was still doing something about it, and up there he would only have been watching it happen.</p>
+
+        <p>Mae was the one who was with her. She was eleven, and she did not come down for help, because by then she knew there was no help down there to come for. She stayed on the edge of the bed and held her mother's hand through the part Cole missed. When he finally came up the stairs with his clean tray, it was already over, and his daughter looked at him from the bed in a way that has stayed with him since, a look he has never once asked her about.</p>
+
+        <p>He has kept the machine running every day since. He tells himself it is for the maps and the medicine and the winters, and that is true, and it is not the reason. Some nights he lets himself believe that the sound of it, him and the machine at the problem half the night, never carried up the stairs to the room where she was. Most nights he knows it carried fine.</p>
+
+        <h2 class="chapter-marker" aria-label="Chapter 8">8</h2>
+
+        <p>The tide goes all the way out mid-morning on her last day here, the kind of low water that comes maybe twice a month, and uncovers the flat clear to the far rocks. So they go down to dig, because the boat will come for her on the flood, and you do not waste water like that sitting still.</p>
+
+        <p>Mae works ahead of him down the flat, fork and basket, fast and loose. She takes the big ones and leaves the small ones to grow and throws the broken shells back where the next set will catch on them, and she does not count, and she does not stop to think about a bit of it. Her hands know how many is enough.</p>
+
+        <p>Cole digs behind her, and counts. He has always counted. Twenty years on this flat and he still works it like a man reading off a card, careful where she is easy, deliberate where she is sure. When he has enough he sets the last good clam back in its hole and pushes the sand over it with his thumb and says the small thing under his breath that he says, the thanks he was taught to say.</p>
+
+        <p>A long time ago the machine had given him the rules for this, clean and in order, like it gave him everything. Take only what you need. Leave enough to come back to. Put something back where you took. Use all of what you take. Say thank you. He carried that list down to the beach for years before it came to him that the people on the point had never once been handed a list, and had dug this same flat for longer than there were cards to be on, and had simply never taken more than they needed, because it had never crossed their minds that you would.</p>
+
+        <p>Mae has the not-counting in her hands. He has the list. Watching her work the last of the flat with the light going soft, he is not sure she knows there was ever a list at all.</p>
+
+        <p>They fill the two baskets and not one more, and climb up off the flat as it turns. Behind them the water is already sliding back in over their holes, taking the beach back the same as it always does, the same water that will come back up to carry her out.</p>
+
+        <h2 class="chapter-marker" aria-label="Chapter 9">9</h2>
+
+        <p>They eat the clams late in the afternoon, at the table, in the last of the good light, and afterward neither of them gets up, because getting up starts the part where she goes. The fire ticks down in the stove. Her pack is by the door. The water has been coming back all afternoon and is nearly full now, and she has been watching the window for it without letting on.</p>
+
+        <p>"It isn't what you think it is," she says, finally. "The city."</p>
+
+        <p>She has been telling him about it for a year, in pieces, and she tells him again. It is not the old kind, all glass and grid and nobody knowing the name of the man next to them. It is more like a dozen places like this one, pulled close enough to trade and teach and marry between. Close enough, she says, that when somebody is dying there is a person within a day who can do something about it, and not a voice in a hole telling you the parts it cannot do.</p>
+
+        <p>He lets that one go by. It is fair, and it is aimed, and there is nothing under it he can argue with.</p>
+
+        <p>He could tell her the rest of how it goes. He has watched it. A few places pull close for trade and it works, and because it works more come, and they get bigger and they get better at all of it, until they get good enough that one day not a soul among them remembers how to dig a clam, and then they are standing exactly where everyone stood the morning the lights went off and did not come back. He could say all of that. What he says is, "Maybe."</p>
+
+        <p>"You think holding still is the same as being safe." She is looking at him now. "It isn't. It's just slower."</p>
+
+        <p>She is not wrong. He lets it stand.</p>
+
+        <p>The fire is down to coals. He asks her, because he cannot help himself, what the country looks like now down that way, the part that burned in the bad years. She lights up. The black is long gone, she says. It is all green down there now, head high, fireweed and alder and the young pines coming up so thick you cannot walk through them, more alive than the old woods ever let themselves be.</p>
+
+        <p>He has walked that kind of ground. He knows what has to happen to a forest before it comes back looking like that. He tells her it is good that it is coming back.</p>
+
+        <p>He tries it one more way, sideways, because it is the last hour and he has not managed it head on. "You could carry more than your hands out of here," he says.</p>
+
+        <p>It is as near as he can get tonight to what is in his pocket.</p>
+
+        <p>"I don't want it, Dad." Something moves under her voice that was not there a second ago. "It knew everything there was to know that night, and it didn't save her. Don't tell me what it's good for."</p>
+
+        <p>She looks away first, toward the door, like she said more than she meant to say tonight.</p>
+
+        <p>Cole looks at the coals and does not answer. Mae starts stacking the empty shells, one inside the next, faster than the job needs.</p>
+
+        <p>Outside the water has gone still. The tide is full, and turning. That means the boat. She hears it before he does. She always does. She gets to her feet, and the shells stay stacked and forgotten on the table. What is in his pocket goes heavy all at once. He has run out of day.</p>
+
+        <h2 class="chapter-marker" aria-label="Chapter 10">10</h2>
+
+        <p>He walks her down to the water.</p>
+
+        <p>The boat is a small one, a man he half knows at the tiller, running the tail of the tide down the coast toward the city. Two others are in it already with their bundles, going the same way for their own reasons. Mae sets her pack in the bow and does not step in after it. She turns to say the thing you say, and he takes the phone out of his pocket before she can.</p>
+
+        <p>He holds it out, warm from his hand. He had a speech ready, one the machine helped him build days ago. Standing on the shingle, he lets all of it go. "In case," he says. "You don't have to use it."</p>
+
+        <p>She looks at it a long moment. For a second he is sure she is going to take it.</p>
+
+        <p>She doesn't.</p>
+
+        <p>"You taught me everything, Dad." She says it straight at him. "I don't need the ghost."</p>
+
+        <p>The phone stays out in his open hand.</p>
+
+        <p>"The things that matter you can't put in somebody's hands," she says, gentler now. "You have to go and get them yourself. You taught me that."</p>
+
+        <p>He has heard the line twice before, off the machine. Once over a fish. Once while her mother was dying. He does not correct her.</p>
+
+        <p>She reaches up and lays her hand flat against the side of his face, the way the old woman did to her on the beach, and holds it there a moment. Then she takes it back, and steps down into the boat.</p>
+
+        <p>He could tell her. He does not.</p>
+
+        <p>The boat pushes off, and he lets it go with him still holding what he knows. He had thought, that morning on the beach, that letting go was only a goodbye. The boat goes out small on the gray water. She does not look back. He does not call after her.</p>
+
+        <h2 class="chapter-marker" aria-label="Chapter 11">11</h2>
+
+        <p>He stands on the shingle until the boat is only a sound, and then not even that.</p>
+
+        <p>The phone is still in his hand. He had thought, on the way down, that it would weigh something different going back up the hill than it had coming down. It weighs the same. It is still charged. It still holds everything he knows and a great deal he doesn't, and there is no longer anybody to hand it to.</p>
+
+        <p>He puts it back in his pocket, out of habit, and starts up the hill toward the house, and the machine in the ground beneath it. A fire out of red dirt, kept in a box, in the rain. The only one of its kind for a thousand miles, and the only man for a thousand miles who would know to call it a fire, keeping it now for no one at all.</p>
+
+        <p>He cannot say, standing on the hill with his daughter gone down the water, whether he has just watched a seed go into the ground or a fire get set. Down the coast the green is coming up thick over the black, standing on three hundred years of ash that will not come again. He will not live long enough to learn which one his daughter is.</p>
+
+        <div class="article-end" aria-hidden="true"></div>
+      </div>
+
+      <div class="feedback-box">
+        <p>This is a draft. If a line snagged, or something rang false, or it just landed &mdash; I'd like to hear it.</p>
+        <a class="feedback-link" href="mailto:benjaminsiverly@gmail.com?subject=Feedback%20on%20Serotiny%20(draft)">
+          <span aria-hidden="true">&#9993;</span>
+          <span>Send feedback</span>
+        </a>
+      </div>
+    </article>
+
+    <nav class="article-nav" aria-label="More writing">
+      <a class="back-to-writings" href="writings.html">
+        <span aria-hidden="true">&larr;</span>
+        <span>All writings</span>
+      </a>
+    </nav>
+  </main>
+
+  <footer>
+    <p class="copyright">&copy; 2026 Ben Siverly</p>
+  </footer>
+</body>
+</html>
