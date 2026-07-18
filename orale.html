@@ -530,6 +530,7 @@
       return {
         v: 1,
         name: 'Ben',
+        voice: 'high',
         session: 0,
         srs: {},
         streak: { count: 0, last: null, tokens: 2, month: monthKey() },
@@ -646,7 +647,12 @@
     function lookupEn(es) { return DICT[es] || DICT[es.toLowerCase()] || ''; }
 
     // =========================================================================
-    // Speech: es-MX preferred, voices load async, cancel before speak (iOS)
+    // Speech. Two engines:
+    //  1. Neural: Piper (open-source VITS) Mexican Spanish voices, run fully
+    //     in-browser via WASM (vits-web, MIT). The model downloads once from
+    //     Hugging Face and is cached in the browser's private file system.
+    //  2. System speechSynthesis as the fallback: while the model downloads,
+    //     when offline, or if anything in the neural path fails.
     // =========================================================================
     let voice = null;
     function pickVoice() {
@@ -662,7 +668,7 @@
       pickVoice();
       window.speechSynthesis.addEventListener('voiceschanged', pickVoice);
     }
-    function speak(text, rate, onend) {
+    function speakSystem(text, rate, onend) {
       if (!('speechSynthesis' in window)) return;
       try {
         window.speechSynthesis.cancel();
@@ -674,6 +680,120 @@
         window.speechSynthesis.speak(u);
       } catch (e) { /* speech is a bonus, never a blocker */ }
     }
+
+    const VITS_WEB_URL = 'https://cdn.jsdelivr.net/npm/@diffusionstudio/vits-web@1.0.3/+esm';
+    const NEURAL_VOICES = { high: 'es_MX-claude-high', medium: 'es_MX-ald-medium' };
+    const neural = {
+      status: 'idle',   // idle | loading | ready | failed
+      mod: null,
+      readyVoice: null,
+      pct: 0,
+      wavCache: new Map(),
+      q: Promise.resolve(),
+      token: 0,
+      audio: null
+    };
+    function neuralVoiceId() { return NEURAL_VOICES[state.voice] || null; }
+    function neuralAudio() {
+      if (!neural.audio) neural.audio = new Audio();
+      return neural.audio;
+    }
+    function voiceStatusText() {
+      if (!neuralVoiceId()) return L('System voice', 'Voz del sistema');
+      switch (neural.status) {
+        case 'ready': return 'Voz mexicana lista ✓';
+        case 'loading': return L('Downloading the Mexican voice (one time)', 'Descargando la voz mexicana (una vez)') + (neural.pct ? '… ' + neural.pct + '%' : '…');
+        case 'failed': return L('Neural voice unavailable; using the system voice', 'Voz neuronal no disponible; usando la del sistema');
+        default: return L('Neural voice warming up', 'Voz neuronal en camino');
+      }
+    }
+    function updateVoiceUi() {
+      document.querySelectorAll('.voice-status').forEach((el) => { el.textContent = voiceStatusText(); });
+    }
+    async function initNeural() {
+      const vid = neuralVoiceId();
+      if (!vid || neural.status === 'loading') return;
+      if (neural.status === 'ready' && neural.readyVoice === vid) return;
+      neural.status = 'loading';
+      neural.pct = 0;
+      updateVoiceUi();
+      try {
+        if (!neural.mod) neural.mod = await import(VITS_WEB_URL);
+        const have = await neural.mod.stored();
+        if (have.indexOf(vid) === -1) {
+          await neural.mod.download(vid, (p) => {
+            if (p && p.total > 1000000) {
+              neural.pct = Math.min(99, Math.round((p.loaded / p.total) * 100));
+              updateVoiceUi();
+            }
+          });
+        }
+        neural.readyVoice = vid;
+        neural.status = 'ready';
+      } catch (e) {
+        neural.status = 'failed';
+      }
+      updateVoiceUi();
+    }
+    function neuralReady() {
+      const vid = neuralVoiceId();
+      return !!vid && neural.status === 'ready' && neural.readyVoice === vid;
+    }
+    // Serialize inference: one synthesis at a time, results cached as blob URLs.
+    function neuralPredict(text) {
+      const vid = neuralVoiceId();
+      const key = vid + '|' + text;
+      if (neural.wavCache.has(key)) return Promise.resolve(neural.wavCache.get(key));
+      const job = neural.q.then(async () => {
+        if (neural.wavCache.has(key)) return neural.wavCache.get(key);
+        const wav = await neural.mod.predict({ text, voiceId: vid });
+        const url = URL.createObjectURL(wav);
+        neural.wavCache.set(key, url);
+        return url;
+      });
+      neural.q = job.then(() => {}, () => {});
+      return job;
+    }
+    async function speakNeural(text, rate, onend) {
+      const t = ++neural.token;
+      const a = neuralAudio();
+      try { a.pause(); } catch (e) { /* nothing playing */ }
+      try {
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        const url = await neuralPredict(text);
+        if (t !== neural.token) return;
+        a.onended = onend ? () => onend() : null;
+        a.src = url;
+        // Piper speaks at a natural pace; nudge rather than drag. preservesPitch
+        // (default on) keeps the slowdown from sounding warped.
+        a.playbackRate = (rate || 0.85) >= 1 ? 1.1 : 0.95;
+        try { a.preservesPitch = true; } catch (e) { /* older engines */ }
+        await a.play();
+      } catch (e) {
+        if (t === neural.token) speakSystem(text, rate, onend);
+      }
+    }
+    function speak(text, rate, onend) {
+      if (neuralReady()) { speakNeural(text, rate, onend); return; }
+      if (neuralVoiceId() && (neural.status === 'idle' || (neural.status === 'ready' && !neuralReady()))) initNeural();
+      speakSystem(text, rate, onend);
+    }
+    function prewarm(text) {
+      if (neuralReady()) neuralPredict(text).catch(() => {});
+    }
+    // iOS unlocks media playback on the first real tap; prime the shared
+    // element with a silent wav so later async .play() calls are allowed.
+    const SILENT_WAV = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=';
+    document.addEventListener('pointerdown', function unlockAudio() {
+      document.removeEventListener('pointerdown', unlockAudio, true);
+      try {
+        const a = neuralAudio();
+        a.muted = true;
+        a.src = SILENT_WAV;
+        const p = a.play();
+        if (p && p.then) p.then(() => { a.pause(); a.muted = false; }, () => { a.muted = false; });
+      } catch (e) { /* fallback engine needs no unlock */ }
+    }, true);
 
     // =========================================================================
     // Celebration copy — the chilango list, gated by tier. First appearance of
@@ -1022,8 +1142,10 @@
             ? 'Small core, six frames, real sentences today. The app is the drill; the street is the game.'
             : (state.lastNote ? esc(state.lastNote) : L('Due reviews load first, then new material.', 'Primero los repasos, luego lo nuevo.'))) + '</p>' +
           '<div class="statrow">' + streakBits.join('') + '</div>' +
+          (neuralVoiceId() && !neuralReady() ? '<p class="sub voice-status" style="margin-top:0.6rem"></p>' : '') +
         '</div>' +
         '<div class="metro">' + mapHtml + '</div>';
+      updateVoiceUi();
       setActions('<button type="button" class="btn primary" data-action="start-session">' + (state.session === 0 ? L('Start', 'Empezar') + ' · Unidad 0+1' : L('Start session', 'Empezar sesión')) + '</button>');
     }
 
@@ -1159,6 +1281,9 @@
       app.innerHTML = html;
       setActions(actions);
       window.scrollTo(0, 0);
+      // Synthesize the sentence in the background so the answer feedback (and
+      // any replay tap) plays instantly.
+      if (ex.es) prewarm(ex.es);
     }
 
     // ----- Assembly interactions -----
@@ -1406,7 +1531,15 @@
       sheetInner.innerHTML =
         '<h2>Ajustes</h2>' +
         '<p class="sub">' + L('Everything lives in this browser. No account, no server, nobody watching.', 'Todo vive en este navegador. Sin cuenta, sin servidor.') + '</p>' +
-        '<p><strong>' + L('Voice', 'Voz') + ':</strong> ' + (voice ? esc(voice.name + ' (' + voice.lang + ')') : L('system default (no es-MX voice found yet)', 'la del sistema')) + '</p>' +
+        '<h2 style="margin-top:1rem">Voz</h2>' +
+        '<p class="sub voice-status"></p>' +
+        '<p class="sub">' + L('The neural voices are Piper (open source), Mexican Spanish, synthesized on this device. One download, then they work offline.', 'Las voces neuronales son Piper (código abierto), español mexicano, sintetizado en este aparato. Se descargan una vez y luego funcionan sin conexión.') + '</p>' +
+        [['high', 'Neuronal alta · es_MX (~100 MB, ' + L('best', 'la mejor') + ')'],
+         ['medium', 'Neuronal media · es_MX (~60 MB, ' + L('faster', 'más rápida') + ')'],
+         ['system', L('System voice (robotic, but instant)', 'Voz del sistema (robótica, pero instantánea)')]]
+          .map((opt) => '<button type="button" class="btn" data-action="set-voice" data-voice="' + opt[0] + '"' +
+            (state.voice === opt[0] ? ' style="border-color:var(--pink); box-shadow: 0 3px 0 var(--pink)"' : '') + '>' +
+            (state.voice === opt[0] ? '✓ ' : '') + opt[1] + '</button>').join('') +
         '<h2 style="margin-top:1rem">Respaldo</h2>' +
         '<p class="sub">' + L('Copy this to move progress to another device, or paste a backup and load it.', 'Copia esto para llevar tu progreso a otro aparato, o pega un respaldo y cárgalo.') + '</p>' +
         '<textarea id="backup-box">' + esc(JSON.stringify(state)) + '</textarea>' +
@@ -1416,6 +1549,7 @@
         '<button type="button" class="btn primary" data-action="close-sheet">' + L('Close', 'Cerrar') + '</button>';
       sheet.classList.add('show');
       sheetBack.classList.add('show');
+      updateVoiceUi();
     }
     function openDef(es, en) {
       sheetInner.innerHTML =
@@ -1506,6 +1640,19 @@
         case 'bonus': startBonus(); break;
         case 'check-bonus': checkBonus(); break;
         case 'open-settings': openSettings(); break;
+        case 'set-voice': {
+          state.voice = t.getAttribute('data-voice');
+          save();
+          neural.token += 1;
+          if (neural.audio) { try { neural.audio.pause(); } catch (e) { /* idle */ } }
+          if (neuralVoiceId() && !neuralReady()) {
+            if (neural.status !== 'loading') neural.status = 'idle';
+            initNeural();
+          }
+          openSettings();
+          speak(pick(['órale', 'qué onda', 'sale']));
+          break;
+        }
         case 'close-sheet': closeSheet(); break;
         case 'copy-backup': {
           const box = document.getElementById('backup-box');
@@ -1551,11 +1698,13 @@
         state: () => state,
         current: () => current,
         session: () => sess,
-        bonus: () => bonus
+        bonus: () => bonus,
+        neural: () => ({ status: neural.status, readyVoice: neural.readyVoice, pct: neural.pct, cached: neural.wavCache.size, audioSrc: neural.audio ? neural.audio.currentSrc : null, playbackRate: neural.audio ? neural.audio.playbackRate : null })
       };
     }
 
     renderHome();
+    initNeural();
   })();
   </script>
 </body>
