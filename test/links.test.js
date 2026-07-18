@@ -34,8 +34,8 @@ test('sitemap.xml lists every page and nothing else', () => {
   const listed = [...sitemap.matchAll(/<loc>https:\/\/bensiverly\.com\/([^<]*)<\/loc>/g)]
     .map((m) => m[1] || 'index.html')
     .sort();
-  // 404.html is the error page - intentionally noindex and kept out of the sitemap.
-  const indexable = htmlPages().filter((p) => p !== '404.html');
+  // Pages marked noindex (the 404 error page, private tools) stay out of the sitemap.
+  const indexable = htmlPages().filter((p) => !/<meta name="robots" content="noindex/.test(readPage(p)));
   assert.deepEqual(listed, indexable);
 });
 

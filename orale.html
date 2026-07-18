@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Órale · CDMX Spanish Trainer · Ben Siverly</title>
+  <meta name="description" content="A private, personal trainer for Mexico City Spanish. Frames first, production over recognition, spaced repetition, and a real-world mission every session.">
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://bensiverly.com/orale.html">
+
+  <!-- Favicon & PWA -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#F04E98">
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Órale",
+    "url": "https://bensiverly.com/orale.html",
+    "description": "A personal CDMX Spanish trainer: helper frames, spaced repetition, and real-world missions.",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Any",
+    "browserRequirements": "Requires JavaScript",
+    "isAccessibleForFree": true,
+    "author": { "@type": "Person", "name": "Ben Siverly", "url": "https://bensiverly.com/" }
+  }
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --pink: #F04E98;
+      --blue: #0057A8;
+      --olive: #7A9A01;
+      --paper: #FAF7F0;
+      --ink: #1A1A1A;
+      --red: #DA291C;
+      --line: rgba(26, 26, 26, 0.14);
+      --display: 'Archivo Black', 'Arial Black', sans-serif;
+      --body: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--body);
+      font-size: 1rem;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    button { font-family: inherit; color: inherit; cursor: pointer; }
+    .skip-link { position: absolute; left: 8px; top: -56px; z-index: 1000; padding: 0.6rem 1rem; background: var(--blue); color: #fff; border-radius: 0 0 6px 6px; font: 600 0.95rem/1 var(--body); text-decoration: none; }
+    .skip-link:focus { top: 0; }
+    ::selection { background: var(--pink); color: #fff; }
+
+    .wrap { max-width: 480px; margin: 0 auto; padding: 0 1rem 8.5rem; }
+
+    header.site {
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: 480px; margin: 0 auto; padding: 0.9rem 1rem 0.4rem;
+    }
+    header.site h1 {
+      font-family: var(--display); font-size: 1.35rem; letter-spacing: 0.02em;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .logo-dot {
+      width: 28px; height: 28px; border-radius: 7px; background: var(--pink);
+      color: #fff; display: inline-grid; place-items: center;
+      font-family: var(--display); font-size: 1rem; flex: none;
+    }
+    .hbtns { display: flex; gap: 0.4rem; }
+    .hbtn {
+      min-width: 44px; min-height: 44px; border: 2px solid var(--ink); border-radius: 10px;
+      background: #fff; font-size: 1.05rem; font-weight: 700;
+    }
+
+    /* Progress bar */
+    .pbar { height: 8px; border-radius: 4px; background: rgba(26,26,26,0.1); overflow: hidden; margin: 0.6rem 0 1.1rem; }
+    .pfill { height: 100%; width: 0; background: var(--pink); border-radius: 4px; transition: width 150ms ease; }
+
+    /* Type */
+    .kicker { font-weight: 700; font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(26,26,26,0.55); }
+    .big-es { font-family: var(--display); font-size: 1.9rem; line-height: 1.2; margin: 0.35rem 0 0.2rem; }
+    .prompt-en { font-size: 1.25rem; font-weight: 600; margin: 0.3rem 0 1rem; }
+    .sub { color: rgba(26,26,26,0.62); font-size: 0.95rem; }
+
+    /* Spanish tap-to-hear affordance */
+    .esb {
+      background: none; border: none; padding: 0; font: inherit; text-align: left;
+      color: inherit; border-bottom: 2px dotted rgba(240,78,152,0.55);
+      min-height: 30px;
+    }
+    .esb:active { color: var(--pink); }
+
+    /* Tiles */
+    .slots {
+      display: flex; flex-wrap: wrap; gap: 0.5rem; align-content: flex-start;
+      min-height: 64px; padding: 0.5rem 0.15rem; margin-bottom: 1rem;
+      border-bottom: 3px solid var(--line);
+    }
+    .bank { display: flex; flex-wrap: wrap; gap: 0.55rem; }
+    .tile {
+      border: 2px solid var(--ink); border-radius: 10px; background: #fff;
+      padding: 0.6rem 0.9rem; min-height: 44px; font-size: 1.05rem; font-weight: 600;
+      box-shadow: 0 3px 0 var(--ink); transition: transform 150ms ease, opacity 150ms ease;
+    }
+    .tile:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
+    .tile.ghost { opacity: 0.25; pointer-events: none; box-shadow: none; }
+    .tile.inslot { background: #fff; border-color: var(--blue); box-shadow: 0 3px 0 var(--blue); }
+
+    /* Option list (cloze / MC / contrast) */
+    .opts { display: grid; gap: 0.6rem; }
+    .opt {
+      border: 2px solid var(--ink); border-radius: 12px; background: #fff;
+      padding: 0.85rem 1rem; min-height: 52px; font-size: 1.08rem; font-weight: 600;
+      text-align: left; box-shadow: 0 3px 0 var(--ink);
+    }
+    .opt:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
+
+    /* Cards */
+    .card {
+      background: #fff; border: 2px solid var(--ink); border-radius: 16px;
+      padding: 1.1rem 1.1rem 1.2rem; box-shadow: 0 4px 0 var(--ink);
+    }
+    .chip {
+      display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: #fff; background: var(--olive);
+      border-radius: 999px; padding: 0.22rem 0.6rem; margin-left: 0.4rem; vertical-align: middle;
+    }
+    .chip.pink { background: var(--pink); }
+
+    /* Action bar */
+    .abar {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+      background: var(--paper); border-top: 1px solid var(--line);
+      padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
+    }
+    .abar-inner { max-width: 480px; margin: 0 auto; display: grid; gap: 0.5rem; }
+    .btn {
+      border: 2px solid var(--ink); border-radius: 12px; min-height: 52px;
+      font-size: 1.05rem; font-weight: 700; background: #fff;
+      box-shadow: 0 3px 0 var(--ink); transition: transform 150ms ease;
+    }
+    .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
+    .btn.primary { background: var(--pink); color: #fff; font-family: var(--display); letter-spacing: 0.02em; font-weight: 400; }
+    .btn.quiet { background: transparent; border-color: rgba(26,26,26,0.35); box-shadow: none; font-weight: 600; }
+    .btn[disabled] { opacity: 0.35; pointer-events: none; }
+    .btn-row { display: flex; gap: 0.5rem; }
+    .btn-row .btn { flex: 1; }
+
+    /* Feedback banner */
+    .fback {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+      padding: 1rem 1rem calc(0.9rem + env(safe-area-inset-bottom));
+      color: #fff; transform: translateY(100%); transition: transform 150ms ease;
+    }
+    .fback.show { transform: translateY(0); }
+    .fback.good { background: var(--olive); }
+    .fback.bad { background: var(--red); }
+    .fback-inner { max-width: 480px; margin: 0 auto; }
+    .fback-msg { font-weight: 700; font-size: 1.05rem; margin-bottom: 0.65rem; }
+    .fback .btn { width: 100%; background: #fff; color: var(--ink); border-color: var(--ink); }
+    .fback .esb { border-bottom-color: rgba(255,255,255,0.7); color: #fff; }
+
+    /* Metro map */
+    .metro { display: grid; gap: 1.05rem; margin: 1.2rem 0 1.4rem; }
+    .mline { display: flex; align-items: center; gap: 0.7rem; border: none; background: none; text-align: left; padding: 0.15rem 0; min-height: 52px; }
+    .mline.locked { opacity: 0.38; }
+    .mbadge {
+      width: 38px; height: 38px; border-radius: 9px; flex: none;
+      color: #fff; display: grid; place-items: center;
+      font-family: var(--display); font-size: 1.05rem;
+    }
+    .mbody { display: block; flex: 1; min-width: 0; }
+    .mname { font-weight: 700; font-size: 0.92rem; margin-bottom: 0.35rem; display: flex; justify-content: space-between; gap: 0.5rem; }
+    .mname .pct { font-weight: 600; color: rgba(26,26,26,0.5); font-size: 0.82rem; }
+    .mtrack { display: block; position: relative; height: 10px; border-radius: 5px; }
+    .mdots { position: absolute; inset: -5px 0; display: flex; justify-content: space-between; align-items: center; }
+    .mdot { width: 15px; height: 15px; border-radius: 50%; border: 3px solid currentColor; background: var(--paper); }
+    .mdot.done { background: currentColor; }
+    .mdot.terminal { width: 19px; height: 19px; border-width: 4px; }
+
+    .home-hero { margin-top: 0.9rem; }
+    .home-hero .big-es { font-size: 2.1rem; }
+    .statrow { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.7rem; }
+    .stat {
+      border: 2px solid var(--ink); background: #fff; border-radius: 10px;
+      padding: 0.4rem 0.7rem; font-weight: 700; font-size: 0.9rem;
+    }
+
+    /* Mission signage */
+    .mission-card {
+      background: var(--ink); color: #fff; border-radius: 18px;
+      padding: 1.4rem 1.2rem 1.5rem; margin-top: 0.8rem;
+    }
+    .mission-card .kicker { color: rgba(255,255,255,0.65); }
+    .mission-es { font-family: var(--display); font-size: 1.75rem; line-height: 1.25; margin: 0.55rem 0 0.7rem; }
+    .mission-card .esb { color: #fff; border-bottom-color: rgba(240,78,152,0.8); }
+    .mission-ctx { color: rgba(255,255,255,0.82); font-size: 1rem; }
+
+    /* Teach card */
+    .teach-es { font-family: var(--display); font-size: 2.2rem; line-height: 1.15; margin: 0.4rem 0 0.3rem; overflow-wrap: break-word; }
+    .teach-en { font-size: 1.2rem; font-weight: 600; color: rgba(26,26,26,0.75); }
+    .teach-ex { margin-top: 0.9rem; padding-top: 0.8rem; border-top: 2px solid var(--line); }
+
+    /* Conjugation table */
+    .conjtab { width: 100%; border-collapse: collapse; margin: 0.6rem 0 0.9rem; font-size: 1rem; }
+    .conjtab td { border: 1px solid var(--line); padding: 0.45rem 0.65rem; }
+    .conjtab td:first-child { font-weight: 600; color: rgba(26,26,26,0.6); width: 40%; }
+    .conjtab .esb { font-weight: 700; }
+
+    /* Speaker button inline */
+    .spk {
+      border: 2px solid var(--ink); background: #fff; border-radius: 10px;
+      min-width: 44px; min-height: 44px; font-size: 1.1rem; box-shadow: 0 2px 0 var(--ink);
+    }
+
+    /* Papel picado */
+    .pp { position: fixed; top: -24px; width: 10px; height: 15px; z-index: 90; pointer-events: none; animation: ppfall 2.3s linear forwards; }
+    @keyframes ppfall {
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(112vh) rotate(560deg); }
+    }
+
+    /* Bottom sheet (definitions / settings) */
+    .sheet-back { position: fixed; inset: 0; background: rgba(26,26,26,0.45); z-index: 60; display: none; }
+    .sheet-back.show { display: block; }
+    .sheet {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 61;
+      background: var(--paper); border-radius: 18px 18px 0 0; border-top: 3px solid var(--ink);
+      padding: 1.1rem 1.1rem calc(1.2rem + env(safe-area-inset-bottom));
+      max-height: 80vh; overflow-y: auto; display: none;
+    }
+    .sheet.show { display: block; }
+    .sheet-inner { max-width: 480px; margin: 0 auto; }
+    .def-es { font-family: var(--display); font-size: 1.7rem; margin: 0.2rem 0; overflow-wrap: break-word; }
+    .def-en { font-size: 1.1rem; font-weight: 600; color: rgba(26,26,26,0.75); margin-bottom: 0.8rem; }
+    .sheet textarea {
+      width: 100%; min-height: 110px; font: 0.8rem/1.4 ui-monospace, monospace;
+      border: 2px solid var(--ink); border-radius: 10px; padding: 0.6rem; background: #fff; color: var(--ink);
+    }
+    .sheet h2 { font-family: var(--display); font-size: 1.2rem; margin-bottom: 0.6rem; }
+    .sheet .btn { width: 100%; margin-top: 0.55rem; }
+    .sheet p { margin: 0.4rem 0; font-size: 0.95rem; }
+
+    footer.site { max-width: 480px; margin: 2.5rem auto 0; padding: 0 1rem 2rem; color: rgba(26,26,26,0.55); font-size: 0.85rem; }
+    footer.site a { color: inherit; }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; animation: none !important; }
+      .pp { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#app">Skip to app</a>
+
+  <header class="site">
+    <h1><span class="logo-dot" aria-hidden="true">Ó</span>ÓRALE</h1>
+    <div class="hbtns">
+      <button type="button" class="hbtn" data-action="open-settings" aria-label="Settings">⚙</button>
+    </div>
+  </header>
+
+  <main id="app" class="wrap" aria-live="polite"></main>
+
+  <div class="abar" id="abar" hidden>
+    <div class="abar-inner" id="abar-inner"></div>
+  </div>
+
+  <div class="fback" id="fback" aria-live="assertive">
+    <div class="fback-inner">
+      <div class="fback-msg" id="fback-msg"></div>
+      <button type="button" class="btn" id="fback-btn" data-action="advance">Sigue</button>
+    </div>
+  </div>
+
+  <div class="sheet-back" id="sheet-back" data-action="close-sheet"></div>
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true"><div class="sheet-inner" id="sheet-inner"></div></div>
+
+  <footer class="site">
+    Private tool · progress lives in this browser only · <a href="/">bensiverly.com</a>
+  </footer>
+
+  <script>
+  (() => {
+    'use strict';
+
+    // =========================================================================
+    // Content payload (the curriculum data; CDMX specificity is the product)
+    // =========================================================================
+    const DATA = {
+      frames: [
+        { es: "voy a", en: "I'm going to", example: "voy a comer" },
+        { es: "tengo que", en: "I have to", example: "tengo que trabajar" },
+        { es: "quiero", en: "I want to", example: "quiero ver" },
+        { es: "puedo", en: "I can", example: "¿puedo pagar?" },
+        { es: "me gusta", en: "I like to", example: "me gusta cocinar" },
+        { es: "hay que", en: "you have to / one must", example: "hay que esperar" }
+      ],
+      conjugated: {
+        ser:   { en: "to be (identity)", yo: "soy", tu: "eres", el: "es", nosotros: "somos", ellos: "son" },
+        estar: { en: "to be (state/place)", yo: "estoy", tu: "estás", el: "está", nosotros: "estamos", ellos: "están" },
+        tener: { en: "to have", yo: "tengo", tu: "tienes", el: "tiene", nosotros: "tenemos", ellos: "tienen" },
+        ir:    { en: "to go", yo: "voy", tu: "vas", el: "va", nosotros: "vamos", ellos: "van" },
+        hacer: { en: "to do/make", yo: "hago", tu: "haces", el: "hace", nosotros: "hacemos", ellos: "hacen" },
+        poder: { en: "can/to be able", yo: "puedo", tu: "puedes", el: "puede", nosotros: "podemos", ellos: "pueden" },
+        querer:{ en: "to want", yo: "quiero", tu: "quieres", el: "quiere", nosotros: "queremos", ellos: "quieren" },
+        saber: { en: "to know (facts)", yo: "sé", tu: "sabes", el: "sabe", nosotros: "sabemos", ellos: "saben" }
+      },
+      regularPatterns: {
+        ar: { model: "hablar", yo: "-o", tu: "-as", el: "-a", nosotros: "-amos", ellos: "-an" },
+        er: { model: "comer",  yo: "-o", tu: "-es", el: "-e", nosotros: "-emos", ellos: "-en" },
+        ir: { model: "vivir",  yo: "-o", tu: "-es", el: "-e", nosotros: "-imos", ellos: "-en" }
+      },
+      infinitives: [
+        { es: "comer", en: "to eat", complements: [{es:"tacos",en:"tacos"},{es:"aquí",en:"here"},{es:"algo",en:"something"},{es:"con mi amigo",en:"with my friend"}] },
+        { es: "trabajar", en: "to work", complements: [{es:"mañana",en:"tomorrow"},{es:"mucho",en:"a lot"},{es:"en casa",en:"at home"},{es:"hoy",en:"today"}] },
+        { es: "ver", en: "to see/watch", complements: [{es:"la película",en:"the movie"},{es:"algo",en:"something"},{es:"el menú",en:"the menu"}] },
+        { es: "hablar", en: "to speak", complements: [{es:"español",en:"Spanish"},{es:"con ella",en:"with her"},{es:"un poco",en:"a little"},{es:"más",en:"more"}] },
+        { es: "ir", en: "to go", complements: [{es:"al mercado",en:"to the market"},{es:"a casa",en:"home"},{es:"al baño",en:"to the bathroom"}] },
+        { es: "comprar", en: "to buy", complements: [{es:"agua",en:"water"},{es:"comida",en:"food"},{es:"un café",en:"a coffee"},{es:"algo",en:"something"}] },
+        { es: "pagar", en: "to pay", complements: [{es:"la cuenta",en:"the bill"},{es:"con tarjeta",en:"with card"},{es:"en efectivo",en:"in cash"},{es:"ahora",en:"now"}] },
+        { es: "esperar", en: "to wait", complements: [{es:"aquí",en:"here"},{es:"un poco",en:"a little"},{es:"a mi amigo",en:"for my friend"}] },
+        { es: "cocinar", en: "to cook", complements: [{es:"en casa",en:"at home"},{es:"algo",en:"something"},{es:"esta noche",en:"tonight"}] },
+        { es: "vivir", en: "to live", complements: [{es:"aquí",en:"here"},{es:"en la ciudad",en:"in the city"},{es:"cerca",en:"nearby"}] },
+        { es: "tomar", en: "to drink/take", complements: [{es:"café",en:"coffee"},{es:"agua",en:"water"},{es:"algo",en:"something"}] },
+        { es: "descansar", en: "to rest", complements: [{es:"un poco",en:"a little"},{es:"ahora",en:"now"},{es:"en casa",en:"at home"}] },
+        { es: "caminar", en: "to walk", complements: [{es:"al parque",en:"to the park"},{es:"mucho",en:"a lot"},{es:"aquí",en:"here"}] },
+        { es: "aprender", en: "to learn", complements: [{es:"español",en:"Spanish"},{es:"más",en:"more"},{es:"algo nuevo",en:"something new"}] },
+        { es: "pedir", en: "to order/ask for", complements: [{es:"tacos",en:"tacos"},{es:"la cuenta",en:"the bill"},{es:"un café",en:"a coffee"}] },
+        { es: "salir", en: "to go out", complements: [{es:"esta noche",en:"tonight"},{es:"ahora",en:"now"},{es:"con amigos",en:"with friends"}] }
+      ],
+      gustar: {
+        note: "The thing liked is the grammatical subject. Singular thing: gusta. Plural things: gustan.",
+        pronouns: { me: "I", te: "you", le: "he/she/you-formal", nos: "we", les: "they" },
+        examples: [
+          { es: "me gusta el café", en: "I like coffee" },
+          { es: "me gustan los tacos", en: "I like tacos" },
+          { es: "¿te gusta la ciudad?", en: "do you like the city?" }
+        ]
+      },
+      hay: { es: "hay", en: "there is / there are", examples: ["hay tacos", "¿hay baño?", "no hay problema"] },
+      questionWords: [
+        {es:"qué",en:"what"},{es:"quién",en:"who"},{es:"cómo",en:"how"},{es:"dónde",en:"where"},
+        {es:"cuándo",en:"when"},{es:"por qué",en:"why"},{es:"cuánto",en:"how much"},{es:"cuál",en:"which"}
+      ],
+      glue: [
+        {es:"y",en:"and"},{es:"o",en:"or"},{es:"pero",en:"but"},{es:"porque",en:"because"},
+        {es:"si",en:"if"},{es:"que",en:"that"},{es:"no",en:"no/not"},{es:"sí",en:"yes"},
+        {es:"también",en:"also"},{es:"muy",en:"very"},{es:"más",en:"more"},{es:"menos",en:"less"},
+        {es:"con",en:"with"},{es:"sin",en:"without"},{es:"para",en:"for/to"},{es:"de",en:"of/from"},
+        {es:"en",en:"in/on"},{es:"a",en:"to"},{es:"aquí",en:"here"},{es:"allá",en:"there"},
+        {es:"ahora",en:"now"},{es:"ya",en:"already"},{es:"todavía",en:"still"},{es:"bien",en:"well"},
+        {es:"mal",en:"badly"},{es:"mucho",en:"a lot"},{es:"poco",en:"a little"},{es:"algo",en:"something"},
+        {es:"nada",en:"nothing"},{es:"todo",en:"everything"}
+      ],
+      nouns: [
+        {es:"agua",en:"water"},{es:"comida",en:"food"},{es:"café",en:"coffee"},{es:"casa",en:"house"},
+        {es:"calle",en:"street"},{es:"baño",en:"bathroom"},{es:"tiempo",en:"time/weather"},{es:"día",en:"day"},
+        {es:"año",en:"year"},{es:"cosa",en:"thing"},{es:"gente",en:"people"},{es:"trabajo",en:"work"},
+        {es:"dinero",en:"money"},{es:"cuenta",en:"bill"},{es:"propina",en:"tip"},{es:"familia",en:"family"},
+        {es:"amigo",en:"friend"},{es:"mercado",en:"market"},{es:"ciudad",en:"city"},{es:"tarjeta",en:"card"},
+        {es:"efectivo",en:"cash"}
+      ],
+      courtesy: [
+        {es:"hola",en:"hi"},{es:"adiós",en:"bye"},{es:"gracias",en:"thanks"},{es:"de nada",en:"you're welcome"},
+        {es:"por favor",en:"please"},{es:"perdón",en:"sorry / excuse me"},{es:"buenos días",en:"good morning"},
+        {es:"buenas tardes",en:"good afternoon"},{es:"buenas noches",en:"good evening"},
+        {es:"con permiso",en:"excuse me (passing through)"},{es:"mande",en:"pardon? (the Mexican 'what did you say?')"},
+        {es:"¿me da...?",en:"could you give me...? (polite ordering)"},{es:"provecho",en:"enjoy your meal (said to others eating)"}
+      ],
+      numbers: ["uno","dos","tres","cuatro","cinco","seis","siete","ocho","nueve","diez","veinte (20)","cincuenta (50)","cien (100)","mil (1000)"],
+      chilango: [
+        {es:"órale",en:"wow / okay / let's go",tier:1},
+        {es:"qué onda",en:"what's up",tier:1},
+        {es:"chido",en:"cool",tier:1},
+        {es:"sale",en:"okay / deal",tier:1},
+        {es:"ahorita",en:"'right now'-ish; elastic, could mean never",tier:1},
+        {es:"qué padre",en:"how cool",tier:2},
+        {es:"no manches",en:"no way / come on",tier:2},
+        {es:"neta",en:"really / for real",tier:2},
+        {es:"güey",en:"dude (among friends, informal)",tier:2},
+        {es:"chamba",en:"work, job",tier:3},
+        {es:"chela",en:"beer",tier:3},
+        {es:"antojito",en:"street snack / craving",tier:3},
+        {es:"aguas",en:"watch out!",tier:3},
+        {es:"chafa",en:"cheap, low quality",tier:3},
+        {es:"fresa",en:"preppy, snobby (person)",tier:3}
+      ],
+      contrasts: {
+        serEstar: [
+          { prompt: "I am from here (identity)", correct: "soy de aquí", wrong: "estoy de aquí" },
+          { prompt: "I am tired (state)", correct: "estoy cansado", wrong: "soy cansado" },
+          { prompt: "We are friends (identity)", correct: "somos amigos", wrong: "estamos amigos" },
+          { prompt: "She is on the street (location)", correct: "está en la calle", wrong: "es en la calle" }
+        ],
+        gustaGustan: [
+          { prompt: "I like coffee", correct: "me gusta el café", wrong: "me gustan el café" },
+          { prompt: "I like tacos", correct: "me gustan los tacos", wrong: "me gusta los tacos" }
+        ]
+      },
+      missions: [
+        { es: "¿Me da un café, por favor?", context: "At any café. The polite Mexican way to order." },
+        { es: "La cuenta, por favor.", context: "Ask for the bill. Waiters won't bring it unrequested in Mexico." },
+        { es: "Provecho.", context: "Say it passing anyone who's eating. Instant local credibility." },
+        { es: "¿Cuánto cuesta?", context: "At a market stall. Then survive the number that comes back." },
+        { es: "Mande.", context: "Next time you miss what someone said. Not '¿qué?'" },
+        { es: "Con permiso.", context: "Moving through a crowd or exiting the metro." },
+        { es: "¿Hay baño?", context: "Anywhere. The most load-bearing sentence in the language." },
+        { es: "Quiero dos tacos, por favor.", context: "A taco stand. Frame + verb + noun + courtesy. The whole method in one order." }
+      ]
+    };
+
+    // Support tables for conjugation drills (built only from payload vocabulary).
+    const PERSONS = ['yo', 'tu', 'el', 'nosotros', 'ellos'];
+    const PERSON_ES = { yo: 'yo', tu: 'tú', el: 'él', nosotros: 'nosotros', ellos: 'ellos' };
+    const PERSON_EN = { yo: 'I', tu: 'you', el: 'he', nosotros: 'we', ellos: 'they' };
+    const CONJ_EN = {
+      ser:   { yo: 'am', tu: 'are', el: 'is', nosotros: 'are', ellos: 'are' },
+      estar: { yo: 'am', tu: 'are', el: 'is', nosotros: 'are', ellos: 'are' },
+      tener: { yo: 'have', tu: 'have', el: 'has', nosotros: 'have', ellos: 'have' },
+      ir:    { yo: 'go', tu: 'go', el: 'goes', nosotros: 'go', ellos: 'go' },
+      hacer: { yo: 'do', tu: 'do', el: 'does', nosotros: 'do', ellos: 'do' },
+      poder: { yo: 'can', tu: 'can', el: 'can', nosotros: 'can', ellos: 'can' },
+      querer:{ yo: 'want', tu: 'want', el: 'wants', nosotros: 'want', ellos: 'want' },
+      saber: { yo: 'know', tu: 'knows', el: 'knows', nosotros: 'know', ellos: 'know' }
+    };
+    CONJ_EN.saber.tu = 'know';
+    const CONJ_COMP = {
+      ser:   [['de aquí','from here'],['mi amigo','my friend'],['de la ciudad','from the city']],
+      estar: [['aquí','here'],['en casa','at home'],['bien','well'],['en el mercado','at the market']],
+      tener: [['tiempo','time'],['dinero','money'],['trabajo','work'],['una casa','a house']],
+      ir:    [['al mercado','to the market'],['a casa','home'],['al parque','to the park']],
+      hacer: [['algo','something'],['mucho','a lot'],['la comida','the food']],
+      poder: [['esperar','wait'],['pagar','pay'],['caminar','walk']],
+      querer:[['café','coffee'],['tacos','tacos'],['descansar','to rest']],
+      saber: [['hablar español','how to speak Spanish'],['cocinar','how to cook'],['más','more']]
+    };
+    const PATTERN_TARGETS = {
+      ar: ['comprar', 'trabajar', 'caminar', 'tomar', 'esperar', 'pagar', 'cocinar', 'descansar'],
+      er: ['aprender'],
+      ir: ['vivir']
+    };
+    const ENDINGS = {
+      ar: { yo: 'o', tu: 'as', el: 'a', nosotros: 'amos', ellos: 'an' },
+      er: { yo: 'o', tu: 'es', el: 'e', nosotros: 'emos', ellos: 'en' },
+      ir: { yo: 'o', tu: 'es', el: 'e', nosotros: 'imos', ellos: 'en' }
+    };
+
+    // =========================================================================
+    // Units (each unit is a metro line)
+    // =========================================================================
+    const UNITS = [
+      { n: 0, name: 'Sobrevivencia', color: '#F04E98' },
+      { n: 1, name: 'Los Marcos', color: '#0057A8' },
+      { n: 2, name: 'Los Cinco Grandes', color: '#7A9A01' },
+      { n: 3, name: 'Poder y Saber', color: '#00A6A0' },
+      { n: 4, name: 'Los Patrones', color: '#D5A100' },
+      { n: 5, name: 'Gustar y el Pegamento', color: '#DA291C' },
+      { n: 6, name: 'El Mercado', color: '#F58025' },
+      { n: 7, name: 'Capa Chilanga', color: '#00954C' }
+    ];
+
+    // =========================================================================
+    // Item registry: every learnable thing lives in the 4-box Leitner system
+    // =========================================================================
+    const ITEMS = [];
+    const ITEM_BY_ID = {};
+    function addItem(id, unit, kind, es, en, extra) {
+      const it = Object.assign({ id, unit, kind, es, en }, extra || {});
+      ITEMS.push(it);
+      ITEM_BY_ID[id] = it;
+    }
+    DATA.courtesy.forEach((c) => addItem('c:' + c.es, 0, 'courtesy', c.es, c.en));
+    DATA.frames.forEach((f) => addItem('f:' + f.es, 1, 'frame', f.es, f.en, { example: f.example }));
+    DATA.infinitives.forEach((v) => addItem('v:' + v.es, 1, 'verb', v.es, v.en, { complements: v.complements }));
+    ['ser', 'estar', 'tener', 'ir', 'hacer'].forEach((v) => PERSONS.forEach((p) =>
+      addItem('j:' + v + ':' + p, 2, 'conj', DATA.conjugated[v][p], PERSON_EN[p] + ' ' + CONJ_EN[v][p], { verb: v, person: p })));
+    DATA.contrasts.serEstar.forEach((c, i) => addItem('x:se:' + i, 2, 'contrast', c.correct, c.prompt, { pair: c, family: 'serEstar' }));
+    ['poder', 'querer', 'saber'].forEach((v) => PERSONS.forEach((p) =>
+      addItem('j:' + v + ':' + p, 3, 'conj', DATA.conjugated[v][p], PERSON_EN[p] + ' ' + CONJ_EN[v][p], { verb: v, person: p })));
+    addItem('hay', 3, 'hay', 'hay', DATA.hay.en);
+    DATA.questionWords.forEach((q) => addItem('q:' + q.es, 3, 'qword', q.es, q.en));
+    ['ar', 'er', 'ir'].forEach((pat) => PERSONS.forEach((p) =>
+      addItem('p:' + pat + ':' + p, 4, 'pattern', '-' + ENDINGS[pat][p], 'regular -' + pat.toUpperCase() + ' · ' + PERSON_ES[p], { pat, person: p })));
+    addItem('g:gusta', 5, 'gustar', 'gusta', 'is pleasing (one thing) — me gusta el café', { plural: false });
+    addItem('g:gustan', 5, 'gustar', 'gustan', 'are pleasing (several things) — me gustan los tacos', { plural: true });
+    DATA.glue.forEach((g) => addItem('l:' + g.es, 5, 'glue', g.es, g.en));
+    DATA.nouns.forEach((nn) => addItem('n:' + nn.es, 6, 'noun', nn.es, nn.en));
+    DATA.numbers.forEach((raw, i) => {
+      const m = raw.match(/^(.+?) \((\d+)\)$/);
+      const es = m ? m[1] : raw;
+      const digit = m ? m[2] : String(i + 1);
+      addItem('num:' + es, 6, 'number', es, digit, { digit });
+    });
+    DATA.chilango.forEach((s) => addItem('s:' + s.es, 7, 'slang', s.es, s.en, { tier: s.tier }));
+
+    // New-item introduction order. Frames first: `quiero comer` is a complete,
+    // useful sentence in minute three, and all six frames must be assembled by
+    // the end of session 2.
+    const INTRO_HEAD = [
+      'f:quiero', 'v:comer', 'f:voy a', 'v:ir', 'f:tengo que',
+      'f:puedo', 'f:me gusta', 'f:hay que',
+      'c:hola', 'c:gracias',
+      'c:por favor', 'v:comprar', 'v:pagar', 'c:¿me da...?', 'v:pedir',
+      'c:perdón', 'v:hablar', 'c:mande', 'v:trabajar', 'c:con permiso',
+      'v:tomar', 'c:provecho', 'v:esperar', 'c:buenos días', 'v:ver',
+      'c:buenas tardes', 'v:salir', 'c:buenas noches', 'v:caminar', 'c:adiós',
+      'v:cocinar', 'c:de nada', 'v:vivir', 'v:aprender', 'v:descansar'
+    ];
+    const INTRO_ORDER = INTRO_HEAD.concat(ITEMS.map((it) => it.id).filter((id) => INTRO_HEAD.indexOf(id) === -1));
+
+    // =========================================================================
+    // State + storage (single batched key, in-memory fallback)
+    // =========================================================================
+    const STORE_KEY = 'orale:progress';
+    let memoryFallback = null;
+    function defaultState() {
+      return {
+        v: 1,
+        name: 'Ben',
+        session: 0,
+        srs: {},
+        streak: { count: 0, last: null, tokens: 2, month: monthKey() },
+        slangSeen: {},
+        seenCombos: {},
+        perfect: 0,
+        missionIdx: 0,
+        sentencesBuilt: 0,
+        lastNote: ''
+      };
+    }
+    function loadState() {
+      let raw = null;
+      try { raw = localStorage.getItem(STORE_KEY); } catch (e) { raw = null; }
+      if (!raw && memoryFallback) return memoryFallback;
+      if (!raw) return defaultState();
+      try {
+        const parsed = JSON.parse(raw);
+        return Object.assign(defaultState(), parsed);
+      } catch (e) { return defaultState(); }
+    }
+    function save() {
+      memoryFallback = state;
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* memory only */ }
+    }
+    function todayKey() {
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+    function monthKey() {
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    }
+    let state = loadState();
+    if (state.streak.month !== monthKey()) {
+      state.streak.month = monthKey();
+      state.streak.tokens = 2;
+      save();
+    }
+
+    // =========================================================================
+    // SRS: 4-box Leitner. Box gaps in sessions: 0 (this one), 1, 3, 7.
+    // =========================================================================
+    const BOX_GAP = [0, 1, 3, 7];
+    function curSession() { return state.session + 1; }
+    function rec(id) { return state.srs[id]; }
+    function boxOf(id) { const r = rec(id); return r ? r.box : -1; }
+    function initSrs(id) {
+      if (!state.srs[id]) {
+        state.srs[id] = { box: 0, due: curSession(), seen: 0, miss: 0 };
+        save();
+      }
+    }
+    function gradeItem(id, correct) {
+      const r = state.srs[id] || { box: 0, due: curSession(), seen: 0, miss: 0 };
+      r.seen += 1;
+      if (correct) {
+        r.box = Math.min(3, r.box + 1);
+      } else {
+        r.miss += 1;
+        r.box = Math.max(0, r.box - 1);
+      }
+      r.due = curSession() + BOX_GAP[r.box];
+      state.srs[id] = r;
+      save();
+    }
+    function unitItems(u) { return ITEMS.filter((it) => it.unit === u); }
+    function unitMastery(u) {
+      const its = unitItems(u);
+      const done = its.filter((it) => boxOf(it.id) >= 2).length;
+      return done / its.length;
+    }
+    function unitProgress(u) {
+      const its = unitItems(u);
+      let score = 0;
+      its.forEach((it) => { score += Math.max(0, boxOf(it.id) + 1); });
+      return score / (its.length * 4);
+    }
+    // Units 0 and 1 are open from day one; each later line unlocks when 60% of
+    // the previous line's items reach box 2+.
+    function unlockedThrough() {
+      let u = 1;
+      while (u < 7 && unitMastery(u) >= 0.6) u += 1;
+      return u;
+    }
+    function uiEs() { return unlockedThrough() >= 2; }
+    function L(en, es) { return uiEs() ? es : en; }
+
+    // =========================================================================
+    // Utilities
+    // =========================================================================
+    function rand(n) { return Math.floor(Math.random() * n); }
+    function pick(arr) { return arr[rand(arr.length)]; }
+    function shuffle(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = rand(i + 1);
+        const t = a[i]; a[i] = a[j]; a[j] = t;
+      }
+      return a;
+    }
+    function esc(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    function verbEnBare(en) { return en.replace(/^to /, '').split('/')[0]; }
+
+    // Tappable Spanish: speaks + opens the definition card. The interface is corpus.
+    function esWord(es, en, cls) {
+      return '<button type="button" class="esb ' + (cls || '') + '" data-def-es="' + esc(es) + '" data-def-en="' + esc(en || lookupEn(es) || '') + '">' + esc(es) + '</button>';
+    }
+    const DICT = {};
+    ITEMS.forEach((it) => { if (!DICT[it.es]) DICT[it.es] = it.en; });
+    DATA.infinitives.forEach((v) => v.complements.forEach((c) => { if (!DICT[c.es]) DICT[c.es] = c.en; }));
+    function lookupEn(es) { return DICT[es] || DICT[es.toLowerCase()] || ''; }
+
+    // =========================================================================
+    // Speech: es-MX preferred, voices load async, cancel before speak (iOS)
+    // =========================================================================
+    let voice = null;
+    function pickVoice() {
+      if (!('speechSynthesis' in window)) return;
+      const voices = window.speechSynthesis.getVoices();
+      const prefs = ['es-mx', 'es-419', 'es-us', 'es-es', 'es'];
+      for (const p of prefs) {
+        const found = voices.find((v) => v.lang && v.lang.replace('_', '-').toLowerCase().indexOf(p) === 0);
+        if (found) { voice = found; return; }
+      }
+    }
+    if ('speechSynthesis' in window) {
+      pickVoice();
+      window.speechSynthesis.addEventListener('voiceschanged', pickVoice);
+    }
+    function speak(text, rate, onend) {
+      if (!('speechSynthesis' in window)) return;
+      try {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        if (voice) u.voice = voice;
+        u.lang = voice ? voice.lang : 'es-MX';
+        u.rate = rate || 0.85;
+        if (onend) u.onend = onend;
+        window.speechSynthesis.speak(u);
+      } catch (e) { /* speech is a bonus, never a blocker */ }
+    }
+
+    // =========================================================================
+    // Celebration copy — the chilango list, gated by tier. First appearance of
+    // each term gets a "palabra nueva" chip; every term is tappable for its card.
+    // =========================================================================
+    function slangTierAllowed() {
+      let t = 1;
+      if (state.streak.count >= 5 || unlockedThrough() >= 4) t = 2;
+      if (unlockedThrough() >= 6) t = 3;
+      return t;
+    }
+    function celebrate() {
+      const tier = slangTierAllowed();
+      const pool = DATA.chilango.filter((s) => s.tier <= tier && ['órale', 'qué onda', 'chido', 'sale', 'qué padre', 'no manches', 'neta'].indexOf(s.es) !== -1);
+      const s = pick(pool);
+      const isNew = !state.slangSeen[s.es];
+      if (isNew) { state.slangSeen[s.es] = true; save(); }
+      const bang = { 'órale': '¡Órale!', 'qué onda': '¡Qué onda!', 'chido': '¡Qué chido!', 'sale': 'Sale.', 'qué padre': '¡Qué padre!', 'no manches': '¡No manches!', 'neta': '¡Neta!' }[s.es];
+      return esWord(bang, s.es + ' — ' + s.en) + (isNew ? '<span class="chip pink">palabra nueva</span>' : '');
+    }
+
+    // =========================================================================
+    // Sentence generator: frame × verb × complement. Novel recombination of
+    // known parts is the learning event — never repeat a sentence in-session
+    // while an unseen combination exists.
+    // =========================================================================
+    let sess = null;
+    function knownVerbs() {
+      const seen = ITEMS.filter((it) => it.kind === 'verb' && rec(it.id));
+      return seen.length ? seen : ITEMS.filter((it) => it.kind === 'verb').slice(0, 3);
+    }
+    function knownFrames() {
+      const seen = ITEMS.filter((it) => it.kind === 'frame' && rec(it.id));
+      return seen.length ? seen : ITEMS.filter((it) => it.kind === 'frame').slice(0, 2);
+    }
+    function composeSentence(fixedFrame, fixedVerb) {
+      let best = null;
+      for (let tries = 0; tries < 40; tries++) {
+        const frame = fixedFrame || pick(knownFrames());
+        const verb = fixedVerb || pick(knownVerbs());
+        const comp = pick(verb.complements);
+        const es = frame.es + ' ' + verb.es + ' ' + comp.es;
+        const en = frame.en.split(' / ')[0] + ' ' + verbEnBare(verb.en) + ' ' + comp.en;
+        const cand = { frame, verb, comp, es, en };
+        if (sess && sess.sentences.has(es)) continue;
+        if (!best) best = cand;
+        if (!state.seenCombos[es]) { best = cand; break; }
+      }
+      if (!best) {
+        const frame = fixedFrame || pick(knownFrames());
+        const verb = fixedVerb || pick(knownVerbs());
+        const comp = pick(verb.complements);
+        best = { frame, verb, comp, es: frame.es + ' ' + verb.es + ' ' + comp.es, en: frame.en.split(' / ')[0] + ' ' + verbEnBare(verb.en) + ' ' + comp.en };
+      }
+      if (sess) sess.sentences.add(best.es);
+      state.seenCombos[best.es] = (state.seenCombos[best.es] || 0) + 1;
+      state.sentencesBuilt += 1;
+      save();
+      return best;
+    }
+
+    // =========================================================================
+    // Exercise construction
+    // =========================================================================
+    function distractorTiles(sentence, count) {
+      const out = [];
+      const wrongFrame = pick(DATA.frames.filter((f) => f.es !== sentence.frame.es));
+      out.push(wrongFrame.es);
+      const otherVerb = pick(DATA.infinitives.filter((v) => v.es !== sentence.verb.es));
+      out.push(otherVerb.es);
+      if (count > 2) {
+        const otherComp = pick(otherVerb.complements.filter((c) => c.es !== sentence.comp.es) || otherVerb.complements);
+        out.push(otherComp ? otherComp.es : pick(DATA.glue).es);
+      }
+      return out.slice(0, count);
+    }
+
+    function sentenceExercise(item) {
+      const s = composeSentence(item.kind === 'frame' ? item : null, item.kind === 'verb' ? item : null);
+      const r = Math.random();
+      const correct = [s.frame.es, s.verb.es, s.comp.es];
+      if (r < 0.45) {
+        return { type: 'assemble', item, graded: true, en: s.en, es: s.es, correct, tiles: shuffle(correct.concat(distractorTiles(s, 2 + rand(2)))) };
+      }
+      if (r < 0.65) {
+        const opts = shuffle([s.frame.es].concat(shuffle(DATA.frames.filter((f) => f.es !== s.frame.es).map((f) => f.es)).slice(0, 3)));
+        return { type: 'cloze', item, graded: true, en: s.en, es: s.es, gapped: '____ ' + s.verb.es + ' ' + s.comp.es, answer: s.frame.es, opts };
+      }
+      if (r < 0.85) {
+        return { type: 'listen', item, graded: true, en: s.en, es: s.es, correct, tiles: shuffle(correct.concat(distractorTiles(s, 2))) };
+      }
+      return { type: 'speak', item, graded: true, en: s.en, es: s.es };
+    }
+
+    function conjExercise(item) {
+      const v = item.verb;
+      const person = item.person;
+      const form = DATA.conjugated[v][person];
+      const comp = pick(CONJ_COMP[v]);
+      const pron = PERSON_ES[person];
+      const esFull = (person === 'yo' || person === 'nosotros' ? '' : pron + ' ') + form + ' ' + comp[0];
+      const enFull = PERSON_EN[person] + ' ' + CONJ_EN[v][person] + ' ' + comp[1];
+      const allForms = PERSONS.map((p) => DATA.conjugated[v][p]);
+      if (Math.random() < 0.5) {
+        const opts = shuffle(Array.from(new Set(allForms))).slice(0, 4);
+        if (opts.indexOf(form) === -1) { opts[0] = form; }
+        return { type: 'cloze', item, graded: true, en: enFull, es: esFull, gapped: esFull.replace(form, '____'), answer: form, opts: shuffle(opts), hint: v + ' — ' + DATA.conjugated[v].en };
+      }
+      const correct = esFull.split(' ');
+      const wrong = shuffle(allForms.filter((f) => f !== form)).slice(0, 2);
+      return { type: 'assemble', item, graded: true, en: enFull, es: esFull, correct, tiles: shuffle(correct.concat(wrong)), hint: v + ' — ' + DATA.conjugated[v].en };
+    }
+
+    function patternExercise(item) {
+      const pat = item.pat;
+      const person = item.person;
+      const model = DATA.regularPatterns[pat].model;
+      const stemOf = (inf) => inf.slice(0, -2);
+      // -IR has no regular target besides the model itself in this payload, so
+      // fall back to conjugating the model against its endings row.
+      const targetPool = PATTERN_TARGETS[pat].filter((t) => t !== model);
+      const target = pick(targetPool.length ? targetPool : [model]);
+      const answer = stemOf(target) + ENDINGS[pat][item.person];
+      const opts = shuffle(PERSONS.map((p) => stemOf(target) + ENDINGS[pat][p]).filter((x, i, a) => a.indexOf(x) === i)).slice(0, 4);
+      if (opts.indexOf(answer) === -1) opts[0] = answer;
+      const modelRows = PERSONS.map((p) => [PERSON_ES[p], stemOf(model) + ENDINGS[pat][p]]);
+      return { type: 'pattern', item, graded: true, pat, model, modelRows, target, person, answer, opts: shuffle(opts) };
+    }
+
+    function contrastExercise(item) {
+      const c = item.pair;
+      const first = Math.random() < 0.5;
+      return {
+        type: 'contrast', item, graded: true, prompt: c.prompt,
+        opts: first ? [c.correct, c.wrong] : [c.wrong, c.correct],
+        answer: c.correct, family: item.family || 'serEstar'
+      };
+    }
+
+    function gustarExercise(item) {
+      const ex = item.plural ? DATA.gustar.examples[1] : DATA.gustar.examples[0];
+      const r = Math.random();
+      if (r < 0.4) {
+        const c = pick(DATA.contrasts.gustaGustan.filter((g) => (g.correct.indexOf('gustan') !== -1) === item.plural));
+        return { type: 'contrast', item, graded: true, prompt: c.prompt, opts: shuffle([c.correct, c.wrong]), answer: c.correct, family: 'gustar' };
+      }
+      if (r < 0.75) {
+        const gapped = ex.es.replace(item.es, '____');
+        return { type: 'cloze', item, graded: true, en: ex.en, es: ex.es, gapped, answer: item.es, opts: shuffle(['gusta', 'gustan']), hint: DATA.gustar.note };
+      }
+      const correct = ex.es.split(' ');
+      return { type: 'assemble', item, graded: true, en: ex.en, es: ex.es, correct, tiles: shuffle(correct.concat([item.plural ? 'gusta' : 'gustan', 'y'])), hint: DATA.gustar.note };
+    }
+
+    function hayExercise(item) {
+      const ex = pick(DATA.hay.examples);
+      const enMap = { 'hay tacos': 'there are tacos', '¿hay baño?': 'is there a bathroom?', 'no hay problema': 'no problem' };
+      const correct = ex.replace(/[¿?]/g, '').split(' ');
+      return { type: 'assemble', item, graded: true, en: enMap[ex] || ex, es: ex, correct, tiles: shuffle(correct.concat(shuffle(['es', 'está', 'tiene']).slice(0, 2))) };
+    }
+
+    function vocabExercise(item) {
+      const kindPool = ITEMS.filter((it) => it.kind === item.kind && it.es !== item.es);
+      const r = Math.random();
+      const seenTimes = rec(item.id) ? rec(item.id).seen : 0;
+      if (item.kind === 'number') {
+        if (r < 0.5) {
+          const opts = shuffle([item].concat(shuffle(kindPool).slice(0, 3)));
+          return { type: 'mc', item, graded: true, prompt: item.digit, mode: 'digit-to-word', opts: opts.map((o) => o.es), answer: item.es };
+        }
+        const opts = shuffle([item].concat(shuffle(kindPool).slice(0, 3)));
+        return { type: 'mc', item, graded: true, prompt: '', mode: 'listen-number', listenText: item.es, opts: opts.map((o) => o.digit), answer: item.digit };
+      }
+      if ((item.kind === 'courtesy' || item.kind === 'slang') && seenTimes > 0 && r < 0.35) {
+        return { type: 'speak', item, graded: true, en: item.en, es: item.es };
+      }
+      if (r < 0.5 || seenTimes === 0) {
+        const opts = shuffle([item].concat(shuffle(kindPool).slice(0, 3)));
+        return { type: 'mc', item, graded: true, prompt: item.en, mode: 'en-to-es', opts: opts.map((o) => o.es), answer: item.es };
+      }
+      const opts = shuffle([item].concat(shuffle(kindPool).slice(0, 3)));
+      return { type: 'mc', item, graded: true, prompt: '', mode: 'listen-meaning', listenText: item.es, opts: opts.map((o) => o.en), answer: item.en };
+    }
+
+    function exerciseFor(item) {
+      switch (item.kind) {
+        case 'frame':
+        case 'verb': return sentenceExercise(item);
+        case 'conj': return conjExercise(item);
+        case 'pattern': return patternExercise(item);
+        case 'contrast': return contrastExercise(item);
+        case 'gustar': return gustarExercise(item);
+        case 'hay': return hayExercise(item);
+        default: return vocabExercise(item);
+      }
+    }
+
+    function warmupExercise(item) {
+      // Recognition MC: warm-up only, never counts toward mastery.
+      const pool = ITEMS.filter((it) => it.es !== item.es && it.en !== item.en);
+      const opts = shuffle([item].concat(shuffle(pool).slice(0, 3)));
+      return { type: 'mc', item, graded: false, warmup: true, prompt: '', mode: 'es-to-en', listenText: item.es, showEs: item.es, opts: opts.map((o) => o.en), answer: item.en };
+    }
+
+    function teachCard(item) {
+      return { type: 'teach', item, graded: false };
+    }
+
+    // =========================================================================
+    // Session planning: due reviews front-loaded, then new material
+    // =========================================================================
+    function dueItems() {
+      const cur = curSession();
+      const maxUnit = unlockedThrough();
+      return ITEMS
+        .filter((it) => it.unit <= maxUnit && rec(it.id) && rec(it.id).due <= cur)
+        .sort((a, b) => rec(a.id).box - rec(b.id).box);
+    }
+    function seenItems() {
+      return ITEMS.filter((it) => rec(it.id));
+    }
+    function nextFocusUnit() {
+      const maxUnit = unlockedThrough();
+      for (let u = 0; u <= maxUnit; u++) {
+        if (unitItems(u).some((it) => !rec(it.id))) return u;
+      }
+      for (let u = 0; u <= maxUnit; u++) {
+        if (unitItems(u).some((it) => boxOf(it.id) < 3)) return u;
+      }
+      return maxUnit;
+    }
+    function planSession(focusUnit, explicit) {
+      const plan = [];
+      const due = dueItems();
+      const seen = seenItems();
+      // Warm-up: at most two recognition MCs, first exercises only.
+      const warmSrc = shuffle(due.length ? due : seen).slice(0, 2);
+      warmSrc.forEach((it) => plan.push({ op: 'warmup', item: it }));
+      // Due reviews, front-loaded, lowest boxes first.
+      due.slice(0, 5).forEach((it) => plan.push({ op: 'drill', item: it }));
+      // New material from the intro queue, limited to unlocked units, with the
+      // focus unit preferred.
+      const maxUnit = unlockedThrough();
+      // The intro queue already interleaves survival phrases with the frames;
+      // only a deliberate tap on a specific line overrides that order.
+      let unseen = INTRO_ORDER
+        .map((id) => ITEM_BY_ID[id])
+        .filter((it) => it && !rec(it.id) && it.unit <= maxUnit);
+      if (explicit) {
+        unseen = unseen.slice().sort((a, b) => (a.unit === focusUnit ? 0 : 1) - (b.unit === focusUnit ? 0 : 1));
+      }
+      // Session 1 introduces five items (three frames, two verbs); session 2's
+      // three new items are the remaining frames, so all six frames get
+      // assembled by the end of session 2 without crowding out due reviews.
+      const newCount = due.length > 8 ? 2 : (state.session === 0 ? 5 : 3);
+      const fresh = unseen.slice(0, newCount);
+      // Teach in pairs so a frame and a verb are both on the table before the
+      // first drill asks for a full sentence.
+      for (let i = 0; i < fresh.length; i += 2) {
+        const pair = fresh.slice(i, i + 2);
+        pair.forEach((it) => plan.push({ op: 'teach', item: it }));
+        pair.forEach((it) => plan.push({ op: 'drill', item: it }));
+      }
+      // Fill with fresh recombination practice.
+      const practicePool = seen.length ? seen : fresh;
+      let guard = 0;
+      while (plan.length < 11 && practicePool.length && guard < 20) {
+        guard += 1;
+        const it = pick(practicePool);
+        if (it) plan.push({ op: 'drill', item: it });
+      }
+      return plan.slice(0, 13);
+    }
+
+    // =========================================================================
+    // Rendering
+    // =========================================================================
+    const app = document.getElementById('app');
+    const abar = document.getElementById('abar');
+    const abarInner = document.getElementById('abar-inner');
+    const fback = document.getElementById('fback');
+    const fbackMsg = document.getElementById('fback-msg');
+    const sheet = document.getElementById('sheet');
+    const sheetBack = document.getElementById('sheet-back');
+    const sheetInner = document.getElementById('sheet-inner');
+    const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let screen = 'home';
+    let current = null;   // materialized exercise
+    let awaiting = false; // feedback banner open
+
+    function setActions(html) {
+      abarInner.innerHTML = html;
+      abar.hidden = !html;
+    }
+    function hideFeedback() {
+      fback.classList.remove('show', 'good', 'bad');
+      awaiting = false;
+    }
+    function showFeedback(good, msg) {
+      fbackMsg.innerHTML = msg;
+      fback.classList.remove('good', 'bad');
+      fback.classList.add(good ? 'good' : 'bad', 'show');
+      document.getElementById('fback-btn').textContent = L('Continue', 'Sigue');
+      awaiting = true;
+    }
+
+    // ----- Home: the metro map is the hero -----
+    function renderHome() {
+      screen = 'home';
+      hideFeedback();
+      const maxUnit = unlockedThrough();
+      const greet = state.session === 0
+        ? '¿Qué onda, ' + esc(state.name) + '?'
+        : pick(['¿Qué onda, ' + esc(state.name) + '?', 'Qué gusto, ' + esc(state.name) + '.', 'Órale, ' + esc(state.name) + '.']);
+      let mapHtml = '';
+      UNITS.forEach((u) => {
+        const locked = u.n > maxUnit;
+        const prog = unitProgress(u.n);
+        const mastery = unitMastery(u.n);
+        const dots = 5;
+        const filled = Math.min(dots, Math.floor(prog * dots + 0.0001));
+        let dotHtml = '';
+        for (let i = 0; i < dots; i++) {
+          dotHtml += '<span class="mdot' + (i < filled ? ' done' : '') + '"></span>';
+        }
+        dotHtml += '<span class="mdot terminal' + (mastery >= 0.999 ? ' done' : '') + '" title="Transbordo"></span>';
+        mapHtml +=
+          '<button type="button" class="mline' + (locked ? ' locked' : '') + '" data-action="start-unit" data-unit="' + u.n + '" ' + (locked ? 'disabled' : '') + '>' +
+            '<span class="mbadge" style="background:' + u.color + '">' + u.n + '</span>' +
+            '<span class="mbody">' +
+              '<span class="mname"><span>' + esc(u.name) + '</span><span class="pct">' + (locked ? '🔒' : Math.round(mastery * 100) + '%') + '</span></span>' +
+              '<span class="mtrack" style="background:' + u.color + '33; color:' + u.color + '"><span class="mdots">' + dotHtml + '</span></span>' +
+            '</span>' +
+          '</button>';
+      });
+      const streakBits = [];
+      streakBits.push('<span class="stat">Racha: ' + state.streak.count + '</span>');
+      streakBits.push('<span class="stat">' + esWord('ahorita', "'right now'-ish; elastic, could mean never") + ' × ' + state.streak.tokens + '</span>');
+      streakBits.push('<span class="stat">' + L('Sessions', 'Sesiones') + ': ' + state.session + '</span>');
+      app.innerHTML =
+        '<div class="home-hero">' +
+          '<p class="kicker">' + L('Your line to the street', 'Tu línea a la calle') + '</p>' +
+          '<p class="big-es">' + greet + '</p>' +
+          '<p class="sub">' + (state.session === 0
+            ? 'Small core, six frames, real sentences today. The app is the drill; the street is the game.'
+            : (state.lastNote ? esc(state.lastNote) : L('Due reviews load first, then new material.', 'Primero los repasos, luego lo nuevo.'))) + '</p>' +
+          '<div class="statrow">' + streakBits.join('') + '</div>' +
+        '</div>' +
+        '<div class="metro">' + mapHtml + '</div>';
+      setActions('<button type="button" class="btn primary" data-action="start-session">' + (state.session === 0 ? L('Start', 'Empezar') + ' · Unidad 0+1' : L('Start session', 'Empezar sesión')) + '</button>');
+    }
+
+    // ----- Session flow -----
+    function startSession(unitN) {
+      const explicit = typeof unitN === 'number';
+      const focus = explicit ? unitN : nextFocusUnit();
+      sess = {
+        unit: focus,
+        color: UNITS[focus].color,
+        plan: planSession(focus, explicit),
+        idx: 0,
+        graded: 0,
+        correct: 0,
+        misses: 0,
+        requeued: {},
+        sentences: new Set(),
+        heard: 0
+      };
+      screen = 'session';
+      nextExercise();
+    }
+    function nextExercise() {
+      hideFeedback();
+      if (!sess || sess.idx >= sess.plan.length) { renderMission(); return; }
+      const step = sess.plan[sess.idx];
+      if (step.op === 'teach') {
+        current = teachCard(step.item);
+      } else if (step.op === 'warmup') {
+        current = warmupExercise(step.item);
+      } else {
+        current = exerciseFor(step.item);
+      }
+      renderExercise();
+    }
+    function progressHtml() {
+      const pctv = Math.round((sess.idx / sess.plan.length) * 100);
+      return '<div class="pbar"><div class="pfill" style="width:' + pctv + '%; background:' + sess.color + '"></div></div>';
+    }
+
+    function renderExercise() {
+      const ex = current;
+      let html = progressHtml();
+      let actions = '';
+      if (ex.type === 'teach') {
+        const it = ex.item;
+        html +=
+          '<p class="kicker">' + L('New', 'Nuevo') + (it.kind === 'slang' ? ' · slang tier ' + it.tier : '') + ' <span class="chip pink">palabra nueva</span></p>' +
+          '<div class="card">' +
+            '<div class="teach-es">' + esWord(it.es, it.en) + ' <button type="button" class="spk" data-say="' + esc(it.es) + '" aria-label="Listen">🔊</button></div>' +
+            '<div class="teach-en">' + esc(it.en) + '</div>' +
+            (it.example ? '<div class="teach-ex"><span class="kicker">' + L('Example', 'Ejemplo') + '</span><br>' + esWord(it.example, '') + '</div>' : '') +
+            (it.kind === 'gustar' ? '<div class="teach-ex sub">' + esc(DATA.gustar.note) + '</div>' : '') +
+          '</div>';
+        actions = '<button type="button" class="btn primary" data-action="teach-done">' + L('Got it', 'Va') + '</button>';
+        speak(it.es);
+      } else if (ex.type === 'assemble' || ex.type === 'listen') {
+        const listening = ex.type === 'listen';
+        html +=
+          '<p class="kicker">' + (listening ? L('Listen, then build it', 'Escucha y ármala') : L('Build it in Spanish', 'Ármala en español')) + '</p>' +
+          (listening
+            ? '<p class="prompt-en"><button type="button" class="spk" data-say="' + esc(ex.es) + '" aria-label="Replay">🔊</button> <span class="sub">' + L('Tap to replay', 'Toca para repetir') + '</span></p>'
+            : '<p class="prompt-en">' + esc(ex.en) + '</p>') +
+          (ex.hint ? '<p class="sub">' + esc(ex.hint) + '</p>' : '') +
+          '<div class="slots" id="slots"></div>' +
+          '<div class="bank" id="bank">' +
+            ex.tiles.map((t, i) => '<button type="button" class="tile" data-tile="' + i + '" data-word="' + esc(t) + '">' + esc(t) + '</button>').join('') +
+          '</div>';
+        actions = '<button type="button" class="btn primary" id="check-btn" data-action="check-assemble" disabled>' + L('Check', 'Checa') + '</button>';
+        ex.answerSeq = [];
+        if (listening) speak(ex.es);
+      } else if (ex.type === 'cloze') {
+        html +=
+          '<p class="kicker">' + L('Fill the gap', 'Completa') + '</p>' +
+          '<p class="prompt-en">' + esc(ex.en) + '</p>' +
+          '<p class="big-es">' + esc(ex.gapped) + '</p>' +
+          (ex.hint ? '<p class="sub">' + esc(ex.hint) + '</p>' : '') +
+          '<div class="opts" style="margin-top:1rem">' +
+            ex.opts.map((o) => '<button type="button" class="opt" data-answer="' + esc(o) + '">' + esc(o) + '</button>').join('') +
+          '</div>';
+      } else if (ex.type === 'mc') {
+        let promptHtml = '';
+        if (ex.mode === 'es-to-en') {
+          promptHtml = '<p class="big-es">' + esWord(ex.showEs, ex.item.en) + ' <button type="button" class="spk" data-say="' + esc(ex.showEs) + '" aria-label="Listen">🔊</button></p><p class="sub">' + L('What does it mean?', '¿Qué significa?') + '</p>';
+          speak(ex.showEs);
+        } else if (ex.mode === 'listen-meaning' || ex.mode === 'listen-number') {
+          promptHtml = '<p class="prompt-en"><button type="button" class="spk" data-say="' + esc(ex.listenText) + '" aria-label="Replay">🔊</button> <span class="sub">' + L('What did you hear?', '¿Qué escuchaste?') + '</span></p>';
+          speak(ex.listenText);
+        } else if (ex.mode === 'digit-to-word') {
+          promptHtml = '<p class="big-es">' + esc(ex.prompt) + '</p><p class="sub">' + L('Pick the number word', 'Elige el número') + '</p>';
+        } else {
+          promptHtml = '<p class="prompt-en">' + esc(ex.prompt) + '</p>';
+        }
+        html +=
+          '<p class="kicker">' + (ex.warmup ? L('Warm-up', 'Calentamiento') : L('Choose', 'Elige')) + '</p>' +
+          promptHtml +
+          '<div class="opts" style="margin-top:1rem">' +
+            ex.opts.map((o) => '<button type="button" class="opt" data-answer="' + esc(o) + '">' + esc(o) + '</button>').join('') +
+          '</div>';
+      } else if (ex.type === 'contrast') {
+        html +=
+          '<p class="kicker">' + (ex.family === 'gustar' ? 'gusta vs. gustan' : 'ser vs. estar') + '</p>' +
+          '<p class="prompt-en">' + esc(ex.prompt) + '</p>' +
+          '<div class="opts" style="margin-top:1rem">' +
+            ex.opts.map((o) => '<button type="button" class="opt" data-answer="' + esc(o) + '">' + esc(o) + '</button>').join('') +
+          '</div>';
+      } else if (ex.type === 'pattern') {
+        html +=
+          '<p class="kicker">Los patrones · -' + ex.pat.toUpperCase() + '</p>' +
+          '<p class="sub">' + L('The model:', 'El modelo:') + ' <strong>' + esc(ex.model) + '</strong></p>' +
+          '<table class="conjtab">' + ex.modelRows.map((row) =>
+            '<tr><td>' + esc(row[0]) + '</td><td>' + esWord(row[1], '') + '</td></tr>').join('') + '</table>' +
+          '<p class="prompt-en">' + L('Now conjugate', 'Ahora conjuga') + ': <strong>' + esc(ex.target) + '</strong> · ' + esc(PERSON_ES[ex.person]) + '</p>' +
+          '<div class="opts">' +
+            ex.opts.map((o) => '<button type="button" class="opt" data-answer="' + esc(o) + '">' + esc(o) + '</button>').join('') +
+          '</div>';
+      } else if (ex.type === 'speak') {
+        html +=
+          '<p class="kicker">' + L('Speak & shadow', 'Habla') + '</p>' +
+          '<div class="card">' +
+            '<div class="teach-es">' + esWord(ex.es, ex.en) + '</div>' +
+            '<div class="teach-en">' + esc(ex.en) + '</div>' +
+          '</div>' +
+          '<p class="sub" style="margin-top:0.9rem">Dilo en voz alta. ' + L('The app cannot hear you. Say it anyway — your mouth needs the reps.', 'La app no te escucha. Dilo de todos modos: la boca necesita práctica.') + '</p>';
+        actions =
+          '<div class="btn-row">' +
+            '<button type="button" class="btn" data-say="' + esc(ex.es) + '">🔊 Otra vez</button>' +
+            '<button type="button" class="btn" data-say-fast="' + esc(ex.es) + '">⚡ velocidad chilanga</button>' +
+          '</div>' +
+          '<button type="button" class="btn primary" data-action="spoke-it">Lo dije en voz alta</button>';
+        speak(ex.es, 0.85, () => { window.setTimeout(() => speak(ex.es), 400); });
+      }
+      app.innerHTML = html;
+      setActions(actions);
+      window.scrollTo(0, 0);
+    }
+
+    // ----- Assembly interactions -----
+    function refreshAssemble() {
+      const ex = current;
+      const slots = document.getElementById('slots');
+      const checkBtn = document.getElementById('check-btn');
+      slots.innerHTML = ex.answerSeq.map((ti) =>
+        '<button type="button" class="tile inslot" data-unslot="' + ti + '">' + esc(ex.tiles[ti]) + '</button>').join('');
+      ex.tiles.forEach((t, i) => {
+        const el = document.querySelector('#bank [data-tile="' + i + '"]');
+        if (el) el.classList.toggle('ghost', ex.answerSeq.indexOf(i) !== -1);
+      });
+      if (checkBtn) checkBtn.disabled = ex.answerSeq.length === 0;
+    }
+    function gradeAssemble() {
+      const ex = current;
+      const built = ex.answerSeq.map((i) => ex.tiles[i]).join(' ');
+      const target = ex.correct.join(' ');
+      finishExercise(built === target, built);
+    }
+
+    // ----- Grading + feedback -----
+    function errorLine(ex, given) {
+      if (ex.type === 'contrast' && ex.family !== 'gustar') {
+        const right = ex.answer.split(' ')[0];
+        const wrong = given ? given.split(' ')[0] : '';
+        const isEstar = ex.answer.indexOf('esto') === 0 || ex.answer.indexOf('está') === 0 || ex.answer.indexOf('estamos') === 0;
+        return 'Casi. ' + L('It is', 'Es') + ' ' + esWord(ex.answer, ex.prompt) + (wrong ? ', ' + L('not', 'no') + ' “' + esc(wrong) + '”' : '') + '. ' + (isEstar ? L('State or place, not identity.', 'Estado o lugar, no identidad.') : L('Identity, not state.', 'Identidad, no estado.'));
+      }
+      if (ex.type === 'contrast') {
+        const plural = ex.answer.indexOf('gustan') !== -1;
+        return 'Casi. ' + esWord(ex.answer, ex.prompt) + '. ' + (plural ? L('Plural things take', 'Cosas en plural llevan') + ' “gustan”.' : L('One thing takes', 'Una cosa lleva') + ' “gusta”.');
+      }
+      const target = ex.es || ex.answer;
+      return 'Casi. ' + L('It is', 'Es') + ' ' + esWord(target, ex.en || '') + '.';
+    }
+    function finishExercise(ok, given) {
+      const ex = current;
+      if (ex.graded) {
+        sess.graded += 1;
+        if (ok) sess.correct += 1;
+        else sess.misses += 1;
+        gradeItem(ex.item.id, ok);
+        if (!ok && !sess.requeued[ex.item.id] && sess.plan.length < 15) {
+          sess.requeued[ex.item.id] = true;
+          sess.plan.push({ op: 'drill', item: ex.item });
+        }
+      }
+      if (ex.es) { sess.heard += 1; speak(ex.es); }
+      if (ok) {
+        showFeedback(true, '✓ ' + celebrate() + (ex.es && ex.type !== 'speak' ? ' · ' + esWord(ex.es, ex.en || '') : ''));
+      } else {
+        showFeedback(false, errorLine(ex, given));
+      }
+    }
+    function advance() {
+      if (!sess) return;
+      sess.idx += 1;
+      nextExercise();
+    }
+
+    // ----- Mission: the bridge from app to street -----
+    function renderMission() {
+      screen = 'mission';
+      hideFeedback();
+      const m = DATA.missions[state.missionIdx % DATA.missions.length];
+      app.innerHTML =
+        progressHtml() +
+        '<p class="kicker">La Misión</p>' +
+        '<p class="sub">' + L('This is the actual point of the session. Deploy it today.', 'Este es el punto de la sesión. Úsala hoy.') + '</p>' +
+        '<div class="mission-card">' +
+          '<p class="kicker">' + L('Say this to a real person', 'Dísela a una persona real') + '</p>' +
+          '<p class="mission-es">' + esWord(m.es, m.context) + ' <button type="button" class="spk" data-say="' + esc(m.es) + '" aria-label="Listen">🔊</button></p>' +
+          '<p class="mission-ctx">' + esc(m.context) + '</p>' +
+        '</div>';
+      setActions('<button type="button" class="btn primary" data-action="mission-done">Sale, la digo hoy</button>');
+      speak(m.es);
+    }
+
+    // ----- Streak (racha): grace, never guilt -----
+    function updateStreak() {
+      const today = todayKey();
+      const s = state.streak;
+      let note = '';
+      if (s.last === today) {
+        // second session today, streak unchanged
+      } else if (!s.last) {
+        s.count = 1;
+      } else {
+        const gap = Math.round((new Date(today) - new Date(s.last)) / 86400000);
+        if (gap === 1) {
+          s.count += 1;
+        } else if (gap > 1 && s.tokens > 0) {
+          s.tokens -= 1;
+          s.count += 1;
+          note = 'Ahorita cuenta. (' + s.tokens + ' ' + L('grace tokens left', 'de gracia') + ')';
+        } else if (gap > 1) {
+          s.count = 1;
+          note = L('Streak reset. It happens. 🤷', 'Se reinició la racha. Ni modo. 🤷');
+        }
+      }
+      s.last = today;
+      state.lastNote = note;
+      save();
+      return note;
+    }
+
+    // ----- Summary + papel picado -----
+    function papelPicado() {
+      if (REDUCED) return;
+      const colors = ['#F04E98', '#0057A8', '#7A9A01', '#F58025', '#00954C', '#D5A100'];
+      for (let i = 0; i < 44; i++) {
+        const p = document.createElement('span');
+        p.className = 'pp';
+        p.style.left = rand(100) + 'vw';
+        p.style.background = colors[rand(colors.length)];
+        p.style.animationDelay = (Math.random() * 0.7) + 's';
+        p.style.transform = 'rotate(' + rand(360) + 'deg)';
+        document.body.appendChild(p);
+        window.setTimeout(() => p.remove(), 3200);
+      }
+    }
+    function renderSummary() {
+      screen = 'summary';
+      hideFeedback();
+      const perfect = sess.graded > 0 && sess.misses === 0;
+      const before = unlockedThrough();
+      state.session += 1;
+      state.missionIdx += 1;
+      if (perfect) state.perfect += 1;
+      const note = updateStreak();
+      const after = unlockedThrough();
+      save();
+      papelPicado();
+      const pctv = sess.graded ? Math.round((sess.correct / sess.graded) * 100) : 100;
+      let headline;
+      if (perfect) headline = '¡Neta, perfecto!';
+      else if (state.streak.count >= 5) headline = '¡No manches! Racha de ' + state.streak.count + '.';
+      else headline = pick(['¡Órale!', '¡Qué chido!', 'Sale.']);
+      let unlockHtml = '';
+      if (after > before) {
+        const u = UNITS[after];
+        unlockHtml =
+          '<div class="card" style="margin-top:0.9rem; border-color:' + u.color + '; box-shadow: 0 4px 0 ' + u.color + '">' +
+            '<p class="kicker">' + L('New line unlocked', 'Nueva línea') + '</p>' +
+            '<p class="big-es" style="margin:0.2rem 0 0"><span class="mbadge" style="background:' + u.color + '; display:inline-grid; vertical-align:middle; margin-right:0.4rem">' + u.n + '</span>' + esc(u.name) + '</p>' +
+          '</div>';
+      }
+      app.innerHTML =
+        '<div class="home-hero">' +
+          '<p class="kicker">' + L('Session done', 'Sesión terminada') + '</p>' +
+          '<p class="big-es">' + headline + '</p>' +
+          '<div class="statrow">' +
+            '<span class="stat">' + pctv + '% ' + L('right', 'bien') + '</span>' +
+            '<span class="stat">Racha: ' + state.streak.count + '</span>' +
+            '<span class="stat">' + sess.heard + ' ' + L('sentences heard', 'oraciones oídas') + '</span>' +
+          '</div>' +
+          (note ? '<p class="sub" style="margin-top:0.7rem">' + esc(note) + '</p>' : '') +
+          unlockHtml +
+        '</div>';
+      let actions = '';
+      if (perfect) {
+        actions += '<button type="button" class="btn" data-action="bonus">Ronda extra: haz tres oraciones</button>';
+      }
+      actions += '<button type="button" class="btn primary" data-action="go-home">' + L('Home', 'A la casa') + '</button>';
+      setActions(actions);
+    }
+
+    // ----- Bonus: free-build three valid sentences from seven tiles -----
+    let bonus = null;
+    function startBonus() {
+      screen = 'bonus';
+      hideFeedback();
+      const frames = shuffle(knownFrames()).slice(0, 2);
+      const verbs = shuffle(knownVerbs()).slice(0, 2);
+      const comps = [];
+      verbs.forEach((v) => shuffle(v.complements).slice(0, 2).forEach((c) => comps.push(c.es)));
+      const tiles = shuffle(frames.map((f) => f.es).concat(verbs.map((v) => v.es)).concat(comps.slice(0, 3)));
+      bonus = { frames, verbs, tiles, answerSeq: [], made: [], done: 0 };
+      renderBonus('');
+    }
+    function renderBonus(msg) {
+      app.innerHTML =
+        '<p class="kicker">Ronda extra</p>' +
+        '<p class="prompt-en">Haz tres oraciones</p>' +
+        '<p class="sub">' + L('Build 3 different valid sentences: frame + verb + complement.', 'Arma 3 oraciones válidas: marco + verbo + complemento.') + ' (' + bonus.done + '/3)</p>' +
+        (msg ? '<p class="sub" style="color:var(--olive); font-weight:700">' + msg + '</p>' : '') +
+        '<div class="slots" id="slots"></div>' +
+        '<div class="bank" id="bank">' +
+          bonus.tiles.map((t, i) => '<button type="button" class="tile" data-btile="' + i + '" data-word="' + esc(t) + '">' + esc(t) + '</button>').join('') +
+        '</div>' +
+        (bonus.made.length ? '<p class="sub" style="margin-top:1rem">' + bonus.made.map((s) => '✓ ' + esc(s)).join('<br>') + '</p>' : '');
+      setActions(
+        '<div class="btn-row">' +
+          '<button type="button" class="btn quiet" data-action="go-home">' + L('Exit', 'Salir') + '</button>' +
+          '<button type="button" class="btn primary" data-action="check-bonus">Va</button>' +
+        '</div>');
+      refreshBonus();
+    }
+    function refreshBonus() {
+      const slots = document.getElementById('slots');
+      slots.innerHTML = bonus.answerSeq.map((ti) =>
+        '<button type="button" class="tile inslot" data-bunslot="' + ti + '">' + esc(bonus.tiles[ti]) + '</button>').join('');
+      bonus.tiles.forEach((t, i) => {
+        const el = document.querySelector('#bank [data-btile="' + i + '"]');
+        if (el) el.classList.toggle('ghost', bonus.answerSeq.indexOf(i) !== -1);
+      });
+    }
+    function checkBonus() {
+      const words = bonus.answerSeq.map((i) => bonus.tiles[i]);
+      const s = words.join(' ');
+      const frame = bonus.frames.find((f) => f.es === words[0]);
+      const verb = bonus.verbs.find((v) => v.es === words[1]);
+      let valid = false;
+      if (frame && verb && words.length >= 2) {
+        if (words.length === 2) valid = true;
+        else if (words.length === 3) valid = verb.complements.some((c) => c.es === words[2]);
+      }
+      if (valid && bonus.made.indexOf(s) === -1) {
+        bonus.made.push(s);
+        bonus.done += 1;
+        speak(s);
+        state.sentencesBuilt += 1;
+        save();
+        bonus.answerSeq = [];
+        if (bonus.done >= 3) {
+          papelPicado();
+          renderBonus('¡Neta, perfecto! Tres de tres.');
+          setActions('<button type="button" class="btn primary" data-action="go-home">' + L('Home', 'A la casa') + '</button>');
+          return;
+        }
+        renderBonus('✓ ¡Chido! ' + esc(s));
+      } else if (valid) {
+        bonus.answerSeq = [];
+        renderBonus(L('Already made that one. A new combination.', 'Esa ya la hiciste. Una combinación nueva.'));
+      } else {
+        bonus.answerSeq = [];
+        renderBonus(L('Not valid. Frame, then verb, then a complement that fits it.', 'No válida. Marco, luego verbo, luego un complemento que le quede.'));
+      }
+    }
+
+    // ----- Settings / backup sheet -----
+    function openSettings() {
+      sheetInner.innerHTML =
+        '<h2>Ajustes</h2>' +
+        '<p class="sub">' + L('Everything lives in this browser. No account, no server, nobody watching.', 'Todo vive en este navegador. Sin cuenta, sin servidor.') + '</p>' +
+        '<p><strong>' + L('Voice', 'Voz') + ':</strong> ' + (voice ? esc(voice.name + ' (' + voice.lang + ')') : L('system default (no es-MX voice found yet)', 'la del sistema')) + '</p>' +
+        '<h2 style="margin-top:1rem">Respaldo</h2>' +
+        '<p class="sub">' + L('Copy this to move progress to another device, or paste a backup and load it.', 'Copia esto para llevar tu progreso a otro aparato, o pega un respaldo y cárgalo.') + '</p>' +
+        '<textarea id="backup-box">' + esc(JSON.stringify(state)) + '</textarea>' +
+        '<button type="button" class="btn" data-action="copy-backup">' + L('Copy backup', 'Copiar respaldo') + '</button>' +
+        '<button type="button" class="btn" data-action="load-backup">' + L('Load pasted backup', 'Cargar respaldo') + '</button>' +
+        '<button type="button" class="btn" data-action="reset-all" style="border-color:var(--red); color:var(--red)">' + L('Reset everything', 'Borrar todo') + '</button>' +
+        '<button type="button" class="btn primary" data-action="close-sheet">' + L('Close', 'Cerrar') + '</button>';
+      sheet.classList.add('show');
+      sheetBack.classList.add('show');
+    }
+    function openDef(es, en) {
+      sheetInner.innerHTML =
+        '<p class="kicker">' + L('Word card', 'Tarjeta') + '</p>' +
+        '<p class="def-es">' + esc(es) + '</p>' +
+        '<p class="def-en">' + esc(en || lookupEn(es) || '—') + '</p>' +
+        '<div class="btn-row">' +
+          '<button type="button" class="btn" data-say="' + esc(es) + '">🔊 0.85</button>' +
+          '<button type="button" class="btn" data-say-fast="' + esc(es) + '">⚡ velocidad chilanga</button>' +
+        '</div>' +
+        '<button type="button" class="btn primary" data-action="close-sheet" style="margin-top:0.6rem">' + L('Close', 'Cerrar') + '</button>';
+      sheet.classList.add('show');
+      sheetBack.classList.add('show');
+    }
+    function closeSheet() {
+      sheet.classList.remove('show');
+      sheetBack.classList.remove('show');
+    }
+
+    // =========================================================================
+    // Event delegation
+    // =========================================================================
+    document.addEventListener('click', (ev) => {
+      const t = ev.target.closest('button, [data-action]');
+      if (!t) return;
+      const say = t.getAttribute('data-say');
+      if (say !== null && say !== undefined && say !== '') { speak(say); return; }
+      const sayFast = t.getAttribute('data-say-fast');
+      if (sayFast) { speak(sayFast, 1.05); return; }
+      if (t.hasAttribute('data-def-es')) {
+        const es = t.getAttribute('data-def-es');
+        speak(es);
+        openDef(es, t.getAttribute('data-def-en'));
+        return;
+      }
+      // Assembly tiles
+      if (t.hasAttribute('data-tile') && current && current.answerSeq) {
+        const i = Number(t.getAttribute('data-tile'));
+        if (current.answerSeq.indexOf(i) === -1) {
+          current.answerSeq.push(i);
+          speak(current.tiles[i]);
+          refreshAssemble();
+        }
+        return;
+      }
+      if (t.hasAttribute('data-unslot') && current && current.answerSeq) {
+        const i = Number(t.getAttribute('data-unslot'));
+        const at = current.answerSeq.indexOf(i);
+        if (at !== -1) current.answerSeq.splice(at, 1);
+        refreshAssemble();
+        return;
+      }
+      // Bonus tiles
+      if (t.hasAttribute('data-btile') && bonus) {
+        const i = Number(t.getAttribute('data-btile'));
+        if (bonus.answerSeq.indexOf(i) === -1) {
+          bonus.answerSeq.push(i);
+          speak(bonus.tiles[i]);
+          refreshBonus();
+        }
+        return;
+      }
+      if (t.hasAttribute('data-bunslot') && bonus) {
+        const i = Number(t.getAttribute('data-bunslot'));
+        const at = bonus.answerSeq.indexOf(i);
+        if (at !== -1) bonus.answerSeq.splice(at, 1);
+        refreshBonus();
+        return;
+      }
+      // Option answers (MC / cloze / contrast / pattern)
+      if (t.hasAttribute('data-answer') && current && !awaiting) {
+        const given = t.getAttribute('data-answer');
+        const ok = given === current.answer;
+        finishExercise(ok, given);
+        return;
+      }
+      const action = t.getAttribute('data-action');
+      if (!action) return;
+      switch (action) {
+        case 'start-session': startSession(); break;
+        case 'start-unit': startSession(Number(t.getAttribute('data-unit'))); break;
+        case 'check-assemble': gradeAssemble(); break;
+        case 'teach-done': initSrs(current.item.id); advance(); break;
+        case 'spoke-it': finishExercise(true, ''); break;
+        case 'advance': advance(); break;
+        case 'mission-done': renderSummary(); break;
+        case 'go-home': sess = null; bonus = null; closeSheet(); renderHome(); break;
+        case 'bonus': startBonus(); break;
+        case 'check-bonus': checkBonus(); break;
+        case 'open-settings': openSettings(); break;
+        case 'close-sheet': closeSheet(); break;
+        case 'copy-backup': {
+          const box = document.getElementById('backup-box');
+          box.select();
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(box.value).catch(() => {});
+          }
+          t.textContent = L('Copied', 'Copiado') + ' ✓';
+          break;
+        }
+        case 'load-backup': {
+          const box = document.getElementById('backup-box');
+          try {
+            const parsed = JSON.parse(box.value);
+            if (parsed && typeof parsed === 'object' && parsed.srs) {
+              state = Object.assign(defaultState(), parsed);
+              save();
+              closeSheet();
+              renderHome();
+            } else {
+              t.textContent = L('That is not a backup', 'Eso no es un respaldo');
+            }
+          } catch (e) {
+            t.textContent = L('Could not read that', 'No se pudo leer');
+          }
+          break;
+        }
+        case 'reset-all': {
+          if (window.confirm(L('Wipe all progress? This cannot be undone.', '¿Borrar todo el progreso? No se puede deshacer.'))) {
+            state = defaultState();
+            save();
+            closeSheet();
+            renderHome();
+          }
+          break;
+        }
+      }
+    });
+
+    // Test/debug hook, only with ?debug in the URL (used by the smoke tests).
+    if (window.location.search.indexOf('debug') !== -1) {
+      window.__orale = {
+        state: () => state,
+        current: () => current,
+        session: () => sess,
+        bonus: () => bonus
+      };
+    }
+
+    renderHome();
+  })();
+  </script>
+</body>
+</html>
