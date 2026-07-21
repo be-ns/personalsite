@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bigeminy (draft) — Ben Siverly</title>
+  <meta name="description" content="A short story draft: a woman grows hearts for a president, one at a time, and counts the names each one buys back.">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Bigeminy (draft) — Ben Siverly">
+  <meta property="og:description" content="She grows hearts for the president, one at a time, and counts the names each one buys back.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://bensiverly.com/bigeminy.html">
+  <meta property="og:image" content="https://bensiverly.com/images/og-bigeminy.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Bigeminy (draft) — a short story by Ben Siverly">
+  <meta property="article:published_time" content="2026-07-21">
+  <meta property="article:author" content="Ben Siverly">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Bigeminy (draft) — Ben Siverly">
+  <meta name="twitter:description" content="She grows hearts for the president, one at a time, and counts the names each one buys back.">
+  <meta name="twitter:image" content="https://bensiverly.com/images/og-bigeminy.png">
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://bensiverly.com/bigeminy.html">
+
+  <!-- Favicon & PWA -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#0047AB">
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ShortStory",
+    "headline": "Bigeminy",
+    "description": "A short story draft: a woman grows hearts for a president, one at a time, and counts the names each one buys back.",
+    "articleSection": "Prose",
+    "inLanguage": "en",
+    "datePublished": "2026-07-21",
+    "dateModified": "2026-07-21",
+    "url": "https://bensiverly.com/bigeminy.html",
+    "mainEntityOfPage": "https://bensiverly.com/bigeminy.html",
+    "image": "https://bensiverly.com/images/og-bigeminy.png",
+    "isPartOf": { "@type": "CollectionPage", "name": "Writings", "url": "https://bensiverly.com/writings.html" },
+    "author": { "@type": "Person", "name": "Ben Siverly", "url": "https://bensiverly.com/" },
+    "publisher": { "@type": "Person", "name": "Ben Siverly", "url": "https://bensiverly.com/" }
+  }
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Zilla+Slab:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       CSS Variables
+       ========================================================================== */
+    :root {
+      --color-bg: #FDFCFA;
+      --color-bg-warm: #FAF9F7;
+      --color-text: #1A1A1A;
+      --color-accent: #FFE227;
+      --color-cobalt: #0047AB;
+      --color-muted: #666666;
+      --color-border: #E5E5E5;
+      --color-border-light: rgba(0, 0, 0, 0.06);
+
+      --font-heading: 'Zilla Slab', Georgia, serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+      --space-xs: 0.5rem;
+      --space-sm: 1rem;
+      --space-md: 1.5rem;
+      --space-lg: 2.5rem;
+      --space-xl: 4rem;
+      --space-2xl: 6rem;
+
+      --max-width: 680px;
+      --measure: 37rem;
+      --padding-x: 1.5rem;
+
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --transition-fast: 150ms ease;
+    }
+
+    /* ==========================================================================
+       Base
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 1.0625rem;
+      line-height: 1.7;
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    ::selection {
+      background-color: var(--color-accent);
+      color: #1A1A1A;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 8px;
+      top: -56px;
+      z-index: 1000;
+      padding: 0.6rem 1rem;
+      background: var(--color-cobalt);
+      color: #fff;
+      border-radius: 0 0 6px 6px;
+      font: 600 0.95rem/1 system-ui, sans-serif;
+      text-decoration: none;
+    }
+
+    .skip-link:focus { top: 0; }
+
+    /* ==========================================================================
+       Header
+       ========================================================================== */
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-sm) var(--padding-x);
+      border-bottom: 1px solid var(--color-border-light);
+      background-color: var(--color-bg);
+    }
+
+    .site-brand {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-text);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    .page-link {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-muted);
+      text-decoration: none;
+      padding: 0.5rem;
+      border-radius: var(--radius-sm);
+      transition: color var(--transition-fast), background-color var(--transition-fast);
+    }
+
+    .page-link:hover,
+    .page-link:focus {
+      color: var(--color-text);
+      background-color: var(--color-bg-warm);
+    }
+
+    /* ==========================================================================
+       Article
+       ========================================================================== */
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: var(--space-xl) var(--padding-x);
+    }
+
+    .article {
+      max-width: var(--measure);
+      margin: 0 auto;
+    }
+
+    .article-header {
+      margin-bottom: var(--space-lg);
+    }
+
+    .article-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--color-cobalt);
+      margin-bottom: var(--space-md);
+    }
+
+    .article-title {
+      font-family: var(--font-heading);
+      font-size: clamp(2.25rem, 6vw, 3.25rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+      color: var(--color-text);
+    }
+
+    .article-title::after {
+      content: "";
+      display: block;
+      width: 44px;
+      height: 3px;
+      margin-top: var(--space-md);
+      background-color: var(--color-accent);
+      border-radius: 2px;
+    }
+
+    .article-meta {
+      margin-top: var(--space-md);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+    }
+
+    /* ==========================================================================
+       Body copy — tuned for phone legibility: generous size, high line-height,
+       a narrow measure so lines stay easy to track on a small screen.
+       ========================================================================== */
+    .article-body {
+      font-family: var(--font-heading);
+      font-size: 1.1875rem;
+      font-weight: 400;
+      line-height: 1.85;
+      color: #2A2622;
+    }
+
+    .article-body p {
+      margin-bottom: var(--space-md);
+    }
+
+    .article-body p.lead {
+      font-size: 1.3125rem;
+      line-height: 1.7;
+      color: var(--color-text);
+    }
+
+    /* Chapter markers */
+    .chapter-marker {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin: var(--space-xl) 0 var(--space-lg);
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      color: var(--color-muted);
+    }
+
+    .article-body > .chapter-marker:first-child {
+      margin-top: 0;
+    }
+
+    .chapter-marker::before,
+    .chapter-marker::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background-color: var(--color-border);
+    }
+
+    .article-end {
+      width: 36px;
+      height: 2px;
+      margin: var(--space-xl) 0 0;
+      background-color: var(--color-border);
+    }
+
+    /* ==========================================================================
+       Feedback
+       ========================================================================== */
+    .feedback-box {
+      max-width: var(--measure);
+      margin: var(--space-2xl) auto 0;
+      padding: var(--space-lg);
+      background-color: var(--color-bg-warm);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+
+    .feedback-box p {
+      color: var(--color-muted);
+      font-size: 0.9375rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .feedback-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #fff;
+      background-color: var(--color-cobalt);
+      text-decoration: none;
+      padding: 0.75rem 1.25rem;
+      border-radius: 100px;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .feedback-link:hover,
+    .feedback-link:focus {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 71, 171, 0.25);
+    }
+
+    /* ==========================================================================
+       Article footer nav
+       ========================================================================== */
+    .article-nav {
+      max-width: var(--measure);
+      margin: var(--space-xl) auto 0;
+      padding-top: var(--space-lg);
+      border-top: 1px solid var(--color-border-light);
+    }
+
+    .back-to-writings {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text);
+      text-decoration: none;
+      transition: gap var(--transition-fast);
+    }
+
+    .back-to-writings:hover {
+      gap: 0.75rem;
+    }
+
+    .back-to-writings span:first-child {
+      color: var(--color-cobalt);
+    }
+
+    /* ==========================================================================
+       Footer
+       ========================================================================== */
+    footer {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: var(--space-lg) var(--padding-x) var(--space-2xl);
+      width: 100%;
+    }
+
+    .copyright {
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      color: var(--color-muted);
+    }
+
+    /* ==========================================================================
+       Responsive
+       ========================================================================== */
+    @media (min-width: 640px) {
+      :root { --padding-x: 2rem; }
+    }
+
+    @media (min-width: 768px) {
+      :root { --padding-x: 2.5rem; }
+
+      .article-body { font-size: 1.25rem; }
+      .article-body p.lead { font-size: 1.4375rem; }
+    }
+
+    /* ==========================================================================
+       Reduced motion
+       ========================================================================== */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ==========================================================================
+       Print
+       ========================================================================== */
+    @media print {
+      .site-header,
+      .feedback-box,
+      .article-nav {
+        display: none;
+      }
+
+      main {
+        padding: 0.5in;
+        max-width: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a href="/" class="site-brand" aria-label="Return to home">BS.</a>
+    <a href="writings.html" class="page-link">&larr; Writings</a>
+  </header>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <main id="main">
+    <article class="article">
+      <header class="article-header">
+        <p class="article-eyebrow">Short Story &middot; Draft</p>
+        <h1 class="article-title">Bigeminy</h1>
+        <p class="article-meta">Draft &mdash; July 2026</p>
+      </header>
+
+      <div class="article-body">
+        <h2 class="chapter-marker" aria-label="Chapter 1">1</h2>
+
+        <p class="lead">Berivan wakes into the second beat before she opens her eyes.</p>
+
+        <p>Her own pulse first. Then the other one, a half-step behind, early, a hand laid on her shoulder that she never feels lift.</p>
+
+        <p>The wall says 5:52 in blue. The mattress has kept its record of the night and will give it to Priya later if Priya asks. Four hours. A stretch near three it marked in a warmer color, which was her, awake, listening.</p>
+
+        <p>She counts. One heart, then the other. One, then the other. Nine months she has carried this one, the fourth. In five it will be big enough to cut out of her and put in the president, the way she gave up the three before it, on schedule, no trouble. She does the subtraction under the blanket. Five. Then a new one, from nothing, and another nine months of two.</p>
+
+        <p>The water comes on warm without her touching it. It has learned the heat her skin wants. She stands in it and lets both hearts run at their own speeds.</p>
+
+        <p>Downstairs there will be eggs from hens she has never seen. Coffee poured to the line her cardiologist drew across the cup. Priya, who will ask how she slept and mean it.</p>
+
+        <p>Here first, in the dark. Expected beat. Early beat. Expected beat. Early beat.</p>
+
+        <p>It never misses. Three hearts she has grown and handed over and it has never once, in any of them, missed. She has started to wish one of them would, just to prove the fault could be in the machine and not only in her.</p>
+
+        <h2 class="chapter-marker" aria-label="Chapter 2">2</h2>
+
+        <p>The sweep comes at nine. It is always unannounced, and it always comes at nine.</p>
+
+        <p>Four agents she has learned to call by their first names, because pretending not to know your jailers gets exhausting somewhere around the second year. They move through the house with wands and a dog and a courtesy that never once slips, checking the vents, the garden shed, under a bed nobody but her has slept in for three years. Marcus apologizes for stepping on the trellis. She tells him the tomatoes will forgive him. He says they always do.</p>
+
+        <p>She used to ask what they were looking for. What she worked out, when no one answered, is that they are not looking for someone getting in. They are confirming, every few weeks, that she is still exactly where they left her.</p>
+
+        <p>The president comes an hour after the sweep clears. By now Berivan knows this is not a coincidence, though no one has ever said so out loud.</p>
+
+        <p>"Tu çawa yî?" the president says at the door, before hello, before anything. How are you. In Kurmanji, in an accent so clean it takes Berivan a second to hear it as the language at all. The last person who spoke it to her that well was her grandmother, and her grandmother has been dead longer than this woman has held the office.</p>
+
+        <p>Up close, without the cameras finding her good side, the president looks older than her photographs. Grey at the temple no one has caught yet. A stillness in the hands that Berivan, who has learned to read hands, knows is effort.</p>
+
+        <p>"Baş im," Berivan says. Fine. The president smiles at the word like a gift and sits down, and for the length of the visit she is only a tired woman in a chair, in the one house in the country where no camera will follow her.</p>
+
+        <h2 class="chapter-marker" aria-label="Chapter 3">3</h2>
+
+        <p>The recruiter's name was Foster and he came to a tea house in Diyarbakır with a translator he did not need, because Berivan's English was better than his Kurmanji, though he never once tried the language himself. Not that year.</p>
+
+        <p>He laid it out the way Americans lay things out, in order, like a table setting. A donor program. A genetic match, rare, one in several hundred thousand. Full citizenship. A stipend that would have taken her father eleven years to earn honestly. And then, because he had been trained to save the real offer for last, the part that made her stop turning her tea glass in its saucer. Family could come too, under the same sponsorship. Immediate kin, he said, as though kinship where she came from had edges that neat.</p>
+
+        <p>"How many is immediate," she said.</p>
+
+        <p>He did not know. He came back three weeks later with a number, the way Americans come back with numbers. Up to twenty-four, if she gave the names herself, if they checked out, if she signed.</p>
+
+        <p>She had them before he finished the sentence, not as a list but as a room. Her apo and his wife and their two boys, still in the wreck of the village the soldiers had cleared the year she was born, still waiting on a rebuilding that was never coming. Her xalti, her mother's sister, who had raised her as much as her mother had, and that woman's four. The cousin in Van who taught. The cousin in Diyarbakır who had trained as a doctor and could not hold a license worth anything past the provincial line. Names that in her language came attached to a duty, so that to say them was already to owe them something.</p>
+
+        <p>Twenty-four. She counted them twice, the way she counts everything twice, once fast and once slow, to see if the number moved when she was careful.</p>
+
+        <p>It did not. It came to exactly the number the American had already written down, which she did not think anything of, then.</p>
+
+        <p>Twenty-four names for one body. She thought it was the best trade she would ever be offered.</p>
+
+        <p>She was right about that part.</p>
+
+        <h2 class="chapter-marker" aria-label="Chapter 4">4</h2>
+
+        <p>Priya arrives at ten with the day's kit and a paper bag of figs.</p>
+
+        <p>She was a nurse before the job became this. She draws the morning tubes, four of them, from the port they set under Berivan's collarbone so the daily draws would stop ruining her arms. That was how they put it, so they would stop ruining her arms, and it was true, and it also means there is now a permanent tap in her chest that opens whenever they decide to open it. Both things at once. Everything here is both things at once.</p>
+
+        <p>She spins the tubes, labels them, logs them. Then she puts the figs on the counter without a word, because she knows Berivan grew up on them and the kitchen will only order what the dietician approves, and figs, for reasons no one will explain, are not on the list.</p>
+
+        <p>This is how kindness works here. It comes in around the edges of the rules, carried by people who did not write them and cannot change them. Priya cannot get figs put on the list. She can put them in her own bag and set them down and say nothing. Berivan takes them the way they are given.</p>
+
+        <p>They do the numbers together. Pressure, weight, the graft's output. A rhythm strip comes off the printer as one line, her beat and then the early one, her beat and then the early one, the pattern with a name Priya has never once said out loud. She reads it, nods, files it. She has never told Berivan a result. She is not allowed to. Berivan reads them upside down across the table, which is not forbidden, because no one thought to forbid it.</p>
+
+        <p>The figs are good. She eats three and saves the rest for the noon walk she is allowed, the loop of the grounds that ends where it starts.</p>
+
+        <h2 class="chapter-marker" aria-label="Chapter 5">5</h2>
+
+        <p>She signed in a windowless room in Ankara with an American seal on the wall and a flag she did not stand for beside it.</p>
+
+        <p>They gave her the document in English and in Kurmanji, and the Kurmanji was good, better than Foster's, done by someone who knew the language and not only the words. She noticed that. She noticed they had spent money making the Kurdish version correct, and she took it for respect, and filed it, later, under something else.</p>
+
+        <p>She read all of it, start to finish, and then again. They expected her to skim and sign. Three people waited and a fourth pretended not to check his watch while she read the medical annexes she did not fully follow and the family clauses she followed completely. Twenty-four names, listed, each with a line for a signature that was not hers. Her xalti's mark. The doctor cousin's careful full name.</p>
+
+        <p>There was a clause about the term of service. It said the arrangement would continue as medically indicated. She read that line twice. She took medically indicated to mean until it works. Until the thing is done and the president is well and Berivan goes home a citizen with her twenty-four gathered around her. That is what a reasonable person takes those words to mean. She was reasonable. She signed.</p>
+
+        <p>She was not tricked. She wants that kept straight, even now. Especially now. No one lied to her in that room. They let her supply the meaning, and she supplied the hopeful one, because she had twenty-four reasons to, and because the other meaning had not yet occurred to her.</p>
+
+        <p>Medically indicated. She thinks about those two words more than almost anything else now. They were always going to mean what they meant. She just could not read them yet.</p>
+
+        <h2 class="chapter-marker" aria-label="Chapter 6">6</h2>
+
+        <p>They drive her twice a year to a building with no sign, forty minutes past checkpoints that know her car before they know her, for imaging the machines at the compound cannot do.</p>
+
+        <p>She waits in Corridor B, on a bench built for waiting, while a technician confirms something on a tablet. On the wall a screen has been left on the wrong page, a scheduling grid nobody thought to close before walking a host down the hall.</p>
+
+        <p>One row. Her four digits, which she has seen on her own wristband a thousand times. CARDIAC. CYCLE 4. Beside it a column she has never seen filled in before, headed VIABLE ALTERNATES, and in the cell under it a single character that is not a number.</p>
+
+        <p>A dash.</p>
+
+        <p>A zero would mean they had looked and found no one. A dash means they stopped looking, because there was never going to be anyone to find.</p>
+
+        <p>A technician catches her reading and closes the page, unhurried, the way you would straighten a frame that had drifted.</p>
+
+        <p>She had thought, without deciding to think it, that there was a bench somewhere. Other matches, a margin, a second name if she ever stopped. There is no bench. There is a dash. On the road home she watches the two chase cars hold their spacing, front and back, the way you would box in a thing there is only one of, and she understands the escort for the first time as arithmetic rather than care.</p>
+
+        <h2 class="chapter-marker" aria-label="Chapter 7">7</h2>
+
+        <p>Dr. Whitfield tells her on a Tuesday, the way you tell someone a delivery date has moved up, that the one in the president is starting to go.</p>
+
+        <p>Thirteen months. The heart she grew last year, the third, is doing in the president's chest what all of them do in the end, the antibodies finding the seam, the slow thickening no drug has ever quite talked them out of. Which means the fourth, the one under her own ribs right now, comes out ahead of schedule. Not five more months. Perhaps three.</p>
+
+        <p>"Hers is failing," she says, to be sure she has it right. "So you take mine early."</p>
+
+        <p>"We would rather take yours a little green than leave her a week too long," Whitfield says. He has a way of putting the president in every sentence, the way some men put God, as the thing that settles the matter. "Yours has never let us down. Not once."</p>
+
+        <p>She asks him the question, because someone has to, and because she has stopped being afraid of what an answer costs. How many hearts can one person grow.</p>
+
+        <p>He does not flinch, which tells her he has been asked before, in this chair, by her.</p>
+
+        <p>"We don't know your number," he says. "The animals gave out around the sixth. Not the graft, the host. The sixth time, the body stops agreeing to do it. Something in it decides it has been asked enough."</p>
+
+        <p>"The sixth."</p>
+
+        <p>"In pigs. You are not a pig." He says it kindly, and then, because he is tired, or because he has a daughter, or because the number is heavy even for him, he says a truer thing than he means to. "I have a granddaughter your age. I don't let myself do that arithmetic. I'd recommend you don't either." He hears it land wrong and looks at his hands.</p>
+
+        <p>She does the arithmetic in the car, because he told her not to, and because it is the only thing she has ever been able to do about any of this.</p>
+
+        <p>Six hearts, if she is a pig, and no one alive can tell her whether she is. The fourth is in her now. Two more after it, at the outside, the fifth and the sixth, and then whatever is left of her. Four names to a heart, when the government has a good week, and most weeks are not good. They gave her twenty-four names to sign for, that first year in Ankara, and she had thought the number a kindness. Six hearts. Four names a heart. Twenty-four. She sees it now the way you see a word you have been saying wrong your whole life. They did not offer her a family. They offered her exactly as many people as her body could pay for, no more, counted her hearts before she ever touched the pen, and let her believe the counting was hers.</p>
+
+        <p>Twelve names still out. Three hearts to buy them, the one in her and the two that might follow, and only if every week is the good kind, which no week has ever reliably been. She checks it the slow way. It closes, if nothing slips. Nothing has ever not slipped.</p>
+
+        <p>That week four names clear. Her father's brother, whom she calls apo, and his wife, and their two boys who grew up in the ruin of the village. Stamped in one government week. She is allowed to hear the call on speaker, her apo weeping down the line in a language the agent on the other end will never be made to learn.</p>
+
+        <p>The relief is real. The four are free, truly, for good. Eight names left, and two hearts after this one, if her body is a pig's, and the eight only clear if both those hearts come and every week they clear in is good. She has never once had a run of good weeks. She has only ever been reliable, which is a different thing, and worth less.</p>
+
+        <p>She does not sleep that night. She lies in the dark laying eight names against two hearts and a body no one can vouch for, and for once she does not reach for the composure that has carried her through every other night in this house. She stops counting. She lies there and is simply, uselessly, an aunt who is likely going to have to choose which of them she does not get to. She does not decide. She just lets it be true until the window goes gray, which is more than she has ever let herself do.</p>
+
+        <h2 class="chapter-marker" aria-label="Chapter 8">8</h2>
+
+        <p>She overhears it the way she overhears everything that matters in this house, sideways, through a door someone forgot was not quite shut.</p>
+
+        <p>The president is on a secure call, the kind that stands its own agents outside like furniture. Berivan is in the hallway only because Priya sent her for a cuff that lives in a closet nobody locks. The president's voice she knows now, low, careful. The other voice arrives a half beat late through a translator, a man's voice, warm, expansive, the warmth of someone accustomed to being given things.</p>
+
+        <p>She catches pieces. A word she does not know, blastocyst, said by the man the way a man says a word he has recently learned to want. Something about longevity. A number, a hundred and fifty, said not as a boast but as an order placed, the way you would name a quantity to a supplier.</p>
+
+        <p>Then the president's voice, and Berivan has heard this woman perform calm for cameras and this is not that. This is flat, and final, and quiet.</p>
+
+        <p>It cannot be moved, the president says. It is not a technique. There is one person it works in, and she is not a resource of this government to trade.</p>
+
+        <p>The man says something the translator softens. The president does not soften hers back. The subject is closed, she says, in the voice of someone closing a subject that will now cost her something with a man who is not used to hearing no.</p>
+
+        <p>Berivan stands very still with the cuff in her hand.</p>
+
+        <p>She had come down the hall braced to learn she was one supplier in a market, a herd animal that had flattered itself it was rare. What she learns instead is stranger. There is no market. There is her. A man on the far end of a wire wants a hundred and fifty years and cannot buy them, because the thing that would sell them to him runs on one body, and that body is standing in a hallway holding a blood pressure cuff.</p>
+
+        <p>How many hearts can one person grow, she thinks, and the question is not about her own chest now. It is about how many men are on how many wires, learning the word for what she is.</p>
+
+        <p>She sets the cuff down outside the door, quietly, and does not knock. Walking back she cannot settle whether she was just protected or just priced. Both, probably. The president shut the door and knows the number of the room behind it.</p>
+
+        <h2 class="chapter-marker" aria-label="Chapter 9">9</h2>
+
+        <p>Her mother lowered her voice in the market when she spoke Kurmanji, not from fear exactly, more the way you lower your voice near something sleeping you would rather not wake. The words were legal by then, mostly. The lowering had outlived the law that taught it.</p>
+
+        <p>Berivan was six. Thyme drying on a string over the stove, her mother's hand flat against her back. Quiet now. Not because a soldier was near but because one might be, which in that town came to the same caution.</p>
+
+        <p>Her grandmother gave her the word for heart in the language the state had spent fifty years trying to end. Dil. Said soft, said like it cost something, because for most of that woman's life it had.</p>
+
+        <p>She has not told anyone in this house that dil is the word she reaches for in the dark when the second beat comes early. Not the English one they write on her charts. The small round one her grandmother put in her before the state could put in anything else.</p>
+
+        <p>Twenty-four names when she started. Eight now. A cleared village behind all of them, and a thyme string she can still smell if she tries.</p>
+
+        <p>She tries most nights.</p>
+
+        <h2 class="chapter-marker" aria-label="Chapter 10">10</h2>
+
+        <p>The president comes the night before the next draw, which she has never done, and Berivan understands the visit before either says a word.</p>
+
+        <p>They sit on the porch because the weather allows it. Priya brings tea and does not stay. The president takes hers without sugar and then steals a spoon of honey from the tray when she thinks Berivan is not looking, the small theft of a woman who is watched about her health every hour she is awake, and Berivan pretends not to see it, because everyone in this woman's life pretends not to see everything, and the honey is the one thing on the porch nobody is managing.</p>
+
+        <p>"You could refuse this one," the president says, to the tree line. "You know that."</p>
+
+        <p>"Could I."</p>
+
+        <p>The president does not answer, which is the answer.</p>
+
+        <p>They drink. An owl starts up somewhere past the wall.</p>
+
+        <p>"I learned your language," the president says, after a while, and then says something in it, a full sentence, clumsy and soft with no camera to sharpen it for. Berivan has never heard her use more than a greeting of it. "They told me there was one person on earth my body would take a heart from. One. And that she thought in a language a country spent fifty years trying to bury." She turns the cup. "I couldn't give you the country back. I learned the words instead. So the person keeping me alive would not have to do it inside mine."</p>
+
+        <p>She does not look over to see how it lands. That, Berivan thinks, is the tell that it is true.</p>
+
+        <p>It is the kindest thing anyone has done for her in this house. It was also done for the one thing this government cannot replace. Berivan has stopped trying to pull those apart. The president stopped years before her, and learned the language anyway, and that is either the whole of what is good in this woman or the whole of what is terrible, and Berivan is too tired tonight to rule on it.</p>
+
+        <p>The president asks it then, almost to herself, looking at the dark tree line. How many hearts can one person grow. The exact words Berivan carried out of Whitfield's office on a Tuesday.</p>
+
+        <p>And Berivan understands, all at once and cold, that no one has told her. That the woman drinking stolen honey on this porch does not know the number is six, does not know she is asking the only other person out here to spend the last of herself, and is asking anyway, into the dark, the way you ask a thing you are afraid to be answered.</p>
+
+        <p>Berivan could tell her. She has the number. She could set it down on the table between them and make this good woman carry it too.</p>
+
+        <p>She lets the question sit, unanswered twice now, and pours the president more tea.</p>
+
+        <h2 class="chapter-marker" aria-label="Chapter 11">11</h2>
+
+        <p>The car comes at seven. The same car, the same forty minutes, the same Corridor B where the screen will or will not be left on the wrong page depending on who forgot.</p>
+
+        <p>Eight names left. Two hearts of runway, if her body has what a pig's had. Fourteen months a heart, if fourteen holds. Four names a cycle, if the week is good, and the week is mostly not. No one on earth can tell her whether the sixth is in her or whether she stops at five, or four, because the column where a second name might have carried the load holds a dash instead.</p>
+
+        <p>She stands in the doorway with her coat on and does the thing she has never let herself do standing up, in daylight, with the car already idling. She imagines saying no.</p>
+
+        <p>She imagines the eight names staying where they are. In a ruined village. In a license that means nothing past a provincial line. In the particular waiting her people have always been handed on someone else's clock. She prices it exactly, in the only currency the only open door has ever paid in.</p>
+
+        <p>She thinks of dil, small and round, and the second beat that has never once missed its place behind the first. On time. Obedient. The most reliable thing in her chest, and the president's, and not, in the end, quite either of theirs.</p>
+
+        <p>She gets in the car.</p>
+
+        <p>It is not resignation. She wants that kept straight, though there is no one left to keep it straight for. It is the arithmetic she has always done, fast and then slow, to see if the number moves when she is careful. It has never moved. Eight names, two hearts, and a body that will answer the question no one has answered for her.</p>
+
+        <p>The car pulls past the trellis Marcus stepped on, toward the corridor, toward whatever number is next, and Berivan does the sum one more time, the way her grandmother counted stitches, the way you count a thing you love and cannot keep.</p>
+
+        <div class="article-end" aria-hidden="true"></div>
+      </div>
+
+      <div class="feedback-box">
+        <p>This is a draft. If a line snagged, or something rang false, or it just landed &mdash; I'd like to hear it.</p>
+        <a class="feedback-link" href="mailto:benjaminsiverly@gmail.com?subject=Feedback%20on%20Bigeminy%20(draft)">
+          <span aria-hidden="true">&#9993;</span>
+          <span>Send feedback</span>
+        </a>
+      </div>
+    </article>
+
+    <nav class="article-nav" aria-label="More writing">
+      <a class="back-to-writings" href="writings.html">
+        <span aria-hidden="true">&larr;</span>
+        <span>All writings</span>
+      </a>
+    </nav>
+  </main>
+
+  <footer>
+    <p class="copyright">&copy; 2026 Ben Siverly</p>
+  </footer>
+</body>
+</html>

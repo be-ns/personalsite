@@ -413,6 +413,15 @@ const pages = [
     outputPath: './images/og-serotiny.png',
   },
   {
+    title: 'Bigeminy',
+    subtitle: 'Two heartbeats, one body, and the price of twenty-four names',
+    eyebrow: 'Short Story · Draft',
+    accentColor: tokens.teal,
+    washes: literaryWashes,
+    seed: 3233,
+    outputPath: './images/og-bigeminy.png',
+  },
+  {
     title: 'Nobody Claps',
     subtitle: 'The unglamorous work nobody claps for',
     eyebrow: 'Essay',
