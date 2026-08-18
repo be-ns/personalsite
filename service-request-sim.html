@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service Request Sim · Before &amp; After · Ben Siverly</title>
+  <meta name="description" content="A scripted twelve-hour fleet-dispatch simulation. Duplicates, status calls, priority blindness, and API overload are one problem: no authoritative visible request state.">
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://bensiverly.com/service-request-sim.html">
+
+  <!-- Favicon & PWA -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#0047AB">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Zilla+Slab:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       Tokens
+       ========================================================================== */
+    :root {
+      --ink: #14161A;
+      --ink-2: #4A5058;
+      --ink-3: #7C838C;
+      --paper: #F6F5F2;
+      --card: #FFFFFF;
+      --line: #E2E1DC;
+      --line-2: #CFCEC8;
+      --cobalt: #0047AB;
+      --cobalt-soft: #E8EFFA;
+      --accent: #FFE227;
+      --red: #C0392B;
+      --red-soft: #FBEBE9;
+      --amber: #B7791F;
+      --amber-soft: #FDF3E3;
+      --green: #16794C;
+      --green-soft: #E7F4EE;
+
+      --font-display: 'Zilla Slab', Georgia, serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+
+      --r-sm: 4px;
+      --r-md: 8px;
+      --r-lg: 14px;
+      --shadow: 0 1px 2px rgba(20, 22, 26, 0.06), 0 4px 14px rgba(20, 22, 26, 0.05);
+    }
+
+    /* Phase colouring: phase 1 runs hot, phase 2 runs calm. */
+    body[data-phase="1"] { --phase: var(--red); --phase-soft: var(--red-soft); }
+    body[data-phase="2"] { --phase: var(--cobalt); --phase-soft: var(--cobalt-soft); }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--ink);
+      background: var(--paper);
+    }
+
+    .skip-link {
+      position: absolute; left: 8px; top: -56px; z-index: 1000;
+      padding: 0.6rem 1rem; background: var(--cobalt); color: #fff;
+      border-radius: 0 0 6px 6px; font: 600 0.95rem/1 var(--font-body); text-decoration: none;
+    }
+    .skip-link:focus { top: 0; }
+
+    ::selection { background: var(--accent); color: var(--ink); }
+
+    :focus-visible { outline: 3px solid var(--cobalt); outline-offset: 2px; }
+
+    .wrap { max-width: 1240px; margin: 0 auto; padding: 0 18px; }
+
+    /* ==========================================================================
+       Header
+       ========================================================================== */
+    .hdr {
+      position: sticky; top: 0; z-index: 40;
+      background: rgba(246, 245, 242, 0.94);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--line);
+    }
+    .hdr-in {
+      display: flex; align-items: center; gap: 18px;
+      padding: 12px 0; flex-wrap: wrap;
+    }
+    .brand { margin-right: auto; min-width: 240px; }
+    h1 {
+      font-family: var(--font-display); font-size: 1.18rem; font-weight: 700;
+      margin: 0; letter-spacing: -0.01em; line-height: 1.2;
+    }
+    .northstar {
+      margin: 2px 0 0; font-size: 0.8rem; color: var(--ink-3);
+    }
+
+    .clock {
+      font-family: var(--font-mono); font-size: 1.5rem; font-weight: 500;
+      letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
+    }
+    .clock-label { display: block; font-family: var(--font-body); font-size: 0.65rem; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
+
+    .phase-badge {
+      font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      padding: 5px 10px; border-radius: 999px;
+      background: var(--phase-soft); color: var(--phase);
+      border: 1px solid currentColor; white-space: nowrap;
+    }
+
+    /* The switch */
+    .switch-wrap { display: flex; align-items: center; gap: 10px; }
+    .switch-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.11em; text-transform: uppercase; color: var(--ink-2); line-height: 1.15; max-width: 90px; }
+    .switch {
+      position: relative; width: 74px; height: 36px; flex: none;
+      border-radius: 999px; border: 2px solid var(--line-2);
+      background: #EDEBE6; cursor: pointer; padding: 0;
+      transition: background 220ms ease, border-color 220ms ease;
+    }
+    .switch::after {
+      content: ""; position: absolute; top: 3px; left: 3px;
+      width: 26px; height: 26px; border-radius: 50%;
+      background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.28);
+      transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .switch[aria-checked="true"] { background: var(--cobalt); border-color: var(--cobalt); }
+    .switch[aria-checked="true"]::after { transform: translateX(38px); }
+    .switch.pulse { animation: pulse 1.25s ease-in-out infinite; }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(0, 71, 171, 0.45); }
+      50% { box-shadow: 0 0 0 10px rgba(0, 71, 171, 0); }
+    }
+
+    .btn {
+      font: 600 0.8rem/1 var(--font-body);
+      padding: 9px 14px; border-radius: var(--r-md);
+      border: 1px solid var(--line-2); background: var(--card); color: var(--ink);
+      cursor: pointer; transition: background 140ms ease, border-color 140ms ease;
+    }
+    .btn:hover { background: #F0EEE9; }
+    .btn[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+    .btn-primary { background: var(--cobalt); border-color: var(--cobalt); color: #fff; }
+    .btn-primary:hover { background: #003A8C; }
+    .btn-ghost { background: transparent; }
+
+    /* Progress hairline under the header */
+    .progress { height: 3px; background: var(--line); position: relative; }
+    .progress-fill { height: 100%; width: 0; background: var(--phase); transition: width 120ms linear; }
+    .progress-flip { position: absolute; top: -2px; left: 50%; width: 1px; height: 7px; background: var(--ink-3); }
+
+    /* ==========================================================================
+       Stage
+       ========================================================================== */
+    .stage {
+      display: grid; grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 18px; padding: 18px 0 0;
+    }
+
+    .panel {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: var(--r-lg); box-shadow: var(--shadow);
+    }
+    .panel-hd {
+      display: flex; align-items: baseline; gap: 10px;
+      padding: 12px 16px; border-bottom: 1px solid var(--line);
+    }
+    .panel-hd h2 {
+      font-family: var(--font-body); font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase; margin: 0; color: var(--ink-2);
+    }
+    .panel-note { font-size: 0.75rem; color: var(--ink-3); margin-left: auto; text-align: right; }
+
+    /* Queue */
+    .queue { padding: 12px; display: flex; flex-direction: column; gap: 9px; min-height: 420px; }
+    .req {
+      border: 1px solid var(--line); border-left: 3px solid var(--line-2);
+      border-radius: var(--r-md); padding: 10px 12px; background: var(--card);
+    }
+    .req.is-new { animation: slide-in 320ms ease both; }
+    @keyframes slide-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+    .req-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .req-id { font-family: var(--font-mono); font-size: 0.78rem; font-weight: 500; }
+    .req-time { font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-3); }
+    .req-veh { font-size: 0.78rem; color: var(--ink-2); margin-left: auto; }
+    .req-quote { margin: 5px 0 0; font-size: 0.86rem; color: var(--ink); }
+    .req-meta { margin: 5px 0 0; font-size: 0.72rem; color: var(--ink-3); display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+    .req[data-sev="critical"] { border-left-color: var(--red); }
+    .req[data-sev="elevated"] { border-left-color: var(--amber); }
+    .req[data-sev="low"] { border-left-color: var(--line-2); }
+    .req[data-dim="1"] { opacity: 0.62; }
+
+    .chip {
+      font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 2px 7px; border-radius: 999px; border: 1px solid var(--line-2);
+      color: var(--ink-2); background: #FAF9F6; white-space: nowrap;
+    }
+    .chip-critical { background: var(--red-soft); color: var(--red); border-color: currentColor; }
+    .chip-elevated { background: var(--amber-soft); color: var(--amber); border-color: currentColor; }
+    .chip-low { background: #F2F1EC; color: var(--ink-3); }
+    .chip-agent { background: var(--cobalt-soft); color: var(--cobalt); border-color: currentColor; }
+    .chip-state { background: var(--green-soft); color: var(--green); border-color: currentColor; }
+    .chip-stale { background: var(--red-soft); color: var(--red); border-color: currentColor; }
+
+    .fold {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--ink-3); font-weight: 600; margin: 4px 2px 0;
+    }
+    .fold::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+    .queue-empty { color: var(--ink-3); font-size: 0.85rem; padding: 22px 6px; }
+
+    /* Decision card */
+    .decision {
+      border: 2px solid var(--cobalt); background: var(--cobalt-soft);
+      border-radius: var(--r-md); padding: 13px 14px;
+      animation: slide-in 260ms ease both;
+    }
+    .decision h3 { margin: 0 0 4px; font-size: 0.86rem; font-family: var(--font-body); font-weight: 700; }
+    .decision p { margin: 0 0 10px; font-size: 0.81rem; color: var(--ink-2); }
+    .decision-rule { font-size: 0.74rem; color: var(--cobalt); font-weight: 600; }
+    .decision-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+
+    /* Driver phone */
+    .phone { padding: 14px; }
+    .phone-frame {
+      border: 1px solid var(--line-2); border-radius: 20px; background: #FBFAF8;
+      padding: 14px 12px 16px; min-height: 400px; display: flex; flex-direction: column;
+    }
+    .phone-top {
+      display: flex; justify-content: space-between; align-items: center;
+      font-family: var(--font-mono); font-size: 0.68rem; color: var(--ink-3);
+      padding-bottom: 9px; border-bottom: 1px solid var(--line);
+    }
+    .bubble {
+      background: var(--ink); color: #fff; border-radius: 14px 14px 4px 14px;
+      padding: 9px 12px; font-size: 0.82rem; margin: 12px 0 4px; align-self: flex-end; max-width: 92%;
+    }
+    .bubble-meta { font-family: var(--font-mono); font-size: 0.65rem; color: var(--ink-3); text-align: right; }
+    .answer {
+      border: 1px solid var(--line); border-radius: var(--r-md);
+      padding: 10px 12px; margin-top: 10px; background: var(--card);
+    }
+    .answer-q { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: var(--ink-3); }
+    .answer-a { font-size: 0.88rem; margin-top: 3px; font-weight: 600; }
+    .answer[data-state="void"] { border-style: dashed; background: transparent; }
+    .answer[data-state="void"] .answer-a { color: var(--ink-3); font-weight: 400; font-style: italic; }
+    .answer[data-state="answered"] { border-color: var(--green); background: var(--green-soft); }
+    .answer[data-state="answered"] .answer-a { color: var(--green); }
+    .phone-foot { margin-top: auto; padding-top: 12px; font-size: 0.74rem; color: var(--ink-3); }
+    .phone-alarm {
+      margin-top: 10px; background: var(--red-soft); border: 1px solid var(--red);
+      color: var(--red); border-radius: var(--r-md); padding: 9px 11px; font-size: 0.8rem; font-weight: 600;
+    }
+
+    /* ==========================================================================
+       Metrics strip
+       ========================================================================== */
+    .strip { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+    .metric {
+      background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg);
+      padding: 12px 13px 10px; box-shadow: var(--shadow);
+    }
+    .metric-name { font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; color: var(--ink-3); min-height: 2.1em; }
+    .metric-val {
+      font-family: var(--font-mono); font-size: 1.6rem; font-weight: 500;
+      letter-spacing: -0.03em; line-height: 1.15; margin-top: 4px; font-variant-numeric: tabular-nums;
+    }
+    .metric[data-hot="1"] .metric-val { color: var(--red); }
+    .metric[data-good="1"] .metric-val { color: var(--green); }
+    .metric-sub { font-size: 0.7rem; color: var(--ink-3); min-height: 1.5em; }
+    .metric-prior { font-family: var(--font-mono); font-size: 0.68rem; color: var(--ink-3); margin-top: 2px; }
+    .metric-prior strong { color: var(--red); font-weight: 500; }
+    .spark { display: block; width: 100%; height: 26px; margin-top: 6px; overflow: visible; }
+    .spark-line { fill: none; stroke: var(--phase); stroke-width: 1.6; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+    .spark-flip { stroke: var(--ink-3); stroke-width: 1; stroke-dasharray: 2 2; vector-effect: non-scaling-stroke; }
+
+    /* ==========================================================================
+       Event log
+       ========================================================================== */
+    .logwrap { margin: 18px 0 26px; }
+    .log { max-height: 230px; overflow-y: auto; padding: 6px 0; }
+    .log-row {
+      display: grid; grid-template-columns: 54px 92px minmax(0, 1fr);
+      gap: 10px; padding: 7px 16px; border-bottom: 1px solid #F1F0EB;
+      font-size: 0.81rem;
+    }
+    .log-row:first-child { animation: slide-in 240ms ease both; }
+    .log-row:last-child { border-bottom: 0; }
+    .log-t { font-family: var(--font-mono); font-size: 0.74rem; color: var(--ink-3); }
+    .log-actor { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-2); }
+    .log-body code, .log-api { font-family: var(--font-mono); font-size: 0.75rem; word-break: break-word; }
+    .log-row[data-tone="bad"] .log-body { color: var(--red); }
+    .log-row[data-tone="good"] .log-body { color: var(--green); }
+    .log-row[data-tone="human"] .log-body { color: var(--cobalt); font-weight: 600; }
+
+    /* ==========================================================================
+       Interstitial + end screen
+       ========================================================================== */
+    .overlay {
+      position: fixed; inset: 0; z-index: 90;
+      background: rgba(20, 22, 26, 0.96); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px; text-align: center;
+    }
+    .overlay[hidden] { display: none; }
+    .interstitial p {
+      font-family: var(--font-display); font-size: clamp(1.5rem, 4.2vw, 2.6rem);
+      font-weight: 600; line-height: 1.25; max-width: 22ch; margin: 0 auto;
+    }
+    .interstitial small { display: block; margin-top: 18px; font-family: var(--font-mono); font-size: 0.78rem; color: #A7ADB6; letter-spacing: 0.06em; }
+
+    .endscreen { align-items: flex-start; overflow-y: auto; background: rgba(20, 22, 26, 0.98); }
+    .end-in { max-width: 900px; margin: 0 auto; padding: 40px 0 60px; text-align: left; }
+    .end-money {
+      font-family: var(--font-display); font-size: clamp(1.6rem, 4vw, 2.5rem);
+      font-weight: 700; line-height: 1.2; margin: 0 0 6px;
+    }
+    .end-money em { font-style: normal; color: var(--accent); }
+    .end-sub { color: #A7ADB6; margin: 0 0 28px; font-size: 0.95rem; }
+    .end-in h3 { font-family: var(--font-body); font-size: 0.7rem; letter-spacing: 0.11em; text-transform: uppercase; color: #A7ADB6; margin: 28px 0 10px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+    th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid #2C3038; vertical-align: top; }
+    th { font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; color: #A7ADB6; font-weight: 700; }
+    td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+    td.p1 { color: #F09A90; }
+    td.p2 { color: #7FD3AC; }
+    td.tgt { color: #A7ADB6; font-size: 0.78rem; }
+    tr.side td { border-top: 1px solid #4A5058; }
+    .end-foot { margin-top: 26px; font-size: 0.78rem; color: #8B929B; line-height: 1.6; }
+    .end-close {
+      margin-top: 30px; padding-top: 22px; border-top: 1px solid #2C3038;
+      font-family: var(--font-display); font-size: 1.22rem; font-weight: 600; line-height: 1.4;
+    }
+    .end-actions { margin-top: 24px; display: flex; gap: 10px; flex-wrap: wrap; }
+    details.raw { margin-top: 22px; }
+    details.raw summary { cursor: pointer; font-size: 0.78rem; color: #A7ADB6; font-family: var(--font-mono); }
+    details.raw pre {
+      max-height: 340px; overflow: auto; background: #0E1013; border: 1px solid #2C3038;
+      border-radius: var(--r-md); padding: 14px; font-size: 0.72rem; line-height: 1.5; color: #C3C9D1; margin-top: 10px;
+    }
+    .caveat {
+      margin-top: 18px; border-left: 3px solid var(--accent); padding: 8px 0 8px 14px;
+      font-size: 0.86rem; color: #E3E6EA;
+    }
+
+    .risk {
+      margin: 0 0 9px; border-left: 3px solid var(--red); background: var(--red-soft);
+      padding: 9px 12px; font-size: 0.82rem; color: var(--red); font-weight: 600;
+      border-radius: 0 var(--r-md) var(--r-md) 0;
+    }
+
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+    }
+
+    @media (max-width: 980px) {
+      .stage { grid-template-columns: 1fr; }
+      .strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .brand { min-width: 100%; }
+    }
+    @media (max-width: 560px) {
+      .strip { grid-template-columns: 1fr; }
+      .log-row { grid-template-columns: 48px 1fr; }
+      .log-actor { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+    }
+  </style>
+</head>
+<body data-phase="1">
+  <a class="skip-link" href="#main">Skip to the simulation</a>
+
+  <header class="hdr">
+    <div class="wrap hdr-in">
+      <div class="brand">
+        <h1>Service Request Sim: one day, two systems</h1>
+        <p class="northstar">North star: dispatchers feel the software works for them, not the other way around.</p>
+      </div>
+
+      <div>
+        <span class="clock-label">Sim clock</span>
+        <span class="clock" id="clock">06:00</span>
+      </div>
+
+      <span class="phase-badge" id="phaseBadge">Phase 1 &middot; switch off</span>
+
+      <div class="switch-wrap">
+        <span class="switch-label" id="switchLabel">The switch</span>
+        <button type="button" class="switch" id="theSwitch" role="switch" aria-checked="false" aria-labelledby="switchLabel"></button>
+      </div>
+
+      <button type="button" class="btn" id="btnPause" aria-pressed="false">Pause</button>
+      <button type="button" class="btn" id="btnSpeed" aria-pressed="false">2&times;</button>
+    </div>
+    <div class="progress"><div class="progress-fill" id="progressFill"></div><div class="progress-flip"></div></div>
+  </header>
+
+  <main id="main" class="wrap">
+    <section class="stage">
+      <div class="panel">
+        <div class="panel-hd">
+          <h2>Dispatcher queue</h2>
+          <span class="panel-note" id="queueNote">Flat list, newest at the bottom. No severity, no grouping.</span>
+        </div>
+        <div class="queue" id="queue" aria-live="polite"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-hd">
+          <h2>Driver</h2>
+          <span class="panel-note" id="phoneNote">The void</span>
+        </div>
+        <div class="phone">
+          <div class="phone-frame" id="phone"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="strip" id="strip" aria-label="Operating metrics"></section>
+
+    <section class="panel logwrap">
+      <div class="panel-hd">
+        <h2>Event log</h2>
+        <span class="panel-note">
+          <button type="button" class="btn btn-ghost" id="btnHow" aria-pressed="false">Show the API</button>
+        </span>
+      </div>
+      <div class="log" id="log" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <div class="overlay interstitial" id="interstitial" hidden>
+    <div>
+      <p id="interstitialText"></p>
+      <small id="interstitialSub"></small>
+    </div>
+  </div>
+
+  <div class="overlay endscreen" id="endscreen" hidden>
+    <div class="wrap end-in" id="endBody"></div>
+  </div>
+
+  <p class="sr-only" id="srStatus" role="status"></p>
+  <script>
+  (() => {
+    'use strict';
+
+    /* ======================================================================
+       Clock. 06:00 to 18:00 of simulated time, 12 wall seconds per sim hour,
+       so the whole day runs in 144 seconds at 1x. Everything below is
+       scripted and deterministic: no randomness, no network, no model calls.
+       Agent "confidence" values are fixtures, printed so you can argue with them.
+       ====================================================================== */
+    const SIM_START = 360;   // 06:00
+    const SIM_END = 1080;    // 18:00
+    const FLIP_AT = 720;     // 12:00
+    const SIM_MIN_PER_SEC = 5;
+
+    const hm = (s) => {
+      const [h, m] = s.split(':').map(Number);
+      return h * 60 + m;
+    };
+    const fmt = (min) => {
+      const t = Math.max(SIM_START, Math.min(SIM_END, Math.round(min)));
+      return String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0');
+    };
+    const money = (n) => '$' + n.toLocaleString('en-US');
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+    const FLEET = {
+      'VEH-1042': { type: 'box truck', route: 'I-80 corridor' },
+      'VEH-2117': { type: 'service van', route: 'metro loop' },
+      'VEH-3308': { type: 'box truck', route: 'in shop since yesterday' },
+      'VEH-4501': { type: 'reefer', route: 'south valley' },
+      'VEH-5150': { type: 'box truck', route: 'I-80 corridor' }
+    };
+
+    /* ======================================================================
+       State
+       ====================================================================== */
+    const state = {
+      now: SIM_START,
+      playing: true,
+      speed: 1,
+      phase: 1,
+      flipped: false,
+      ended: false,
+      waiting: null,
+      showApi: false,
+      risk: false,
+      requests: [],
+      log: [],
+      spark: [],
+      snapshot: null,
+      caveats: [],
+      m: { dupes: 0, minutes: 0, cost: 0 },
+      safety: null,
+      phone: null
+    };
+
+    const seedRequests = () => {
+      state.requests = [{
+        id: 'REQ-098', veh: 'VEH-3308', cat: 'brakes',
+        quote: 'Brake line replacement, opened yesterday 16:20.',
+        source: 'shop', at: SIM_START, status: 'in_service',
+        sev: 'elevated', conf: null, linked: [], sched: null, stale: false
+      }];
+    };
+
+    const findReq = (id) => state.requests.find((r) => r.id === id);
+
+    /* ======================================================================
+       The script. Every event carries what happened in plain English and what
+       it looks like at the API boundary. The API column is the actual argument.
+       ====================================================================== */
+    const SCRIPT = [
+      /* ---------------- Phase 1: switch off ---------------- */
+      {
+        t: hm('06:05'), phase: 1, actor: 'driver', tone: 'bad',
+        plain: 'VEH-1042 driver: "Grinding when I brake coming off the interstate." Ticket created. Nothing goes back to the driver.',
+        api: 'POST /v1/requests {vehicle:"VEH-1042", category:"brakes"} -> 201 REQ-101. No severity field. No subscriber. No acknowledgement.',
+        run() {
+          state.requests.push({
+            id: 'REQ-101', veh: 'VEH-1042', cat: 'brakes',
+            quote: 'Grinding when I brake coming off the interstate.',
+            source: 'driver', at: state.now, status: 'reported',
+            sev: 'critical', conf: null, linked: [], sched: null, stale: false
+          });
+          state.safety = { startedAt: state.now, frozenAt: null, never: false, ref: 'REQ-101' };
+          state.phone = {
+            veh: 'VEH-1042', sentAt: state.now, quote: 'Grinding when I brake coming off the interstate.',
+            seen: null, when: null, alarm: null
+          };
+        }
+      },
+      {
+        t: hm('06:40'), phase: 1, actor: 'dispatch', tone: 'bad',
+        plain: 'Inbound status call on VEH-1042. The dispatcher reads the queue out loud and has nothing to promise. 4 minutes.',
+        api: 'GET /v1/requests?vehicle=VEH-1042 -> [{status:"open"}]. "Open" is not an answer to "when".',
+        run() { state.m.minutes += 4; }
+      },
+      {
+        t: hm('07:10'), phase: 1, actor: 'supervisor', tone: 'bad',
+        plain: 'A supervisor files the same brake issue. Nothing checks whether it already exists. Second ticket.',
+        api: 'POST /v1/requests {vehicle:"VEH-1042", category:"brakes"} -> 201 REQ-102. No idempotency key, so a duplicate is a valid create.',
+        run() {
+          state.requests.push({
+            id: 'REQ-102', veh: 'VEH-1042', cat: 'brakes',
+            quote: 'Reported brake noise, second-hand from the yard.',
+            source: 'supervisor', at: state.now, status: 'reported',
+            sev: 'critical', conf: null, linked: [], sched: null, stale: false
+          });
+          state.m.dupes += 1;
+        }
+      },
+      {
+        t: hm('07:45'), phase: 1, actor: 'driver', tone: '',
+        plain: 'VEH-2117 driver: "Dent on rear panel from a parking lot." It lands in the queue looking exactly like the brake ticket.',
+        api: 'POST /v1/requests {vehicle:"VEH-2117", category:"cosmetic"} -> 201 REQ-103. Same shape, same row, same weight as a brake failure.',
+        run() {
+          state.requests.push({
+            id: 'REQ-103', veh: 'VEH-2117', cat: 'cosmetic',
+            quote: 'Dent on rear panel from a parking lot.',
+            source: 'driver', at: state.now, status: 'reported',
+            sev: 'low', conf: null, linked: [], sched: null, stale: false
+          });
+        }
+      },
+      {
+        t: hm('08:15'), phase: 1, actor: 'phone', tone: 'bad',
+        plain: 'Phone report, same brakes, hand-logged by dispatch. Third open ticket for one physical fault. 3 minutes.',
+        api: 'POST /v1/requests {vehicle:"VEH-1042", category:"brakes"} -> 201 REQ-104. Third 201 for the same brake pads.',
+        run() {
+          state.requests.push({
+            id: 'REQ-104', veh: 'VEH-1042', cat: 'brakes',
+            quote: 'Called in: brakes still making noise.',
+            source: 'phone', at: state.now, status: 'reported',
+            sev: 'critical', conf: null, linked: [], sched: null, stale: false
+          });
+          state.m.dupes += 1;
+          state.m.minutes += 3;
+        }
+      },
+      {
+        t: hm('08:50'), phase: 1, actor: 'shop', tone: 'bad',
+        plain: 'The shop finishes VEH-3308. Nobody tells the system. The system still says the truck is in service.',
+        api: 'No call is made. REQ-098 stays in_service. Reality and state diverge at 08:50 and stay diverged.',
+        run() { findReq('REQ-098').stale = true; }
+      },
+      {
+        t: hm('09:20'), phase: 1, actor: 'dispatch', tone: 'bad',
+        plain: 'A driver asks when VEH-3308 is ready. It has been ready for thirty minutes. 5 minutes on the phone to find that out.',
+        api: 'GET /v1/requests/REQ-098 -> {status:"in_service"}. The API is confidently wrong, which is worse than empty.',
+        run() { state.m.minutes += 5; }
+      },
+      {
+        t: hm('09:30'), phase: 1, actor: 'driver', tone: '',
+        plain: 'VEH-4501 driver: "AC dead. 95 degrees on this route." Reefer, produce load. Same queue, same rank as the dent.',
+        api: 'POST /v1/requests {vehicle:"VEH-4501", category:"hvac"} -> 201 REQ-105.',
+        run() {
+          state.requests.push({
+            id: 'REQ-105', veh: 'VEH-4501', cat: 'hvac',
+            quote: 'AC dead. 95 degrees on this route.',
+            source: 'driver', at: state.now, status: 'reported',
+            sev: 'elevated', conf: null, linked: [], sched: null, stale: false
+          });
+        }
+      },
+      {
+        t: hm('10:00'), phase: 1, actor: 'dispatch', tone: 'bad',
+        plain: 'Two more status calls. 7 minutes. The dispatcher is the status API, and the status API does not scale.',
+        api: '2x GET /v1/requests?vehicle=... resolved by a human on a phone. This is the integration surface customers actually use.',
+        run() { state.m.minutes += 7; }
+      },
+      {
+        t: hm('11:30'), phase: 1, actor: 'road', tone: 'bad',
+        plain: 'VEH-1042 loses braking on I-80 and comes back on a flatbed. The first report was 5 hours 25 minutes ago and was never triaged.',
+        api: 'REQ-101 never left state "reported". Three tickets, zero transitions, one truck on a flatbed.',
+        run() {
+          state.safety.frozenAt = state.now;
+          state.safety.never = true;
+          state.m.cost += 3200 + 1500 + 1200;
+          state.risk = true;
+          if (state.phone) state.phone.alarm = 'VEH-1042 out of service on I-80. Roadside recovery dispatched.';
+        }
+      },
+      {
+        t: hm('11:55'), phase: 1, kind: 'flip', actor: 'system', tone: 'human',
+        plain: 'Same fleet, same drivers, same trucks. Flip the switch.',
+        api: 'Nothing below changes the vehicles. It changes the request model underneath them.',
+        run() { state.waiting = { id: 'flip' }; }
+      },
+
+      /* ---------------- Phase 2: switch on ---------------- */
+      {
+        t: hm('12:20'), phase: 2, actor: 'driver', tone: '',
+        plain: 'VEH-5150 driver: "Pedal feels soft on the downhill." The agent reads it as safety-critical, confidence 0.92, and raises it to the top of the queue on its own.',
+        api: 'POST /v1/requests -> 201 REQ-201. POST /v1/requests/REQ-201/severity {to:"critical", actor:"agent", confidence:0.92} -> 200. Agent tokens may only raise.',
+        run() {
+          state.requests.push({
+            id: 'REQ-201', veh: 'VEH-5150', cat: 'brakes',
+            quote: 'Pedal feels soft on the downhill.',
+            source: 'driver', at: state.now, status: 'reported',
+            sev: 'critical', conf: 0.92, byAgent: true, linked: [], sched: null, stale: false
+          });
+          state.safety = { startedAt: state.now, frozenAt: null, never: false, ref: 'REQ-201' };
+          state.phone = {
+            veh: 'VEH-5150', sentAt: state.now, quote: 'Pedal feels soft on the downhill.',
+            seen: null, when: null, alarm: null
+          };
+          state.waiting = {
+            id: 'severity',
+            title: 'Severity: confirm or downgrade',
+            body: 'The agent classified REQ-201 as safety-critical at 0.92 and already escalated it. It cannot lower a severity.',
+            rule: 'Agents escalate. Only a human downgrades. The two mistakes do not cost the same.',
+            actions: [
+              { label: 'Confirm critical', primary: true, value: 'confirm' },
+              { label: 'Downgrade to elevated', value: 'downgrade' }
+            ]
+          };
+        }
+      },
+      {
+        t: hm('12:22'), phase: 2, actor: 'system', tone: 'good',
+        plain: 'The driver phone answers both questions without anyone calling: seen at 12:22, schedule pending. Report to triage: 2 minutes.',
+        api: 'request.triaged -> webhook push to the driver subscription. The same event feeds the metric and the notification.',
+        run() {
+          const r = findReq('REQ-201');
+          if (r) r.status = 'triaged';
+          state.safety.frozenAt = state.now;
+          state.phone.seen = state.now;
+        }
+      },
+      {
+        t: hm('13:00'), phase: 2, actor: 'supervisor', tone: '',
+        plain: 'A supervisor files the same brake issue. Intake recognises it before it becomes a ticket and suggests a merge at 0.96.',
+        api: 'POST /requests -> 409 idempotent match VEH-5150:brakes:2026-08-18 -> merge suggested into REQ-201',
+        run() {
+          state.waiting = {
+            id: 'merge',
+            title: 'Duplicate intake: confirm or keep separate',
+            body: 'Supervisor report on VEH-5150 brakes matches REQ-201 on the intake key at 0.96. No second ticket has been created yet.',
+            rule: 'The agent suggests merges. Only a human confirms one. Unmerge is always available, and unmerge rate is a tracked metric.',
+            actions: [
+              { label: 'Confirm merge', primary: true, value: 'merge' },
+              { label: 'Keep separate', value: 'separate' }
+            ]
+          };
+        }
+      },
+      {
+        t: hm('13:30'), phase: 2, actor: 'driver', tone: '',
+        plain: 'Cosmetic report on VEH-2117. Classified low, filed below the fold, nobody is interrupted for a dent.',
+        api: 'POST /v1/requests -> 201 REQ-203, severity low (agent, 0.88). No page, no interrupt, still in the log.',
+        run() {
+          state.requests.push({
+            id: 'REQ-203', veh: 'VEH-2117', cat: 'cosmetic',
+            quote: 'Scuff on the sliding door track.',
+            source: 'driver', at: state.now, status: 'triaged',
+            sev: 'low', conf: 0.88, byAgent: true, linked: [], sched: null, stale: false
+          });
+        }
+      },
+      {
+        t: hm('14:00'), phase: 2, actor: 'dispatch', tone: 'good',
+        plain: 'Next routine bay slot was Thursday 07:00. Critical claims the same-day safety slot instead: Bay 2, today 14:30. The driver phone updates itself.',
+        api: 'request.scheduled -> webhook push to 3 subscribers -> 14 queued polls suppressed',
+        run() {
+          const r = findReq('REQ-201');
+          if (r) { r.status = 'scheduled'; r.sched = 'Bay 2 &middot; today 14:30'; }
+          state.phone.when = 'Bay 2, today 14:30';
+        }
+      },
+      {
+        t: hm('14:30'), phase: 2, actor: 'shop', tone: 'good',
+        plain: 'The shop taps complete on VEH-3308. Status updates itself, the driver is notified, nobody phones anybody. This is the 08:50 failure, closed.',
+        api: 'POST /v1/requests/REQ-098/transitions {to:"completed", actor:"shop"} via scoped token -> request.completed -> webhook fan-out.',
+        run() {
+          const r = findReq('REQ-098');
+          if (r) { r.status = 'completed'; r.stale = false; }
+        }
+      },
+      {
+        t: hm('14:45'), phase: 2, actor: 'shop', tone: '',
+        plain: 'VEH-5150 goes into Bay 2 for the planned brake job.',
+        api: 'POST /v1/requests/REQ-201/transitions {to:"in_service", actor:"shop"} -> 200.',
+        run() { const r = findReq('REQ-201'); if (r) r.status = 'in_service'; }
+      },
+      {
+        t: hm('16:00'), phase: 2, actor: 'shop', tone: 'good',
+        plain: 'Planned brake job done on VEH-5150. $800. The same failure cost $5,900 this morning, and the only difference is that somebody knew about it in time.',
+        api: 'POST /v1/requests/REQ-201/transitions {to:"completed", actor:"shop"} -> request.completed -> driver notified.',
+        run() {
+          const r = findReq('REQ-201');
+          if (r) r.status = 'completed';
+          state.m.cost += 800;
+          state.phone.when = 'Completed 16:00 &middot; Bay 2';
+        }
+      },
+      {
+        t: hm('17:45'), phase: 2, kind: 'end', actor: 'system', tone: 'human',
+        plain: 'End of day.',
+        api: 'The event log below is the substrate: webhooks, metrics, and this end screen are all reads of the same stream.',
+        run() { endRun(); }
+      }
+    ];
+
+    /* ======================================================================
+       Metrics. Counters are phase-scoped: they reset at the flip so the two
+       halves of the day are comparable. The sparkline keeps the whole day.
+       ====================================================================== */
+    const safetyValue = () => {
+      if (!state.safety) return null;
+      const s = state.safety;
+      return Math.max(0, Math.round((s.frozenAt === null ? state.now : s.frozenAt) - s.startedAt));
+    };
+
+    const apiRate = () => {
+      if (!state.flipped) {
+        const p = clamp((state.now - SIM_START) / (hm('11:55') - SIM_START), 0, 1);
+        return Math.round(40 + 100 * p);
+      }
+      if (state.now < hm('12:22')) return 140;
+      const p = clamp((state.now - hm('12:22')) / (hm('14:00') - hm('12:22')), 0, 1);
+      return Math.round(140 - 132 * p);
+    };
+
+    const METRICS = [
+      {
+        id: 'dupes',
+        name: 'Open duplicates',
+        value: () => state.m.dupes,
+        display: (v) => String(v),
+        sub: () => 'open requests sharing an intake key',
+        hot: (v) => v > 0
+      },
+      {
+        id: 'minutes',
+        name: 'Dispatcher minutes lost',
+        value: () => state.m.minutes,
+        display: (v) => v + ' min',
+        sub: () => (state.flipped ? 'no inbound status contacts since 12:22' : 'minutes spent answering "any word yet?"'),
+        hot: (v) => v > 0
+      },
+      {
+        id: 'safety',
+        name: 'Safety: report to triage',
+        value: () => safetyValue() || 0,
+        display: () => {
+          const v = safetyValue();
+          if (v === null) return 'n/a';
+          return v + ' min';
+        },
+        sub: () => {
+          if (!state.safety) return 'safety-critical reports only';
+          if (state.safety.never) return 'never triaged · REQ-101';
+          if (state.safety.frozenAt !== null) return 'severity confirmed · ' + state.safety.ref;
+          return 'still running · ' + state.safety.ref;
+        },
+        hot: () => Boolean(state.safety) && (state.safety.never || (state.safety.frozenAt === null && !state.flipped)),
+        good: () => Boolean(state.safety) && state.safety.frozenAt !== null && state.flipped
+      },
+      {
+        id: 'api',
+        name: 'API calls per minute',
+        value: () => apiRate(),
+        display: (v) => String(v),
+        sub: () => {
+          const v = apiRate();
+          if (v > 100) return 'agents polling for state that never changes';
+          if (v > 20) return 'webhook subscribers dropping their polls';
+          return 'push, not poll';
+        },
+        hot: (v) => v > 100,
+        good: (v) => v < 20
+      },
+      {
+        id: 'cost',
+        name: 'Cost of delay',
+        value: () => state.m.cost,
+        display: (v) => money(v),
+        sub: () => 'avoidable spend, assumptions on the end screen',
+        hot: (v) => v >= 3000
+      }
+    ];
+
+    /* ======================================================================
+       DOM
+       ====================================================================== */
+    const el = {
+      body: document.body,
+      clock: document.getElementById('clock'),
+      phaseBadge: document.getElementById('phaseBadge'),
+      theSwitch: document.getElementById('theSwitch'),
+      switchLabel: document.getElementById('switchLabel'),
+      btnPause: document.getElementById('btnPause'),
+      btnSpeed: document.getElementById('btnSpeed'),
+      btnHow: document.getElementById('btnHow'),
+      progressFill: document.getElementById('progressFill'),
+      queue: document.getElementById('queue'),
+      queueNote: document.getElementById('queueNote'),
+      phone: document.getElementById('phone'),
+      phoneNote: document.getElementById('phoneNote'),
+      strip: document.getElementById('strip'),
+      log: document.getElementById('log'),
+      interstitial: document.getElementById('interstitial'),
+      interstitialText: document.getElementById('interstitialText'),
+      interstitialSub: document.getElementById('interstitialSub'),
+      endscreen: document.getElementById('endscreen'),
+      endBody: document.getElementById('endBody'),
+      srStatus: document.getElementById('srStatus')
+    };
+
+    const say = (msg) => { el.srStatus.textContent = msg; };
+
+    /* ======================================================================
+       Log
+       ====================================================================== */
+    const pushLog = (t, actor, plain, api, tone) => {
+      state.log.unshift({ t: Math.round(t), actor, plain, api, tone: tone || '' });
+      renderLog();
+    };
+
+    function renderLog() {
+      el.log.innerHTML = state.log.map((row) => (
+        '<div class="log-row" data-tone="' + row.tone + '">' +
+          '<span class="log-t">' + fmt(row.t) + '</span>' +
+          '<span class="log-actor">' + row.actor + '</span>' +
+          '<span class="log-body">' + (state.showApi ? '<code class="log-api">' + row.api + '</code>' : row.plain) + '</span>' +
+        '</div>'
+      )).join('');
+    }
+
+    /* ======================================================================
+       Queue
+       ====================================================================== */
+    const SEV_RANK = { critical: 0, elevated: 1, low: 2 };
+
+    const shownCards = new Set();
+
+    function requestCard(r) {
+      const veh = FLEET[r.veh] || { type: '' };
+      const isNew = !shownCards.has(r.id);
+      shownCards.add(r.id);
+      const bits = [];
+
+      if (state.flipped) {
+        bits.push('<span class="chip chip-' + r.sev + '">' + r.sev + '</span>');
+        if (r.conf) bits.push('<span class="chip chip-agent">agent ' + r.conf.toFixed(2) + '</span>');
+      }
+      bits.push('<span class="req-id">' + r.id + '</span>');
+      bits.push('<span class="req-time">' + (r.at <= SIM_START ? 'yesterday' : fmt(r.at)) + '</span>');
+      bits.push('<span class="req-veh">' + r.veh + ' · ' + veh.type + '</span>');
+
+      const meta = [];
+      if (state.flipped) {
+        meta.push('<span class="chip chip-state">' + r.status.replace('_', ' ') + '</span>');
+        if (r.sched) meta.push('scheduled: ' + r.sched);
+        if (r.linked.length) meta.push('merged in: ' + r.linked.join(', '));
+        if (r.stale) meta.push('<span class="chip chip-stale">shop state unconfirmed</span>');
+        if (r.note) meta.push(r.note);
+      } else {
+        meta.push('<span class="chip">' + (r.status === 'in_service' ? 'in shop' : 'open') + '</span>');
+        meta.push('reported by ' + r.source);
+        if (r.stale && r.id === 'REQ-098') meta.push('<span class="chip chip-stale">status unverified</span>');
+      }
+
+      return '<article class="req' + (isNew ? ' is-new' : '') + '" data-sev="' + (state.flipped ? r.sev : 'none') + '" data-dim="' + (state.flipped && r.sev === 'low' ? '1' : '0') + '">' +
+        '<div class="req-top">' + bits.join('') + '</div>' +
+        '<p class="req-quote">' + r.quote + '</p>' +
+        '<div class="req-meta">' + meta.join('<span aria-hidden="true">·</span>') + '</div>' +
+      '</article>';
+    }
+
+    function decisionCard(w) {
+      return '<div class="decision" role="group" aria-label="' + w.title + '">' +
+        '<h3>' + w.title + '</h3>' +
+        '<p>' + w.body + '</p>' +
+        '<p class="decision-rule">' + w.rule + '</p>' +
+        '<div class="decision-actions">' +
+          w.actions.map((a) => '<button type="button" class="btn' + (a.primary ? ' btn-primary' : '') + '" data-choice="' + a.value + '">' + a.label + '</button>').join('') +
+        '</div>' +
+      '</div>';
+    }
+
+    function renderQueue() {
+      const parts = [];
+
+      if (state.waiting && state.waiting.actions) parts.push(decisionCard(state.waiting));
+      if (state.risk && !state.flipped) {
+        parts.push('<p class="risk">Deferred safety issue = driver exposure, then vehicle loss, then liability, then revenue. In that order.</p>');
+      }
+
+      const visible = state.requests.filter((r) => r.status !== 'merged');
+
+      if (!state.flipped) {
+        visible.sort((a, b) => a.at - b.at);
+        parts.push(visible.map(requestCard).join(''));
+        el.queueNote.textContent = 'Flat list, timestamp order. No severity, no grouping, no duplicate check.';
+      } else {
+        const ranked = visible.slice().sort((a, b) => (SEV_RANK[a.sev] - SEV_RANK[b.sev]) || (a.at - b.at));
+        const above = ranked.filter((r) => r.sev !== 'low');
+        const below = ranked.filter((r) => r.sev === 'low');
+        parts.push(above.map(requestCard).join(''));
+        if (below.length) {
+          parts.push('<p class="fold">Below the fold · ' + below.length + ' low · no interrupt</p>');
+          parts.push(below.map(requestCard).join(''));
+        }
+        el.queueNote.textContent = 'Severity-ranked. Duplicates collapsed to one canonical request. Every card carries its state.';
+      }
+
+      if (!visible.length && !parts.length) parts.push('<p class="queue-empty">Nothing open. 06:00, everything is fine.</p>');
+      el.queue.innerHTML = parts.join('');
+
+      el.queue.querySelectorAll('[data-choice]').forEach((btn) => {
+        btn.addEventListener('click', () => resolveDecision(btn.dataset.choice));
+      });
+    }
+
+    /* ======================================================================
+       Driver phone
+       ====================================================================== */
+    function renderPhone() {
+      const p = state.phone;
+      if (!p) {
+        el.phone.innerHTML = '<div class="phone-top"><span>Driver app</span><span>' + fmt(state.now) + '</span></div>' +
+          '<p class="phone-foot">Nothing reported yet.</p>';
+        el.phoneNote.textContent = state.flipped ? 'Seen / When' : 'The void';
+        return;
+      }
+
+      const waited = Math.max(0, Math.round(state.now - p.sentAt));
+      const waitStr = Math.floor(waited / 60) + 'h ' + (waited % 60) + 'm';
+
+      const seen = p.seen === null
+        ? '<div class="answer" data-state="void"><div class="answer-q">Did anyone see this?</div><div class="answer-a">no reply</div></div>'
+        : '<div class="answer" data-state="answered"><div class="answer-q">Did anyone see this?</div><div class="answer-a">Seen and triaged ' + fmt(p.seen) + '</div></div>';
+
+      const when = p.when === null
+        ? '<div class="answer" data-state="void"><div class="answer-q">When does it get fixed?</div><div class="answer-a">' + (p.seen === null ? 'no reply' : 'schedule pending') + '</div></div>'
+        : '<div class="answer" data-state="answered"><div class="answer-q">When does it get fixed?</div><div class="answer-a">' + p.when + '</div></div>';
+
+      el.phone.innerHTML =
+        '<div class="phone-top"><span>' + p.veh + ' · driver</span><span>' + fmt(state.now) + '</span></div>' +
+        '<div class="bubble">' + p.quote + '</div>' +
+        '<div class="bubble-meta">sent ' + fmt(p.sentAt) + '</div>' +
+        seen + when +
+        (p.alarm ? '<div class="phone-alarm">' + p.alarm + '</div>' : '') +
+        '<p class="phone-foot">' + (p.seen === null
+          ? waitStr + ' since the report. The driver has no way to know if anyone is looking.'
+          : 'The driver stopped needing to call. That is the whole feature.') + '</p>';
+
+      el.phoneNote.textContent = state.flipped ? 'Seen / When' : 'The void';
+    }
+
+    /* ======================================================================
+       Metrics strip
+       ====================================================================== */
+    function buildStrip() {
+      el.strip.innerHTML = METRICS.map((m) => (
+        '<div class="metric" id="metric-' + m.id + '">' +
+          '<div class="metric-name">' + m.name + '</div>' +
+          '<div class="metric-val" id="val-' + m.id + '">0</div>' +
+          '<div class="metric-sub" id="sub-' + m.id + '"></div>' +
+          '<div class="metric-prior" id="prior-' + m.id + '"></div>' +
+          '<svg class="spark" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true">' +
+            '<line class="spark-flip" x1="50" y1="0" x2="50" y2="26"></line>' +
+            '<polyline class="spark-line" id="spark-' + m.id + '" points=""></polyline>' +
+          '</svg>' +
+        '</div>'
+      )).join('');
+    }
+
+    function renderStrip() {
+      METRICS.forEach((m) => {
+        const v = m.value();
+        const card = document.getElementById('metric-' + m.id);
+        document.getElementById('val-' + m.id).textContent = m.display(v);
+        document.getElementById('sub-' + m.id).textContent = m.sub();
+        card.dataset.hot = m.hot && m.hot(v) ? '1' : '0';
+        card.dataset.good = m.good && m.good(v) ? '1' : '0';
+
+        const prior = document.getElementById('prior-' + m.id);
+        prior.innerHTML = state.snapshot ? 'phase 1: <strong>' + state.snapshot[m.id] + '</strong>' : '';
+
+        const series = state.spark.map((s) => [s.x, s[m.id]]);
+        const max = Math.max(1, ...series.map((s) => s[1]));
+        document.getElementById('spark-' + m.id).setAttribute('points',
+          series.map(([x, y]) => (x * 100).toFixed(1) + ',' + (24 - (y / max) * 21).toFixed(1)).join(' '));
+      });
+    }
+
+    function sample() {
+      state.spark.push({
+        x: clamp((state.now - SIM_START) / (SIM_END - SIM_START), 0, 1),
+        dupes: state.m.dupes,
+        minutes: state.m.minutes,
+        safety: safetyValue() || 0,
+        api: apiRate(),
+        cost: state.m.cost
+      });
+    }
+
+    /* ======================================================================
+       Engine
+       ====================================================================== */
+    let lastTs = null;
+    let sinceRepaint = 0;
+    let nextSample = SIM_START;
+
+    function fire(ev) {
+      ev.done = true;
+      state.now = ev.t;
+      pushLog(state.now, ev.actor, ev.plain, ev.api, ev.tone);
+      if (ev.run) ev.run();
+      if (ev.kind === 'flip') armFlip();
+      sample();
+      renderQueue();
+      renderPhone();
+    }
+
+    function advance(delta) {
+      const target = Math.min(SIM_END, state.now + delta);
+      for (const ev of SCRIPT) {
+        if (ev.done) continue;
+        if (ev.t > target) break;
+        if (ev.phase === 2 && !state.flipped) break;
+        fire(ev);
+        if (state.waiting || state.ended) return;
+      }
+      state.now = target;
+      while (nextSample <= state.now) { sample(); nextSample += 5; }
+    }
+
+    function paintClock() {
+      el.clock.textContent = fmt(state.now);
+      el.progressFill.style.width = (clamp((state.now - SIM_START) / (SIM_END - SIM_START), 0, 1) * 100) + '%';
+      el.phaseBadge.textContent = state.flipped ? 'Phase 2 · switch on' : 'Phase 1 · switch off';
+    }
+
+    function frame(ts) {
+      if (lastTs === null) lastTs = ts;
+      const dt = Math.min(240, ts - lastTs) / 1000;
+      lastTs = ts;
+
+      if (state.playing && !state.waiting && !state.ended) {
+        advance(dt * SIM_MIN_PER_SEC * state.speed);
+      }
+
+      sinceRepaint += dt;
+      if (sinceRepaint > 0.12) {
+        sinceRepaint = 0;
+        paintClock();
+        renderStrip();
+        renderPhone();
+      }
+      requestAnimationFrame(frame);
+    }
+
+    /* ======================================================================
+       The flip
+       ====================================================================== */
+    function armFlip() {
+      el.theSwitch.classList.add('pulse');
+      el.switchLabel.textContent = 'Flip the switch';
+      say('The simulation is paused at 11:55. Flip the switch to run the same day on the new request model.');
+    }
+
+    function runRemainingPhase1() {
+      for (const ev of SCRIPT) {
+        if (ev.done || ev.phase !== 1) continue;
+        if (ev.kind === 'flip') { ev.done = true; continue; }
+        fire(ev);
+      }
+      nextSample = Math.ceil(state.now / 5) * 5;
+    }
+
+    function deriveAtCutover() {
+      ['REQ-102', 'REQ-104'].forEach((id) => {
+        const r = findReq(id);
+        if (r) { r.status = 'merged'; r.dupOf = 'REQ-101'; }
+      });
+      const canonical = findReq('REQ-101');
+      if (canonical) {
+        canonical.linked = ['REQ-102', 'REQ-104'];
+        canonical.status = 'in_service';
+        canonical.conf = 0.94;
+        canonical.note = 'emergency repair after the 11:30 breakdown';
+      }
+      const hvac = findReq('REQ-105');
+      if (hvac) { hvac.status = 'triaged'; hvac.conf = 0.71; }
+      const dent = findReq('REQ-103');
+      if (dent) { dent.status = 'triaged'; dent.conf = 0.88; }
+      const shopJob = findReq('REQ-098');
+      if (shopJob) { shopJob.status = 'in_service'; }
+    }
+
+    function showInterstitial(text, sub, ms) {
+      el.interstitialText.textContent = text;
+      el.interstitialSub.textContent = sub;
+      el.interstitial.hidden = false;
+      state.waiting = { id: 'interstitial' };
+      const close = () => {
+        if (el.interstitial.hidden) return;
+        el.interstitial.hidden = true;
+        if (state.waiting && state.waiting.id === 'interstitial') state.waiting = null;
+      };
+      el.interstitial.addEventListener('click', close, { once: true });
+      window.setTimeout(close, ms);
+    }
+
+    function doFlip() {
+      if (state.flipped || state.ended) return;
+
+      const skipped = SCRIPT.some((ev) => ev.phase === 1 && !ev.done && ev.kind !== 'flip');
+      state.waiting = null;
+      runRemainingPhase1();
+      if (skipped) {
+        pushLog(state.now, 'system', 'Fast-forwarded the rest of the morning. The numbers are the same either way. The script is fixed.',
+          'Remaining phase 1 events applied in order. Deterministic script, no sampling.', '');
+      }
+
+      state.now = FLIP_AT;
+      state.snapshot = {
+        dupes: String(state.m.dupes),
+        minutes: state.m.minutes + ' min',
+        safety: state.safety && state.safety.never ? '325 min' : (safetyValue() || 0) + ' min',
+        api: String(apiRate()),
+        cost: money(state.m.cost)
+      };
+
+      state.flipped = true;
+      state.phase = 2;
+      state.m = { dupes: 0, minutes: 0, cost: 0 };
+      state.safety = null;
+      state.risk = false;
+      nextSample = FLIP_AT;
+      el.body.dataset.phase = '2';
+      el.theSwitch.classList.remove('pulse');
+      el.theSwitch.setAttribute('aria-checked', 'true');
+      el.theSwitch.disabled = true;
+      el.switchLabel.textContent = 'Switch on';
+
+      deriveAtCutover();
+      pushLog(FLIP_AT, 'dispatch',
+        'Cutover. Intake replays this morning’s stream: three reports on VEH-1042 brakes collapse into one canonical request, and the dispatcher confirms the merge.',
+        'POST /v1/requests/REQ-101/merge {duplicate_ids:["REQ-102","REQ-104"], confirmed_by:"dispatcher:human"} -> 200 canonical REQ-101',
+        'human');
+
+      renderQueue();
+      renderPhone();
+      say('Phase 2. Same fleet, same day, new request model.');
+      showInterstitial(
+        'Nothing about the trucks changed. We changed what the system knows and who can see it.',
+        '12:00 · phase 2 · switch on',
+        3200
+      );
+    }
+
+    /* ======================================================================
+       Human-judgment moments
+       ====================================================================== */
+    function resolveDecision(choice) {
+      const w = state.waiting;
+      if (!w || !w.actions) return;
+      state.waiting = null;
+
+      if (choice === 'confirm') {
+        pushLog(state.now, 'dispatch', 'Dispatcher confirms critical on REQ-201. The agent raised it; a human owns it.',
+          'POST /v1/requests/REQ-201/severity {to:"critical", actor:"dispatcher:human", confirmed:true} -> 200', 'human');
+      } else if (choice === 'downgrade') {
+        const r = findReq('REQ-201');
+        if (r) { r.sev = 'elevated'; r.note = 'downgraded by dispatcher at ' + fmt(state.now); }
+        pushLog(state.now, 'dispatch', 'Dispatcher downgrades REQ-201 to elevated. The agent could never have done this on its own.',
+          'POST /v1/requests/REQ-201/severity {to:"elevated", actor:"dispatcher:human", reason:"manual downgrade"} -> 200', 'human');
+        state.caveats.push('You downgraded a 0.92 safety call on a brake report. Nothing in this model can price that outcome. What the system can do is record who lowered it and when, which is exactly why downgrade is human-only and escalation is not.');
+      } else if (choice === 'merge') {
+        const r = findReq('REQ-201');
+        if (r) r.linked = r.linked.concat(['supervisor report 13:00']);
+        pushLog(state.now, 'dispatch', 'Dispatcher confirms the merge. One request, two reporters, no second ticket to chase.',
+          'POST /v1/requests/REQ-201/merge {duplicate_ids:["intake:VEH-5150:brakes:2026-08-18"], confirmed_by:"dispatcher:human"} -> 200', 'human');
+      } else if (choice === 'separate') {
+        state.requests.push({
+          id: 'REQ-202', veh: 'VEH-5150', cat: 'brakes',
+          quote: 'Supervisor: brake feel reported by the yard, filed separately.',
+          source: 'supervisor', at: state.now, status: 'reported',
+          sev: 'elevated', conf: null, linked: [], sched: null, stale: false
+        });
+        state.m.dupes += 1;
+        pushLog(state.now, 'dispatch', 'Dispatcher keeps the supervisor report separate. That is a legitimate call, and it costs one open duplicate.',
+          'POST /v1/requests {..., force_create:true} -> 201 REQ-202. The 409 is a suggestion, not a wall.', 'human');
+        state.caveats.push('You kept the supervisor report separate, so the day ends with one open duplicate. That is the design working: a merge nobody can refuse is a merge that hides real issues inside a closed ticket.');
+      }
+
+      renderQueue();
+    }
+
+    /* ======================================================================
+       End screen
+       ====================================================================== */
+    function endRun() {
+      state.ended = true;
+      state.playing = false;
+      const snap = state.snapshot || { dupes: 'n/a', minutes: 'n/a', safety: 'n/a', api: 'n/a', cost: 'n/a' };
+      const rows = [
+        ['Open duplicates', snap.dupes, String(state.m.dupes), 'At least 80% of incoming duplicates caught and merged at intake.'],
+        ['Dispatcher minutes lost', snap.minutes, state.m.minutes + ' min', 'Inbound status contacts per open request down 60%.'],
+        ['Safety: report to triage', snap.safety + ' (never triaged)', (safetyValue() === null ? 'n/a' : safetyValue() + ' min'), 'Median under 30 minutes for safety-critical reports.'],
+        ['API calls per minute', snap.api, String(apiRate()), 'Status-poll traffic down 75% as webhook adoption crosses 50% of integrations.'],
+        ['Cost of delay', snap.cost, money(state.m.cost), 'Directional only. Validated against customer-reported emergency-repair frequency.']
+      ];
+
+      el.endBody.innerHTML =
+        '<p class="end-money">Same event stream. Same fleet. <em>' + snap.cost + '</em> before lunch, <em>' + money(state.m.cost) + '</em> after.</p>' +
+        '<p class="end-sub">One brake report handled two ways. The trucks were identical. The request model was not.</p>' +
+
+        '<h3>Operating picture</h3>' +
+        '<table><thead><tr><th>Metric</th><th>Phase 1 · switch off</th><th>Phase 2 · switch on</th><th>90-day target</th></tr></thead><tbody>' +
+        rows.map((r) => '<tr><td>' + r[0] + '</td><td class="num p1">' + r[1] + '</td><td class="num p2">' + r[2] + '</td><td class="tgt">' + r[3] + '</td></tr>').join('') +
+        '<tr class="side"><td>Unmerge rate <span class="tgt">(side-effect metric)</span></td><td class="num p1">n/a, nothing merges</td><td class="num p2">0% today</td><td class="tgt">Under 5%. Reviewed on the same cadence as the primaries.</td></tr>' +
+        '</tbody></table>' +
+        '<p class="end-foot">Unmerge rate is pre-committed, not added later. The failure mode of this design is over-merging: duplicates go to zero, the dashboard looks excellent, and a real second issue is asleep inside a closed ticket. A primary metric that can only improve is a metric that has stopped measuring.</p>' +
+
+        (state.caveats.length ? state.caveats.map((c) => '<p class="caveat">' + c + '</p>').join('') : '') +
+
+        '<h3>Assumptions</h3>' +
+        '<p class="end-foot">Planned brake repair $800. Emergency roadside is modelled at 4x that (observed range 3–5x; weekend surcharge excluded). Downtime $750/day for 2 unplanned days. Missed-delivery penalty $1,200. Phase 1 total is $3,200 emergency repair + $1,500 downtime + $1,200 penalty = $5,900. These are assumptions with a shape, not measurements. The point is the ratio and where it comes from: planned maintenance is the cheap version of the same repair, and every hour of triage delay is drift toward the expensive column.</p>' +
+
+        '<details class="raw"><summary>Raw event log (the substrate everything above is read from)</summary><pre id="rawJson"></pre></details>' +
+
+        '<p class="end-close">Retention comes from the state machine. Growth comes from what you can build on one.</p>' +
+
+        '<div class="end-actions">' +
+          '<button type="button" class="btn btn-primary" id="btnReplay">Run it again</button>' +
+          '<button type="button" class="btn" id="btnClose">Back to the board</button>' +
+        '</div>';
+
+      document.getElementById('rawJson').textContent = JSON.stringify(
+        state.log.slice().reverse().map((r) => ({ t: fmt(r.t), actor: r.actor, event: r.plain, api: r.api })), null, 2);
+
+      el.endscreen.hidden = false;
+      document.getElementById('btnReplay').addEventListener('click', () => { window.location.reload(); });
+      document.getElementById('btnClose').addEventListener('click', () => { el.endscreen.hidden = true; });
+      say('End of the simulated day.');
+    }
+
+    /* ======================================================================
+       Controls
+       ====================================================================== */
+    el.theSwitch.addEventListener('click', doFlip);
+
+    el.btnPause.addEventListener('click', () => {
+      state.playing = !state.playing;
+      el.btnPause.textContent = state.playing ? 'Pause' : 'Resume';
+      el.btnPause.setAttribute('aria-pressed', String(!state.playing));
+    });
+
+    el.btnSpeed.addEventListener('click', () => {
+      state.speed = state.speed === 1 ? 2 : 1;
+      el.btnSpeed.textContent = 'Speed ' + state.speed + '×';
+      el.btnSpeed.setAttribute('aria-pressed', String(state.speed === 2));
+    });
+
+    el.btnHow.addEventListener('click', () => {
+      state.showApi = !state.showApi;
+      el.btnHow.textContent = state.showApi ? 'Show plain English' : 'Show the API';
+      el.btnHow.setAttribute('aria-pressed', String(state.showApi));
+      renderLog();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (!el.interstitial.hidden) el.interstitial.click();
+        else if (!el.endscreen.hidden) el.endscreen.hidden = true;
+      }
+    });
+
+    /* ======================================================================
+       Start
+       ====================================================================== */
+    seedRequests();
+    el.btnSpeed.textContent = 'Speed 1×';
+    pushLog(SIM_START, 'system',
+      'Day opens. Five vehicles, one already in the shop. Every request below is the same fleet on the same day. Only the system underneath changes at noon.',
+      'GET /v1/requests?status=open -> [REQ-098]. VEH-3308, in_service since yesterday 16:20.', '');
+    buildStrip();
+    renderQueue();
+    renderPhone();
+    renderStrip();
+    sample();
+    paintClock();
+    requestAnimationFrame(frame);
+  })();
+  </script>
+</body>
+</html>
