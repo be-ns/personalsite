@@ -28,45 +28,37 @@
       --ink: #14161A;
       --ink-2: #4A5058;
       --ink-3: #7C838C;
-      --paper: #F6F5F2;
+      --paper: #F3F4F2;
       --card: #FFFFFF;
-      --line: #E2E1DC;
-      --line-2: #CFCEC8;
+      --line: #E3E4E0;
+      --line-2: #CFD1CB;
       --cobalt: #0047AB;
       --cobalt-soft: #E8EFFA;
-      --accent: #FFE227;
       --red: #C0392B;
       --red-soft: #FBEBE9;
       --amber: #B7791F;
       --amber-soft: #FDF3E3;
       --green: #16794C;
       --green-soft: #E7F4EE;
+      --accent: #FFE227;
 
       --font-display: 'Zilla Slab', Georgia, serif;
       --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
 
-      --r-sm: 4px;
       --r-md: 8px;
       --r-lg: 14px;
-      --shadow: 0 1px 2px rgba(20, 22, 26, 0.06), 0 4px 14px rgba(20, 22, 26, 0.05);
+      --shadow: 0 1px 2px rgba(20, 22, 26, 0.05), 0 4px 16px rgba(20, 22, 26, 0.05);
     }
 
-    /* Phase colouring: phase 1 runs hot, phase 2 runs calm. */
     body[data-phase="1"] { --phase: var(--red); --phase-soft: var(--red-soft); }
     body[data-phase="2"] { --phase: var(--cobalt); --phase-soft: var(--cobalt-soft); }
 
     *, *::before, *::after { box-sizing: border-box; }
-
     html { font-size: 16px; -webkit-text-size-adjust: 100%; }
-
     body {
-      margin: 0;
-      font-family: var(--font-body);
-      font-size: 15px;
-      line-height: 1.55;
-      color: var(--ink);
-      background: var(--paper);
+      margin: 0; font-family: var(--font-body); font-size: 15px; line-height: 1.55;
+      color: var(--ink); background: var(--paper);
     }
 
     .skip-link {
@@ -75,66 +67,62 @@
       border-radius: 0 0 6px 6px; font: 600 0.95rem/1 var(--font-body); text-decoration: none;
     }
     .skip-link:focus { top: 0; }
-
     ::selection { background: var(--accent); color: var(--ink); }
-
     :focus-visible { outline: 3px solid var(--cobalt); outline-offset: 2px; }
 
-    .wrap { max-width: 1240px; margin: 0 auto; padding: 0 18px; }
+    .wrap { max-width: 1280px; margin: 0 auto; padding: 0 18px; }
 
     /* ==========================================================================
-       Header
+       Header: brand, tabs, clock, switch, transport. Nothing else.
        ========================================================================== */
     .hdr {
       position: sticky; top: 0; z-index: 40;
-      background: rgba(246, 245, 242, 0.94);
-      backdrop-filter: blur(8px);
+      background: rgba(243, 244, 242, 0.95); backdrop-filter: blur(8px);
       border-bottom: 1px solid var(--line);
     }
-    .hdr-in {
-      display: flex; align-items: center; gap: 18px;
-      padding: 12px 0; flex-wrap: wrap;
-    }
-    .brand { margin-right: auto; min-width: 240px; }
+    .hdr-in { display: flex; align-items: center; gap: 14px; padding: 10px 0; flex-wrap: wrap; }
     h1 {
-      font-family: var(--font-display); font-size: 1.18rem; font-weight: 700;
-      margin: 0; letter-spacing: -0.01em; line-height: 1.2;
-    }
-    .northstar {
-      margin: 2px 0 0; font-size: 0.8rem; color: var(--ink-3);
+      font-family: var(--font-display); font-size: 1.05rem; font-weight: 700;
+      margin: 0 6px 0 0; letter-spacing: -0.01em; white-space: nowrap;
     }
 
+    .tabs { display: flex; gap: 2px; background: #E9EAE6; border-radius: 999px; padding: 3px; }
+    .tab {
+      font: 600 0.8rem/1 var(--font-body); padding: 8px 16px; border: 0; border-radius: 999px;
+      background: transparent; color: var(--ink-2); cursor: pointer;
+    }
+    .tab[aria-selected="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgba(20,22,26,0.12); }
+    .tab .dot {
+      display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+      background: var(--red); margin-left: 6px; vertical-align: 1px;
+    }
+    .tab .dot[hidden] { display: none; }
+
+    .hdr-right { display: flex; align-items: center; gap: 14px; margin-left: auto; flex-wrap: wrap; }
     .clock {
-      font-family: var(--font-mono); font-size: 1.5rem; font-weight: 500;
-      letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
+      font-family: var(--font-mono); font-size: 1.3rem; font-weight: 500;
+      font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
     }
-    .clock-label { display: block; font-family: var(--font-body); font-size: 0.65rem; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
-
-    .phase-badge {
-      font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500;
-      text-transform: uppercase; letter-spacing: 0.07em;
-      padding: 5px 10px; border-radius: 999px;
-      background: var(--phase-soft); color: var(--phase);
+    .phase-chip {
+      font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 4px 10px; border-radius: 999px; background: var(--phase-soft); color: var(--phase);
       border: 1px solid currentColor; white-space: nowrap;
     }
 
-    /* The switch */
-    .switch-wrap { display: flex; align-items: center; gap: 10px; }
-    .switch-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.11em; text-transform: uppercase; color: var(--ink-2); line-height: 1.15; max-width: 90px; }
+    .switch-wrap { display: flex; align-items: center; gap: 8px; }
+    .switch-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-2); max-width: 84px; line-height: 1.2; }
     .switch {
-      position: relative; width: 74px; height: 36px; flex: none;
-      border-radius: 999px; border: 2px solid var(--line-2);
-      background: #EDEBE6; cursor: pointer; padding: 0;
+      position: relative; width: 64px; height: 32px; flex: none; border-radius: 999px;
+      border: 2px solid var(--line-2); background: #EAEBE7; cursor: pointer; padding: 0;
       transition: background 220ms ease, border-color 220ms ease;
     }
     .switch::after {
-      content: ""; position: absolute; top: 3px; left: 3px;
-      width: 26px; height: 26px; border-radius: 50%;
+      content: ""; position: absolute; top: 2px; left: 2px; width: 24px; height: 24px; border-radius: 50%;
       background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.28);
       transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
     }
     .switch[aria-checked="true"] { background: var(--cobalt); border-color: var(--cobalt); }
-    .switch[aria-checked="true"]::after { transform: translateX(38px); }
+    .switch[aria-checked="true"]::after { transform: translateX(32px); }
     .switch.pulse { animation: pulse 1.25s ease-in-out infinite; }
     @keyframes pulse {
       0%, 100% { box-shadow: 0 0 0 0 rgba(0, 71, 171, 0.45); }
@@ -142,178 +130,209 @@
     }
 
     .btn {
-      font: 600 0.8rem/1 var(--font-body);
-      padding: 9px 14px; border-radius: var(--r-md);
-      border: 1px solid var(--line-2); background: var(--card); color: var(--ink);
-      cursor: pointer; transition: background 140ms ease, border-color 140ms ease;
+      font: 600 0.78rem/1 var(--font-body); padding: 8px 13px; border-radius: var(--r-md);
+      border: 1px solid var(--line-2); background: var(--card); color: var(--ink); cursor: pointer;
     }
-    .btn:hover { background: #F0EEE9; }
+    .btn:hover { background: #F0F1ED; }
     .btn[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
     .btn-primary { background: var(--cobalt); border-color: var(--cobalt); color: #fff; }
     .btn-primary:hover { background: #003A8C; }
-    .btn-ghost { background: transparent; }
+    .btn-ghost { background: transparent; border-color: transparent; color: var(--ink-2); }
 
-    /* Progress hairline under the header */
     .progress { height: 3px; background: var(--line); position: relative; }
     .progress-fill { height: 100%; width: 0; background: var(--phase); transition: width 120ms linear; }
     .progress-flip { position: absolute; top: -2px; left: 50%; width: 1px; height: 7px; background: var(--ink-3); }
 
     /* ==========================================================================
-       Stage
+       Live view: map + attention rail
        ========================================================================== */
-    .stage {
-      display: grid; grid-template-columns: minmax(0, 1fr) 320px;
-      gap: 18px; padding: 18px 0 0;
-    }
+    .view[hidden] { display: none; }
+    .live { display: grid; grid-template-columns: minmax(0, 1fr) 332px; gap: 16px; padding: 16px 0 0; }
 
-    .panel {
-      background: var(--card); border: 1px solid var(--line);
-      border-radius: var(--r-lg); box-shadow: var(--shadow);
-    }
-    .panel-hd {
-      display: flex; align-items: baseline; gap: 10px;
-      padding: 12px 16px; border-bottom: 1px solid var(--line);
-    }
-    .panel-hd h2 {
-      font-family: var(--font-body); font-size: 0.7rem; font-weight: 700;
-      letter-spacing: 0.1em; text-transform: uppercase; margin: 0; color: var(--ink-2);
-    }
-    .panel-note { font-size: 0.75rem; color: var(--ink-3); margin-left: auto; text-align: right; }
+    .panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow); }
+    .panel-hd { display: flex; align-items: center; gap: 10px; padding: 11px 16px; border-bottom: 1px solid var(--line); }
+    .panel-hd h2 { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin: 0; color: var(--ink-2); }
+    .panel-note { font-size: 0.73rem; color: var(--ink-3); margin-left: auto; text-align: right; }
 
-    /* Queue */
-    .queue { padding: 12px; display: flex; flex-direction: column; gap: 9px; min-height: 420px; }
-    .req {
-      border: 1px solid var(--line); border-left: 3px solid var(--line-2);
-      border-radius: var(--r-md); padding: 10px 12px; background: var(--card);
+    /* Map */
+    .map-box { padding: 6px; }
+    .map { display: block; width: 100%; height: auto; }
+    .map .route { fill: none; stroke: #DDDFD9; stroke-width: 10; stroke-linecap: round; stroke-linejoin: round; }
+    .map .route-edge { fill: none; stroke: #C9CCC4; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+    .map .place { fill: #EDEEE9; stroke: var(--line-2); stroke-width: 1.4; rx: 8; }
+    .map .place-label { font: 600 11px var(--font-body); fill: var(--ink-3); letter-spacing: 0.08em; text-transform: uppercase; }
+    .map .road-label { font: 500 10px var(--font-mono); fill: #A6AAA1; letter-spacing: 0.06em; }
+
+    .veh { cursor: pointer; }
+    .veh .veh-body { fill: var(--card); stroke: var(--ink-2); stroke-width: 1.6; }
+    .veh .veh-glyph { font: 700 10px var(--font-mono); fill: var(--ink); text-anchor: middle; }
+    .veh .veh-name { font: 600 10.5px var(--font-mono); fill: var(--ink-2); text-anchor: middle; }
+    .veh .veh-status { font: 600 9.5px var(--font-body); text-anchor: middle; fill: var(--ink-3); text-transform: uppercase; letter-spacing: 0.05em; }
+    .veh .ping { fill: none; stroke-width: 2; opacity: 0; }
+    .veh[data-alert="1"] .ping { opacity: 1; animation: ping 1.6s ease-out infinite; transform-origin: center; transform-box: fill-box; }
+    @keyframes ping {
+      0% { transform: scale(0.7); opacity: 0.85; }
+      80% { transform: scale(1.55); opacity: 0; }
+      100% { opacity: 0; }
     }
-    .req.is-new { animation: slide-in 320ms ease both; }
+    .veh[data-sel="1"] .veh-body { stroke: var(--cobalt); stroke-width: 2.4; }
+    .veh .decide-badge { display: none; }
+    .veh[data-decide="1"] .decide-badge { display: block; animation: bob 1s ease-in-out infinite alternate; }
+    @keyframes bob { from { transform: translateY(0); } to { transform: translateY(-3px); } }
+
+    .map-legend { display: flex; gap: 16px; padding: 8px 16px 12px; font-size: 0.7rem; color: var(--ink-3); flex-wrap: wrap; }
+    .map-legend .key { display: inline-flex; align-items: center; gap: 6px; }
+    .key i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; border: 1px solid transparent; }
+
+    /* Attention rail */
+    .rail { display: flex; flex-direction: column; gap: 10px; padding: 12px; min-height: 480px; }
+    .att {
+      border: 1px solid var(--line); border-left: 3px solid var(--line-2); border-radius: var(--r-md);
+      padding: 9px 11px; background: var(--card); cursor: pointer; text-align: left; width: 100%;
+      font: inherit; color: inherit; display: block;
+    }
+    .att.is-new { animation: slide-in 320ms ease both; }
     @keyframes slide-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
-    .req-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .req-id { font-family: var(--font-mono); font-size: 0.78rem; font-weight: 500; }
-    .req-time { font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-3); }
-    .req-veh { font-size: 0.78rem; color: var(--ink-2); margin-left: auto; }
-    .req-quote { margin: 5px 0 0; font-size: 0.86rem; color: var(--ink); }
-    .req-meta { margin: 5px 0 0; font-size: 0.72rem; color: var(--ink-3); display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-
-    .req[data-sev="critical"] { border-left-color: var(--red); }
-    .req[data-sev="elevated"] { border-left-color: var(--amber); }
-    .req[data-sev="low"] { border-left-color: var(--line-2); }
-    .req[data-dim="1"] { opacity: 0.62; }
+    .att[data-sev="critical"] { border-left-color: var(--red); }
+    .att[data-sev="elevated"] { border-left-color: var(--amber); }
+    .att[data-sel="1"] { border-color: var(--cobalt); box-shadow: 0 0 0 1px var(--cobalt) inset; }
+    .att-top { display: flex; align-items: baseline; gap: 8px; }
+    .att-veh { font-family: var(--font-mono); font-size: 0.78rem; font-weight: 500; }
+    .att-time { font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-3); margin-left: auto; }
+    .att-quote { margin: 4px 0 0; font-size: 0.82rem; color: var(--ink); }
+    .att-meta { margin: 5px 0 0; font-size: 0.7rem; color: var(--ink-3); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 
     .chip {
-      font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500;
-      text-transform: uppercase; letter-spacing: 0.06em;
-      padding: 2px 7px; border-radius: 999px; border: 1px solid var(--line-2);
-      color: var(--ink-2); background: #FAF9F6; white-space: nowrap;
+      font-family: var(--font-mono); font-size: 0.64rem; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.05em; padding: 2px 7px; border-radius: 999px; border: 1px solid var(--line-2);
+      color: var(--ink-2); background: #FAFAF7; white-space: nowrap;
     }
     .chip-critical { background: var(--red-soft); color: var(--red); border-color: currentColor; }
     .chip-elevated { background: var(--amber-soft); color: var(--amber); border-color: currentColor; }
-    .chip-low { background: #F2F1EC; color: var(--ink-3); }
-    .chip-agent { background: var(--cobalt-soft); color: var(--cobalt); border-color: currentColor; }
     .chip-state { background: var(--green-soft); color: var(--green); border-color: currentColor; }
     .chip-stale { background: var(--red-soft); color: var(--red); border-color: currentColor; }
+    .chip-agent { background: var(--cobalt-soft); color: var(--cobalt); border-color: currentColor; }
 
-    .fold {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;
-      color: var(--ink-3); font-weight: 600; margin: 4px 2px 0;
-    }
-    .fold::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+    .fold { font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; margin: 2px 2px 0; }
+    .rail-empty { color: var(--ink-3); font-size: 0.83rem; padding: 14px 4px; }
 
-    .queue-empty { color: var(--ink-3); font-size: 0.85rem; padding: 22px 6px; }
-
-    /* Decision card */
     .decision {
-      border: 2px solid var(--cobalt); background: var(--cobalt-soft);
-      border-radius: var(--r-md); padding: 13px 14px;
-      animation: slide-in 260ms ease both;
+      border: 2px solid var(--cobalt); background: var(--cobalt-soft); border-radius: var(--r-md);
+      padding: 12px 13px; animation: slide-in 260ms ease both;
     }
-    .decision h3 { margin: 0 0 4px; font-size: 0.86rem; font-family: var(--font-body); font-weight: 700; }
-    .decision p { margin: 0 0 10px; font-size: 0.81rem; color: var(--ink-2); }
-    .decision-rule { font-size: 0.74rem; color: var(--cobalt); font-weight: 600; }
-    .decision-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    .decision h3 { margin: 0 0 4px; font-size: 0.84rem; font-weight: 700; }
+    .decision p { margin: 0 0 8px; font-size: 0.79rem; color: var(--ink-2); }
+    .decision-rule { font-size: 0.72rem; color: var(--cobalt); font-weight: 600; margin: 0 0 4px; }
+    .decision-actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
 
-    /* Driver phone */
-    .phone { padding: 14px; }
-    .phone-frame {
-      border: 1px solid var(--line-2); border-radius: 20px; background: #FBFAF8;
-      padding: 14px 12px 16px; min-height: 400px; display: flex; flex-direction: column;
-    }
-    .phone-top {
-      display: flex; justify-content: space-between; align-items: center;
-      font-family: var(--font-mono); font-size: 0.68rem; color: var(--ink-3);
-      padding-bottom: 9px; border-bottom: 1px solid var(--line);
-    }
-    .bubble {
-      background: var(--ink); color: #fff; border-radius: 14px 14px 4px 14px;
-      padding: 9px 12px; font-size: 0.82rem; margin: 12px 0 4px; align-self: flex-end; max-width: 92%;
-    }
-    .bubble-meta { font-family: var(--font-mono); font-size: 0.65rem; color: var(--ink-3); text-align: right; }
-    .answer {
-      border: 1px solid var(--line); border-radius: var(--r-md);
-      padding: 10px 12px; margin-top: 10px; background: var(--card);
-    }
-    .answer-q { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: var(--ink-3); }
-    .answer-a { font-size: 0.88rem; margin-top: 3px; font-weight: 600; }
-    .answer[data-state="void"] { border-style: dashed; background: transparent; }
-    .answer[data-state="void"] .answer-a { color: var(--ink-3); font-weight: 400; font-style: italic; }
-    .answer[data-state="answered"] { border-color: var(--green); background: var(--green-soft); }
-    .answer[data-state="answered"] .answer-a { color: var(--green); }
-    .phone-foot { margin-top: auto; padding-top: 12px; font-size: 0.74rem; color: var(--ink-3); }
-    .phone-alarm {
-      margin-top: 10px; background: var(--red-soft); border: 1px solid var(--red);
-      color: var(--red); border-radius: var(--r-md); padding: 9px 11px; font-size: 0.8rem; font-weight: 600;
-    }
+    .driver-mini { border-top: 1px solid var(--line); margin-top: auto; padding-top: 10px; }
+    .driver-mini h3 { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin: 0 0 8px; color: var(--ink-2); }
+    .dm-q { display: flex; justify-content: space-between; gap: 10px; font-size: 0.78rem; padding: 6px 9px; border: 1px solid var(--line); border-radius: var(--r-md); margin-bottom: 6px; background: #FBFBF9; }
+    .dm-q b { font-weight: 600; }
+    .dm-q[data-state="void"] { border-style: dashed; background: transparent; }
+    .dm-q[data-state="void"] b { color: var(--ink-3); font-weight: 400; font-style: italic; }
+    .dm-q[data-state="answered"] { border-color: var(--green); background: var(--green-soft); }
+    .dm-q[data-state="answered"] b { color: var(--green); }
+    .dm-quote { font-size: 0.74rem; color: var(--ink-3); margin: 0 0 8px; }
+    .dm-alarm { background: var(--red-soft); border: 1px solid var(--red); color: var(--red); border-radius: var(--r-md); padding: 7px 10px; font-size: 0.75rem; font-weight: 600; margin-top: 4px; }
 
-    /* ==========================================================================
-       Metrics strip
-       ========================================================================== */
-    .strip { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
-    .metric {
+    /* Status bar under the map: three numbers, no more */
+    .statusbar { display: flex; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+    .sb {
+      flex: 1; min-width: 180px; display: flex; align-items: baseline; gap: 10px;
       background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg);
-      padding: 12px 13px 10px; box-shadow: var(--shadow);
+      padding: 10px 16px; box-shadow: var(--shadow); cursor: pointer; font: inherit; text-align: left;
     }
-    .metric-name { font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; color: var(--ink-3); min-height: 2.1em; }
-    .metric-val {
-      font-family: var(--font-mono); font-size: 1.6rem; font-weight: 500;
-      letter-spacing: -0.03em; line-height: 1.15; margin-top: 4px; font-variant-numeric: tabular-nums;
-    }
-    .metric[data-hot="1"] .metric-val { color: var(--red); }
-    .metric[data-good="1"] .metric-val { color: var(--green); }
-    .metric-sub { font-size: 0.7rem; color: var(--ink-3); min-height: 1.5em; }
-    .metric-prior { font-family: var(--font-mono); font-size: 0.68rem; color: var(--ink-3); margin-top: 2px; }
-    .metric-prior strong { color: var(--red); font-weight: 500; }
-    .spark { display: block; width: 100%; height: 26px; margin-top: 6px; overflow: visible; }
-    .spark-line { fill: none; stroke: var(--phase); stroke-width: 1.6; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
-    .spark-flip { stroke: var(--ink-3); stroke-width: 1; stroke-dasharray: 2 2; vector-effect: non-scaling-stroke; }
+    .sb-label { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+    .sb-val { font-family: var(--font-mono); font-size: 1.22rem; font-weight: 500; margin-left: auto; }
+    .sb[data-hot="1"] .sb-val { color: var(--red); }
+    .sb[data-good="1"] .sb-val { color: var(--green); }
 
-    /* ==========================================================================
-       Event log
-       ========================================================================== */
-    .logwrap { margin: 18px 0 26px; }
-    .log { max-height: 230px; overflow-y: auto; padding: 6px 0; }
+    /* Event log drawer */
+    .logwrap { margin: 14px 0 26px; }
+    .logwrap summary {
+      cursor: pointer; list-style: none; display: flex; align-items: center; gap: 10px;
+      padding: 11px 16px; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--ink-2);
+    }
+    .logwrap summary::-webkit-details-marker { display: none; }
+    .logwrap summary::after { content: "▸"; color: var(--ink-3); font-size: 0.8rem; }
+    .logwrap[open] summary::after { content: "▾"; }
+    .logwrap summary .panel-note { font-weight: 400; letter-spacing: 0; text-transform: none; }
+    .log { max-height: 240px; overflow-y: auto; border-top: 1px solid var(--line); padding: 4px 0; }
     .log-row {
-      display: grid; grid-template-columns: 54px 92px minmax(0, 1fr);
-      gap: 10px; padding: 7px 16px; border-bottom: 1px solid #F1F0EB;
-      font-size: 0.81rem;
+      display: grid; grid-template-columns: 52px 88px minmax(0, 1fr); gap: 10px;
+      padding: 7px 16px; border-bottom: 1px solid #F1F2EE; font-size: 0.8rem;
     }
     .log-row:first-child { animation: slide-in 240ms ease both; }
     .log-row:last-child { border-bottom: 0; }
-    .log-t { font-family: var(--font-mono); font-size: 0.74rem; color: var(--ink-3); }
-    .log-actor { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-2); }
-    .log-body code, .log-api { font-family: var(--font-mono); font-size: 0.75rem; word-break: break-word; }
+    .log-t { font-family: var(--font-mono); font-size: 0.73rem; color: var(--ink-3); }
+    .log-actor { font-family: var(--font-mono); font-size: 0.67rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-2); }
+    .log-body code { font-family: var(--font-mono); font-size: 0.74rem; word-break: break-word; }
     .log-row[data-tone="bad"] .log-body { color: var(--red); }
     .log-row[data-tone="good"] .log-body { color: var(--green); }
     .log-row[data-tone="human"] .log-body { color: var(--cobalt); font-weight: 600; }
 
     /* ==========================================================================
-       Interstitial + end screen
+       Performance view: hero + instrument tiles
+       ========================================================================== */
+    .perf { padding: 16px 0 26px; display: grid; gap: 14px; }
+    .hero-tile {
+      background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg);
+      box-shadow: var(--shadow); padding: 20px 24px; display: flex; align-items: center; gap: 28px; flex-wrap: wrap;
+    }
+    .hero-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); }
+    .hero-val { font-family: var(--font-body); font-size: 3rem; font-weight: 600; letter-spacing: -0.03em; line-height: 1; margin-top: 6px; }
+    .hero-tile[data-hot="1"] .hero-val { color: var(--red); }
+    .hero-tile[data-good="1"] .hero-val { color: var(--green); }
+    .hero-sub { font-size: 0.78rem; color: var(--ink-3); margin-top: 8px; max-width: 46ch; }
+    .hero-spark { margin-left: auto; min-width: 260px; flex: 1; max-width: 420px; }
+
+    .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .tile {
+      background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg);
+      box-shadow: var(--shadow); padding: 14px 16px 12px; display: flex; flex-direction: column;
+    }
+    .tile-label { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); min-height: 2em; }
+    .tile-val { font-family: var(--font-body); font-size: 1.9rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; margin-top: 4px; }
+    .tile[data-hot="1"] .tile-val { color: var(--red); }
+    .tile[data-good="1"] .tile-val { color: var(--green); }
+    .tile-sub { font-size: 0.72rem; color: var(--ink-3); min-height: 1.6em; margin-top: 2px; }
+
+    .meter { margin-top: 10px; }
+    .meter-track { height: 8px; border-radius: 999px; background: var(--cobalt-soft); position: relative; overflow: hidden; }
+    .meter-fill { height: 100%; border-radius: 999px; background: var(--cobalt); transition: width 200ms ease; }
+    .meter[data-tone="bad"] .meter-track { background: var(--red-soft); }
+    .meter[data-tone="bad"] .meter-fill { background: var(--red); }
+    .meter[data-tone="warn"] .meter-track { background: var(--amber-soft); }
+    .meter[data-tone="warn"] .meter-fill { background: var(--amber); }
+    .meter[data-tone="good"] .meter-track { background: var(--green-soft); }
+    .meter[data-tone="good"] .meter-fill { background: var(--green); }
+    .meter-mark { position: absolute; top: -2px; width: 2px; height: 12px; background: var(--ink-2); }
+    .meter-cap { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.64rem; color: var(--ink-3); margin-top: 4px; }
+
+    .arc-box { display: flex; justify-content: center; margin: 4px 0 0; }
+    .arc { width: 132px; height: 78px; }
+    .arc .arc-track { fill: none; stroke: var(--line); stroke-width: 10; stroke-linecap: round; }
+    .arc .arc-fill { fill: none; stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 200ms ease; }
+    .arc .arc-num { font: 600 1.05rem var(--font-body); fill: var(--ink); text-anchor: middle; }
+    .arc .arc-unit { font: 500 0.55rem var(--font-body); fill: var(--ink-3); text-anchor: middle; letter-spacing: 0.06em; text-transform: uppercase; }
+
+    .spark { display: block; width: 100%; height: 34px; margin-top: 10px; overflow: visible; }
+    .hero-spark .spark { height: 64px; margin-top: 0; }
+    .spark-line { fill: none; stroke: var(--phase); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+    .spark-flip { stroke: var(--ink-3); stroke-width: 1; stroke-dasharray: 2 2; vector-effect: non-scaling-stroke; }
+
+    .tile-foot { margin-top: auto; padding-top: 10px; font-size: 0.68rem; color: var(--ink-3); border-top: 1px dashed var(--line); }
+    .tile-foot .p1 { font-family: var(--font-mono); color: var(--red); }
+    .perf-note { font-size: 0.76rem; color: var(--ink-3); margin: 0; }
+
+    /* ==========================================================================
+       Overlays
        ========================================================================== */
     .overlay {
-      position: fixed; inset: 0; z-index: 90;
-      background: rgba(20, 22, 26, 0.96); color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      padding: 24px; text-align: center;
+      position: fixed; inset: 0; z-index: 90; background: rgba(20, 22, 26, 0.96); color: #fff;
+      display: flex; align-items: center; justify-content: center; padding: 24px; text-align: center;
     }
     .overlay[hidden] { display: none; }
     .interstitial p {
@@ -324,13 +343,10 @@
 
     .endscreen { align-items: flex-start; overflow-y: auto; background: rgba(20, 22, 26, 0.98); }
     .end-in { max-width: 900px; margin: 0 auto; padding: 40px 0 60px; text-align: left; }
-    .end-money {
-      font-family: var(--font-display); font-size: clamp(1.6rem, 4vw, 2.5rem);
-      font-weight: 700; line-height: 1.2; margin: 0 0 6px;
-    }
+    .end-money { font-family: var(--font-display); font-size: clamp(1.6rem, 4vw, 2.5rem); font-weight: 700; line-height: 1.2; margin: 0 0 6px; }
     .end-money em { font-style: normal; color: var(--accent); }
     .end-sub { color: #A7ADB6; margin: 0 0 28px; font-size: 0.95rem; }
-    .end-in h3 { font-family: var(--font-body); font-size: 0.7rem; letter-spacing: 0.11em; text-transform: uppercase; color: #A7ADB6; margin: 28px 0 10px; }
+    .end-in h3 { font-size: 0.7rem; letter-spacing: 0.11em; text-transform: uppercase; color: #A7ADB6; margin: 28px 0 10px; }
     table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
     th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid #2C3038; vertical-align: top; }
     th { font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; color: #A7ADB6; font-weight: 700; }
@@ -340,10 +356,7 @@
     td.tgt { color: #A7ADB6; font-size: 0.78rem; }
     tr.side td { border-top: 1px solid #4A5058; }
     .end-foot { margin-top: 26px; font-size: 0.78rem; color: #8B929B; line-height: 1.6; }
-    .end-close {
-      margin-top: 30px; padding-top: 22px; border-top: 1px solid #2C3038;
-      font-family: var(--font-display); font-size: 1.22rem; font-weight: 600; line-height: 1.4;
-    }
+    .end-close { margin-top: 30px; padding-top: 22px; border-top: 1px solid #2C3038; font-family: var(--font-display); font-size: 1.22rem; font-weight: 600; line-height: 1.4; }
     .end-actions { margin-top: 24px; display: flex; gap: 10px; flex-wrap: wrap; }
     details.raw { margin-top: 22px; }
     details.raw summary { cursor: pointer; font-size: 0.78rem; color: #A7ADB6; font-family: var(--font-mono); }
@@ -351,16 +364,7 @@
       max-height: 340px; overflow: auto; background: #0E1013; border: 1px solid #2C3038;
       border-radius: var(--r-md); padding: 14px; font-size: 0.72rem; line-height: 1.5; color: #C3C9D1; margin-top: 10px;
     }
-    .caveat {
-      margin-top: 18px; border-left: 3px solid var(--accent); padding: 8px 0 8px 14px;
-      font-size: 0.86rem; color: #E3E6EA;
-    }
-
-    .risk {
-      margin: 0 0 9px; border-left: 3px solid var(--red); background: var(--red-soft);
-      padding: 9px 12px; font-size: 0.82rem; color: var(--red); font-weight: 600;
-      border-radius: 0 var(--r-md) var(--r-md) 0;
-    }
+    .caveat { margin-top: 18px; border-left: 3px solid var(--accent); padding: 8px 0 8px 14px; font-size: 0.86rem; color: #E3E6EA; }
 
     .sr-only {
       position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
@@ -368,16 +372,16 @@
     }
 
     @media (max-width: 980px) {
-      .stage { grid-template-columns: 1fr; }
-      .strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .brand { min-width: 100%; }
+      .live { grid-template-columns: 1fr; }
+      .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .rail { min-height: 0; }
     }
     @media (max-width: 560px) {
-      .strip { grid-template-columns: 1fr; }
-      .log-row { grid-template-columns: 48px 1fr; }
+      .tiles { grid-template-columns: 1fr; }
+      .log-row { grid-template-columns: 46px 1fr; }
       .log-actor { display: none; }
+      .hero-spark { min-width: 100%; }
     }
-
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
     }
@@ -388,61 +392,62 @@
 
   <header class="hdr">
     <div class="wrap hdr-in">
-      <div class="brand">
-        <h1>Service Request Sim: one day, two systems</h1>
-        <p class="northstar">North star: dispatchers feel the software works for them, not the other way around.</p>
+      <h1>Fleet Ops</h1>
+
+      <div class="tabs" role="tablist" aria-label="Views">
+        <button type="button" class="tab" id="tabLive" role="tab" aria-selected="true" aria-controls="viewLive">Live <span class="dot" id="liveDot" hidden></span></button>
+        <button type="button" class="tab" id="tabPerf" role="tab" aria-selected="false" aria-controls="viewPerf">Performance</button>
       </div>
 
-      <div>
-        <span class="clock-label">Sim clock</span>
-        <span class="clock" id="clock">06:00</span>
+      <div class="hdr-right">
+        <span class="phase-chip" id="phaseBadge">Old system</span>
+        <span class="clock" id="clock" aria-label="Simulated clock">06:00</span>
+        <div class="switch-wrap">
+          <span class="switch-label" id="switchLabel">The switch</span>
+          <button type="button" class="switch" id="theSwitch" role="switch" aria-checked="false" aria-labelledby="switchLabel"></button>
+        </div>
+        <button type="button" class="btn btn-ghost" id="btnPause" aria-pressed="false">Pause</button>
+        <button type="button" class="btn btn-ghost" id="btnSpeed" aria-pressed="false">2&times;</button>
       </div>
-
-      <span class="phase-badge" id="phaseBadge">Phase 1 &middot; switch off</span>
-
-      <div class="switch-wrap">
-        <span class="switch-label" id="switchLabel">The switch</span>
-        <button type="button" class="switch" id="theSwitch" role="switch" aria-checked="false" aria-labelledby="switchLabel"></button>
-      </div>
-
-      <button type="button" class="btn" id="btnPause" aria-pressed="false">Pause</button>
-      <button type="button" class="btn" id="btnSpeed" aria-pressed="false">2&times;</button>
     </div>
     <div class="progress"><div class="progress-fill" id="progressFill"></div><div class="progress-flip"></div></div>
   </header>
 
   <main id="main" class="wrap">
-    <section class="stage">
-      <div class="panel">
-        <div class="panel-hd">
-          <h2>Dispatcher queue</h2>
-          <span class="panel-note" id="queueNote">Flat list, newest at the bottom. No severity, no grouping.</span>
+    <section class="view" id="viewLive" role="tabpanel" aria-labelledby="tabLive">
+      <div class="live">
+        <div class="panel">
+          <div class="panel-hd">
+            <h2>Fleet</h2>
+            <span class="panel-note" id="mapNote"></span>
+          </div>
+          <div class="map-box">
+            <svg class="map" id="map" viewBox="0 0 1000 540" role="img" aria-label="Schematic map of five vehicles, the yard, and the repair shop"></svg>
+          </div>
+          <div class="map-legend" id="mapLegend"></div>
         </div>
-        <div class="queue" id="queue" aria-live="polite"></div>
+
+        <div class="panel">
+          <div class="panel-hd">
+            <h2>Needs attention</h2>
+            <span class="panel-note" id="railNote"></span>
+          </div>
+          <div class="rail" id="rail" aria-live="polite"></div>
+        </div>
       </div>
 
-      <div class="panel">
-        <div class="panel-hd">
-          <h2>Driver</h2>
-          <span class="panel-note" id="phoneNote">The void</span>
-        </div>
-        <div class="phone">
-          <div class="phone-frame" id="phone"></div>
-        </div>
-      </div>
+      <div class="statusbar" id="statusbar"></div>
+
+      <details class="panel logwrap" id="logDrawer">
+        <summary>
+          Event log
+          <span class="panel-note"><button type="button" class="btn btn-ghost" id="btnHow" aria-pressed="false">Show the API</button></span>
+        </summary>
+        <div class="log" id="log"></div>
+      </details>
     </section>
 
-    <section class="strip" id="strip" aria-label="Operating metrics"></section>
-
-    <section class="panel logwrap">
-      <div class="panel-hd">
-        <h2>Event log</h2>
-        <span class="panel-note">
-          <button type="button" class="btn btn-ghost" id="btnHow" aria-pressed="false">Show the API</button>
-        </span>
-      </div>
-      <div class="log" id="log" aria-live="polite"></div>
-    </section>
+    <section class="view perf" id="viewPerf" role="tabpanel" aria-labelledby="tabPerf" hidden></section>
   </main>
 
   <div class="overlay interstitial" id="interstitial" hidden>
@@ -467,15 +472,12 @@
        scripted and deterministic: no randomness, no network, no model calls.
        Agent "confidence" values are fixtures, printed so you can argue with them.
        ====================================================================== */
-    const SIM_START = 360;   // 06:00
-    const SIM_END = 1080;    // 18:00
-    const FLIP_AT = 720;     // 12:00
+    const SIM_START = 360;
+    const SIM_END = 1080;
+    const FLIP_AT = 720;
     const SIM_MIN_PER_SEC = 5;
 
-    const hm = (s) => {
-      const [h, m] = s.split(':').map(Number);
-      return h * 60 + m;
-    };
+    const hm = (s) => { const [h, m] = s.split(':').map(Number); return h * 60 + m; };
     const fmt = (min) => {
       const t = Math.max(SIM_START, Math.min(SIM_END, Math.round(min)));
       return String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0');
@@ -483,27 +485,29 @@
     const money = (n) => '$' + n.toLocaleString('en-US');
     const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
+    /* Map geometry: I-80 across the top, the metro loop, the south valley
+       road, the yard, and the shop. Positions are schematic, not geographic. */
     const FLEET = {
-      'VEH-1042': { type: 'box truck', route: 'I-80 corridor' },
-      'VEH-2117': { type: 'service van', route: 'metro loop' },
-      'VEH-3308': { type: 'box truck', route: 'in shop since yesterday' },
-      'VEH-4501': { type: 'reefer', route: 'south valley' },
-      'VEH-5150': { type: 'box truck', route: 'I-80 corridor' }
+      'VEH-1042': { type: 'box truck', route: 'I-80 corridor', x: 620, y: 120 },
+      'VEH-2117': { type: 'service van', route: 'metro loop', x: 208, y: 315 },
+      'VEH-3308': { type: 'box truck', route: 'in shop since yesterday', x: 795, y: 355 },
+      'VEH-4501': { type: 'reefer', route: 'south valley', x: 660, y: 452 },
+      'VEH-5150': { type: 'box truck', route: 'I-80 corridor', x: 300, y: 120 }
     };
+    const SHOP = { x: 795, y: 340 };
+    const BREAKDOWN_SPOT = { x: 812, y: 120 };
 
-    /* ======================================================================
-       State
-       ====================================================================== */
     const state = {
       now: SIM_START,
       playing: true,
       speed: 1,
-      phase: 1,
       flipped: false,
       ended: false,
       waiting: null,
       showApi: false,
       risk: false,
+      view: 'live',
+      selected: null,
       requests: [],
       log: [],
       spark: [],
@@ -571,7 +575,7 @@
       },
       {
         t: hm('07:45'), phase: 1, actor: 'driver', tone: '',
-        plain: 'VEH-2117 driver: "Dent on rear panel from a parking lot." It lands in the queue looking exactly like the brake ticket.',
+        plain: 'VEH-2117 driver: "Dent on rear panel from a parking lot." It lands looking exactly like the brake ticket.',
         api: 'POST /v1/requests {vehicle:"VEH-2117", category:"cosmetic"} -> 201 REQ-103. Same shape, same row, same weight as a brake failure.',
         run() {
           state.requests.push({
@@ -611,7 +615,7 @@
       },
       {
         t: hm('09:30'), phase: 1, actor: 'driver', tone: '',
-        plain: 'VEH-4501 driver: "AC dead. 95 degrees on this route." Reefer, produce load. Same queue, same rank as the dent.',
+        plain: 'VEH-4501 driver: "AC dead. 95 degrees on this route." Reefer, produce load. Same list, same rank as the dent.',
         api: 'POST /v1/requests {vehicle:"VEH-4501", category:"hvac"} -> 201 REQ-105.',
         run() {
           state.requests.push({
@@ -650,7 +654,7 @@
       /* ---------------- Phase 2: switch on ---------------- */
       {
         t: hm('12:20'), phase: 2, actor: 'driver', tone: '',
-        plain: 'VEH-5150 driver: "Pedal feels soft on the downhill." The agent reads it as safety-critical, confidence 0.92, and raises it to the top of the queue on its own.',
+        plain: 'VEH-5150 driver: "Pedal feels soft on the downhill." The agent reads it as safety-critical, confidence 0.92, and raises it to the top on its own.',
         api: 'POST /v1/requests -> 201 REQ-201. POST /v1/requests/REQ-201/severity {to:"critical", actor:"agent", confidence:0.92} -> 200. Agent tokens may only raise.',
         run() {
           state.requests.push({
@@ -664,8 +668,9 @@
             veh: 'VEH-5150', sentAt: state.now, quote: 'Pedal feels soft on the downhill.',
             seen: null, when: null, alarm: null
           };
+          state.selected = 'VEH-5150';
           state.waiting = {
-            id: 'severity',
+            id: 'severity', veh: 'VEH-5150',
             title: 'Severity: confirm or downgrade',
             body: 'The agent classified REQ-201 as safety-critical at 0.92 and already escalated it. It cannot lower a severity.',
             rule: 'Agents escalate. Only a human downgrades. The two mistakes do not cost the same.',
@@ -692,8 +697,9 @@
         plain: 'A supervisor files the same brake issue. Intake recognises it before it becomes a ticket and suggests a merge at 0.96.',
         api: 'POST /requests -> 409 idempotent match VEH-5150:brakes:2026-08-18 -> merge suggested into REQ-201',
         run() {
+          state.selected = 'VEH-5150';
           state.waiting = {
-            id: 'merge',
+            id: 'merge', veh: 'VEH-5150',
             title: 'Duplicate intake: confirm or keep separate',
             body: 'Supervisor report on VEH-5150 brakes matches REQ-201 on the intake key at 0.96. No second ticket has been created yet.',
             rule: 'The agent suggests merges. Only a human confirms one. Unmerge is always available, and unmerge rate is a tracked metric.',
@@ -750,20 +756,20 @@
           const r = findReq('REQ-201');
           if (r) r.status = 'completed';
           state.m.cost += 800;
-          state.phone.when = 'Completed 16:00 &middot; Bay 2';
+          state.phone.when = 'Completed 16:00, Bay 2';
         }
       },
       {
         t: hm('17:45'), phase: 2, kind: 'end', actor: 'system', tone: 'human',
         plain: 'End of day.',
-        api: 'The event log below is the substrate: webhooks, metrics, and this end screen are all reads of the same stream.',
+        api: 'The event log is the substrate: webhooks, metrics, and this end screen are all reads of the same stream.',
         run() { endRun(); }
       }
     ];
 
     /* ======================================================================
-       Metrics. Counters are phase-scoped: they reset at the flip so the two
-       halves of the day are comparable. The sparkline keeps the whole day.
+       Derived metrics. Counters are phase-scoped: they reset at the flip so
+       the two halves of the day are comparable. Sparklines keep the whole day.
        ====================================================================== */
     const safetyValue = () => {
       if (!state.safety) return null;
@@ -781,93 +787,49 @@
       return Math.round(140 - 132 * p);
     };
 
-    const METRICS = [
-      {
-        id: 'dupes',
-        name: 'Open duplicates',
-        value: () => state.m.dupes,
-        display: (v) => String(v),
-        sub: () => 'open requests sharing an intake key',
-        hot: (v) => v > 0
-      },
-      {
-        id: 'minutes',
-        name: 'Dispatcher minutes lost',
-        value: () => state.m.minutes,
-        display: (v) => v + ' min',
-        sub: () => (state.flipped ? 'no inbound status contacts since 12:22' : 'minutes spent answering "any word yet?"'),
-        hot: (v) => v > 0
-      },
-      {
-        id: 'safety',
-        name: 'Safety: report to triage',
-        value: () => safetyValue() || 0,
-        display: () => {
-          const v = safetyValue();
-          if (v === null) return 'n/a';
-          return v + ' min';
-        },
-        sub: () => {
-          if (!state.safety) return 'safety-critical reports only';
-          if (state.safety.never) return 'never triaged · REQ-101';
-          if (state.safety.frozenAt !== null) return 'severity confirmed · ' + state.safety.ref;
-          return 'still running · ' + state.safety.ref;
-        },
-        hot: () => Boolean(state.safety) && (state.safety.never || (state.safety.frozenAt === null && !state.flipped)),
-        good: () => Boolean(state.safety) && state.safety.frozenAt !== null && state.flipped
-      },
-      {
-        id: 'api',
-        name: 'API calls per minute',
-        value: () => apiRate(),
-        display: (v) => String(v),
-        sub: () => {
-          const v = apiRate();
-          if (v > 100) return 'agents polling for state that never changes';
-          if (v > 20) return 'webhook subscribers dropping their polls';
-          return 'push, not poll';
-        },
-        hot: (v) => v > 100,
-        good: (v) => v < 20
-      },
-      {
-        id: 'cost',
-        name: 'Cost of delay',
-        value: () => state.m.cost,
-        display: (v) => money(v),
-        sub: () => 'avoidable spend, assumptions on the end screen',
-        hot: (v) => v >= 3000
-      }
-    ];
+    const openRequests = () => state.requests.filter((r) => r.status !== 'merged' && r.status !== 'completed' && r.status !== 'closed');
+
+    /* Per-vehicle live picture, derived from requests. The map reads only this. */
+    function vehicleView(vid) {
+      const reqs = state.requests.filter((r) => r.veh === vid && r.status !== 'merged');
+      const open = reqs.filter((r) => r.status !== 'completed' && r.status !== 'closed');
+      const rank = { critical: 0, elevated: 1, low: 2 };
+      open.sort((a, b) => (rank[a.sev] - rank[b.sev]) || (a.at - b.at));
+      const top = open[0] || null;
+      const broken = vid === 'VEH-1042' && state.risk && !state.flipped;
+      const inShop = top && top.status === 'in_service';
+      const done = !top && reqs.some((r) => r.status === 'completed');
+      const base = FLEET[vid];
+      let x = base.x, y = base.y;
+      if (broken) { x = BREAKDOWN_SPOT.x; y = BREAKDOWN_SPOT.y; }
+      return { id: vid, top, open, broken, inShop, done, x, y };
+    }
 
     /* ======================================================================
        DOM
        ====================================================================== */
+    const $ = (id) => document.getElementById(id);
     const el = {
       body: document.body,
-      clock: document.getElementById('clock'),
-      phaseBadge: document.getElementById('phaseBadge'),
-      theSwitch: document.getElementById('theSwitch'),
-      switchLabel: document.getElementById('switchLabel'),
-      btnPause: document.getElementById('btnPause'),
-      btnSpeed: document.getElementById('btnSpeed'),
-      btnHow: document.getElementById('btnHow'),
-      progressFill: document.getElementById('progressFill'),
-      queue: document.getElementById('queue'),
-      queueNote: document.getElementById('queueNote'),
-      phone: document.getElementById('phone'),
-      phoneNote: document.getElementById('phoneNote'),
-      strip: document.getElementById('strip'),
-      log: document.getElementById('log'),
-      interstitial: document.getElementById('interstitial'),
-      interstitialText: document.getElementById('interstitialText'),
-      interstitialSub: document.getElementById('interstitialSub'),
-      endscreen: document.getElementById('endscreen'),
-      endBody: document.getElementById('endBody'),
-      srStatus: document.getElementById('srStatus')
+      clock: $('clock'), phaseBadge: $('phaseBadge'),
+      theSwitch: $('theSwitch'), switchLabel: $('switchLabel'),
+      btnPause: $('btnPause'), btnSpeed: $('btnSpeed'), btnHow: $('btnHow'),
+      progressFill: $('progressFill'),
+      tabLive: $('tabLive'), tabPerf: $('tabPerf'), liveDot: $('liveDot'),
+      viewLive: $('viewLive'), viewPerf: $('viewPerf'),
+      map: $('map'), mapNote: $('mapNote'), mapLegend: $('mapLegend'),
+      rail: $('rail'), railNote: $('railNote'),
+      statusbar: $('statusbar'),
+      log: $('log'), logDrawer: $('logDrawer'),
+      interstitial: $('interstitial'), interstitialText: $('interstitialText'), interstitialSub: $('interstitialSub'),
+      endscreen: $('endscreen'), endBody: $('endBody'),
+      srStatus: $('srStatus')
     };
 
     const say = (msg) => { el.srStatus.textContent = msg; };
+
+    const SEV_COLOR = { critical: '#C0392B', elevated: '#B7791F', low: '#7C838C' };
+    const SEV_RANK = { critical: 0, elevated: 1, low: 2 };
 
     /* ======================================================================
        Log
@@ -882,52 +844,93 @@
         '<div class="log-row" data-tone="' + row.tone + '">' +
           '<span class="log-t">' + fmt(row.t) + '</span>' +
           '<span class="log-actor">' + row.actor + '</span>' +
-          '<span class="log-body">' + (state.showApi ? '<code class="log-api">' + row.api + '</code>' : row.plain) + '</span>' +
+          '<span class="log-body">' + (state.showApi ? '<code>' + row.api + '</code>' : row.plain) + '</span>' +
         '</div>'
       )).join('');
     }
 
     /* ======================================================================
-       Queue
+       Map. A schematic, not geography: the interstate, the loop, the valley
+       road, the yard, and the shop. Vehicles carry the whole live story;
+       everything else on the map is furniture and stays quiet.
        ====================================================================== */
-    const SEV_RANK = { critical: 0, elevated: 1, low: 2 };
+    function mapFurniture() {
+      return (
+        '<path class="route" d="M 40 120 H 960"></path>' +
+        '<path class="route-edge" d="M 40 106 H 960 M 40 134 H 960"></path>' +
+        '<text class="road-label" x="52" y="98">I-80 CORRIDOR</text>' +
 
-    const shownCards = new Set();
+        '<rect class="route" x="120" y="240" width="240" height="150" rx="70" fill="none"></rect>' +
+        '<text class="road-label" x="150" y="228">METRO LOOP</text>' +
 
-    function requestCard(r) {
-      const veh = FLEET[r.veh] || { type: '' };
-      const isNew = !shownCards.has(r.id);
-      shownCards.add(r.id);
-      const bits = [];
+        '<path class="route" d="M 470 120 C 520 240, 560 340, 640 452 H 900"></path>' +
+        '<text class="road-label" x="700" y="480">SOUTH VALLEY</text>' +
 
-      if (state.flipped) {
-        bits.push('<span class="chip chip-' + r.sev + '">' + r.sev + '</span>');
-        if (r.conf) bits.push('<span class="chip chip-agent">agent ' + r.conf.toFixed(2) + '</span>');
-      }
-      bits.push('<span class="req-id">' + r.id + '</span>');
-      bits.push('<span class="req-time">' + (r.at <= SIM_START ? 'yesterday' : fmt(r.at)) + '</span>');
-      bits.push('<span class="req-veh">' + r.veh + ' · ' + veh.type + '</span>');
+        '<g><rect class="place" x="430" y="290" width="120" height="66" rx="8"></rect>' +
+        '<text class="place-label" x="452" y="330">Yard</text></g>' +
 
-      const meta = [];
-      if (state.flipped) {
-        meta.push('<span class="chip chip-state">' + r.status.replace('_', ' ') + '</span>');
-        if (r.sched) meta.push('scheduled: ' + r.sched);
-        if (r.linked.length) meta.push('merged in: ' + r.linked.join(', '));
-        if (r.stale) meta.push('<span class="chip chip-stale">shop state unconfirmed</span>');
-        if (r.note) meta.push(r.note);
-      } else {
-        meta.push('<span class="chip">' + (r.status === 'in_service' ? 'in shop' : 'open') + '</span>');
-        meta.push('reported by ' + r.source);
-        if (r.stale && r.id === 'REQ-098') meta.push('<span class="chip chip-stale">status unverified</span>');
-      }
-
-      return '<article class="req' + (isNew ? ' is-new' : '') + '" data-sev="' + (state.flipped ? r.sev : 'none') + '" data-dim="' + (state.flipped && r.sev === 'low' ? '1' : '0') + '">' +
-        '<div class="req-top">' + bits.join('') + '</div>' +
-        '<p class="req-quote">' + r.quote + '</p>' +
-        '<div class="req-meta">' + meta.join('<span aria-hidden="true">·</span>') + '</div>' +
-      '</article>';
+        '<g><rect class="place" x="730" y="300" width="150" height="80" rx="8"></rect>' +
+        '<text class="place-label" x="756" y="326">Repair shop</text>' +
+        '<rect x="748" y="338" width="26" height="30" rx="3" fill="#DDDFD9"></rect>' +
+        '<rect x="782" y="338" width="26" height="30" rx="3" fill="#DDDFD9"></rect>' +
+        '<rect x="816" y="338" width="26" height="30" rx="3" fill="#DDDFD9"></rect></g>'
+      );
     }
 
+    function vehicleMarker(v) {
+      /* Phase 1 is deliberately blind: every alert pings in the same gray,
+         and no status text rides under the truck. Phase 2 colors the ping by
+         severity and says what state the request is in. */
+      const alert = Boolean(v.top) || v.broken;
+      const pingColor = !state.flipped ? '#7C838C' : (v.broken ? SEV_COLOR.critical : (v.top ? SEV_COLOR[v.top.sev] : ''));
+      const showPing = v.broken || (Boolean(v.top) && v.top.status === 'reported');
+      const decide = state.waiting && state.waiting.veh === v.id;
+      let status = '';
+      if (v.broken) status = 'BREAKDOWN';
+      else if (state.flipped && v.inShop) status = '';
+      else if (state.flipped && v.top) status = (v.top.sched && v.top.status === 'scheduled') ? 'scheduled' : v.top.status.replace('_', ' ');
+      else if (state.flipped && v.done) status = 'completed';
+
+      return (
+        '<g class="veh" data-veh="' + v.id + '" data-alert="' + (showPing ? 1 : 0) + '" data-sel="' + (state.selected === v.id ? 1 : 0) + '" data-decide="' + (decide ? 1 : 0) + '" transform="translate(' + v.x + ',' + v.y + ')" tabindex="0" role="button" aria-label="' + v.id + (status ? ', ' + status.toLowerCase() : '') + '">' +
+          '<circle class="ping" r="21" stroke="' + (pingColor || 'none') + '"></circle>' +
+          '<rect class="veh-body" x="-19" y="-13" width="38" height="26" rx="7"' + (v.broken ? ' stroke="#C0392B" stroke-dasharray="3 2"' : '') + '></rect>' +
+          '<text class="veh-glyph" y="4">' + (v.broken ? '✕' : (v.inShop ? '🔧' : '▮▮')) + '</text>' +
+          '<text class="veh-name" y="28">' + v.id.replace('VEH-', '') + '</text>' +
+          (status ? '<text class="veh-status" y="41" fill="' + (v.broken ? SEV_COLOR.critical : (v.top ? SEV_COLOR[v.top.sev] : '#16794C')) + '">' + status + '</text>' : '') +
+          (decide ? '<g class="decide-badge"><circle cy="-24" r="9" fill="#0047AB"></circle><text y="-20" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">?</text></g>' : '') +
+        '</g>'
+      );
+    }
+
+    function renderMap() {
+      const views = Object.keys(FLEET).map(vehicleView);
+      /* Vehicles under service park outside the shop, one slot each. */
+      views.filter((v) => v.inShop && v.id !== 'VEH-3308' && !v.broken)
+        .forEach((v, i) => { v.x = SHOP.x - 90 - i * 60; v.y = SHOP.y + 15; });
+      el.map.innerHTML = mapFurniture() + views.map(vehicleMarker).join('');
+      el.map.querySelectorAll('.veh').forEach((g) => {
+        const pick = () => { state.selected = (state.selected === g.dataset.veh) ? null : g.dataset.veh; renderMap(); renderRail(); };
+        g.addEventListener('click', pick);
+        g.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
+      });
+
+      el.mapNote.textContent = state.flipped
+        ? 'Tap a vehicle. Every alert carries severity and state.'
+        : 'Tap a vehicle. Every alert looks the same, because the system cannot tell them apart.';
+
+      el.mapLegend.innerHTML = state.flipped
+        ? '<span class="key"><i style="background:#C0392B"></i>critical</span>' +
+          '<span class="key"><i style="background:#B7791F"></i>elevated</span>' +
+          '<span class="key"><i style="background:#7C838C"></i>low</span>' +
+          '<span class="key"><i style="background:#16794C"></i>resolved</span>'
+        : '<span class="key"><i style="background:#7C838C"></i>alert (no severity exists yet)</span>';
+    }
+
+    /* ======================================================================
+       Attention rail. Decisions first, then whatever is actually actionable.
+       Low-severity work is a count, not a card.
+       ====================================================================== */
     function decisionCard(w) {
       return '<div class="decision" role="group" aria-label="' + w.title + '">' +
         '<h3>' + w.title + '</h3>' +
@@ -939,110 +942,216 @@
       '</div>';
     }
 
-    function renderQueue() {
-      const parts = [];
+    const shownCards = new Set();
 
-      if (state.waiting && state.waiting.actions) parts.push(decisionCard(state.waiting));
-      if (state.risk && !state.flipped) {
-        parts.push('<p class="risk">Deferred safety issue = driver exposure, then vehicle loss, then liability, then revenue. In that order.</p>');
-      }
-
-      const visible = state.requests.filter((r) => r.status !== 'merged');
-
-      if (!state.flipped) {
-        visible.sort((a, b) => a.at - b.at);
-        parts.push(visible.map(requestCard).join(''));
-        el.queueNote.textContent = 'Flat list, timestamp order. No severity, no grouping, no duplicate check.';
+    function attCard(r) {
+      const isNew = !shownCards.has(r.id);
+      shownCards.add(r.id);
+      const meta = [];
+      if (state.flipped) {
+        meta.push('<span class="chip chip-' + r.sev + '">' + r.sev + '</span>');
+        if (r.conf) meta.push('<span class="chip chip-agent">agent ' + r.conf.toFixed(2) + '</span>');
+        meta.push('<span class="chip chip-state">' + r.status.replace('_', ' ') + '</span>');
+        if (r.sched) meta.push(r.sched);
+        if (r.linked.length) meta.push('merged: ' + r.linked.length);
+        if (r.stale) meta.push('<span class="chip chip-stale">shop state unconfirmed</span>');
+        if (r.note) meta.push(r.note);
       } else {
-        const ranked = visible.slice().sort((a, b) => (SEV_RANK[a.sev] - SEV_RANK[b.sev]) || (a.at - b.at));
+        meta.push('<span class="chip">open</span>');
+        meta.push(r.source);
+        if (r.stale && r.id === 'REQ-098') meta.push('<span class="chip chip-stale">status unverified</span>');
+      }
+      return '<button type="button" class="att' + (isNew ? ' is-new' : '') + '" data-veh="' + r.veh + '" data-sev="' + (state.flipped ? r.sev : 'none') + '" data-sel="' + (state.selected === r.veh ? 1 : 0) + '">' +
+        '<span class="att-top"><span class="att-veh">' + r.veh + ' · ' + r.id + '</span><span class="att-time">' + (r.at <= SIM_START ? 'yesterday' : fmt(r.at)) + '</span></span>' +
+        '<span class="att-quote">' + r.quote + '</span>' +
+        '<span class="att-meta">' + meta.join('<span aria-hidden="true">·</span>') + '</span>' +
+      '</button>';
+    }
+
+    function driverMini() {
+      const p = state.phone;
+      if (!p) return '';
+      const seen = p.seen === null
+        ? '<div class="dm-q" data-state="void"><span>Did anyone see this?</span><b>no reply</b></div>'
+        : '<div class="dm-q" data-state="answered"><span>Seen?</span><b>Triaged ' + fmt(p.seen) + '</b></div>';
+      const when = p.when === null
+        ? '<div class="dm-q" data-state="void"><span>When is it fixed?</span><b>' + (p.seen === null ? 'no reply' : 'schedule pending') + '</b></div>'
+        : '<div class="dm-q" data-state="answered"><span>When?</span><b>' + p.when + '</b></div>';
+      return '<div class="driver-mini">' +
+        '<h3>' + p.veh + ' driver&rsquo;s phone</h3>' +
+        '<p class="dm-quote">&ldquo;' + p.quote + '&rdquo; · sent ' + fmt(p.sentAt) + '</p>' +
+        seen + when +
+        (p.alarm ? '<div class="dm-alarm">' + p.alarm + '</div>' : '') +
+      '</div>';
+    }
+
+    function renderRail() {
+      const parts = [];
+      if (state.waiting && state.waiting.actions) parts.push(decisionCard(state.waiting));
+
+      const open = openRequests();
+      if (!state.flipped) {
+        open.sort((a, b) => a.at - b.at);
+        parts.push(open.map(attCard).join(''));
+        el.railNote.textContent = 'Everything, in arrival order';
+      } else {
+        const ranked = open.slice().sort((a, b) => (SEV_RANK[a.sev] - SEV_RANK[b.sev]) || (a.at - b.at));
         const above = ranked.filter((r) => r.sev !== 'low');
         const below = ranked.filter((r) => r.sev === 'low');
-        parts.push(above.map(requestCard).join(''));
-        if (below.length) {
-          parts.push('<p class="fold">Below the fold · ' + below.length + ' low · no interrupt</p>');
-          parts.push(below.map(requestCard).join(''));
-        }
-        el.queueNote.textContent = 'Severity-ranked. Duplicates collapsed to one canonical request. Every card carries its state.';
+        parts.push(above.map(attCard).join(''));
+        if (below.length) parts.push('<p class="fold">+ ' + below.length + ' low priority, filed, no interrupt</p>');
+        el.railNote.textContent = 'Only what needs a person';
       }
+      if (!open.length && !(state.waiting && state.waiting.actions)) {
+        parts.push('<p class="rail-empty">Nothing needs you right now.</p>');
+      }
+      parts.push(driverMini());
+      el.rail.innerHTML = parts.join('');
 
-      if (!visible.length && !parts.length) parts.push('<p class="queue-empty">Nothing open. 06:00, everything is fine.</p>');
-      el.queue.innerHTML = parts.join('');
-
-      el.queue.querySelectorAll('[data-choice]').forEach((btn) => {
+      el.rail.querySelectorAll('[data-choice]').forEach((btn) => {
         btn.addEventListener('click', () => resolveDecision(btn.dataset.choice));
+      });
+      el.rail.querySelectorAll('.att').forEach((card) => {
+        card.addEventListener('click', () => {
+          state.selected = (state.selected === card.dataset.veh) ? null : card.dataset.veh;
+          renderMap(); renderRail();
+        });
       });
     }
 
     /* ======================================================================
-       Driver phone
+       Status bar: three numbers on the home screen, each a door to the
+       Performance tab. Everything else lives behind that door.
        ====================================================================== */
-    function renderPhone() {
-      const p = state.phone;
-      if (!p) {
-        el.phone.innerHTML = '<div class="phone-top"><span>Driver app</span><span>' + fmt(state.now) + '</span></div>' +
-          '<p class="phone-foot">Nothing reported yet.</p>';
-        el.phoneNote.textContent = state.flipped ? 'Seen / When' : 'The void';
-        return;
-      }
-
-      const waited = Math.max(0, Math.round(state.now - p.sentAt));
-      const waitStr = Math.floor(waited / 60) + 'h ' + (waited % 60) + 'm';
-
-      const seen = p.seen === null
-        ? '<div class="answer" data-state="void"><div class="answer-q">Did anyone see this?</div><div class="answer-a">no reply</div></div>'
-        : '<div class="answer" data-state="answered"><div class="answer-q">Did anyone see this?</div><div class="answer-a">Seen and triaged ' + fmt(p.seen) + '</div></div>';
-
-      const when = p.when === null
-        ? '<div class="answer" data-state="void"><div class="answer-q">When does it get fixed?</div><div class="answer-a">' + (p.seen === null ? 'no reply' : 'schedule pending') + '</div></div>'
-        : '<div class="answer" data-state="answered"><div class="answer-q">When does it get fixed?</div><div class="answer-a">' + p.when + '</div></div>';
-
-      el.phone.innerHTML =
-        '<div class="phone-top"><span>' + p.veh + ' · driver</span><span>' + fmt(state.now) + '</span></div>' +
-        '<div class="bubble">' + p.quote + '</div>' +
-        '<div class="bubble-meta">sent ' + fmt(p.sentAt) + '</div>' +
-        seen + when +
-        (p.alarm ? '<div class="phone-alarm">' + p.alarm + '</div>' : '') +
-        '<p class="phone-foot">' + (p.seen === null
-          ? waitStr + ' since the report. The driver has no way to know if anyone is looking.'
-          : 'The driver stopped needing to call. That is the whole feature.') + '</p>';
-
-      el.phoneNote.textContent = state.flipped ? 'Seen / When' : 'The void';
+    function renderStatusbar() {
+      const open = openRequests().length;
+      const sv = safetyValue();
+      const safetyHot = Boolean(state.safety) && (state.safety.never || (state.safety.frozenAt === null && !state.flipped));
+      el.statusbar.innerHTML =
+        '<button type="button" class="sb" data-goto="perf"><span class="sb-label">Open requests</span><span class="sb-val">' + open + '</span></button>' +
+        '<button type="button" class="sb" data-goto="perf" data-hot="' + (safetyHot ? 1 : 0) + '" data-good="' + (sv !== null && !safetyHot && state.flipped ? 1 : 0) + '">' +
+          '<span class="sb-label">Critical untriaged</span><span class="sb-val">' + (state.safety && state.safety.frozenAt === null ? sv + ' min' : (state.safety && state.safety.never ? 'never' : '0')) + '</span></button>' +
+        '<button type="button" class="sb" data-goto="perf" data-hot="' + (state.m.cost >= 3000 ? 1 : 0) + '"><span class="sb-label">Cost of delay</span><span class="sb-val">' + money(state.m.cost) + '</span></button>';
+      el.statusbar.querySelectorAll('[data-goto]').forEach((b) => b.addEventListener('click', () => setView('perf')));
     }
 
     /* ======================================================================
-       Metrics strip
+       Performance tab. One hero (the money), a meter against the safety
+       target, an arc for API load, plain stat tiles for the counts.
        ====================================================================== */
-    function buildStrip() {
-      el.strip.innerHTML = METRICS.map((m) => (
-        '<div class="metric" id="metric-' + m.id + '">' +
-          '<div class="metric-name">' + m.name + '</div>' +
-          '<div class="metric-val" id="val-' + m.id + '">0</div>' +
-          '<div class="metric-sub" id="sub-' + m.id + '"></div>' +
-          '<div class="metric-prior" id="prior-' + m.id + '"></div>' +
-          '<svg class="spark" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true">' +
-            '<line class="spark-flip" x1="50" y1="0" x2="50" y2="26"></line>' +
-            '<polyline class="spark-line" id="spark-' + m.id + '" points=""></polyline>' +
-          '</svg>' +
-        '</div>'
-      )).join('');
+    function sparkSvg(id, cls) {
+      return '<svg class="spark ' + (cls || '') + '" viewBox="0 0 100 30" preserveAspectRatio="none" aria-hidden="true">' +
+        '<line class="spark-flip" x1="50" y1="0" x2="50" y2="30"></line>' +
+        '<polyline class="spark-line" id="spark-' + id + '" points=""></polyline></svg>';
     }
 
-    function renderStrip() {
-      METRICS.forEach((m) => {
-        const v = m.value();
-        const card = document.getElementById('metric-' + m.id);
-        document.getElementById('val-' + m.id).textContent = m.display(v);
-        document.getElementById('sub-' + m.id).textContent = m.sub();
-        card.dataset.hot = m.hot && m.hot(v) ? '1' : '0';
-        card.dataset.good = m.good && m.good(v) ? '1' : '0';
+    function buildPerf() {
+      el.viewPerf.innerHTML =
+        '<div class="hero-tile" id="tile-cost">' +
+          '<div><div class="hero-label">Cost of delay today</div>' +
+          '<div class="hero-val" id="val-cost">$0</div>' +
+          '<div class="hero-sub" id="sub-cost"></div>' +
+          '<div class="tile-foot" id="foot-cost"></div></div>' +
+          '<div class="hero-spark">' + sparkSvg('cost') + '</div>' +
+        '</div>' +
 
-        const prior = document.getElementById('prior-' + m.id);
-        prior.innerHTML = state.snapshot ? 'phase 1: <strong>' + state.snapshot[m.id] + '</strong>' : '';
+        '<div class="tiles">' +
+          '<div class="tile" id="tile-safety">' +
+            '<div class="tile-label">Safety report to triage</div>' +
+            '<div class="tile-val" id="val-safety">n/a</div>' +
+            '<div class="tile-sub" id="sub-safety"></div>' +
+            '<div class="meter" id="meter-safety"><div class="meter-track"><div class="meter-fill" id="fill-safety"></div><div class="meter-mark" style="left:9%"></div></div>' +
+            '<div class="meter-cap"><span>0</span><span>target 30 min</span><span>330</span></div></div>' +
+            '<div class="tile-foot" id="foot-safety"></div>' +
+          '</div>' +
 
-        const series = state.spark.map((s) => [s.x, s[m.id]]);
+          '<div class="tile" id="tile-api">' +
+            '<div class="tile-label">API load</div>' +
+            '<div class="arc-box"><svg class="arc" viewBox="0 0 132 78" aria-hidden="true">' +
+              '<path class="arc-track" d="M 12 66 A 54 54 0 0 1 120 66"></path>' +
+              '<path class="arc-fill" id="arcFill" d="M 12 66 A 54 54 0 0 1 120 66"></path>' +
+              '<text class="arc-num" id="arcNum" x="66" y="58">0</text>' +
+              '<text class="arc-unit" x="66" y="72">calls / min</text>' +
+            '</svg></div>' +
+            '<div class="tile-sub" id="sub-api" style="text-align:center"></div>' +
+            '<div class="tile-foot" id="foot-api"></div>' +
+          '</div>' +
+
+          '<div class="tile" id="tile-dupes">' +
+            '<div class="tile-label">Open duplicates</div>' +
+            '<div class="tile-val" id="val-dupes">0</div>' +
+            '<div class="tile-sub" id="sub-dupes"></div>' +
+            sparkSvg('dupes') +
+            '<div class="tile-foot" id="foot-dupes"></div>' +
+          '</div>' +
+
+          '<div class="tile" id="tile-minutes">' +
+            '<div class="tile-label">Dispatcher minutes lost</div>' +
+            '<div class="tile-val" id="val-minutes">0</div>' +
+            '<div class="tile-sub" id="sub-minutes"></div>' +
+            sparkSvg('minutes') +
+            '<div class="tile-foot" id="foot-minutes"></div>' +
+          '</div>' +
+        '</div>' +
+
+        '<p class="perf-note">Counters reset at the flip so the two halves of the day compare honestly. The dashed rule on each trace is noon. Cost assumptions are on the end-of-day screen.</p>';
+    }
+
+    const ARC_LEN = Math.PI * 54;
+
+    function renderPerf() {
+      const sv = safetyValue();
+      const api = apiRate();
+      const snap = state.snapshot;
+
+      $('val-cost').textContent = money(state.m.cost);
+      $('sub-cost').textContent = state.flipped
+        ? 'Planned work only. The morning bought the expensive version of the same repair.'
+        : 'Avoidable spend: emergency repair, downtime, missed deliveries.';
+      $('tile-cost').dataset.hot = state.m.cost >= 3000 ? 1 : 0;
+      $('tile-cost').dataset.good = state.flipped && state.m.cost < 3000 ? 1 : 0;
+      $('foot-cost').innerHTML = snap ? 'before the switch: <span class="p1">' + snap.cost + '</span> · 90-day: directional, validated against emergency-repair frequency' : '90-day: directional, validated against emergency-repair frequency';
+
+      const safetyHot = Boolean(state.safety) && (state.safety.never || (state.safety.frozenAt === null && !state.flipped));
+      $('val-safety').textContent = sv === null ? 'n/a' : sv + ' min';
+      $('sub-safety').textContent = !state.safety ? 'No safety-critical report open.'
+        : state.safety.never ? 'Never triaged. ' + state.safety.ref + ' rode to the breakdown.'
+        : state.safety.frozenAt !== null ? 'Severity confirmed on ' + state.safety.ref + '.'
+        : 'Running now on ' + state.safety.ref + '.';
+      $('tile-safety').dataset.hot = safetyHot ? 1 : 0;
+      $('tile-safety').dataset.good = state.safety && state.safety.frozenAt !== null && !state.safety.never ? 1 : 0;
+      const meterPct = sv === null ? 0 : clamp(sv / 330, 0, 1) * 100;
+      $('fill-safety').style.width = meterPct + '%';
+      $('meter-safety').dataset.tone = sv === null ? 'good' : (sv <= 30 ? 'good' : sv <= 90 ? 'warn' : 'bad');
+      $('foot-safety').innerHTML = (snap ? 'before the switch: <span class="p1">' + snap.safety + '</span> · ' : '') + '90-day: median under 30 min';
+
+      const pct = clamp(api / 160, 0, 1);
+      const fill = $('arcFill');
+      fill.style.strokeDasharray = ARC_LEN;
+      fill.style.strokeDashoffset = ARC_LEN * (1 - pct);
+      fill.style.stroke = api > 100 ? '#C0392B' : api > 20 ? '#B7791F' : '#16794C';
+      $('arcNum').textContent = api;
+      $('sub-api').textContent = api > 100 ? 'Agents polling for state that never changes'
+        : api > 20 ? 'Webhook subscribers dropping their polls' : 'Push, not poll';
+      $('foot-api').innerHTML = (snap ? 'before the switch: <span class="p1">' + snap.api + '</span> · ' : '') + '90-day: poll traffic down 75%';
+
+      $('val-dupes').textContent = state.m.dupes;
+      $('sub-dupes').textContent = 'Open requests sharing an intake key.';
+      $('tile-dupes').dataset.hot = state.m.dupes > 0 ? 1 : 0;
+      $('tile-dupes').dataset.good = state.flipped && state.m.dupes === 0 ? 1 : 0;
+      $('foot-dupes').innerHTML = (snap ? 'before the switch: <span class="p1">' + snap.dupes + '</span> · ' : '') + '90-day: 80% caught at intake';
+
+      $('val-minutes').textContent = state.m.minutes + ' min';
+      $('sub-minutes').textContent = state.flipped ? 'No inbound status contacts since 12:22.' : 'Answering "any word yet?" by phone.';
+      $('tile-minutes').dataset.hot = state.m.minutes > 0 ? 1 : 0;
+      $('tile-minutes').dataset.good = state.flipped && state.m.minutes === 0 ? 1 : 0;
+      $('foot-minutes').innerHTML = (snap ? 'before the switch: <span class="p1">' + snap.minutes + '</span> · ' : '') + '90-day: status contacts down 60%';
+
+      ['cost', 'dupes', 'minutes'].forEach((id) => {
+        const series = state.spark.map((s) => [s.x, s[id]]);
         const max = Math.max(1, ...series.map((s) => s[1]));
-        document.getElementById('spark-' + m.id).setAttribute('points',
-          series.map(([x, y]) => (x * 100).toFixed(1) + ',' + (24 - (y / max) * 21).toFixed(1)).join(' '));
+        const node = $('spark-' + id);
+        if (node) node.setAttribute('points', series.map(([x, y]) => (x * 100).toFixed(1) + ',' + (27 - (y / max) * 23).toFixed(1)).join(' '));
       });
     }
 
@@ -1051,10 +1160,21 @@
         x: clamp((state.now - SIM_START) / (SIM_END - SIM_START), 0, 1),
         dupes: state.m.dupes,
         minutes: state.m.minutes,
-        safety: safetyValue() || 0,
-        api: apiRate(),
         cost: state.m.cost
       });
+    }
+
+    /* ======================================================================
+       Tabs
+       ====================================================================== */
+    function setView(v) {
+      state.view = v;
+      el.viewLive.hidden = v !== 'live';
+      el.viewPerf.hidden = v !== 'perf';
+      el.tabLive.setAttribute('aria-selected', String(v === 'live'));
+      el.tabPerf.setAttribute('aria-selected', String(v === 'perf'));
+      if (v === 'live') el.liveDot.hidden = true;
+      if (v === 'perf') renderPerf();
     }
 
     /* ======================================================================
@@ -1064,15 +1184,21 @@
     let sinceRepaint = 0;
     let nextSample = SIM_START;
 
+    function renderLive() { renderMap(); renderRail(); renderStatusbar(); }
+
     function fire(ev) {
       ev.done = true;
       state.now = ev.t;
       pushLog(state.now, ev.actor, ev.plain, ev.api, ev.tone);
       if (ev.run) ev.run();
       if (ev.kind === 'flip') armFlip();
+      if (state.waiting && state.waiting.actions && state.view !== 'live') {
+        setView('live');
+      } else if (state.view !== 'live') {
+        el.liveDot.hidden = false;
+      }
       sample();
-      renderQueue();
-      renderPhone();
+      renderLive();
     }
 
     function advance(delta) {
@@ -1091,24 +1217,22 @@
     function paintClock() {
       el.clock.textContent = fmt(state.now);
       el.progressFill.style.width = (clamp((state.now - SIM_START) / (SIM_END - SIM_START), 0, 1) * 100) + '%';
-      el.phaseBadge.textContent = state.flipped ? 'Phase 2 · switch on' : 'Phase 1 · switch off';
+      el.phaseBadge.textContent = state.flipped ? 'New system' : 'Old system';
     }
 
     function frame(ts) {
       if (lastTs === null) lastTs = ts;
       const dt = Math.min(240, ts - lastTs) / 1000;
       lastTs = ts;
-
       if (state.playing && !state.waiting && !state.ended) {
         advance(dt * SIM_MIN_PER_SEC * state.speed);
       }
-
       sinceRepaint += dt;
-      if (sinceRepaint > 0.12) {
+      if (sinceRepaint > 0.15) {
         sinceRepaint = 0;
         paintClock();
-        renderStrip();
-        renderPhone();
+        renderStatusbar();
+        if (state.view === 'perf') renderPerf();
       }
       requestAnimationFrame(frame);
     }
@@ -1147,8 +1271,6 @@
       if (hvac) { hvac.status = 'triaged'; hvac.conf = 0.71; }
       const dent = findReq('REQ-103');
       if (dent) { dent.status = 'triaged'; dent.conf = 0.88; }
-      const shopJob = findReq('REQ-098');
-      if (shopJob) { shopJob.status = 'in_service'; }
     }
 
     function showInterstitial(text, sub, ms) {
@@ -1167,7 +1289,6 @@
 
     function doFlip() {
       if (state.flipped || state.ended) return;
-
       const skipped = SCRIPT.some((ev) => ev.phase === 1 && !ev.done && ev.kind !== 'flip');
       state.waiting = null;
       runRemainingPhase1();
@@ -1186,10 +1307,10 @@
       };
 
       state.flipped = true;
-      state.phase = 2;
       state.m = { dupes: 0, minutes: 0, cost: 0 };
       state.safety = null;
       state.risk = false;
+      state.selected = null;
       nextSample = FLIP_AT;
       el.body.dataset.phase = '2';
       el.theSwitch.classList.remove('pulse');
@@ -1199,16 +1320,15 @@
 
       deriveAtCutover();
       pushLog(FLIP_AT, 'dispatch',
-        'Cutover. Intake replays this morning’s stream: three reports on VEH-1042 brakes collapse into one canonical request, and the dispatcher confirms the merge.',
+        'Cutover. Intake replays the morning stream: three reports on VEH-1042 brakes collapse into one canonical request, and the dispatcher confirms the merge.',
         'POST /v1/requests/REQ-101/merge {duplicate_ids:["REQ-102","REQ-104"], confirmed_by:"dispatcher:human"} -> 200 canonical REQ-101',
         'human');
 
-      renderQueue();
-      renderPhone();
+      renderLive();
       say('Phase 2. Same fleet, same day, new request model.');
       showInterstitial(
         'Nothing about the trucks changed. We changed what the system knows and who can see it.',
-        '12:00 · phase 2 · switch on',
+        '12:00 · the switch is on',
         3200
       );
     }
@@ -1247,8 +1367,7 @@
           'POST /v1/requests {..., force_create:true} -> 201 REQ-202. The 409 is a suggestion, not a wall.', 'human');
         state.caveats.push('You kept the supervisor report separate, so the day ends with one open duplicate. That is the design working: a merge nobody can refuse is a merge that hides real issues inside a closed ticket.');
       }
-
-      renderQueue();
+      renderLive();
     }
 
     /* ======================================================================
@@ -1268,7 +1387,7 @@
 
       el.endBody.innerHTML =
         '<p class="end-money">Same event stream. Same fleet. <em>' + snap.cost + '</em> before lunch, <em>' + money(state.m.cost) + '</em> after.</p>' +
-        '<p class="end-sub">One brake report handled two ways. The trucks were identical. The request model was not.</p>' +
+        '<p class="end-sub">One brake report handled two ways. The trucks were identical. The request model was not. North star: dispatchers feel the software works for them, not the other way around.</p>' +
 
         '<h3>Operating picture</h3>' +
         '<table><thead><tr><th>Metric</th><th>Phase 1 · switch off</th><th>Phase 2 · switch on</th><th>90-day target</th></tr></thead><tbody>' +
@@ -1280,7 +1399,7 @@
         (state.caveats.length ? state.caveats.map((c) => '<p class="caveat">' + c + '</p>').join('') : '') +
 
         '<h3>Assumptions</h3>' +
-        '<p class="end-foot">Planned brake repair $800. Emergency roadside is modelled at 4x that (observed range 3–5x; weekend surcharge excluded). Downtime $750/day for 2 unplanned days. Missed-delivery penalty $1,200. Phase 1 total is $3,200 emergency repair + $1,500 downtime + $1,200 penalty = $5,900. These are assumptions with a shape, not measurements. The point is the ratio and where it comes from: planned maintenance is the cheap version of the same repair, and every hour of triage delay is drift toward the expensive column.</p>' +
+        '<p class="end-foot">Planned brake repair $800. Emergency roadside is modelled at 4x that (observed range 3&ndash;5x; weekend surcharge excluded). Downtime $750/day for 2 unplanned days. Missed-delivery penalty $1,200. Phase 1 total is $3,200 emergency repair + $1,500 downtime + $1,200 penalty = $5,900. These are assumptions with a shape, not measurements. The point is the ratio and where it comes from: planned maintenance is the cheap version of the same repair, and every hour of triage delay is drift toward the expensive column.</p>' +
 
         '<details class="raw"><summary>Raw event log (the substrate everything above is read from)</summary><pre id="rawJson"></pre></details>' +
 
@@ -1291,12 +1410,12 @@
           '<button type="button" class="btn" id="btnClose">Back to the board</button>' +
         '</div>';
 
-      document.getElementById('rawJson').textContent = JSON.stringify(
+      $('rawJson').textContent = JSON.stringify(
         state.log.slice().reverse().map((r) => ({ t: fmt(r.t), actor: r.actor, event: r.plain, api: r.api })), null, 2);
 
       el.endscreen.hidden = false;
-      document.getElementById('btnReplay').addEventListener('click', () => { window.location.reload(); });
-      document.getElementById('btnClose').addEventListener('click', () => { el.endscreen.hidden = true; });
+      $('btnReplay').addEventListener('click', () => { window.location.reload(); });
+      $('btnClose').addEventListener('click', () => { el.endscreen.hidden = true; });
       say('End of the simulated day.');
     }
 
@@ -1304,6 +1423,8 @@
        Controls
        ====================================================================== */
     el.theSwitch.addEventListener('click', doFlip);
+    el.tabLive.addEventListener('click', () => setView('live'));
+    el.tabPerf.addEventListener('click', () => setView('perf'));
 
     el.btnPause.addEventListener('click', () => {
       state.playing = !state.playing;
@@ -1313,11 +1434,12 @@
 
     el.btnSpeed.addEventListener('click', () => {
       state.speed = state.speed === 1 ? 2 : 1;
-      el.btnSpeed.textContent = 'Speed ' + state.speed + '×';
+      el.btnSpeed.textContent = state.speed === 2 ? '1×' : '2×';
       el.btnSpeed.setAttribute('aria-pressed', String(state.speed === 2));
     });
 
-    el.btnHow.addEventListener('click', () => {
+    el.btnHow.addEventListener('click', (e) => {
+      e.preventDefault();
       state.showApi = !state.showApi;
       el.btnHow.textContent = state.showApi ? 'Show plain English' : 'Show the API';
       el.btnHow.setAttribute('aria-pressed', String(state.showApi));
@@ -1335,14 +1457,12 @@
        Start
        ====================================================================== */
     seedRequests();
-    el.btnSpeed.textContent = 'Speed 1×';
     pushLog(SIM_START, 'system',
-      'Day opens. Five vehicles, one already in the shop. Every request below is the same fleet on the same day. Only the system underneath changes at noon.',
+      'Day opens. Five vehicles, one already in the shop. Same fleet all day. Only the system underneath changes at noon.',
       'GET /v1/requests?status=open -> [REQ-098]. VEH-3308, in_service since yesterday 16:20.', '');
-    buildStrip();
-    renderQueue();
-    renderPhone();
-    renderStrip();
+    buildPerf();
+    renderLive();
+    renderPerf();
     sample();
     paintClock();
     requestAnimationFrame(frame);
