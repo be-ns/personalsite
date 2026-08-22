@@ -33,6 +33,7 @@ Each tool is one self-contained HTML file.
 | [Service of Life Builder](https://bensiverly.com/service-of-life.html) | Assemble an order of service for a memorial or celebration of life. |
 | [Memorial Preferences Worksheet](https://bensiverly.com/memorial-preferences.html) | A one-page form to print and fill out by hand — record service wishes on paper, no screen required. |
 | [Decision Assist](https://bensiverly.com/decision-assist.html) | A weighted-criteria decision matrix: score your options against what matters most. |
+| [Fleet Service Request Triage](https://bensiverly.com/fleet-service-requests.html) | One truck, three reports, one record. A dispatcher console prototype. |
 | [Writings](https://bensiverly.com/writings.html) | Poetry and prose. |
 
 ## Repository layout
