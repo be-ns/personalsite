@@ -327,6 +327,17 @@ const pages = [
     outputPath: './images/og-decision-assist.png',
   },
   {
+    title: 'Fleet Service Requests',
+    subtitle: 'One truck. Three reports. One record.',
+    eyebrow: 'Tool',
+    badge: 'Prototype',
+    accentColor: tokens.cobalt,
+    washes: brandWashes,
+    seed: 4471,
+    titleSize: 68,
+    outputPath: './images/og-fleet-service-requests.png',
+  },
+  {
     title: 'Life Strategy Matrix',
     subtitle: 'Score life areas. See where to invest.',
     eyebrow: 'Tool',

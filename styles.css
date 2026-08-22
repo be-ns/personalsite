@@ -890,6 +890,13 @@ section:last-of-type {
   border: 1px solid var(--color-text);
 }
 
+/* Prototype Badge - Quiet Cobalt Outline */
+.tool-badge--proto {
+  background-color: transparent;
+  color: var(--color-cobalt);
+  border: 1px solid var(--color-cobalt);
+}
+
 .tool-featured-description {
   font-size: 1rem;
   line-height: 1.7;
