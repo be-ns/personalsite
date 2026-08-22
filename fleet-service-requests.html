@@ -1,1290 +1,974 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fleet Service Request Triage · Ben Siverly</title>
-  <meta name="description" content="A dispatcher console prototype: three reports about the same truck, arriving through three channels, resolving into one service request.">
-
-  <!-- Open Graph -->
-  <meta property="og:title" content="Fleet Service Request Triage · Ben Siverly">
-  <meta property="og:description" content="A dispatcher console prototype: three reports about the same truck, arriving through three channels, resolving into one service request. Illustrative prototype with fabricated data.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://bensiverly.com/fleet-service-requests.html">
-  <meta property="og:image" content="https://bensiverly.com/images/og-fleet-service-requests.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Fleet Service Request Triage · Ben Siverly">
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Fleet Service Request Triage · Ben Siverly">
-  <meta name="twitter:description" content="One truck, three reports, one record. A dispatcher console prototype.">
-  <meta name="twitter:image" content="https://bensiverly.com/images/og-fleet-service-requests.png">
-
-  <!-- Canonical -->
-  <link rel="canonical" href="https://bensiverly.com/fleet-service-requests.html">
-
-  <!-- Favicon & PWA -->
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#0047AB">
-  <style>
-    .skip-link { position: absolute; left: 8px; top: -56px; z-index: 1000; padding: 0.6rem 1rem; background: #0047AB; color: #fff; border-radius: 0 0 6px 6px; font: 600 0.95rem/1 system-ui, sans-serif; text-decoration: none; }
-    .skip-link:focus { top: 0; }
-    ::selection { background-color: #FFE227; color: #1A1A1A; }
-  </style>
-
-  <!-- Structured data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "Fleet Service Request Triage",
-    "url": "https://bensiverly.com/fleet-service-requests.html",
-    "description": "A dispatcher console prototype: three reports about the same truck, arriving through three channels, resolving into one service request.",
-    "applicationCategory": "BusinessApplication",
-    "operatingSystem": "Any",
-    "browserRequirements": "Requires JavaScript",
-    "isAccessibleForFree": true,
-    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-    "author": { "@type": "Person", "name": "Ben Siverly", "url": "https://bensiverly.com/" }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fleet Service Request Triage — Ben Siverly</title>
+<meta name="description" content="A dispatcher console prototype: three reports about the same truck, arriving through three channels, resolving into one service request.">
+<link rel="canonical" href="https://bensiverly.com/fleet-service-requests.html">
+<meta property="og:title" content="Fleet Service Request Triage">
+<meta property="og:description" content="One truck. Three reports. One record. A dispatcher console prototype.">
+<meta property="og:image" content="https://bensiverly.com/images/og-fleet-service-requests.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0047AB">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Zilla+Slab:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Fleet Service Request Triage",
+  "url": "https://bensiverly.com/fleet-service-requests.html",
+  "description": "A dispatcher console prototype: three reports about the same truck, arriving through three channels, resolving into one service request.",
+  "applicationCategory": "BusinessApplication",
+  "isAccessibleForFree": true,
+  "author": { "@type": "Person", "name": "Ben Siverly", "url": "https://bensiverly.com" }
+}
+</script>
+<style>
+  :root {
+    --color-bg: #FFFFFF;
+    --color-bg-warm: #FAF9F7;
+    --color-bg-alt: #F8F8F6;
+    --color-text: #1A1A1A;
+    --color-accent: #FFE227;
+    --color-cobalt: #0047AB;
+    --color-teal: #0D7377;
+    --color-muted: #666666;
+    --color-border: #E5E5E5;
+    --font-heading: 'Zilla Slab', Georgia, serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    --console-max: 1180px;
+    --sev-1: #B00020;
+    --sev-2: #C2620A;
+    --sev-3: #0047AB;
+    --sev-4: #666666;
+    --sev-1-bg: rgba(176, 0, 32, 0.08);
+    --sev-2-bg: rgba(194, 98, 10, 0.08);
+    --agent-tint: rgba(13, 115, 119, 0.10);
+    --console-gap: 0.75rem;
   }
-  </script>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
+  }
+  .prose { max-width: 680px; margin: 0 auto; padding: 3rem 1.25rem 1.5rem; }
+  .prose h1 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: clamp(1.9rem, 4.5vw, 2.6rem);
+    line-height: 1.12;
+    margin: 0 0 0.75rem;
+  }
+  .prose p { margin: 0 0 0.6rem; color: #333; }
+  .disclosure {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--color-muted);
+    letter-spacing: 0.01em;
+  }
+  noscript p { font-family: var(--font-mono); font-size: 0.8rem; color: var(--sev-1); }
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Zilla+Slab:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  /* ---------- console shell ---------- */
+  .console {
+    width: min(var(--console-max), calc(100vw - 2rem));
+    margin: 1rem auto 2rem;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background: var(--color-bg);
+    overflow: hidden;
+  }
+  .console-bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding: 0.6rem 0.9rem;
+    background: var(--color-bg-warm);
+    border-bottom: 1px solid var(--color-border);
+    flex-wrap: wrap;
+  }
+  .seg { display: inline-flex; border: 1px solid var(--color-border); border-radius: 999px; background: var(--color-bg); padding: 2px; }
+  .seg button {
+    font-family: var(--font-body); font-size: 0.8rem; font-weight: 500;
+    border: 0; background: transparent; color: var(--color-muted);
+    padding: 0.34rem 0.85rem; border-radius: 999px; cursor: pointer;
+  }
+  .seg button[aria-pressed="true"] { background: var(--color-cobalt); color: #fff; font-weight: 600; }
+  .api-toggle {
+    font-family: var(--font-mono); font-size: 0.72rem;
+    border: 1px solid var(--color-border); border-radius: 6px;
+    background: var(--color-bg); color: var(--color-text);
+    padding: 0.4rem 0.7rem; cursor: pointer;
+  }
+  .api-toggle[aria-expanded="true"] { background: var(--color-text); color: var(--color-accent); border-color: var(--color-text); }
 
-  <style>
-    /* ==========================================================================
-       Tokens. Site palette and type, raised information density.
-       ========================================================================== */
-    :root {
-      --color-bg: #FFFFFF;
-      --color-bg-warm: #FAF9F7;
-      --color-bg-alt: #F8F8F6;
-      --color-text: #1A1A1A;
-      --color-accent: #FFE227;
-      --color-cobalt: #0047AB;
-      --color-teal: #0D7377;
-      --color-muted: #666666;
-      --color-border: #E5E5E5;
-      --font-heading: 'Zilla Slab', Georgia, serif;
-      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  .stat-strip { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--color-border); }
+  .stat { padding: 0.7rem 0.9rem; border-right: 1px solid var(--color-border); }
+  .stat:last-child { border-right: 0; }
+  .stat .label { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.09em; text-transform: uppercase; color: var(--color-muted); }
+  .stat .value { font-family: var(--font-heading); font-weight: 700; font-size: 1.7rem; line-height: 1.15; }
+  .stat .value.small { font-size: 1.05rem; font-family: var(--font-body); font-weight: 500; color: var(--color-muted); padding-top: 0.35rem; }
+  .stat .value.alert { color: var(--sev-1); }
 
-      /* Console-only tokens */
-      --console-max: 1180px;
-      --sev-1: #B00020;
-      --sev-2: #C2620A;
-      --sev-3: #0047AB;
-      --sev-4: #666666;
-      --sev-1-bg: rgba(176, 0, 32, 0.08);
-      --sev-2-bg: rgba(194, 98, 10, 0.08);
-      --agent-tint: rgba(13, 115, 119, 0.10);
-      --console-gap: 0.75rem;
-    }
+  .engineer-rail { display: none; border-bottom: 1px solid var(--color-border); background: var(--color-bg-alt); }
+  .engineer-rail.on { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .rail-cell { padding: 0.8rem 0.9rem; border-right: 1px solid var(--color-border); min-width: 0; }
+  .rail-cell:last-child { border-right: 0; }
+  .rail-cell h3 { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-teal); margin: 0 0 0.4rem; }
+  .rail-cell p { font-size: 0.78rem; margin: 0 0 0.35rem; color: #333; }
+  pre {
+    font-family: var(--font-mono); font-size: 0.68rem; line-height: 1.5;
+    background: var(--color-bg); border: 1px solid var(--color-border); border-radius: 6px;
+    padding: 0.6rem; overflow-x: auto; margin: 0.3rem 0 0; white-space: pre-wrap; word-break: break-word;
+  }
 
-    *, *::before, *::after { box-sizing: border-box; }
-    html { font-size: 16px; -webkit-text-size-adjust: 100%; }
-    body {
-      margin: 0; font-family: var(--font-body); font-size: 1rem; line-height: 1.6;
-      color: var(--color-text); background: var(--color-bg);
-    }
-    :focus-visible { outline: 3px solid var(--color-cobalt); outline-offset: 2px; }
+  .console-body { display: grid; grid-template-columns: 60% 40%; }
+  .queue-col { border-right: 1px solid var(--color-border); min-width: 0; }
+  .queue-note {
+    font-family: var(--font-mono); font-size: 0.7rem; color: var(--color-muted);
+    padding: 0.55rem 0.9rem; border-bottom: 1px solid var(--color-border); background: var(--color-bg-warm);
+    display: flex; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap;
+  }
+  ul.queue { list-style: none; margin: 0; padding: 0; }
+  ul.queue li { border-bottom: 1px solid var(--color-border); }
+  .row {
+    display: block; width: 100%; text-align: left; background: transparent; border: 0;
+    padding: 0.5rem 0.9rem; cursor: pointer; font-family: var(--font-body); color: var(--color-text);
+  }
+  .row:hover { background: var(--color-bg-warm); }
+  .row.selected { background: var(--color-bg-warm); box-shadow: inset 3px 0 0 var(--color-cobalt); }
+  .row-l1 { display: flex; align-items: baseline; gap: 0.55rem; font-size: 0.83rem; }
+  .row-l1 .unit { font-family: var(--font-mono); font-weight: 500; font-size: 0.78rem; }
+  .row-l1 .txt { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+  .row-l2 { display: flex; align-items: center; gap: 0.7rem; font-size: 0.7rem; color: var(--color-muted); margin-top: 0.14rem; flex-wrap: wrap; }
+  .row-l2 .mono, .chan { font-family: var(--font-mono); font-size: 0.66rem; }
+  .chan { border: 1px solid var(--color-border); border-radius: 4px; padding: 0 0.28rem; }
+  .api-line { display: none; font-family: var(--font-mono); font-size: 0.64rem; color: var(--color-teal); margin-top: 0.14rem; }
+  .api-on .api-line { display: block; }
 
-    .prose { max-width: 680px; margin: 0 auto; padding: 0 1.25rem; }
-    .console-wrap { max-width: var(--console-max); margin: 0 auto; padding: 0 1.25rem; }
+  .sev {
+    display: inline-flex; align-items: center; gap: 0.32rem;
+    font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.05em;
+    padding: 0.12rem 0.45rem; border-radius: 4px; white-space: nowrap;
+  }
+  .sev .shape { font-size: 0.68rem; line-height: 1; }
+  .sev-S1 { color: var(--sev-1); background: var(--sev-1-bg); font-weight: 500; }
+  .sev-S2 { color: var(--sev-2); background: var(--sev-2-bg); font-weight: 500; }
+  .sev-S3 { color: var(--sev-3); }
+  .sev-S4 { color: var(--sev-4); }
+  .sev-flat { color: var(--color-muted); background: var(--color-bg-alt); }
+  .stale-flag {
+    font-family: var(--font-mono); font-size: 0.62rem; color: var(--sev-2);
+    background: var(--sev-2-bg); border-radius: 4px; padding: 0.08rem 0.4rem;
+  }
 
-    /* ==========================================================================
-       Intro
-       ========================================================================== */
-    .intro { padding: 3rem 0 1.5rem; }
-    h1 {
-      font-family: var(--font-heading); font-size: clamp(1.9rem, 5vw, 2.6rem);
-      font-weight: 700; line-height: 1.15; margin: 0 0 0.75rem; letter-spacing: -0.01em;
-    }
-    .intro-sub { color: var(--color-muted); margin: 0 0 0.6rem; }
-    .disclosure { font-family: var(--font-mono); font-size: 0.75rem; color: var(--color-muted); margin: 0; }
-    .intro a { color: var(--color-cobalt); }
+  .detail-col { min-width: 0; background: var(--color-bg); }
+  .detail { padding: 0.9rem; }
+  .detail-empty { color: var(--color-muted); font-size: 0.85rem; padding: 1.5rem 0.9rem; }
+  .detail h2 { font-family: var(--font-heading); font-size: 1.1rem; margin: 0; line-height: 1.25; }
+  .detail .veh-sub { font-family: var(--font-mono); font-size: 0.7rem; color: var(--color-muted); margin: 0.1rem 0 0.5rem; }
+  .prov { font-size: 0.72rem; color: var(--color-muted); margin: 0.25rem 0 0; }
+  .two-q {
+    border: 1px solid var(--color-border); border-left: 4px solid var(--color-accent);
+    border-radius: 6px; padding: 0.6rem 0.7rem; margin: 0.7rem 0;
+    background: var(--color-bg-warm);
+  }
+  .two-q dt { font-weight: 600; font-size: 0.78rem; }
+  .two-q dd { margin: 0.1rem 0 0.5rem; font-size: 0.82rem; }
+  .two-q dd:last-child { margin-bottom: 0; }
 
-    /* ==========================================================================
-       Console shell
-       ========================================================================== */
-    .console {
-      border: 1px solid var(--color-border); border-radius: 10px; background: var(--color-bg);
-      margin: 1.25rem auto 0; overflow: clip;
-    }
-    .console-hd {
-      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
-      padding: 0.7rem 1rem; border-bottom: 1px solid var(--color-border); background: var(--color-bg-warm);
-    }
-    .seg { display: inline-flex; border: 1px solid var(--color-border); border-radius: 8px; overflow: hidden; background: var(--color-bg); }
-    .seg button {
-      font: 500 0.82rem/1 var(--font-body); padding: 0.55rem 0.9rem; border: 0; background: transparent;
-      color: var(--color-muted); cursor: pointer;
-    }
-    .seg button[aria-pressed="true"] { background: var(--color-text); color: #fff; font-weight: 600; }
-    .console-hd .spacer { margin-left: auto; }
-    .api-toggle {
-      font: 500 0.78rem/1 var(--font-mono); padding: 0.5rem 0.8rem; border: 1px solid var(--color-border);
-      border-radius: 8px; background: var(--color-bg); color: var(--color-text); cursor: pointer;
-    }
-    .api-toggle[aria-expanded="true"] { background: var(--color-teal); border-color: var(--color-teal); color: #fff; }
+  .lifecycle { display: flex; gap: 3px; margin: 0.75rem 0 0.3rem; flex-wrap: wrap; }
+  .lc {
+    font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.04em;
+    padding: 0.22rem 0.45rem; border-radius: 4px; border: 1px solid var(--color-border); color: var(--color-muted);
+  }
+  .lc.done { background: rgba(13,115,119,0.10); border-color: rgba(13,115,119,0.3); color: var(--color-teal); }
+  .lc.now { background: var(--color-cobalt); border-color: var(--color-cobalt); color: #fff; font-weight: 500; }
+  .lc-time { font-family: var(--font-mono); font-size: 0.62rem; color: var(--color-muted); margin: 0 0 0.4rem; }
+  .transitions { display: flex; gap: 0.4rem; flex-wrap: wrap; margin: 0.3rem 0 0.6rem; }
+  .t-btn {
+    font-family: var(--font-body); font-size: 0.74rem; font-weight: 500;
+    border: 1px solid var(--color-cobalt); color: var(--color-cobalt); background: var(--color-bg);
+    border-radius: 6px; padding: 0.3rem 0.6rem; cursor: pointer;
+  }
+  .t-btn:hover { background: var(--color-cobalt); color: #fff; }
+  .t-hint { display: none; font-family: var(--font-mono); font-size: 0.6rem; color: var(--color-teal); width: 100%; }
+  .api-on .t-hint { display: block; }
 
-    /* Stat strip */
-    .stats { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--color-border); }
-    .stat { padding: 0.7rem 1rem; border-right: 1px solid var(--color-border); }
-    .stat:last-child { border-right: 0; }
-    .stat-label { font-family: var(--font-mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-muted); }
-    .stat-value { font-size: 1.35rem; font-weight: 600; line-height: 1.3; }
-    .stat-value small { font-size: 0.78rem; font-weight: 400; color: var(--color-muted); }
+  .sec-label { font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-muted); margin: 0.8rem 0 0.3rem; }
+  .src { border-top: 1px solid var(--color-border); padding: 0.45rem 0; font-size: 0.76rem; }
+  .src .meta { font-family: var(--font-mono); font-size: 0.64rem; color: var(--color-muted); display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+  .src .raw { margin: 0.15rem 0 0; color: #333; }
+  .src.merged-in { background: var(--agent-tint); border-radius: 4px; padding-left: 0.4rem; padding-right: 0.4rem; }
+  .undo-link { font-family: var(--font-mono); font-size: 0.64rem; color: var(--color-cobalt); background: none; border: 0; cursor: pointer; text-decoration: underline; padding: 0; }
+  .act { border-top: 1px solid var(--color-border); padding: 0.35rem 0; font-size: 0.72rem; color: #333; display: flex; gap: 0.5rem; }
+  .actor-badge { font-family: var(--font-mono); font-size: 0.6rem; border-radius: 4px; padding: 0.05rem 0.35rem; border: 1px solid var(--color-border); color: var(--color-muted); white-space: nowrap; height: fit-content; }
+  .actor-agent { color: var(--color-teal); border-color: var(--color-teal); }
+  .actor-human { color: var(--color-cobalt); border-color: var(--color-cobalt); }
+  .actor-shop { color: var(--sev-2); border-color: var(--sev-2); }
 
-    /* Main grid */
-    .console-main { display: grid; grid-template-columns: 60% 40%; align-items: start; }
-    .queue-col { border-right: 1px solid var(--color-border); min-width: 0; }
-    .detail-col { min-width: 0; }
+  .tray { border-top: 1px solid var(--color-border); background: var(--color-bg-warm); padding: 0.7rem 0.9rem; }
+  .tray-head { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; flex-wrap: wrap; }
+  .tray-head .label { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-muted); }
+  .sim-btn {
+    font-family: var(--font-body); font-size: 0.78rem; font-weight: 600;
+    background: var(--color-accent); border: 1px solid #d8be1c; color: var(--color-text);
+    border-radius: 6px; padding: 0.4rem 0.75rem; cursor: pointer;
+  }
+  .sim-btn:disabled { opacity: 0.45; cursor: default; }
+  .tray-card { border: 1px solid var(--color-border); border-radius: 6px; background: var(--color-bg); padding: 0.55rem 0.65rem; margin-top: 0.55rem; font-size: 0.78rem; }
+  .tray-card .outcome { font-family: var(--font-mono); font-size: 0.64rem; margin-bottom: 0.2rem; }
+  .out-merge { color: var(--color-teal); }
+  .out-suggest { color: var(--sev-2); }
+  .out-new { color: var(--color-cobalt); }
+  .suggest-actions { display: flex; gap: 0.45rem; margin-top: 0.4rem; }
+  .suggest-actions button {
+    font-size: 0.74rem; font-weight: 500; border-radius: 6px; padding: 0.3rem 0.6rem; cursor: pointer;
+    border: 1px solid var(--color-border); background: var(--color-bg);
+  }
+  .suggest-actions .yes { border-color: var(--color-teal); color: var(--color-teal); }
+  .suggest-actions .no { border-color: var(--color-muted); color: var(--color-text); }
+  .factors { font-family: var(--font-mono); font-size: 0.64rem; color: var(--color-muted); margin-top: 0.2rem; }
 
-    .queue-note { font-family: var(--font-mono); font-size: 0.72rem; color: var(--color-muted); padding: 0.55rem 1rem; border-bottom: 1px solid var(--color-border); }
+  .toast {
+    position: fixed; left: 50%; bottom: 1.2rem; transform: translateX(-50%);
+    background: var(--color-text); color: #fff; font-size: 0.8rem;
+    border-radius: 8px; padding: 0.55rem 0.9rem; display: none; align-items: center; gap: 0.7rem;
+    max-width: min(92vw, 560px); z-index: 50;
+  }
+  .toast.show { display: flex; }
+  .toast button { background: none; border: 0; color: var(--color-accent); font-weight: 600; cursor: pointer; font-size: 0.8rem; }
 
-    /* Queue rows */
-    .queue { list-style: none; margin: 0; padding: 0; }
-    .queue li { border-bottom: 1px solid var(--color-border); }
-    .row {
-      display: block; width: 100%; text-align: left; font: inherit; color: inherit;
-      background: transparent; border: 0; padding: 0.55rem 1rem; cursor: pointer;
-    }
-    .row:hover { background: var(--color-bg-alt); }
-    .row[aria-current="true"] { background: var(--color-bg-warm); box-shadow: inset 3px 0 0 var(--color-cobalt); }
-    .row-1 { display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; }
-    .row-unit { font-family: var(--font-mono); font-size: 0.82rem; font-weight: 500; }
-    .row-defect { font-size: 0.88rem; font-weight: 500; min-width: 0; }
-    .row-sev { margin-left: auto; }
-    .row-2 { display: flex; align-items: baseline; gap: 0.75rem; flex-wrap: wrap; font-size: 0.73rem; color: var(--color-muted); margin-top: 0.15rem; }
-    .row-api { font-family: var(--font-mono); font-size: 0.7rem; color: var(--color-teal); margin-top: 0.2rem; display: none; }
-    .console[data-api="on"] .row-api { display: block; }
-    .chan { font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.04em; color: var(--color-muted); }
-    .stale-flag { color: var(--sev-2); font-weight: 600; }
+  .foot { max-width: 680px; margin: 0 auto; padding: 0 1.25rem 3.5rem; font-size: 0.82rem; color: #333; }
+  .foot h2 { font-family: var(--font-heading); font-size: 1rem; margin: 1.4rem 0 0.3rem; }
+  .foot p { margin: 0.25rem 0; }
+  .foot a { color: var(--color-cobalt); }
 
-    /* Severity chips: shape + label, never color alone */
-    .sev {
-      display: inline-flex; align-items: center; gap: 0.35rem;
-      font-family: var(--font-mono); font-size: 0.64rem; font-weight: 600; letter-spacing: 0.08em;
-      padding: 0.18rem 0.5rem; border-radius: 100px; white-space: nowrap;
-    }
-    .sev i { display: inline-block; width: 8px; height: 8px; flex: none; }
-    .sev-S1 { color: var(--sev-1); background: var(--sev-1-bg); }
-    .sev-S1 i { background: var(--sev-1); }
-    .sev-S2 { color: var(--sev-2); background: var(--sev-2-bg); }
-    .sev-S2 i { width: 0; height: 0; background: transparent; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 9px solid var(--sev-2); }
-    .sev-S3 { color: var(--sev-3); background: rgba(0, 71, 171, 0.07); }
-    .sev-S3 i { background: transparent; border: 2px solid var(--sev-3); border-radius: 50%; }
-    .sev-S4 { color: var(--sev-4); background: var(--color-bg-alt); }
-    .sev-S4 i { background: transparent; border: 2px solid var(--sev-4); border-radius: 50%; }
-    .sev-none { color: var(--color-muted); background: var(--color-bg-alt); }
+  :focus-visible { outline: 2px solid var(--color-cobalt); outline-offset: 2px; border-radius: 4px; }
 
-    /* ==========================================================================
-       Detail panel
-       ========================================================================== */
-    .detail { padding: 0.85rem 1rem 1.1rem; }
-    .detail-empty { color: var(--color-muted); font-size: 0.88rem; padding: 1.5rem 1rem; }
-    .d-unit { font-family: var(--font-mono); font-size: 0.78rem; color: var(--color-muted); }
-    .d-title { font-family: var(--font-heading); font-size: 1.2rem; font-weight: 700; margin: 0.1rem 0 0.2rem; line-height: 1.25; }
-    .d-meta { font-size: 0.76rem; color: var(--color-muted); }
-    .d-meta code { font-family: var(--font-mono); font-size: 0.72rem; }
+  @media (prefers-reduced-motion: no-preference) {
+    .row, .t-btn, .seg button, .sim-btn { transition: background-color 160ms ease, color 160ms ease; }
+    .tray-card { animation: slide-in 320ms cubic-bezier(0.22, 1, 0.36, 1); }
+    .src.merged-in { animation: slide-in 320ms cubic-bezier(0.22, 1, 0.36, 1); }
+    @keyframes slide-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+  }
 
-    .twoq { border: 1.5px solid var(--color-text); border-radius: 8px; margin: 0.8rem 0; overflow: hidden; }
-    .twoq div { padding: 0.55rem 0.8rem; }
-    .twoq div + div { border-top: 1px solid var(--color-border); }
-    .twoq dt { font-family: var(--font-mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-muted); margin: 0; }
-    .twoq dd { margin: 0.1rem 0 0; font-size: 0.9rem; font-weight: 500; }
-
-    .life { margin: 0.9rem 0 0.3rem; }
-    .life-label { font-family: var(--font-mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-muted); }
-    .life-strip { display: flex; gap: 4px; margin-top: 0.35rem; flex-wrap: wrap; }
-    .life-step {
-      font-family: var(--font-mono); font-size: 0.66rem; padding: 0.28rem 0.5rem; border-radius: 5px;
-      background: var(--color-bg-alt); color: var(--color-muted); border: 1px solid transparent;
-    }
-    .life-step[data-done="1"] { background: var(--color-bg-warm); color: var(--color-text); border-color: var(--color-border); }
-    .life-step[data-now="1"] { background: var(--color-text); color: #fff; font-weight: 600; }
-    .life-actions { display: flex; gap: 0.45rem; margin-top: 0.55rem; flex-wrap: wrap; align-items: center; }
-    .t-btn {
-      font: 600 0.74rem/1 var(--font-body); padding: 0.45rem 0.7rem; border-radius: 6px;
-      border: 1px solid var(--color-cobalt); color: var(--color-cobalt); background: transparent; cursor: pointer;
-    }
-    .t-btn:hover { background: rgba(0, 71, 171, 0.06); }
-    .t-btn-quiet { border-color: var(--color-border); color: var(--color-muted); }
-    .t-api { font-family: var(--font-mono); font-size: 0.66rem; color: var(--color-teal); display: none; width: 100%; white-space: pre-line; }
-    .console[data-api="on"] .t-api { display: block; }
-    .wa-select { font: 500 0.74rem var(--font-body); padding: 0.4rem; border: 1px solid var(--color-border); border-radius: 6px; background: var(--color-bg); }
-
-    .d-h3 { font-family: var(--font-mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-muted); margin: 1rem 0 0.35rem; font-weight: 600; }
-    .sources, .activity { list-style: none; margin: 0; padding: 0; }
-    .sources li {
-      border: 1px solid var(--color-border); border-radius: 6px; padding: 0.45rem 0.6rem;
-      margin-bottom: 0.4rem; font-size: 0.78rem;
-    }
-    .sources li[data-agent="1"] { background: var(--agent-tint); }
-    .src-top { display: flex; gap: 0.5rem; align-items: baseline; flex-wrap: wrap; }
-    .src-text { color: var(--color-muted); margin-top: 0.1rem; }
-    .src-undo {
-      font: 600 0.7rem/1 var(--font-body); border: 0; background: transparent; color: var(--color-cobalt);
-      cursor: pointer; padding: 0.15rem 0.2rem; margin-left: auto; text-decoration: underline;
-    }
-    .activity li { font-size: 0.75rem; color: var(--color-muted); padding: 0.28rem 0; border-bottom: 1px dashed var(--color-border); display: flex; gap: 0.5rem; align-items: baseline; }
-    .actor-badge {
-      font-family: var(--font-mono); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.06em;
-      padding: 0.1rem 0.4rem; border-radius: 4px; background: var(--color-bg-alt); color: var(--color-text); flex: none;
-    }
-    .actor-badge[data-type="agent"] { background: var(--agent-tint); color: var(--color-teal); }
-    .actor-badge[data-type="shop"] { background: rgba(0, 71, 171, 0.08); color: var(--color-cobalt); }
-
-    /* ==========================================================================
-       Inbound tray, suggestion, toast
-       ========================================================================== */
-    .tray { border-top: 1px solid var(--color-border); background: var(--color-bg-warm); padding: 0.75rem 1rem 0.9rem; }
-    .tray-hd { display: flex; align-items: baseline; gap: 0.8rem; flex-wrap: wrap; }
-    .tray-title { font-family: var(--font-mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-muted); font-weight: 600; }
-    .thresholds { font-family: var(--font-mono); font-size: 0.66rem; color: var(--color-muted); margin-left: auto; }
-    .sim-btn {
-      font: 600 0.8rem/1 var(--font-body); padding: 0.55rem 0.9rem; border-radius: 7px;
-      border: 0; background: var(--color-cobalt); color: #fff; cursor: pointer; margin-top: 0.55rem;
-    }
-    .sim-btn:hover { background: #003A8C; }
-    .sim-btn:disabled { background: var(--color-border); color: var(--color-muted); cursor: default; }
-    .tray-feed { list-style: none; margin: 0.6rem 0 0; padding: 0; }
-    .tray-feed li { font-size: 0.78rem; padding: 0.4rem 0.55rem; border: 1px solid var(--color-border); border-radius: 6px; background: var(--color-bg); margin-bottom: 0.4rem; }
-    .outcome { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 600; letter-spacing: 0.05em; }
-    .outcome[data-kind="auto_merged"] { color: var(--color-teal); }
-    .outcome[data-kind="suggested"] { color: var(--sev-2); }
-    .outcome[data-kind="created"] { color: var(--color-cobalt); }
-
-    .suggest { border: 1.5px solid var(--sev-2); border-radius: 7px; background: var(--sev-2-bg); padding: 0.55rem 0.7rem; margin-top: 0.5rem; }
-    .suggest-line { font-size: 0.8rem; font-weight: 500; }
-    .suggest-factors { font-size: 0.72rem; color: var(--color-muted); margin: 0.2rem 0 0.45rem; }
-    .suggest-actions { display: flex; gap: 0.5rem; }
-    .s-btn { font: 600 0.76rem/1 var(--font-body); padding: 0.45rem 0.75rem; border-radius: 6px; cursor: pointer; border: 1px solid var(--color-text); background: var(--color-text); color: #fff; }
-    .s-btn-alt { background: transparent; color: var(--color-text); }
-
-    .toast-region { position: fixed; left: 50%; bottom: 1.2rem; transform: translateX(-50%); z-index: 60; width: min(92vw, 480px); }
-    .toast {
-      display: flex; gap: 0.7rem; align-items: center; background: var(--color-text); color: #fff;
-      border-radius: 8px; padding: 0.65rem 0.9rem; font-size: 0.82rem; box-shadow: 0 6px 24px rgba(0,0,0,0.25);
-    }
-    .toast button { font: 600 0.8rem/1 var(--font-body); border: 0; background: transparent; color: var(--color-accent); cursor: pointer; text-decoration: underline; margin-left: auto; flex: none; }
-
-    /* ==========================================================================
-       Engineer rail
-       ========================================================================== */
-    .rail { display: none; border-top: 1px solid var(--color-border); background: #101418; color: #D7DCE2; padding: 0.9rem 1rem 1.1rem; }
-    .console[data-api="on"] .rail { display: block; }
-    .rail h2, .rail h3 { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: #8FA0B3; margin: 0.9rem 0 0.3rem; font-weight: 600; }
-    .rail h2:first-child { margin-top: 0; }
-    .rail p { font-size: 0.78rem; margin: 0.15rem 0; color: #B9C2CC; }
-    .rail pre {
-      font-family: var(--font-mono); font-size: 0.7rem; line-height: 1.5; background: #0A0D10;
-      border: 1px solid #232A31; border-radius: 6px; padding: 0.7rem 0.8rem; overflow-x: auto; margin: 0.4rem 0 0; color: #C8E4D4;
-    }
-    .rail .payload-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.6rem; }
-    .rail .k { color: #7FB4FF; }
-
-    /* ==========================================================================
-       Footer
-       ========================================================================== */
-    .foot { padding: 2rem 0 3rem; }
-    .foot h2 { font-family: var(--font-heading); font-size: 1.15rem; margin: 1.2rem 0 0.4rem; }
-    .foot p, .foot li { font-size: 0.88rem; color: var(--color-muted); }
-    .foot details { margin-top: 1rem; }
-    .foot summary { cursor: pointer; font-size: 0.85rem; color: var(--color-cobalt); }
-    .matrix-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin-top: 0.6rem; }
-    .matrix-table th, .matrix-table td { text-align: left; padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--color-border); }
-    .matrix-table th { font-family: var(--font-mono); font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-muted); }
-
-    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-
-    /* Merge motion */
-    @media (prefers-reduced-motion: no-preference) {
-      .row-flash { animation: rowflash 640ms ease; }
-      @keyframes rowflash { 0% { background: var(--agent-tint); } 100% { background: transparent; } }
-      .tray-feed li { transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1), opacity 320ms cubic-bezier(0.22, 1, 0.36, 1); }
-      .tray-feed li.merging { transform: translateY(-14px); opacity: 0.15; }
-    }
-
-    @media (max-width: 900px) {
-      .console-main { grid-template-columns: 1fr; }
-      .queue-col { border-right: 0; order: 2; }
-      .detail-col { order: 1; border-bottom: 1px solid var(--color-border); }
-      .stats { grid-template-columns: 1fr; }
-      .stat { border-right: 0; border-bottom: 1px solid var(--color-border); }
-      .rail .payload-grid { grid-template-columns: 1fr; }
-    }
-  </style>
+  @media (max-width: 900px) {
+    .console-body { grid-template-columns: 1fr; display: flex; flex-direction: column; }
+    .detail-col { order: -1; border-bottom: 1px solid var(--color-border); }
+    .queue-col { border-right: 0; }
+    .engineer-rail.on { grid-template-columns: 1fr; }
+    .rail-cell { border-right: 0; border-bottom: 1px solid var(--color-border); }
+    .stat .value { font-size: 1.3rem; }
+  }
+</style>
 </head>
 <body>
-  <a class="skip-link" href="#console">Skip to the console</a>
 
-  <header class="prose intro">
-    <h1>One truck. Three reports. One record.</h1>
-    <p class="intro-sub">A dispatcher console for vehicle service requests, built for the Core Management Platform practicum. Toggle between how it works today and what changes when the record is trustworthy.</p>
-    <p class="disclosure">Illustrative prototype. Fabricated data, no backend, one screen on purpose.</p>
-    <noscript><p class="intro-sub">This console needs JavaScript. Everything runs in your browser; nothing is sent anywhere.</p></noscript>
-  </header>
+<header class="prose">
+  <h1>One truck. Three reports. One record.</h1>
+  <p>A dispatcher console for vehicle service requests, built for the Core Management Platform practicum. Toggle between how it works today and what changes when the record is trustworthy.</p>
+  <p class="disclosure">Illustrative prototype. Fabricated data, no backend, one screen on purpose.</p>
+  <noscript><p>This console needs JavaScript. Everything runs in your browser; nothing is sent anywhere.</p></noscript>
+</header>
 
-  <main class="console-wrap">
-    <section class="console" id="console" data-api="off" aria-label="Service request console">
-      <div class="console-hd">
-        <div class="seg" role="group" aria-label="View">
-          <button type="button" id="viewToday" aria-pressed="true">Today</button>
-          <button type="button" id="viewAfter" aria-pressed="false">With one record per issue</button>
+<main class="console" id="console">
+  <div class="console-bar">
+    <div class="seg" role="group" aria-label="View">
+      <button type="button" id="btn-today" aria-pressed="true">Today</button>
+      <button type="button" id="btn-after" aria-pressed="false">With one record per issue</button>
+    </div>
+    <button type="button" class="api-toggle" id="api-toggle" aria-expanded="false" aria-controls="engineer-rail">Show the API</button>
+  </div>
+
+  <div class="stat-strip" id="stat-strip"></div>
+
+  <section class="engineer-rail" id="engineer-rail" aria-label="API view">
+    <div class="rail-cell">
+      <h3>Key vs. matcher</h3>
+      <p>The idempotency key is transport-level: one client retrying gets the cached response, never a second record.</p>
+      <p>The matcher is domain-level: three people reporting one issue through different doors get one record, probabilistically and reversibly.</p>
+      <p>Different problems, different layers. Every channel below posts to the same endpoint.</p>
+      <pre id="rail-channels" aria-label="Three channel payloads hitting one endpoint"></pre>
+    </div>
+    <div class="rail-cell">
+      <h3>Last intake, on the wire</h3>
+      <pre id="rail-intake" aria-label="Last intake request and response"></pre>
+      <h3 style="margin-top:0.7rem">Last event emitted</h3>
+      <pre id="rail-event" aria-label="Last emitted event envelope"></pre>
+    </div>
+  </section>
+
+  <div class="console-body">
+    <div class="queue-col">
+      <div class="queue-note" id="queue-note"></div>
+      <ul class="queue" id="queue" aria-label="Service request queue"></ul>
+      <div class="tray" id="tray" hidden>
+        <div class="tray-head">
+          <span class="label">Inbound</span>
+          <button type="button" class="sim-btn" id="sim-btn">Simulate incoming report</button>
         </div>
-        <span class="spacer"></span>
-        <button type="button" class="api-toggle" id="apiToggle" aria-expanded="false" aria-controls="rail">Show the API</button>
+        <div id="tray-cards"></div>
       </div>
+    </div>
+    <div class="detail-col">
+      <div id="detail" class="detail"></div>
+    </div>
+  </div>
+</main>
 
-      <div class="stats" id="stats"></div>
+<footer class="foot">
+  <h2>What would change my mind</h2>
+  <p>Duplicate rate doesn't fall: the match keys are not working; fix matching before adding anything.</p>
+  <p>Auto-merge precision slips: drop to suggest-only merging. Automation is a privilege the system has to earn.</p>
+  <p>Downgrade rate runs high: the severity threshold is miscalibrated; retune before dispatchers start disregarding flags.</p>
+  <h2>What this signal doesn't tell us</h2>
+  <p>The channel mix of incoming reports, and the status-call baseline per dispatcher per day. Both are on the discovery list before any threshold here is final.</p>
+  <p>Seed data on this page is fabricated. The written analysis accompanies this prototype. <a href="/">bensiverly.com</a></p>
+</footer>
 
-      <div class="console-main">
-        <div class="queue-col">
-          <p class="queue-note" id="queueNote"></p>
-          <ul class="queue" id="queue"></ul>
+<div class="toast" id="toast" aria-live="polite"></div>
 
-          <div class="tray" id="tray" hidden>
-            <div class="tray-hd">
-              <span class="tray-title">Inbound</span>
-              <span class="thresholds">auto &ge; 0.85 &middot; suggest 0.55&ndash;0.84 &middot; new &lt; 0.55</span>
-            </div>
-            <div id="suggestBox"></div>
-            <ul class="tray-feed" id="trayFeed"></ul>
-            <button type="button" class="sim-btn" id="simBtn">Simulate incoming report</button>
-          </div>
-        </div>
-
-        <div class="detail-col">
-          <div class="detail" id="detail"><p class="detail-empty">Select a request to see its record.</p></div>
-        </div>
-      </div>
-
-      <div class="rail" id="rail" aria-label="API view: the requests and events behind the console">
-        <h2>The key and the matcher are different things</h2>
-        <p>An <span class="k">Idempotency-Key</span> is transport-layer: one client retrying one HTTP request. Deterministic, caller-generated, returns the cached response.</p>
-        <p>The <span class="k">matcher</span> is domain-layer: different people reporting the same real-world issue through channels no interface owns. Probabilistic, server-side, reversible.</p>
-        <p>Conflating them is the bug at the center of this product. The key stops a double-tap. The matcher stops three people.</p>
-
-        <h3>Three channels, one endpoint</h3>
-        <div class="payload-grid" id="channelPayloads"></div>
-
-        <h3>Last intake call</h3>
-        <pre id="lastIntake" aria-label="The most recent POST to the intake endpoint and its response">No intake calls yet. Press Simulate incoming report.</pre>
-
-        <h3>Last emitted event</h3>
-        <pre id="lastEvent" aria-label="The most recent event envelope and its subscriber list">No events emitted yet this session.</pre>
-      </div>
-    </section>
-
-    <p class="sr-only" id="live" role="status"></p>
-    <div class="toast-region" aria-live="polite" id="toastRegion"></div>
-  </main>
-
-  <footer class="prose foot">
-    <h2>What would change my mind</h2>
-    <ul>
-      <li>If duplicate intakes measure under 10 percent in the first instrumented week, the record problem is smaller than the calls suggest and shop coordination moves up.</li>
-      <li>If dispatchers reject more than a third of merge suggestions, the matcher is below the usefulness line and it drops to suggest-only while the factors get rebuilt.</li>
-      <li>If the severity downgrade rate runs past 10 percent, the classifier is miscalibrated and flags will start being ignored, which is worse than no flags.</li>
-    </ul>
-
-    <h2>What this signal does not tell us</h2>
-    <p>Ticket themes say where the pain surfaces, not where it starts. The data to request next: intake volume by channel, time from report to first human touch, and how often the same defect reappears within 30 days of a closed request.</p>
-
-    <details>
-      <summary>Who can do what: the agent boundary</summary>
-      <table class="matrix-table">
-        <thead><tr><th scope="col">Action</th><th scope="col">Actor</th><th scope="col">Human required</th></tr></thead>
-        <tbody>
-          <tr><td>Create a request from a structured telematics fault</td><td>agent</td><td>no</td></tr>
-          <tr><td>Assign a VMRS code to a free-text report</td><td>agent</td><td>no, shown as a correctable suggestion</td></tr>
-          <tr><td>Merge at confidence 0.85 or higher, within severity class</td><td>agent</td><td>no, undo available 24h</td></tr>
-          <tr><td>Merge at confidence 0.55 to 0.84</td><td>agent proposes</td><td>yes</td></tr>
-          <tr><td>Raise severity</td><td>agent</td><td>no</td></tr>
-          <tr><td>Lower severity</td><td>human only</td><td>yes, with a reason</td></tr>
-          <tr><td>Advance reported to triaged</td><td>agent</td><td>no</td></tr>
-          <tr><td>Schedule a shop visit</td><td>agent proposes</td><td>yes</td></tr>
-          <tr><td>Close or cancel a request</td><td>human only</td><td>yes</td></tr>
-        </tbody>
-      </table>
-      <p>The boundary follows the cost of being wrong. A false merge hides a real defect behind another ticket; a false split produces a duplicate that is annoying, visible, and self-correcting. Downgrade and close are one click for a dispatcher and the last line of defense before a defect disappears. Automating them buys seconds and sells the audit trail.</p>
-    </details>
-
-    <p style="margin-top: 1.5rem;">Part of the written analysis for the practicum. Seed data is fabricated; VMRS system codes are real, from the published TMC references. <a href="/">Back to bensiverly.com</a></p>
-  </footer>
-
-  <script type="application/json" id="seed-data">
-  [{
-    "now": "2026-03-11T13:05:00Z",
-    "customer": { "id": "cust_northgate", "name": "Northgate Logistics", "vehicles": 400 },
-    "vmrs_systems": {
-      "001": "Air Conditioning, Heating and Ventilating System",
-      "002": "Cab and Sheet Metal",
-      "003": "Instruments, Gauges, Warning and Shutdown Devices, and Meters",
-      "013": "Brakes",
-      "015": "Steering",
-      "016": "Suspension",
-      "017": "Tires, Tubes, Liners and Valves",
-      "018": "Wheels, Rims, Hubs and Bearings",
-      "031": "Charging System",
-      "032": "Cranking System",
-      "034": "Lighting System",
-      "042": "Cooling System",
-      "044": "Fuel System",
-      "045": "Power Plant"
+<script type="application/json" id="seed-data">
+{
+  "now": "2026-03-11T15:00:00Z",
+  "vmrs_systems": {
+    "001": "AC, heating and ventilating",
+    "002": "Cab and sheet metal",
+    "003": "Instruments and gauges",
+    "013": "Brakes",
+    "015": "Steering",
+    "016": "Suspension",
+    "017": "Tires",
+    "018": "Wheels and hubs",
+    "031": "Charging system",
+    "032": "Cranking system",
+    "034": "Lighting system",
+    "042": "Cooling system",
+    "044": "Fuel system",
+    "045": "Power plant"
+  },
+  "safety_class_systems": ["013", "015", "016", "017", "018", "034"],
+  "severity_labels": { "S1": "OUT OF SERVICE", "S2": "URGENT", "S3": "SCHEDULED", "S4": "DEFERRED" },
+  "severity_shapes": { "S1": "■", "S2": "▲", "S3": "○", "S4": "○" },
+  "sla_minutes": { "S1": 15, "S2": 120, "S3": 1440, "S4": 0 },
+  "allowed_transitions": {
+    "reported": ["triaged", "merged", "cancelled"],
+    "triaged": ["scheduled", "reported", "cancelled"],
+    "scheduled": ["in_service", "triaged", "cancelled"],
+    "in_service": ["ready", "scheduled"],
+    "ready": ["closed", "in_service"],
+    "closed": [],
+    "merged": ["reported"],
+    "cancelled": []
+  },
+  "people": [
+    { "id": "usr_mwebb", "name": "Marcus Webb", "role": "driver" },
+    { "id": "usr_druiz", "name": "Dana Ruiz", "role": "dispatcher" },
+    { "id": "usr_pnandi", "name": "Priya Nandi", "role": "supervisor" },
+    { "id": "usr_tokafor", "name": "Tomi Okafor", "role": "driver" },
+    { "id": "agent_core", "name": "Core Agent", "role": "agent" },
+    { "id": "shop_ridgeline", "name": "Ridgeline Truck Center", "role": "shop" }
+  ],
+  "vehicles": [
+    { "id": "veh_4471", "unit": "4471", "desc": "2022 Freightliner Cascadia", "regulated": true },
+    { "id": "veh_2210", "unit": "2210", "desc": "2021 International MV607", "regulated": true },
+    { "id": "veh_3388", "unit": "3388", "desc": "2023 Ford Transit 350", "regulated": false },
+    { "id": "veh_1902", "unit": "1902", "desc": "2020 Peterbilt 579", "regulated": true },
+    { "id": "veh_5140", "unit": "5140", "desc": "2024 Freightliner M2 106", "regulated": true }
+  ],
+  "reports": [
+    { "id": "rep_1041", "request_id": "req_8841", "channel": "APP", "at": "2026-03-11T07:12:04Z", "reporter": "usr_mwebb", "raw_text": "check engine light came on and there is a grinding sound when I brake hard", "vmrs": { "system": "013", "assembly": "001", "by": "classifier", "confidence": 0.78 }, "origin": true, "legacy_status": "Open" },
+    { "id": "rep_1042", "request_id": "req_8841", "channel": "TEL", "at": "2026-03-11T07:31:22Z", "reporter": "usr_druiz", "raw_text": "Marcus called in, brakes grinding and ABS light is on, asking if he can finish the route", "vmrs": { "system": "013", "by": "dispatcher" }, "merge": { "id": "mrg_201", "decision": "auto", "confidence": 0.91, "by": "agent_core", "reversible_until": "2026-03-12T07:31:00Z" }, "legacy_status": "called driver back" },
+    { "id": "rep_1043", "request_id": "req_8841", "channel": "WEB", "at": "2026-03-11T08:05:47Z", "reporter": "usr_pnandi", "raw_text": "DVIR brake defect logged, unit held pending inspection", "vmrs": { "system": "013", "assembly": "001", "by": "supervisor" }, "merge": { "id": "mrg_202", "decision": "auto", "confidence": 0.94, "by": "agent_core", "reversible_until": "2026-03-12T08:06:00Z" }, "legacy_status": "Open" },
+    { "id": "rep_1038", "request_id": "req_8817", "channel": "APP", "at": "2026-03-08T16:40:00Z", "reporter": "usr_mwebb", "raw_text": "scratch and small dent on the passenger door, probably a dock post", "vmrs": { "system": "002", "assembly": "006", "by": "classifier", "confidence": 0.83 }, "origin": true, "match_note": "create_new at 0.34: different severity class, cannot auto-merge at any confidence", "legacy_status": "Open" },
+    { "id": "rep_1076", "request_id": "req_8830", "channel": "APP", "at": "2026-03-11T06:50:00Z", "reporter": "usr_tokafor", "raw_text": "front left tire looks low, pulling a little at speed", "vmrs": { "system": "017", "assembly": "001", "by": "classifier", "confidence": 0.81 }, "origin": true, "legacy_status": "Open" },
+    { "id": "rep_1090", "request_id": "req_8822", "channel": "APP", "at": "2026-03-10T05:30:00Z", "reporter": "usr_tokafor", "raw_text": "driver side headlight out", "vmrs": { "system": "034", "assembly": "001", "by": "classifier", "confidence": 0.88 }, "origin": true, "legacy_status": "Open" },
+    { "id": "rep_1091", "request_id": "req_8822", "channel": "AGT", "at": "2026-03-10T18:14:00Z", "reporter": "agent_core", "raw_text": "telemetry: lamp circuit open, marker position", "vmrs": { "system": "034", "assembly": "004", "by": "classifier", "confidence": 0.9 }, "merge": { "id": "mrg_204", "decision": "auto", "confidence": 0.87, "by": "agent_core", "reversible_until": "2026-03-11T18:14:00Z", "wrong": true }, "legacy_status": "Open" },
+    { "id": "rep_1052", "request_id": "req_8804", "channel": "WEB", "at": "2026-03-08T15:00:00Z", "reporter": "usr_pnandi", "raw_text": "brake reline due, pads at 3mm on the yard check", "vmrs": { "system": "013", "assembly": "001", "by": "supervisor" }, "origin": true, "legacy_status": "In service" },
+    { "id": "rep_1060", "request_id": "req_8801", "channel": "APP", "at": "2026-03-09T12:40:00Z", "reporter": "usr_tokafor", "raw_text": "fuel gauge stuck at half, jumps around on rough road", "vmrs": { "system": "003", "assembly": "002", "by": "classifier", "confidence": 0.8 }, "origin": true, "legacy_status": "waiting on parts" },
+    { "id": "rep_1061", "request_id": "req_8801", "channel": "TEL", "at": "2026-03-09T13:05:00Z", "reporter": "usr_druiz", "raw_text": "Tomi called, gauge still acting up, wants to know if it is booked", "vmrs": { "system": "003", "by": "dispatcher" }, "merge": { "id": "mrg_206", "decision": "auto", "confidence": 0.86, "by": "agent_core", "reversible_until": "2026-03-10T13:05:00Z" }, "legacy_status": "Open" },
+    { "id": "rep_1070", "request_id": "req_8815", "channel": "AGT", "at": "2026-03-10T15:00:00Z", "reporter": "agent_core", "raw_text": "telemetry: coolant temperature above threshold at idle, spn 110", "vmrs": { "system": "042", "assembly": "001", "by": "classifier", "confidence": 0.86 }, "origin": true, "legacy_status": "Open" },
+    { "id": "rep_1071", "request_id": "req_8815", "channel": "APP", "at": "2026-03-10T15:20:00Z", "reporter": "usr_tokafor", "raw_text": "coolant temp warning at idle, drops back down when moving", "vmrs": { "system": "042", "by": "classifier", "confidence": 0.79 }, "merge": { "id": "mrg_207", "decision": "auto", "confidence": 0.89, "by": "agent_core", "reversible_until": "2026-03-11T15:20:00Z" }, "legacy_status": "Open" },
+    { "id": "rep_1064", "request_id": "req_8807", "channel": "APP", "at": "2026-03-10T17:00:00Z", "reporter": "usr_mwebb", "raw_text": "seat cushion torn on the side bolster", "vmrs": { "system": "002", "assembly": "011", "by": "classifier", "confidence": 0.82 }, "origin": true, "legacy_status": "Open" },
+    { "id": "rep_1066", "request_id": "req_8819", "channel": "WEB", "at": "2026-03-09T09:30:00Z", "reporter": "usr_pnandi", "raw_text": "PM service due by miles, schedule with the brake inspection", "vmrs": { "system": "045", "by": "supervisor" }, "origin": true, "legacy_status": "Open" }
+  ],
+  "requests": [
+    {
+      "id": "req_8841", "vehicle_id": "veh_4471", "state": "reported", "severity": "S1",
+      "severity_provenance": "classifier, 0.91",
+      "vmrs": { "system": "013", "assembly": "001" }, "defect_label": "Brakes, front brakes and drums",
+      "q1": "No. Out of service until inspected. Regulated vehicle, brake defect.",
+      "q2": "Not scheduled yet. Dispatcher notified at 07:12.",
+      "history": [
+        { "at": "2026-03-11T07:12:04Z", "to": "reported", "actor_type": "system", "actor": "intake", "note": "created from rep_1041" }
+      ]
     },
-    "safety_class_systems": ["013", "015", "016", "017", "018", "034"],
-    "cosmetic_class_systems": ["002"],
-    "severities": {
-      "S1": { "label": "OUT OF SERVICE", "sla_minutes": 15 },
-      "S2": { "label": "URGENT", "sla_minutes": 120 },
-      "S3": { "label": "SCHEDULED", "sla_minutes": 1440 },
-      "S4": { "label": "DEFERRED", "sla_minutes": null }
+    {
+      "id": "req_8817", "vehicle_id": "veh_4471", "state": "reported", "severity": "S4",
+      "severity_provenance": "classifier, 0.83",
+      "vmrs": { "system": "002", "assembly": "006" }, "defect_label": "Cab and sheet metal, door",
+      "q1": "Yes. Cosmetic only.",
+      "q2": "Batches into the next planned shop visit.",
+      "history": [
+        { "at": "2026-03-08T16:40:00Z", "to": "reported", "actor_type": "system", "actor": "intake", "note": "created from rep_1038" }
+      ]
     },
-    "allowed_transitions": {
-      "reported": ["triaged", "merged", "cancelled"],
-      "triaged": ["scheduled", "reported", "cancelled"],
-      "scheduled": ["in_service", "triaged", "cancelled"],
-      "in_service": ["ready", "scheduled"],
-      "ready": ["closed", "in_service"],
-      "closed": [],
-      "merged": ["reported"],
-      "cancelled": []
+    {
+      "id": "req_8830", "vehicle_id": "veh_2210", "state": "triaged", "severity": "S2",
+      "severity_provenance": "classifier, 0.84",
+      "vmrs": { "system": "017", "assembly": "001" }, "defect_label": "Tires, front axle",
+      "q1": "Yes. Monitor pressure and recheck at the next stop.",
+      "q2": "Not scheduled yet. Dispatcher notified at 07:05.",
+      "history": [
+        { "at": "2026-03-11T06:50:00Z", "to": "reported", "actor_type": "system", "actor": "intake", "note": "created from rep_1076" },
+        { "at": "2026-03-11T07:05:00Z", "to": "triaged", "actor_type": "agent", "actor": "agent_core", "note": "" }
+      ]
     },
-    "work_accomplished_codes": { "03": "Replace new", "06": "Inspect", "24": "Repair" },
-    "channels": {
-      "driver_app": "APP",
-      "phone_dispatch": "TEL",
-      "supervisor_web": "WEB",
-      "agent_api": "AGT",
-      "shop_api": "SHOP"
+    {
+      "id": "req_8822", "vehicle_id": "veh_3388", "state": "triaged", "severity": "S2",
+      "severity_provenance": "classifier, 0.88",
+      "vmrs": { "system": "034", "assembly": "001" }, "defect_label": "Lighting system, headlamps",
+      "q1": "Yes, daytime routes only until the lamp is replaced.",
+      "q2": "Not scheduled yet. Dispatcher notified at 06:10.",
+      "history": [
+        { "at": "2026-03-10T05:30:00Z", "to": "reported", "actor_type": "system", "actor": "intake", "note": "created from rep_1090" },
+        { "at": "2026-03-10T06:10:00Z", "to": "triaged", "actor_type": "agent", "actor": "agent_core", "note": "" }
+      ]
     },
-    "people": [
-      { "id": "usr_mwebb", "name": "Marcus Webb", "role": "driver" },
-      { "id": "usr_druiz", "name": "Dana Ruiz", "role": "dispatcher" },
-      { "id": "usr_pnandi", "name": "Priya Nandi", "role": "supervisor" },
-      { "id": "usr_tokafor", "name": "Tomi Okafor", "role": "driver" },
-      { "id": "agent_core", "name": "Core Agent", "role": "agent" },
-      { "id": "shop_ridgeline", "name": "Ridgeline Truck Center", "role": "shop" }
-    ],
-    "vehicles": [
-      { "id": "veh_4471", "unit": "4471", "year": 2022, "make": "Freightliner", "model": "Cascadia", "domicile": "Sacramento", "regulated": true },
-      { "id": "veh_2210", "unit": "2210", "year": 2021, "make": "International", "model": "MV607", "domicile": "Sacramento", "regulated": true },
-      { "id": "veh_3388", "unit": "3388", "year": 2023, "make": "Ford", "model": "Transit 350", "domicile": "Stockton", "regulated": false },
-      { "id": "veh_1902", "unit": "1902", "year": 2020, "make": "Peterbilt", "model": "579", "domicile": "Sacramento", "regulated": true },
-      { "id": "veh_5140", "unit": "5140", "year": 2024, "make": "Freightliner", "model": "M2 106", "domicile": "Stockton", "regulated": true }
-    ],
-    "requests": [
-      {
-        "id": "req_8841",
-        "vehicle_id": "veh_4471",
-        "vmrs": { "system": "013", "assembly": "001", "label": "Brakes: front brake lining" },
-        "severity": { "level": "S1", "source": "classifier", "confidence": 0.91, "confirmed_by": "usr_druiz" },
-        "state": "scheduled",
-        "answers": {
-          "q1": "No. Out of service until inspected. Regulated vehicle, brake defect.",
-          "q2": "Ridgeline Truck Center, today 14:00. Estimated ready 17:30."
-        },
-        "reports": [
-          { "id": "rep_1041", "channel": "driver_app", "at": "2026-03-11T07:12:04Z", "reporter": "usr_mwebb", "raw_text": "check engine light came on and there is a grinding sound when I brake hard", "vmrs_assigned": { "system": "013", "assembly": "001", "by": "classifier", "confidence": 0.78 }, "before_status": "Open" },
-          { "id": "rep_1042", "channel": "phone_dispatch", "at": "2026-03-11T07:31:22Z", "reporter": "usr_druiz", "raw_text": "Marcus called in, brakes grinding and ABS light is on, asking if he can finish the route", "vmrs_at_intake": { "system": "013" }, "merge": { "decision": "auto_merged", "confidence": 0.91, "merge_id": "mrg_201", "at": "2026-03-11T07:31:23Z" }, "before_status": "called driver back" },
-          { "id": "rep_1043", "channel": "supervisor_web", "at": "2026-03-11T08:05:47Z", "reporter": "usr_pnandi", "raw_text": "DVIR brake defect logged, unit held pending inspection", "vmrs_at_intake": { "system": "013", "assembly": "001" }, "merge": { "decision": "auto_merged", "confidence": 0.94, "merge_id": "mrg_202", "at": "2026-03-11T08:05:48Z" }, "before_status": "Open" }
-        ],
-        "transitions": [
-          { "to": "triaged", "at": "2026-03-11T07:14:10Z", "actor": { "type": "agent", "id": "agent_core" } },
-          { "to": "scheduled", "at": "2026-03-11T09:02:00Z", "actor": { "type": "human", "id": "usr_druiz" }, "note": "Ridgeline Truck Center, bay 3, 14:00" }
-        ]
-      },
-      {
-        "id": "req_8817",
-        "vehicle_id": "veh_4471",
-        "vmrs": { "system": "002", "assembly": "006", "label": "Cab and sheet metal: passenger door" },
-        "severity": { "level": "S4", "source": "classifier", "confidence": 0.83 },
-        "state": "triaged",
-        "answers": {
-          "q1": "Yes. Cosmetic only.",
-          "q2": "Batched for the next planned shop visit. Not scheduled yet."
-        },
-        "reports": [
-          { "id": "rep_1038", "channel": "driver_app", "at": "2026-03-08T16:40:00Z", "reporter": "usr_mwebb", "raw_text": "scratch and small dent on the passenger door, probably a dock post", "vmrs_assigned": { "system": "002", "assembly": "006", "by": "classifier", "confidence": 0.83 }, "match_note": "different severity class from the brake reports, cannot auto-merge at any confidence", "before_status": "Open" }
-        ],
-        "transitions": [
-          { "to": "triaged", "at": "2026-03-08T16:42:30Z", "actor": { "type": "agent", "id": "agent_core" } }
-        ]
-      },
-      {
-        "id": "req_8830",
-        "vehicle_id": "veh_2210",
-        "vmrs": { "system": "017", "assembly": "001", "label": "Tires: front axle" },
-        "severity": { "level": "S2", "source": "classifier", "confidence": 0.76 },
-        "state": "triaged",
-        "answers": {
-          "q1": "Yes. Monitor pressure. Avoid highway speed if the pull worsens.",
-          "q2": { "not_yet_scheduled": true, "notified_at": "2026-03-11T07:02:00Z" }
-        },
-        "reports": [
-          { "id": "rep_1076", "channel": "driver_app", "at": "2026-03-11T06:50:00Z", "reporter": "usr_tokafor", "raw_text": "front left tire looks low, pulling a little at speed", "vmrs_assigned": { "system": "017", "assembly": "001", "by": "classifier", "confidence": 0.81 }, "before_status": "Open" }
-        ],
-        "transitions": [
-          { "to": "triaged", "at": "2026-03-11T06:58:00Z", "actor": { "type": "agent", "id": "agent_core" } }
-        ]
-      },
-      {
-        "id": "req_8822",
-        "vehicle_id": "veh_3388",
-        "vmrs": { "system": "034", "assembly": "001", "label": "Lighting: headlamps" },
-        "severity": { "level": "S2", "source": "classifier", "confidence": 0.81 },
-        "state": "triaged",
-        "answers": {
-          "q1": "Yes. Daylight routes only until repaired.",
-          "q2": { "not_yet_scheduled": true, "notified_at": "2026-03-10T05:40:00Z" }
-        },
-        "reports": [
-          { "id": "rep_1090", "channel": "driver_app", "at": "2026-03-10T05:30:00Z", "reporter": "usr_tokafor", "raw_text": "driver side headlight out", "vmrs_assigned": { "system": "034", "assembly": "001", "by": "classifier", "confidence": 0.86 }, "before_status": "Open" },
-          { "id": "rep_1091", "channel": "agent_api", "at": "2026-03-10T18:14:00Z", "reporter": "agent_core", "raw_text": "telemetry: lamp circuit open, marker position", "vmrs_assigned": { "system": "034", "assembly": "004", "by": "classifier", "confidence": 0.74 }, "merge": { "decision": "auto_merged", "confidence": 0.87, "merge_id": "mrg_204", "at": "2026-03-10T18:14:02Z" }, "before_status": "Open" }
-        ],
-        "transitions": [
-          { "to": "triaged", "at": "2026-03-10T05:36:00Z", "actor": { "type": "agent", "id": "agent_core" } }
-        ]
-      },
-      {
-        "id": "req_8804",
-        "vehicle_id": "veh_1902",
-        "vmrs": { "system": "042", "assembly": "001", "label": "Cooling system: radiator" },
-        "severity": { "level": "S3", "source": "classifier", "confidence": 0.79 },
-        "state": "in_service",
-        "shop_reported_ready_at": "2026-03-10T16:20:00Z",
-        "answers": {
-          "q1": "No. Unit is at Ridgeline Truck Center.",
-          "q2": "Shop reported ready yesterday 16:20. Confirm and release."
-        },
-        "reports": [
-          { "id": "rep_1012", "channel": "driver_app", "at": "2026-03-08T11:05:00Z", "reporter": "usr_tokafor", "raw_text": "coolant smell after the long grade, level a little low", "vmrs_assigned": { "system": "042", "assembly": "001", "by": "classifier", "confidence": 0.77 }, "before_status": "In service" }
-        ],
-        "transitions": [
-          { "to": "triaged", "at": "2026-03-08T11:20:00Z", "actor": { "type": "agent", "id": "agent_core" } },
-          { "to": "scheduled", "at": "2026-03-08T15:00:00Z", "actor": { "type": "human", "id": "usr_druiz" }, "note": "Ridgeline Truck Center, Monday 09:00" },
-          { "to": "in_service", "at": "2026-03-09T09:00:00Z", "actor": { "type": "shop", "id": "shop_ridgeline" } }
-        ]
-      },
-      {
-        "id": "req_8801",
-        "vehicle_id": "veh_1902",
-        "vmrs": { "system": "003", "assembly": "002", "label": "Instruments: fuel gauge" },
-        "severity": { "level": "S3", "source": "classifier", "confidence": 0.74 },
-        "state": "scheduled",
-        "answers": {
-          "q1": "Yes. Gauge only; fuel level verified manually at dispatch.",
-          "q2": "Ridgeline Truck Center, Thursday 08:00."
-        },
-        "reports": [
-          { "id": "rep_1008", "channel": "driver_app", "at": "2026-03-07T09:12:00Z", "reporter": "usr_tokafor", "raw_text": "fuel gauge stuck at half, jumps around on rough road", "vmrs_assigned": { "system": "003", "assembly": "002", "by": "classifier", "confidence": 0.8 }, "before_status": "waiting on parts" },
-          { "id": "rep_1019", "channel": "phone_dispatch", "at": "2026-03-09T10:44:00Z", "reporter": "usr_druiz", "raw_text": "Tomi called, gauge still acting up, wants to know if it is booked", "vmrs_at_intake": { "system": "003" }, "merge": { "decision": "auto_merged", "confidence": 0.87, "merge_id": "mrg_203", "at": "2026-03-09T10:44:02Z" }, "before_status": "Open" }
-        ],
-        "transitions": [
-          { "to": "triaged", "at": "2026-03-07T09:30:00Z", "actor": { "type": "agent", "id": "agent_core" } },
-          { "to": "scheduled", "at": "2026-03-10T08:15:00Z", "actor": { "type": "human", "id": "usr_druiz" }, "note": "Ridgeline Truck Center, Thursday 08:00" }
-        ]
-      },
-      {
-        "id": "req_8796",
-        "vehicle_id": "veh_1902",
-        "vmrs": { "system": "045", "assembly": "001", "label": "Power plant: PM service" },
-        "severity": { "level": "S3", "source": "classifier", "confidence": 0.88 },
-        "state": "ready",
-        "answers": {
-          "q1": "Yes. Ready for pickup.",
-          "q2": "Complete. Awaiting pickup at Ridgeline Truck Center."
-        },
-        "reports": [
-          { "id": "rep_1001", "channel": "supervisor_web", "at": "2026-03-05T08:00:00Z", "reporter": "usr_pnandi", "raw_text": "PM service due by miles, schedule with the brake inspection", "vmrs_at_intake": { "system": "045", "assembly": "001" }, "before_status": "PM sched" }
-        ],
-        "transitions": [
-          { "to": "triaged", "at": "2026-03-05T08:10:00Z", "actor": { "type": "agent", "id": "agent_core" } },
-          { "to": "scheduled", "at": "2026-03-05T14:00:00Z", "actor": { "type": "human", "id": "usr_druiz" }, "note": "Ridgeline Truck Center, Wednesday 08:00" },
-          { "to": "in_service", "at": "2026-03-11T08:05:00Z", "actor": { "type": "shop", "id": "shop_ridgeline" } },
-          { "to": "ready", "at": "2026-03-11T09:40:00Z", "actor": { "type": "shop", "id": "shop_ridgeline" } }
-        ]
-      },
-      {
-        "id": "req_8809",
-        "vehicle_id": "veh_5140",
-        "vmrs": { "system": "042", "assembly": "002", "label": "Cooling system: thermostat" },
-        "severity": { "level": "S2", "source": "classifier", "confidence": 0.72 },
-        "state": "triaged",
-        "answers": {
-          "q1": "Yes. Watch the gauge. Pull over if it reaches the red band.",
-          "q2": { "not_yet_scheduled": true, "notified_at": "2026-03-10T12:45:00Z" }
-        },
-        "reports": [
-          { "id": "rep_1051", "channel": "driver_app", "at": "2026-03-10T12:20:00Z", "reporter": "usr_mwebb", "raw_text": "coolant temp warning at idle, drops back down when moving", "vmrs_assigned": { "system": "042", "assembly": "002", "by": "classifier", "confidence": 0.75 }, "before_status": "Open" },
-          { "id": "rep_1063", "channel": "agent_api", "at": "2026-03-10T12:41:00Z", "reporter": "agent_core", "raw_text": "telemetry: coolant temperature above threshold at idle, spn 110", "vmrs_at_intake": { "system": "042", "assembly": "002" }, "merge": { "decision": "auto_merged", "confidence": 0.89, "merge_id": "mrg_205", "at": "2026-03-10T12:41:02Z" }, "before_status": "Open" }
-        ],
-        "transitions": [
-          { "to": "triaged", "at": "2026-03-10T12:26:00Z", "actor": { "type": "agent", "id": "agent_core" } }
-        ]
-      },
-      {
-        "id": "req_8812",
-        "vehicle_id": "veh_5140",
-        "vmrs": { "system": "002", "assembly": "011", "label": "Cab and sheet metal: driver seat" },
-        "severity": { "level": "S4", "source": "classifier", "confidence": 0.85 },
-        "state": "triaged",
-        "answers": {
-          "q1": "Yes.",
-          "q2": "Batched for the next planned shop visit. Not scheduled yet."
-        },
-        "reports": [
-          { "id": "rep_1068", "channel": "driver_app", "at": "2026-03-10T15:02:00Z", "reporter": "usr_mwebb", "raw_text": "seat cushion torn on the side bolster", "vmrs_assigned": { "system": "002", "assembly": "011", "by": "classifier", "confidence": 0.85 }, "before_status": "Open" }
-        ],
-        "transitions": [
-          { "to": "triaged", "at": "2026-03-10T15:05:00Z", "actor": { "type": "agent", "id": "agent_core" } }
-        ]
-      }
-    ],
-    "tray": [
-      {
-        "report": { "id": "rep_1044", "channel": "agent_api", "at": "2026-03-11T08:20:11Z", "reporter": "agent_core", "raw_text": "telemetry: ABS wheel speed sensor circuit, spn 789 fmi 7", "vmrs_at_intake": { "system": "013", "assembly": "001" } },
-        "vehicle_id": "veh_4471",
-        "outcome": { "decision": "auto_merged", "confidence": 0.88, "into": "req_8841", "merge_id": "mrg_206", "factors": { "vmrs_system_equal": true, "vmrs_assembly_equal": true, "hours_apart": 1.13, "symptom_overlap": ["abs", "brake"], "distinct_reporter": true } }
-      },
-      {
-        "report": { "id": "rep_1077", "channel": "supervisor_web", "at": "2026-03-11T14:20:00Z", "reporter": "usr_pnandi", "raw_text": "tire wear flagged on rear tandem during yard walk", "vmrs_at_intake": { "system": "017", "assembly": "003" } },
-        "vehicle_id": "veh_2210",
-        "outcome": { "decision": "suggested", "confidence": 0.61, "candidate": "req_8830", "factors_plain": ["same system 017, tires", "different assembly: front axle vs rear tandem", "7.5 hours apart", "different reporter"], "reject_creates": "req_8903" }
-      },
-      {
-        "report": { "id": "rep_1099", "channel": "driver_app", "at": "2026-03-11T14:41:00Z", "reporter": "usr_mwebb", "raw_text": "battery light flickering at idle since this morning", "vmrs_at_intake": null },
-        "vehicle_id": "veh_5140",
-        "outcome": { "decision": "create_new", "confidence": 0.31, "creates": "req_8905", "vmrs_assigned": { "system": "031", "assembly": "001", "by": "classifier", "confidence": 0.72 }, "severity": { "level": "S2", "source": "classifier", "confidence": 0.7 } }
-      }
-    ],
-    "split_ids": { "mrg_204": "req_8902", "mrg_206": "req_8904" }
-  }]
-  </script>
-
-  <script>
-  (() => {
-    'use strict';
-
-    const seed = JSON.parse(document.getElementById('seed-data').textContent)[0];
-    const NOW = Date.parse(seed.now);
-
-    /* Deep-copy the seed so a session can mutate freely and a reload resets.
-       No storage anywhere: the demo starts in a known state on every load. */
-    const state = {
-      view: 'today',
-      apiOn: false,
-      selected: null,
-      requests: JSON.parse(JSON.stringify(seed.requests)),
-      trayIndex: 0,
-      suggestion: null,
-      feed: [],
-      events: [],
-      lastIntake: null,
-      eventSeq: 0,
-      toastTimer: null
-    };
-
-    const $ = (id) => document.getElementById(id);
-    const el = {
-      console: $('console'), stats: $('stats'), queue: $('queue'), queueNote: $('queueNote'),
-      detail: $('detail'), tray: $('tray'), trayFeed: $('trayFeed'), simBtn: $('simBtn'),
-      suggestBox: $('suggestBox'), viewToday: $('viewToday'), viewAfter: $('viewAfter'),
-      apiToggle: $('apiToggle'), rail: $('rail'), channelPayloads: $('channelPayloads'),
-      lastIntake: $('lastIntake'), lastEvent: $('lastEvent'),
-      toastRegion: $('toastRegion'), live: $('live')
-    };
-
-    const person = (id) => seed.people.find((p) => p.id === id) || { name: id, role: 'unknown' };
-    const vehicle = (id) => seed.vehicles.find((v) => v.id === id) || { unit: '?', make: '', model: '' };
-    const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-
-    const fmtAge = (iso) => {
-      const mins = Math.max(0, Math.round((NOW - Date.parse(iso)) / 60000));
-      if (mins < 60) return mins + 'm';
-      const h = Math.floor(mins / 60);
-      if (h < 48) return h + 'h';
-      return Math.floor(h / 24) + 'd ' + (h % 24) + 'h';
-    };
-    const fmtClock = (iso) => iso.slice(11, 16) + (iso.slice(0, 10) === seed.now.slice(0, 10) ? '' : ' · ' + iso.slice(5, 10));
-
-    const SEV_RANK = { S1: 0, S2: 1, S3: 2, S4: 3 };
-    const TERMINAL = ['closed', 'cancelled', 'merged'];
-    const isOpen = (r) => TERMINAL.indexOf(r.state) === -1;
-    const isStale = (r) => r.state === 'in_service' && Boolean(r.shop_reported_ready_at);
-    const needsAttention = (r) => r.severity.level === 'S1' || isStale(r);
-
-    const sevClassOf = (system) => {
-      if (seed.safety_class_systems.indexOf(system) !== -1) return 'safety';
-      if (seed.cosmetic_class_systems.indexOf(system) !== -1) return 'cosmetic';
-      return 'other';
-    };
-
-    const reversible = (mergeAt) => (NOW - Date.parse(mergeAt)) < 24 * 3600 * 1000;
-
-    const allReports = () => {
-      const out = [];
-      for (const r of state.requests) {
-        for (const rep of r.reports) out.push({ req: r, rep });
-      }
-      return out;
-    };
-
-    const dupRate = () => {
-      const reps = allReports();
-      const merged = reps.filter((x) => x.rep.merge).length;
-      return reps.length ? Math.round(100 * merged / reps.length) : 0;
-    };
-
-    /* ==================================================================
-       Events. Every state change goes through emit, and the engineer
-       panel renders the same envelope object the log stores.
-       ================================================================== */
-    const DELIVERY = {
-      'request.created': ['notifications', 'agent', 'customer_webhooks'],
-      'request.merged': ['notifications', 'analytics'],
-      'request.merge_reverted': ['notifications', 'analytics', 'model_training'],
-      'request.severity_changed': ['notifications', 'compliance_log', 'shop_webhooks'],
-      'request.transitioned': ['notifications', 'shop_webhooks', 'driver_sms', 'analytics'],
-      'request.closed': ['analytics', 'maintenance_history']
-    };
-
-    function emit(type, actor, data) {
-      state.eventSeq += 1;
-      const envelope = {
-        event_id: 'evt_' + String(1000 + state.eventSeq),
-        type,
-        occurred_at: seed.now,
-        actor,
-        data,
-        delivered_to: DELIVERY[type] || ['notifications']
-      };
-      state.events.push(envelope);
-      el.lastEvent.textContent = JSON.stringify(envelope, null, 2);
-      return envelope;
+    {
+      "id": "req_8804", "vehicle_id": "veh_1902", "state": "in_service", "severity": "S2",
+      "severity_provenance": "classifier, 0.85, confirmed by Dana Ruiz",
+      "vmrs": { "system": "013", "assembly": "001" }, "defect_label": "Brakes, reline",
+      "q1": "No. In shop.",
+      "q2": "Shop reported ready yesterday 16:20. Confirm and release below.",
+      "shop_ready_at": "2026-03-10T16:20:00Z",
+      "history": [
+        { "at": "2026-03-08T15:00:00Z", "to": "reported", "actor_type": "system", "actor": "intake", "note": "created from rep_1052" },
+        { "at": "2026-03-08T15:20:00Z", "to": "triaged", "actor_type": "agent", "actor": "agent_core", "note": "" },
+        { "at": "2026-03-08T16:00:00Z", "to": "scheduled", "actor_type": "human", "actor": "usr_druiz", "note": "Ridgeline Truck Center, bay 3" },
+        { "at": "2026-03-09T09:00:00Z", "to": "in_service", "actor_type": "shop", "actor": "shop_ridgeline", "note": "" }
+      ]
+    },
+    {
+      "id": "req_8801", "vehicle_id": "veh_1902", "state": "scheduled", "severity": "S3",
+      "severity_provenance": "classifier, 0.80",
+      "vmrs": { "system": "003", "assembly": "002" }, "defect_label": "Instruments, fuel gauge",
+      "q1": "Yes. Fuel by miles, not by the gauge, until repaired.",
+      "q2": "Ridgeline Truck Center, Thu 09:00.",
+      "history": [
+        { "at": "2026-03-09T12:40:00Z", "to": "reported", "actor_type": "system", "actor": "intake", "note": "created from rep_1060" },
+        { "at": "2026-03-09T14:00:00Z", "to": "triaged", "actor_type": "agent", "actor": "agent_core", "note": "" },
+        { "at": "2026-03-10T10:00:00Z", "to": "scheduled", "actor_type": "human", "actor": "usr_druiz", "note": "Ridgeline, Thu 09:00" }
+      ]
+    },
+    {
+      "id": "req_8815", "vehicle_id": "veh_5140", "state": "triaged", "severity": "S2",
+      "severity_provenance": "classifier, 0.86",
+      "vmrs": { "system": "042", "assembly": "001" }, "defect_label": "Cooling system, temperature",
+      "q1": "Yes. Stop if the temperature climbs under load.",
+      "q2": "Not scheduled yet. Dispatcher notified at 15:30 yesterday.",
+      "history": [
+        { "at": "2026-03-10T15:00:00Z", "to": "reported", "actor_type": "system", "actor": "intake", "note": "created from rep_1070" },
+        { "at": "2026-03-10T15:30:00Z", "to": "triaged", "actor_type": "agent", "actor": "agent_core", "note": "" }
+      ]
+    },
+    {
+      "id": "req_8807", "vehicle_id": "veh_5140", "state": "triaged", "severity": "S4",
+      "severity_provenance": "classifier, 0.82",
+      "vmrs": { "system": "002", "assembly": "011" }, "defect_label": "Cab and sheet metal, seat",
+      "q1": "Yes. Comfort item.",
+      "q2": "Batches into the next planned shop visit.",
+      "history": [
+        { "at": "2026-03-10T17:00:00Z", "to": "reported", "actor_type": "system", "actor": "intake", "note": "created from rep_1064" },
+        { "at": "2026-03-10T17:30:00Z", "to": "triaged", "actor_type": "agent", "actor": "agent_core", "note": "" }
+      ]
+    },
+    {
+      "id": "req_8819", "vehicle_id": "veh_1902", "state": "scheduled", "severity": "S3",
+      "severity_provenance": "supervisor entry",
+      "vmrs": { "system": "045" }, "defect_label": "Power plant, PM due",
+      "q1": "Yes. Preventive service, not a defect.",
+      "q2": "Ridgeline Truck Center, Fri 07:30, with the brake inspection.",
+      "history": [
+        { "at": "2026-03-09T09:30:00Z", "to": "reported", "actor_type": "system", "actor": "intake", "note": "created from rep_1066" },
+        { "at": "2026-03-09T10:00:00Z", "to": "triaged", "actor_type": "agent", "actor": "agent_core", "note": "" },
+        { "at": "2026-03-10T08:00:00Z", "to": "scheduled", "actor_type": "human", "actor": "usr_druiz", "note": "paired with brake inspection" }
+      ]
     }
-
-    /* ==================================================================
-       Stat strip
-       ================================================================== */
-    function renderStats() {
-      let cells;
-      if (state.view === 'today') {
-        cells = [
-          ['Open requests', String(allReports().length)],
-          ['Duplicate rate, new intakes', '<small>not measurable</small>'],
-          ['Needing attention now', '<small>unknown</small>']
-        ];
-      } else {
-        const open = state.requests.filter(isOpen);
-        cells = [
-          ['Open requests', String(open.length)],
-          ['Duplicate rate, new intakes', dupRate() + '%'],
-          ['Needing attention now', String(open.filter(needsAttention).length)]
-        ];
-      }
-      el.stats.innerHTML = cells.map((c) =>
-        '<div class="stat"><div class="stat-label">' + c[0] + '</div><div class="stat-value">' + c[1] + '</div></div>'
-      ).join('');
+  ],
+  "scripted_inbound": [
+    {
+      "report": { "id": "rep_1044", "channel": "AGT", "at": "2026-03-11T08:20:11Z", "reporter": "agent_core", "raw_text": "telemetry: ABS wheel speed sensor circuit, spn 789 fmi 7", "vmrs": { "system": "013", "assembly": "001", "by": "classifier", "confidence": 0.92 } },
+      "idempotency_key": "9c1f2a44-ab21-4c0e-9e57-aa10442d7f01",
+      "outcome": { "decision": "auto_merged", "into": "req_8841", "confidence": 0.88, "merge_id": "mrg_209", "factors": ["same system 013", "same assembly 001", "1.1 hours from earliest report", "distinct reporter"] }
+    },
+    {
+      "report": { "id": "rep_1077", "channel": "WEB", "at": "2026-03-11T14:20:00Z", "reporter": "usr_pnandi", "raw_text": "tire wear flagged on rear tandem during yard walk", "vmrs": { "system": "017", "assembly": "003", "by": "supervisor" } },
+      "idempotency_key": "b7e9d0c2-55f1-42db-8f7e-3d2e91a6c410",
+      "outcome": { "decision": "suggested", "candidate": "req_8830", "confidence": 0.61, "factors": ["same system 017", "different assembly", "7.5 hours apart", "different reporter"] }
+    },
+    {
+      "report": { "id": "rep_1101", "channel": "APP", "at": "2026-03-11T14:48:00Z", "reporter": "usr_tokafor", "raw_text": "coolant hose weeping at the clamp under the hood", "vmrs": { "system": "042", "assembly": "002", "by": "classifier", "confidence": 0.77 } },
+      "idempotency_key": "e2a4c8f6-91b3-4d55-a0c7-6f8e2b91d534",
+      "outcome": { "decision": "create_new", "new_request_id": "req_8845", "severity": "S3", "confidence": 0.22, "vehicle_id": "veh_3388", "q1": "Yes. Watch the temperature gauge.", "q2": "Not scheduled yet. Dispatcher notified just now.", "defect_label": "Cooling system, hoses" }
+    },
+    {
+      "replay_of": 2,
+      "note": "The driver double-taps submit. Same Idempotency-Key, same response, no second record."
     }
+  ]
+}
+</script>
 
-    /* ==================================================================
-       Severity chip: shape plus label, never color alone
-       ================================================================== */
-    const sevChip = (level) => {
-      const label = seed.severities[level] ? seed.severities[level].label : 'NORMAL';
-      return '<span class="sev sev-' + level + '"><i aria-hidden="true"></i>' + label + '</span>';
-    };
-    const normalChip = '<span class="sev sev-none">NORMAL</span>';
+<script>
+"use strict";
+(() => {
+  const seed = JSON.parse(document.getElementById("seed-data").textContent);
+  const NOW = new Date(seed.now).getTime();
+  const peopleById = Object.fromEntries(seed.people.map(p => [p.id, p]));
+  const vehById = Object.fromEntries(seed.vehicles.map(v => [v.id, v]));
 
-    /* ==================================================================
-       Queue
-       ================================================================== */
-    function attentionSort(a, b) {
-      const attn = Number(needsAttention(b)) - Number(needsAttention(a));
-      if (attn !== 0) return attn;
-      const sev = SEV_RANK[a.severity.level] - SEV_RANK[b.severity.level];
-      if (sev !== 0) return sev;
-      return Date.parse(a.reports[0].at) - Date.parse(b.reports[0].at);
+  const state = {
+    view: location.hash === "#one-record" ? "after" : "today",
+    api: false,
+    selected: null,
+    requests: seed.requests.map(r => ({ ...r, history: r.history.slice() })),
+    reports: seed.reports.map(r => ({ ...r })),
+    simIndex: 0,
+    trayCards: [],
+    dismissedSuggestions: [],
+    lastIntake: null,
+    lastEvent: null,
+    intakeStats: { total: 13, matched: 4 },
+    splitSeq: 0
+  };
+
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;" }[c]));
+  const fmtAge = iso => {
+    const mins = Math.max(1, Math.round((NOW - new Date(iso).getTime()) / 60000));
+    if (mins < 60) return mins + "m";
+    const h = Math.floor(mins / 60);
+    if (h < 48) return h + "h";
+    const d = Math.floor(h / 24);
+    return d + "d " + (h - d * 24) + "h";
+  };
+  const clock = iso => iso.slice(11, 16);
+
+  const reqById = id => state.requests.find(r => r.id === id);
+  const sourcesOf = id => state.reports.filter(r => r.request_id === id);
+  const sevRank = { S1: 0, S2: 1, S3: 2, S4: 3 };
+  const isStale = r => {
+    if (r.shop_ready_at && r.state === "in_service") return true;
+    const sla = seed.sla_minutes[r.severity];
+    if (!sla) return false;
+    const entered = r.history[r.history.length - 1].at;
+    return (NOW - new Date(entered).getTime()) / 60000 > sla && (r.state === "reported" || r.state === "triaged");
+  };
+  const attentionCount = () => state.requests.filter(r => !["closed", "cancelled", "merged"].includes(r.state) && (r.severity === "S1" || (r.shop_ready_at && r.state === "in_service"))).length;
+  const openRequests = () => state.requests.filter(r => !["closed", "cancelled", "merged"].includes(r.state));
+
+  /* ---------- severity chip ---------- */
+  const sevChip = (sev, flat) => {
+    if (flat) return `<span class="sev sev-flat">NORMAL</span>`;
+    const shape = seed.severity_shapes[sev];
+    return `<span class="sev sev-${sev}"><span class="shape" aria-hidden="true">${shape}</span>${seed.severity_labels[sev]}</span>`;
+  };
+
+  /* ---------- stat strip ---------- */
+  function renderStats() {
+    const el = $("stat-strip");
+    if (state.view === "today") {
+      const open = state.reports.length;
+      el.innerHTML = `
+        <div class="stat"><div class="label">Open requests</div><div class="value">${open}</div></div>
+        <div class="stat"><div class="label">Duplicate rate, new intakes</div><div class="value small">not measurable</div></div>
+        <div class="stat"><div class="label">Needing attention now</div><div class="value small">unknown</div></div>`;
+    } else {
+      const pct = Math.round(100 * state.intakeStats.matched / state.intakeStats.total);
+      const att = attentionCount();
+      el.innerHTML = `
+        <div class="stat"><div class="label">Open requests</div><div class="value">${openRequests().length}</div></div>
+        <div class="stat"><div class="label">Duplicate rate, new intakes</div><div class="value">${pct}%</div></div>
+        <div class="stat"><div class="label">Needing attention now</div><div class="value alert">${att}</div></div>`;
     }
+  }
 
-    function renderQueue() {
-      if (state.view === 'today') {
-        const rows = allReports().sort((a, b) => Date.parse(b.rep.at) - Date.parse(a.rep.at));
-        el.queueNote.textContent = 'Sorted by most recent. ' + rows.length + ' open.';
-        el.queue.innerHTML = rows.map((x) => {
-          const v = vehicle(x.req.vehicle_id);
-          return '<li><button type="button" class="row" data-kind="report" data-id="' + x.rep.id + '"' +
-            (state.selected === x.rep.id ? ' aria-current="true"' : '') + '>' +
-            '<span class="row-1"><span class="row-unit">Unit ' + v.unit + '</span>' +
-            '<span class="row-defect">' + esc(x.rep.raw_text.length > 64 ? x.rep.raw_text.slice(0, 64) + '…' : x.rep.raw_text) + '</span>' +
-            '<span class="row-sev">' + normalChip + '</span></span>' +
-            '<span class="row-2"><span>Status: ' + esc(x.rep.before_status || 'Open') + '</span>' +
-            '<span>' + fmtAge(x.rep.at) + ' old</span>' +
-            '<span class="chan">[' + seed.channels[x.rep.channel] + ']</span></span>' +
-            '</button></li>';
-        }).join('');
-      } else {
-        const open = state.requests.filter(isOpen).sort(attentionSort);
-        const attn = open.filter(needsAttention).length;
-        el.queueNote.textContent = open.length + ' open, ' + attn + ' need attention now.';
-        el.queue.innerHTML = open.map((r) => {
-          const v = vehicle(r.vehicle_id);
-          const chans = r.reports.map((rep) => '[' + seed.channels[rep.channel] + ']').join(' ');
-          return '<li><button type="button" class="row" data-kind="request" data-id="' + r.id + '"' +
-            (state.selected === r.id ? ' aria-current="true"' : '') + '>' +
-            '<span class="row-1"><span class="row-unit">Unit ' + v.unit + '</span>' +
-            '<span class="row-defect">' + esc(r.vmrs.label) + '</span>' +
-            '<span class="row-sev">' + sevChip(r.severity.level) + '</span></span>' +
-            '<span class="row-2"><span>' + r.state.replace('_', ' ') + ' · ' + fmtAge(stateEnteredAt(r)) + '</span>' +
-            '<span>' + r.reports.length + (r.reports.length === 1 ? ' report' : ' reports') + '</span>' +
-            '<span class="chan">' + chans + '</span>' +
-            (isStale(r) ? '<span class="stale-flag">Shop reported ready ' + fmtAge(r.shop_reported_ready_at) + ' ago</span>' : '') +
-            '</span>' +
-            '<span class="row-api">' + r.id + ' · state: ' + r.state + ' · vmrs ' + r.vmrs.system + '-' + r.vmrs.assembly + '</span>' +
-            '</button></li>';
-        }).join('');
+  /* ---------- queue ---------- */
+  function renderQueue() {
+    const ul = $("queue");
+    const note = $("queue-note");
+    let html = "";
+    if (state.view === "today") {
+      note.innerHTML = `<span>Sorted by most recent. ${state.reports.length} open.</span><span>Priority: Normal on every row</span>`;
+      const rows = state.reports.slice().sort((a, b) => new Date(b.at) - new Date(a.at));
+      for (const rep of rows) {
+        const veh = vehById[reqById(rep.request_id).vehicle_id];
+        const sel = state.selected === rep.id ? " selected" : "";
+        html += `<li><button type="button" class="row${sel}" data-kind="report" data-id="${rep.id}">
+          <span class="row-l1"><span class="unit">Unit ${veh.unit}</span><span class="txt">${esc(rep.raw_text)}</span>${sevChip(null, true)}</span>
+          <span class="row-l2"><span>Status: ${esc(rep.legacy_status)}</span><span>${fmtAge(rep.at)} old</span><span class="chan">${rep.channel}</span></span>
+        </button></li>`;
       }
-
-      el.queue.querySelectorAll('.row').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          state.selected = state.selected === btn.dataset.id ? null : btn.dataset.id;
-          renderQueue();
-          renderDetail();
-        });
+    } else {
+      const open = openRequests();
+      note.innerHTML = `<span>Sorted by attention. ${open.length} open, ${attentionCount()} need attention now.</span><span>sort=attention</span>`;
+      const rows = open.slice().sort((a, b) => {
+        const sa = isStale(a) ? -0.5 : 0, sb = isStale(b) ? -0.5 : 0;
+        const d = (sevRank[a.severity] + sa) - (sevRank[b.severity] + sb);
+        if (d !== 0) return d;
+        return new Date(a.history[0].at) - new Date(b.history[0].at);
       });
-    }
-
-    function stateEnteredAt(r) {
-      if (r.transitions.length) return r.transitions[r.transitions.length - 1].at;
-      return r.reports[0].at;
-    }
-
-    /* ==================================================================
-       Detail panel
-       ================================================================== */
-    const LIFE = ['reported', 'triaged', 'scheduled', 'in_service', 'ready', 'closed'];
-
-    function renderDetail() {
-      if (!state.selected) {
-        el.detail.innerHTML = '<p class="detail-empty">Select a request to see its record.</p>';
-        return;
+      for (const r of rows) {
+        const veh = vehById[r.vehicle_id];
+        const srcs = sourcesOf(r.id);
+        const sel = state.selected === r.id ? " selected" : "";
+        const stale = r.shop_ready_at && r.state === "in_service"
+          ? `<span class="stale-flag">Shop reported ready ${fmtAge(r.shop_ready_at)} ago</span>` : "";
+        const chans = [...new Set(srcs.map(s => s.channel))].map(c => `<span class="chan">${c}</span>`).join("");
+        html += `<li><button type="button" class="row${sel}" data-kind="request" data-id="${r.id}">
+          <span class="row-l1"><span class="unit">Unit ${veh.unit}</span><span class="txt">${esc(r.defect_label)}</span>${sevChip(r.severity)}</span>
+          <span class="row-l2"><span>${r.state.replace("_", " ")}</span><span>${fmtAge(r.history[r.history.length - 1].at)} in state</span><span>${srcs.length} report${srcs.length > 1 ? "s" : ""}</span>${chans}${stale}</span>
+          <span class="api-line">${r.id} · state=${r.state} · vmrs=${r.vmrs.system}${r.vmrs.assembly ? "-" + r.vmrs.assembly : ""}</span>
+        </button></li>`;
       }
+    }
+    ul.innerHTML = html;
+  }
 
-      if (state.view === 'today') {
-        const found = allReports().find((x) => x.rep.id === state.selected);
-        if (!found) { el.detail.innerHTML = '<p class="detail-empty">Select a request to see its record.</p>'; return; }
-        const v = vehicle(found.req.vehicle_id);
-        el.detail.innerHTML =
-          '<div class="d-unit">Unit ' + v.unit + ' · ' + v.year + ' ' + v.make + ' ' + v.model + '</div>' +
-          '<h2 class="d-title" style="font-size:1.05rem">Ticket</h2>' +
-          '<p style="font-size:0.85rem; margin:0.4rem 0;">&ldquo;' + esc(found.rep.raw_text) + '&rdquo;</p>' +
-          '<p class="d-meta">Reported by ' + esc(person(found.rep.reporter).name) + ' · ' + fmtClock(found.rep.at) + ' · Priority: Normal</p>' +
-          '<p class="d-meta">Status: ' + esc(found.rep.before_status || 'Open') + ' <span style="color:var(--color-muted)">(free text, last touched whenever someone remembered)</span></p>' +
-          '<p class="d-meta" style="margin-top:0.8rem;">No defect code. No lifecycle. No link to the other ' +
-          'tickets on this unit. The two questions the driver asked are not answerable from this record.</p>';
-        return;
-      }
+  /* ---------- detail ---------- */
+  function renderDetail() {
+    const el = $("detail");
+    if (!state.selected) { el.innerHTML = `<div class="detail-empty">Select a row to see the record.</div>`; return; }
 
-      const r = state.requests.find((q) => q.id === state.selected);
-      if (!r) { el.detail.innerHTML = '<p class="detail-empty">Select a request to see its record.</p>'; return; }
-      const v = vehicle(r.vehicle_id);
-
-      const q2 = typeof r.answers.q2 === 'string'
-        ? esc(r.answers.q2)
-        : 'Not scheduled yet. Dispatcher notified ' + fmtAge(r.answers.q2.notified_at) + ' ago.';
-
-      const prov = r.severity.source + ', ' + r.severity.confidence.toFixed(2) +
-        (r.severity.confirmed_by ? ', confirmed by ' + esc(person(r.severity.confirmed_by).name) : '');
-
-      const doneStates = ['reported'].concat(r.transitions.map((t) => t.to));
-      const lifeHtml = LIFE.map((s) => {
-        const idx = doneStates.lastIndexOf(s);
-        const now = r.state === s;
-        let dur = '';
-        if (idx !== -1 && !now && idx + 1 <= doneStates.length - 1) {
-          const start = idx === 0 ? r.reports[0].at : r.transitions[idx - 1].at;
-          const end = r.transitions[idx] ? r.transitions[idx].at : seed.now;
-          const mins = Math.max(1, Math.round((Date.parse(end) - Date.parse(start)) / 60000));
-          dur = ' ' + (mins < 60 ? mins + 'm' : Math.round(mins / 60) + 'h');
-        }
-        return '<span class="life-step" data-done="' + (idx !== -1 && !now ? 1 : 0) + '" data-now="' + (now ? 1 : 0) + '">' +
-          s.replace('_', ' ') + dur + '</span>';
-      }).join('');
-
-      const nexts = (seed.allowed_transitions[r.state] || []).filter((s) => s !== 'merged');
-      const actions = nexts.map((s) => {
-        if (s === 'closed') {
-          const opts = Object.keys(seed.work_accomplished_codes).map((k) =>
-            '<option value="' + k + '">' + k + ' ' + seed.work_accomplished_codes[k] + '</option>').join('');
-          return '<select class="wa-select" id="waSelect" aria-label="Work accomplished code">' + opts + '</select>' +
-            '<button type="button" class="t-btn" data-to="closed">Close</button>';
-        }
-        const quiet = s === 'cancelled' || s === 'reported' || s === 'triaged' ? ' t-btn-quiet' : '';
-        const label = s === 'ready' && isStale(r) ? 'Mark ready (shop reported)' : 'Move to ' + s.replace('_', ' ');
-        return '<button type="button" class="t-btn' + quiet + '" data-to="' + s + '">' + label + '</button>';
-      }).join('');
-      const apiLines = nexts.map((s) =>
-        'POST /v1/service-requests/' + r.id + '/transitions ' +
-        JSON.stringify({ to: s, actor: { type: 'human', id: 'usr_druiz' } })
-      ).join('\n');
-
-      const sources = r.reports.map((rep) => {
-        const undo = rep.merge && reversible(rep.merge.at)
-          ? '<button type="button" class="src-undo" data-merge="' + rep.merge.merge_id + '">Undo</button>' : '';
-        const conf = rep.merge ? ' · merged at ' + rep.merge.confidence.toFixed(2) : '';
-        return '<li data-agent="' + (rep.channel === 'agent_api' ? 1 : 0) + '">' +
-          '<span class="src-top"><span class="chan">[' + seed.channels[rep.channel] + ']</span>' +
-          '<strong style="font-size:0.76rem">' + esc(person(rep.reporter).name) + '</strong>' +
-          '<span style="color:var(--color-muted)">' + fmtClock(rep.at) + conf + '</span>' + undo + '</span>' +
-          '<div class="src-text">&ldquo;' + esc(rep.raw_text) + '&rdquo;</div></li>';
-      }).join('');
-
-      const activity = r.transitions.slice().reverse().map((t) => {
-        const a = person(t.actor.id);
-        return '<li><span class="actor-badge" data-type="' + t.actor.type + '">' + t.actor.type + '</span>' +
-          '<span>' + fmtClock(t.at) + ' · to ' + t.to.replace('_', ' ') + (t.note ? ' · ' + esc(t.note) : '') + ' · ' + esc(a.name) + '</span></li>';
-      }).join('');
-
-      el.detail.innerHTML =
-        '<div class="d-unit">Unit ' + v.unit + ' · ' + v.year + ' ' + v.make + ' ' + v.model + (v.regulated ? ' · regulated' : '') + '</div>' +
-        '<h2 class="d-title">' + esc(r.vmrs.label) + '</h2>' +
-        '<p class="d-meta"><code>VMRS ' + r.vmrs.system + '-' + r.vmrs.assembly + '</code> · ' + sevChip(r.severity.level) + ' <span>(' + prov + ')</span></p>' +
-        '<dl class="twoq">' +
-          '<div><dt>Can I keep driving?</dt><dd>' + esc(r.answers.q1) + '</dd></div>' +
-          '<div><dt>When will it be fixed?</dt><dd>' + q2 + '</dd></div>' +
-        '</dl>' +
-        '<div class="life"><span class="life-label">Lifecycle</span>' +
-          '<div class="life-strip">' + lifeHtml + '</div>' +
-          '<div class="life-actions">' + actions + '<span class="t-api">' + esc(apiLines) + '</span></div>' +
-        '</div>' +
-        '<h3 class="d-h3">Source reports (' + r.reports.length + ')</h3><ul class="sources">' + sources + '</ul>' +
-        '<h3 class="d-h3">Activity</h3><ul class="activity">' + activity + '</ul>';
-
-      el.detail.querySelectorAll('.t-btn').forEach((btn) => {
-        btn.addEventListener('click', () => doTransition(r.id, btn.dataset.to));
-      });
-      el.detail.querySelectorAll('.src-undo').forEach((btn) => {
-        btn.addEventListener('click', () => undoMerge(btn.dataset.merge));
-      });
+    if (state.view === "today") {
+      const rep = state.reports.find(r => r.id === state.selected);
+      if (!rep) { state.selected = null; renderDetail(); return; }
+      const veh = vehById[reqById(rep.request_id).vehicle_id];
+      const who = peopleById[rep.reporter];
+      el.innerHTML = `
+        <h2>Unit ${veh.unit}</h2>
+        <p class="veh-sub">${esc(veh.desc)}</p>
+        <div class="sec-label">Ticket</div>
+        <p style="font-size:0.85rem">"${esc(rep.raw_text)}"</p>
+        <p class="prov">Reported by ${esc(who.name)} · ${clock(rep.at)} · Priority: Normal</p>
+        <p class="prov">Status: ${esc(rep.legacy_status)} · updated ${fmtAge(rep.at)} ago</p>`;
+      return;
     }
 
-    /* ==================================================================
-       Transitions. The only way state changes, mirroring the API rule.
-       ================================================================== */
-    function doTransition(reqId, to) {
-      const r = state.requests.find((q) => q.id === reqId);
-      if (!r) return;
-      const allowed = seed.allowed_transitions[r.state] || [];
-      if (allowed.indexOf(to) === -1) return;
+    const r = reqById(state.selected);
+    if (!r) { state.selected = null; renderDetail(); return; }
+    const veh = vehById[r.vehicle_id];
+    const srcs = sourcesOf(r.id).sort((a, b) => new Date(a.at) - new Date(b.at));
+    const legal = seed.allowed_transitions[r.state].filter(t => t !== "merged");
 
-      const t = { to, at: seed.now, actor: { type: 'human', id: 'usr_druiz' } };
-      if (to === 'closed') {
-        const sel = document.getElementById('waSelect');
-        const code = sel ? sel.value : '06';
-        t.note = 'work accomplished ' + code + ' ' + seed.work_accomplished_codes[code];
-      }
-      if (to === 'ready' && isStale(r)) t.note = 'confirmed against shop ready report';
-
-      r.transitions.push(t);
-      r.state = to;
-      if (to === 'ready') {
-        r.shop_reported_ready_at = null;
-        r.answers.q2 = 'Ready for pickup at Ridgeline Truck Center.';
-        r.answers.q1 = 'Yes. Ready for pickup.';
-      }
-      emit(to === 'closed' ? 'request.closed' : 'request.transitioned',
-        { type: 'human', id: 'usr_druiz' },
-        { request_id: r.id, from: allowedFrom(r), to, vehicle_id: r.vehicle_id });
-      announce(r.id + ' moved to ' + to.replace('_', ' ') + '.');
-      renderAll();
-    }
-
-    function allowedFrom(r) {
-      return r.transitions.length > 1 ? r.transitions[r.transitions.length - 2].to : 'reported';
-    }
-
-    /* ==================================================================
-       Intake: the tray. Every simulated report goes through the same
-       path and the engineer panel shows the exact call and response.
-       ================================================================== */
-    const IDEM_KEYS = ['a1f4c0de-9b2e-4d1c-8f3a-0000rep1044', 'a1f4c0de-9b2e-4d1c-8f3a-0000rep1077', 'a1f4c0de-9b2e-4d1c-8f3a-0000rep1099'];
-
-    function intakeBody(item) {
-      const rep = item.report;
-      return {
-        channel: rep.channel,
-        vehicle_id: item.vehicle_id,
-        reported_at: rep.at,
-        reporter: { type: person(rep.reporter).role, id: rep.reporter, name: person(rep.reporter).name },
-        raw_text: rep.raw_text,
-        vmrs: rep.vmrs_at_intake || null
-      };
-    }
-
-    function showIntake(item, response) {
-      const req = 'POST /v1/service-requests/intake\n' +
-        'Idempotency-Key: ' + IDEM_KEYS[state.trayIndex - 1] + '\n' +
-        'Authorization: Bearer <scoped token>\n\n' +
-        JSON.stringify(intakeBody(item), null, 2);
-      el.lastIntake.textContent = req + '\n\nHTTP ' + response.status + '\n' + JSON.stringify(response.body, null, 2);
-    }
-
-    function feedLine(kind, text) {
-      state.feed.unshift({ kind, text });
-      el.trayFeed.innerHTML = state.feed.map((f) =>
-        '<li><span class="outcome" data-kind="' + f.kind + '">' + f.kind.replace('_', ' ').toUpperCase() + '</span> · ' + f.text + '</li>'
-      ).join('');
-    }
-
-    function simulate() {
-      if (state.trayIndex >= seed.tray.length || state.suggestion) return;
-      const item = seed.tray[state.trayIndex];
-      state.trayIndex += 1;
-      const rep = JSON.parse(JSON.stringify(item.report));
-      const o = item.outcome;
-
-      if (o.decision === 'auto_merged') {
-        const target = state.requests.find((q) => q.id === o.into);
-        rep.merge = { decision: 'auto_merged', confidence: o.confidence, merge_id: o.merge_id, at: seed.now };
-        target.reports.push(rep);
-        showIntake(item, {
-          status: 200,
-          body: {
-            request_id: target.id, report_id: rep.id,
-            match: { decision: 'auto_merged', confidence: o.confidence, factors: o.factors, reversible_until: '2026-03-12T13:05:00Z', merge_id: o.merge_id }
-          }
-        });
-        emit('request.merged', { type: 'agent', id: 'agent_core' }, { request_id: target.id, report_id: rep.id, merge_id: o.merge_id, confidence: o.confidence });
-        feedLine('auto_merged', esc(rep.raw_text.slice(0, 52)) + '… into ' + target.id + ' at ' + o.confidence.toFixed(2));
-        flashRow(target.id);
-        toast('Attached to ' + target.id + '. Same brake defect, reported by ' + person(rep.reporter).name + '.', o.merge_id);
-      } else if (o.decision === 'suggested') {
-        state.suggestion = { item, rep };
-        showIntake(item, {
-          status: 200,
-          body: { report_id: rep.id, match: { decision: 'suggested', confidence: o.confidence, candidate_request_id: o.candidate } }
-        });
-        feedLine('suggested', esc(rep.raw_text.slice(0, 52)) + '… possible duplicate of ' + o.candidate);
-        renderSuggestion();
-      } else {
-        const nr = makeRequest(o.creates, item.vehicle_id, rep, o.vmrs_assigned, o.severity,
-          { q1: 'Yes. Keep electrical load low; charging output is being monitored.', q2: { not_yet_scheduled: true, notified_at: seed.now } },
-          'Charging system: alternator output');
-        state.requests.push(nr);
-        showIntake(item, {
-          status: 201,
-          body: { request_id: nr.id, state: 'reported', severity: nr.severity, vmrs: nr.vmrs, match: null }
-        });
-        emit('request.created', { type: 'agent', id: 'agent_core' }, { request_id: nr.id, vehicle_id: nr.vehicle_id, severity: nr.severity.level });
-        feedLine('created', esc(rep.raw_text.slice(0, 52)) + '… new ' + nr.id + ', no candidate above 0.55');
-        flashRow(nr.id);
-      }
-
-      if (state.trayIndex >= seed.tray.length) {
-        el.simBtn.disabled = true;
-        el.simBtn.textContent = 'All reports delivered';
-      }
-      renderAll();
-    }
-
-    function makeRequest(id, vehicleId, rep, vmrs, severity, answers, label) {
-      return {
-        id,
-        vehicle_id: vehicleId,
-        vmrs: { system: vmrs.system, assembly: vmrs.assembly, label },
-        severity,
-        state: 'reported',
-        answers,
-        reports: [rep],
-        transitions: []
-      };
-    }
-
-    /* ==================================================================
-       Borderline suggestion: one click either way
-       ================================================================== */
-    function renderSuggestion() {
-      if (!state.suggestion) { el.suggestBox.innerHTML = ''; return; }
-      const o = state.suggestion.item.outcome;
-      el.suggestBox.innerHTML =
-        '<div class="suggest" role="group" aria-label="Possible duplicate">' +
-          '<div class="suggest-line">Possible duplicate of ' + o.candidate + ', ' + o.confidence.toFixed(2) + ' confidence</div>' +
-          '<div class="suggest-factors">' + o.factors_plain.join(' · ') + '</div>' +
-          '<div class="suggest-actions">' +
-            '<button type="button" class="s-btn" id="acceptBtn">Same issue</button>' +
-            '<button type="button" class="s-btn s-btn-alt" id="rejectBtn">Different issue</button>' +
-          '</div>' +
-        '</div>';
-      document.getElementById('acceptBtn').addEventListener('click', acceptSuggestion);
-      document.getElementById('rejectBtn').addEventListener('click', rejectSuggestion);
-    }
-
-    function acceptSuggestion() {
-      const s = state.suggestion;
-      const o = s.item.outcome;
-      const target = state.requests.find((q) => q.id === o.candidate);
-      s.rep.merge = { decision: 'accepted', confidence: o.confidence, merge_id: 'mrg_207', at: seed.now };
-      target.reports.push(s.rep);
-      state.suggestion = null;
-      emit('request.merged', { type: 'human', id: 'usr_druiz' }, { request_id: target.id, report_id: s.rep.id, merge_id: 'mrg_207', confidence: o.confidence });
-      feedLine('auto_merged', 'Dispatcher confirmed: attached to ' + target.id);
-      toast('Attached to ' + target.id + '. Confirmed by dispatcher.', 'mrg_207');
-      flashRow(target.id);
-      renderAll();
-    }
-
-    function rejectSuggestion() {
-      const s = state.suggestion;
-      const o = s.item.outcome;
-      const nr = makeRequest(o.reject_creates, s.item.vehicle_id, s.rep,
-        { system: '017', assembly: '003' },
-        { level: 'S2', source: 'classifier', confidence: 0.7 },
-        { q1: 'Yes. Rear tandem wear; no pressure loss reported.', q2: { not_yet_scheduled: true, notified_at: seed.now } },
-        'Tires: rear tandem');
-      state.requests.push(nr);
-      state.suggestion = null;
-      emit('request.created', { type: 'human', id: 'usr_druiz' }, { request_id: nr.id, vehicle_id: nr.vehicle_id, rejected_candidate: o.candidate });
-      feedLine('created', 'Dispatcher: different issue. New ' + nr.id + ' for the rear tandem.');
-      announce('Created ' + nr.id + ' as a separate issue.');
-      flashRow(nr.id);
-      renderAll();
-    }
-
-    /* ==================================================================
-       Merge reversal. Sources are never destroyed: the report splits
-       back out with its original timestamp and reporter.
-       ================================================================== */
-    function undoMerge(mergeId) {
-      let host = null, rep = null;
-      for (const r of state.requests) {
-        for (const p of r.reports) {
-          if (p.merge && p.merge.merge_id === mergeId) { host = r; rep = p; }
-        }
-      }
-      if (!host || !rep) return;
-
-      host.reports = host.reports.filter((p) => p !== rep);
-      const splitId = seed.split_ids[mergeId] || 'req_8906';
-      const vm = rep.vmrs_assigned || rep.vmrs_at_intake || { system: host.vmrs.system, assembly: host.vmrs.assembly };
-      const label = seed.vmrs_systems[vm.system] ? seed.vmrs_systems[vm.system].split(',')[0] + ': split from ' + host.id : 'Split from ' + host.id;
-      const cleanRep = JSON.parse(JSON.stringify(rep));
-      delete cleanRep.merge;
-      const nr = makeRequest(splitId, host.vehicle_id, cleanRep,
-        { system: vm.system, assembly: vm.assembly || '001' },
-        { level: host.severity.level === 'S1' ? 'S1' : 'S2', source: 'classifier', confidence: 0.7 },
-        { q1: host.answers.q1, q2: { not_yet_scheduled: true, notified_at: seed.now } },
-        label);
-      state.requests.push(nr);
-      emit('request.merge_reverted', { type: 'human', id: 'usr_druiz' },
-        { request_id: host.id, merge_id: mergeId, split_request_id: splitId, restored_report_ids: [rep.id], audit_id: 'aud_5512' });
-      toast('Split back out as ' + splitId + '. Both events kept in the audit trail.', null);
-      announce('Merge reversed. ' + rep.id + ' is now ' + splitId + '.');
-      flashRow(splitId);
-      renderAll();
-    }
-
-    /* ==================================================================
-       Toast, flash, announce
-       ================================================================== */
-    function toast(text, mergeId) {
-      if (state.toastTimer) window.clearTimeout(state.toastTimer);
-      el.toastRegion.innerHTML = '<div class="toast"><span>' + esc(text) + '</span>' +
-        (mergeId ? '<button type="button" id="toastUndo">Undo</button>' : '') + '</div>';
-      if (mergeId) {
-        document.getElementById('toastUndo').addEventListener('click', () => {
-          el.toastRegion.innerHTML = '';
-          undoMerge(mergeId);
-        });
-      }
-      state.toastTimer = window.setTimeout(() => { el.toastRegion.innerHTML = ''; }, 12000);
-    }
-
-    function flashRow(reqId) {
-      window.requestAnimationFrame(() => {
-        const btn = el.queue.querySelector('[data-id="' + reqId + '"]');
-        if (btn) btn.classList.add('row-flash');
-      });
-    }
-
-    function announce(msg) { el.live.textContent = msg; }
-
-    /* ==================================================================
-       Engineer rail: rendered from the same objects the UI renders from
-       ================================================================== */
-    function renderRail() {
-      const hero = seed.requests[0];
-      const samples = hero.reports.slice(0, 3);
-      el.channelPayloads.innerHTML = samples.map((rep) => {
-        const body = {
-          channel: rep.channel,
-          vehicle_id: hero.vehicle_id,
-          reported_at: rep.at,
-          reporter: { type: person(rep.reporter).role, id: rep.reporter },
-          raw_text: rep.raw_text,
-          vmrs: rep.vmrs_at_intake || null
-        };
-        return '<pre aria-label="Intake payload from ' + seed.channels[rep.channel] + '">' +
-          esc('POST /v1/service-requests/intake\n' + JSON.stringify(body, null, 1)) + '</pre>';
-      }).join('');
-    }
-
-    /* ==================================================================
-       View toggle and controls
-       ================================================================== */
-    function setView(v) {
-      state.view = v;
-      state.selected = null;
-      el.viewToday.setAttribute('aria-pressed', String(v === 'today'));
-      el.viewAfter.setAttribute('aria-pressed', String(v === 'after'));
-      el.tray.hidden = v !== 'after';
-      if (window.history.replaceState) window.history.replaceState(null, '', '#' + (v === 'after' ? 'after' : 'today'));
-      renderAll();
-    }
-
-    function renderAll() {
-      renderStats();
-      renderQueue();
-      renderDetail();
-      renderSuggestion();
-    }
-
-    el.viewToday.addEventListener('click', () => setView('today'));
-    el.viewAfter.addEventListener('click', () => setView('after'));
-    el.simBtn.addEventListener('click', simulate);
-
-    el.apiToggle.addEventListener('click', () => {
-      state.apiOn = !state.apiOn;
-      el.console.dataset.api = state.apiOn ? 'on' : 'off';
-      el.apiToggle.setAttribute('aria-expanded', String(state.apiOn));
-      el.apiToggle.textContent = state.apiOn ? 'Hide the API' : 'Show the API';
+    let lc = "";
+    const chain = ["reported", "triaged", "scheduled", "in_service", "ready", "closed"];
+    const idx = chain.indexOf(r.state);
+    chain.forEach((s, i) => {
+      const cls = i < idx ? "done" : i === idx ? "now" : "";
+      lc += `<span class="lc ${cls}">${s.replace("_", " ")}</span>`;
     });
 
-    el.queue.addEventListener('keydown', (e) => {
-      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
-      const rows = Array.prototype.slice.call(el.queue.querySelectorAll('.row'));
-      const idx = rows.indexOf(document.activeElement);
-      if (idx === -1) return;
-      e.preventDefault();
-      const next = rows[idx + (e.key === 'ArrowDown' ? 1 : -1)];
-      if (next) next.focus();
-    });
+    let tbtns = "";
+    for (const t of legal) {
+      if (t === "cancelled") continue;
+      const label = t === "ready" && r.shop_ready_at ? "Mark ready (shop confirmed)" : "Move to " + t.replace("_", " ");
+      tbtns += `<button type="button" class="t-btn" data-transition="${t}" data-req="${r.id}">${label}</button>`;
+    }
+    tbtns += `<span class="t-hint">POST /v1/service-requests/${r.id}/transitions</span>`;
 
-    /* ==================================================================
-       Boot
-       ================================================================== */
+    let srcHtml = "";
+    for (const s of srcs) {
+      const who = peopleById[s.reporter];
+      const merged = s.merge ? `<span>merged ${s.merge.decision} · ${s.merge.confidence.toFixed(2)}</span><button type="button" class="undo-link" data-undo="${s.id}">Undo</button>` : `<span>origin report</span>`;
+      srcHtml += `<div class="src${s.merge && s.justMerged ? " merged-in" : ""}">
+        <div class="meta"><span class="chan">${s.channel}</span><span>${esc(who.name)}</span><span>${clock(s.at)}</span>${merged}</div>
+        <p class="raw">"${esc(s.raw_text)}"</p>
+      </div>`;
+    }
+
+    let actHtml = "";
+    const acts = r.history.slice().reverse();
+    for (const h of acts) {
+      const badge = `<span class="actor-badge actor-${h.actor_type}">${h.actor_type}</span>`;
+      const who = peopleById[h.actor] ? peopleById[h.actor].name : h.actor;
+      actHtml += `<div class="act">${badge}<span>${clock(h.at)} → ${h.to.replace("_", " ")}${h.note ? " · " + esc(h.note) : ""} · ${esc(who)}</span></div>`;
+    }
+
+    el.innerHTML = `
+      <h2>Unit ${veh.unit} · ${esc(r.defect_label)}</h2>
+      <p class="veh-sub">${esc(veh.desc)}${veh.regulated ? " · regulated" : ""} · VMRS ${r.vmrs.system}${r.vmrs.assembly ? "-" + r.vmrs.assembly : ""} · ${r.id}</p>
+      <div>${sevChip(r.severity)}</div>
+      <p class="prov">Severity: ${esc(r.severity_provenance)}. Agents may raise severity; only a human can lower or close.</p>
+      <dl class="two-q">
+        <dt>Can I keep driving?</dt><dd>${esc(r.q1)}</dd>
+        <dt>When will it be fixed?</dt><dd>${esc(r.q2)}</dd>
+      </dl>
+      <div class="sec-label">Lifecycle</div>
+      <div class="lifecycle">${lc}</div>
+      <p class="lc-time">${fmtAge(r.history[r.history.length - 1].at)} in ${r.state.replace("_", " ")}</p>
+      <div class="transitions">${tbtns}</div>
+      <div class="sec-label">Source reports (${srcs.length})</div>
+      ${srcHtml}
+      <div class="sec-label">Activity</div>
+      ${actHtml}`;
+  }
+
+  /* ---------- engineer rail ---------- */
+  function renderRail() {
+    $("rail-channels").textContent =
+`POST /v1/service-requests/intake   ← driver app
+POST /v1/service-requests/intake   ← phone, transcribed by dispatch
+POST /v1/service-requests/intake   ← agent / telematics
+one endpoint, one matcher, one record`;
+    $("rail-intake").textContent = state.lastIntake
+      ? state.lastIntake
+      : "No intake yet this session. Press Simulate incoming report.";
+    $("rail-event").textContent = state.lastEvent
+      ? JSON.stringify(state.lastEvent, null, 1)
+      : "No event emitted yet this session.";
+  }
+
+  /* ---------- toast ---------- */
+  let toastTimer = null;
+  function toast(html) {
+    const t = $("toast");
+    t.innerHTML = html;
+    t.classList.add("show");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove("show"), 12000);
+  }
+
+  /* ---------- events ---------- */
+  function emit(type, actorType, actorId, data, deliveredTo) {
+    state.lastEvent = {
+      event_id: "evt_" + Math.random().toString(36).slice(2, 7).toUpperCase(),
+      type, occurred_at: seed.now,
+      actor: { type: actorType, id: actorId },
+      data, delivered_to: deliveredTo
+    };
     renderRail();
-    setView(window.location.hash === '#after' ? 'after' : 'today');
-  })();
-  </script>
+  }
+
+  /* ---------- simulate ---------- */
+  function simulate() {
+    const item = seed.scripted_inbound[state.simIndex];
+    if (!item) return;
+    state.simIndex += 1;
+    if (state.simIndex >= seed.scripted_inbound.length) {
+      const b = $("sim-btn"); b.disabled = true; b.textContent = "All scripted reports delivered";
+    }
+
+    if (item.replay_of !== undefined) {
+      const orig = seed.scripted_inbound[item.replay_of];
+      state.lastIntake =
+`POST /v1/service-requests/intake
+Idempotency-Key: ${orig.idempotency_key}   ← same key, resubmitted
+Authorization: Bearer <driver token>
+
+→ 201 (replayed from idempotency cache, 24h window)
+${JSON.stringify({ request_id: orig.outcome.new_request_id, report_id: orig.report.id, replay: true }, null, 1)}`;
+      state.trayCards.unshift(`<div class="tray-card"><div class="outcome out-new">IDEMPOTENT REPLAY</div>${esc(item.note)}</div>`);
+      toast("Duplicate submit absorbed by the idempotency key. Same response, no new record.");
+      renderAll();
+      return;
+    }
+
+    const rep = { ...item.report };
+    const out = item.outcome;
+    if (out.decision === "auto_merged") {
+      rep.request_id = out.into;
+      rep.merge = { id: out.merge_id, decision: "auto", confidence: out.confidence, by: "agent_core", reversible_until: "2026-03-12T08:20:00Z" };
+      rep.justMerged = true;
+      state.reports.push(rep);
+      state.intakeStats.total += 1; state.intakeStats.matched += 1;
+      state.lastIntake = intakeWire(item, { status: 200, body: { request_id: out.into, report_id: rep.id, match: { decision: "auto_merged", confidence: out.confidence, reversible_until: rep.merge.reversible_until, merge_id: out.merge_id } } });
+      state.trayCards.unshift(`<div class="tray-card"><div class="outcome out-merge">AUTO-MERGED · ${out.confidence.toFixed(2)}</div>"${esc(rep.raw_text)}"<div class="factors">${out.factors.join(" · ")}</div></div>`);
+      emit("request.merged", "agent", "agent_core", { request_id: out.into, report_id: rep.id }, ["notifications", "analytics"]);
+      toast(`Attached to ${out.into}. Same brake defect, reported by Core Agent. <button type="button" data-undo="${rep.id}">Undo</button>`);
+      state.selected = out.into;
+    } else if (out.decision === "suggested") {
+      state.pendingSuggestion = { rep, out, key: item.idempotency_key };
+      state.intakeStats.total += 1;
+      state.lastIntake = intakeWire(item, { status: 200, body: { report_id: rep.id, match: { decision: "suggested", confidence: out.confidence, candidate_request_id: out.candidate } } });
+      state.trayCards.unshift(`<div class="tray-card" id="suggest-card"><div class="outcome out-suggest">POSSIBLE DUPLICATE OF ${out.candidate} · ${out.confidence.toFixed(2)} CONFIDENCE</div>"${esc(rep.raw_text)}"<div class="factors">${out.factors.join(" · ")}</div>
+        <div class="suggest-actions"><button type="button" class="yes" data-suggest="accept">Same issue</button><button type="button" class="no" data-suggest="reject">Different issue</button></div></div>`);
+    } else if (out.decision === "create_new") {
+      const nr = {
+        id: out.new_request_id, vehicle_id: out.vehicle_id, state: "reported", severity: out.severity,
+        severity_provenance: "classifier, " + item.report.vmrs.confidence.toFixed(2),
+        vmrs: { system: rep.vmrs.system, assembly: rep.vmrs.assembly }, defect_label: out.defect_label,
+        q1: out.q1, q2: out.q2,
+        history: [{ at: rep.at, to: "reported", actor_type: "system", actor: "intake", note: "created from " + rep.id }]
+      };
+      rep.request_id = nr.id; rep.origin = true;
+      state.requests.push(nr);
+      state.reports.push(rep);
+      state.intakeStats.total += 1;
+      state.lastIntake = intakeWire(item, { status: 201, body: { request_id: nr.id, state: "reported", severity: { level: out.severity, source: "classifier" }, match: { decision: "create_new", confidence: out.confidence } } });
+      state.trayCards.unshift(`<div class="tray-card"><div class="outcome out-new">CREATED ${nr.id} · NO MATCH AT ${out.confidence.toFixed(2)}</div>"${esc(rep.raw_text)}"</div>`);
+      emit("request.created", "system", "intake", { request_id: nr.id, vehicle_id: nr.vehicle_id }, ["notifications", "agent", "customer_webhooks"]);
+      state.selected = nr.id;
+    }
+    renderAll();
+  }
+
+  function intakeWire(item, resp) {
+    const req = {
+      channel: item.report.channel, vehicle_id: (reqById(item.outcome.into || item.outcome.candidate) || { vehicle_id: item.outcome.vehicle_id }).vehicle_id,
+      reported_at: item.report.at, reporter: item.report.reporter, raw_text: item.report.raw_text, vmrs: item.report.vmrs
+    };
+    return `POST /v1/service-requests/intake
+Idempotency-Key: ${item.idempotency_key}
+Authorization: Bearer <token>
+
+${JSON.stringify(req, null, 1)}
+
+→ ${resp.status}
+${JSON.stringify(resp.body, null, 1)}`;
+  }
+
+  /* ---------- suggestion resolve ---------- */
+  function resolveSuggestion(accept) {
+    const p = state.pendingSuggestion;
+    if (!p) return;
+    state.pendingSuggestion = null;
+    const cardIdx = state.trayCards.findIndex(c => c.includes('id="suggest-card"'));
+    if (accept) {
+      p.rep.request_id = p.out.candidate;
+      p.rep.merge = { id: "mrg_h" + (++state.splitSeq), decision: "human", confidence: p.out.confidence, by: "usr_druiz", reversible_until: "2026-03-12T14:20:00Z" };
+      p.rep.justMerged = true;
+      state.reports.push(p.rep);
+      state.intakeStats.matched += 1;
+      const r = reqById(p.out.candidate);
+      r.history.push({ at: seed.now, to: r.state, actor_type: "human", actor: "usr_druiz", note: "accepted merge of " + p.rep.id });
+      emit("request.merged", "human", "usr_druiz", { request_id: r.id, report_id: p.rep.id }, ["notifications", "analytics"]);
+      if (cardIdx !== -1) state.trayCards[cardIdx] = `<div class="tray-card"><div class="outcome out-merge">MERGED BY DANA RUIZ</div>"${esc(p.rep.raw_text)}"</div>`;
+      state.selected = r.id;
+    } else {
+      const nr = {
+        id: "req_8846", vehicle_id: "veh_2210", state: "reported", severity: "S3",
+        severity_provenance: "classifier, 0.74",
+        vmrs: { system: "017", assembly: "003" }, defect_label: "Tires, rear tandem",
+        q1: "Yes. Wear item, not a pressure loss.",
+        q2: "Not scheduled yet. Dispatcher notified just now.",
+        history: [{ at: seed.now, to: "reported", actor_type: "system", actor: "intake", note: "kept separate from req_8830 by Dana Ruiz; teaches the matcher" }]
+      };
+      p.rep.request_id = nr.id; p.rep.origin = true;
+      state.requests.push(nr);
+      state.reports.push(p.rep);
+      if (cardIdx !== -1) state.trayCards[cardIdx] = `<div class="tray-card"><div class="outcome out-new">KEPT SEPARATE · CREATED ${nr.id}</div>Two different tires are two different repairs. The reject is one click and it teaches the matcher.</div>`;
+      emit("request.created", "human", "usr_druiz", { request_id: nr.id, vehicle_id: "veh_2210" }, ["notifications", "agent", "customer_webhooks"]);
+      state.selected = nr.id;
+    }
+    renderAll();
+  }
+
+  /* ---------- undo merge ---------- */
+  function undoMerge(repId) {
+    const rep = state.reports.find(r => r.id === repId);
+    if (!rep || !rep.merge) return;
+    const fromReq = rep.request_id;
+    state.splitSeq += 1;
+    const newId = "req_" + (8901 + state.splitSeq);
+    const src = reqById(fromReq);
+    const nr = {
+      id: newId, vehicle_id: src.vehicle_id, state: "reported", severity: rep.vmrs.system === "034" ? "S3" : src.severity,
+      severity_provenance: "restored from split",
+      vmrs: { system: rep.vmrs.system, assembly: rep.vmrs.assembly },
+      defect_label: rep.vmrs.system === "034" ? "Lighting system, marker lamp (trailer)" : src.defect_label,
+      q1: "Yes.", q2: "Not scheduled yet. Split just now, dispatcher notified.",
+      history: [{ at: seed.now, to: "reported", actor_type: "human", actor: "usr_druiz", note: "split from " + fromReq + ", merge " + rep.merge.id + " reversed, original timestamp " + rep.at + " preserved" }]
+    };
+    src.history.push({ at: seed.now, to: src.state, actor_type: "human", actor: "usr_druiz", note: "merge " + rep.merge.id + " reversed; " + rep.id + " split out as " + newId });
+    delete rep.merge;
+    rep.origin = true;
+    rep.request_id = newId;
+    state.requests.push(nr);
+    emit("request.merge_reverted", "human", "usr_druiz", { request_id: fromReq, split_request_id: newId, restored_report_ids: [rep.id] }, ["notifications", "analytics", "model_training"]);
+    toast(`Split back out as ${newId}. Both events kept in the audit trail.`);
+    state.selected = newId;
+    renderAll();
+  }
+
+  /* ---------- transitions ---------- */
+  function doTransition(reqId, to) {
+    const r = reqById(reqId);
+    if (!seed.allowed_transitions[r.state].includes(to)) return;
+    r.history.push({ at: seed.now, to, actor_type: "human", actor: "usr_druiz", note: to === "ready" && r.shop_ready_at ? "confirmed against shop ready event" : "" });
+    const from = r.state;
+    r.state = to;
+    if (to === "ready") delete r.shop_ready_at;
+    emit("request.transitioned", "human", "usr_druiz", { request_id: r.id, from, to, vehicle_id: r.vehicle_id }, ["notifications", "shop_webhooks", "driver_sms", "analytics"]);
+    renderAll();
+  }
+
+  /* ---------- view control ---------- */
+  function setView(v) {
+    state.view = v;
+    state.selected = null;
+    history.replaceState(null, "", v === "after" ? "#one-record" : "#today");
+    $("btn-today").setAttribute("aria-pressed", v === "today" ? "true" : "false");
+    $("btn-after").setAttribute("aria-pressed", v === "after" ? "true" : "false");
+    $("tray").hidden = v !== "after";
+    if (v === "after" && !state.selected) state.selected = "req_8841";
+    renderAll();
+  }
+
+  function renderAll() {
+    renderStats();
+    renderQueue();
+    renderDetail();
+    renderRail();
+    $("tray-cards").innerHTML = state.trayCards.join("");
+    for (const rep of state.reports) delete rep.justMerged;
+  }
+
+  /* ---------- wiring ---------- */
+  $("btn-today").addEventListener("click", () => setView("today"));
+  $("btn-after").addEventListener("click", () => setView("after"));
+  $("api-toggle").addEventListener("click", () => {
+    state.api = !state.api;
+    const b = $("api-toggle");
+    b.setAttribute("aria-expanded", state.api ? "true" : "false");
+    b.textContent = state.api ? "Hide the API" : "Show the API";
+    $("engineer-rail").classList.toggle("on", state.api);
+    $("console").classList.toggle("api-on", state.api);
+    renderRail();
+  });
+  $("sim-btn").addEventListener("click", simulate);
+
+  document.addEventListener("click", e => {
+    const t = e.target.closest("[data-id]");
+    if (t) { state.selected = t.getAttribute("data-id"); renderQueue(); renderDetail(); return; }
+    const u = e.target.closest("[data-undo]");
+    if (u) { undoMerge(u.getAttribute("data-undo")); return; }
+    const tr = e.target.closest("[data-transition]");
+    if (tr) { doTransition(tr.getAttribute("data-req"), tr.getAttribute("data-transition")); return; }
+    const sg = e.target.closest("[data-suggest]");
+    if (sg) { resolveSuggestion(sg.getAttribute("data-suggest") === "accept"); return; }
+  });
+
+  document.addEventListener("keydown", e => {
+    if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+    const rows = [...document.querySelectorAll(".row")];
+    const i = rows.indexOf(document.activeElement);
+    if (i === -1) return;
+    e.preventDefault();
+    const next = rows[i + (e.key === "ArrowDown" ? 1 : -1)];
+    if (next) next.focus();
+  });
+
+  setView(state.view);
+})();
+</script>
 </body>
 </html>
