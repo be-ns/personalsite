@@ -13,14 +13,15 @@ function readPage(name) {
   return fs.readFileSync(path.join(ROOT, name), 'utf8');
 }
 
-// Inline script bodies, excluding JSON-LD and external scripts.
+// Inline script bodies, excluding external scripts and JSON data blocks
+// (JSON-LD and application/json carry data, not executable JavaScript).
 function inlineScripts(html) {
   const blocks = [];
   const re = /<script([^>]*)>([\s\S]*?)<\/script>/g;
   let m;
   while ((m = re.exec(html)) !== null) {
     const attrs = m[1];
-    if (/src=/.test(attrs) || /application\/ld\+json/.test(attrs)) continue;
+    if (/src=/.test(attrs) || /application\/(ld\+)?json/.test(attrs)) continue;
     if (m[2].trim()) blocks.push(m[2]);
   }
   return blocks;
