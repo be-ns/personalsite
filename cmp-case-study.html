@@ -4,6 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Ben Siverly · CMP Case Study</title>
+  <meta name="description" content="Ben Siverly's CMP case study submission: written analysis, an interactive service-request triage prototype, its rationale, and a video walkthrough.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://bensiverly.com/cmp-case-study.html">
   <style>
     :root {
       --bg: #F5F7FA;
@@ -84,14 +87,14 @@
       margin: 0 auto;
     }
     #prototype { padding: 0 !important; }
-    .section h1 { font: 28px -apple-system; margin-bottom: 8px; font-weight: 700; }
+    .section h2.doc-title { font: 28px -apple-system; margin-bottom: 8px; font-weight: 700; }
     .section-byline {
       font: 13px -apple-system;
       color: var(--muted);
       margin-bottom: 32px;
     }
-    .section h2 { font: 18px -apple-system; margin: 24px 0 12px; font-weight: 700; }
-    .section h3 { font: 16px -apple-system; margin: 20px 0 8px; font-weight: 600; }
+    .section h3 { font: 18px -apple-system; margin: 24px 0 12px; font-weight: 700; }
+    .section h4 { font: 16px -apple-system; margin: 20px 0 8px; font-weight: 600; }
     .section p { margin: 12px 0; line-height: 1.65; }
     .section ul, .section ol { margin: 12px 0 12px 24px; line-height: 1.65; }
     .section li { margin: 8px 0; }
@@ -397,7 +400,7 @@
     .video-content {
       padding: 24px;
     }
-    .video-content h2 { font: 18px -apple-system; margin-bottom: 8px; font-weight: 600; }
+    .video-content h3 { font: 18px -apple-system; margin-bottom: 8px; font-weight: 600; }
     .video-content p { color: var(--muted); font: 14px -apple-system; line-height: 1.6; }
     @media (max-width: 768px) {
       .proto-controls { gap: 8px; }
@@ -424,9 +427,9 @@
 
 <div id="main">
   <section id="analysis" class="section active">
-    <h1>What to Build, and What Not to Build</h1>
+    <h2 class="doc-title">What to Build, and What Not to Build</h2>
     <div class="section-byline">Ben Siverly · Part 1 of 3</div>
-    <h3>Vehicle Service Request Management</h3>
+    <h4>Vehicle Service Request Management</h4>
     <p>I read these four ticket themes as one core problem: there isn't a single source of truth that everyone can see and trust, so people have devised their own workarounds and systems that lead to duplicate tickets and degraded day-to-day operations.</p>
     <p>To address this, I'd build the record first, make it reach people second, and hold shop coordination until both exist.</p>
     <p>The same problem can be found wearing different clothing in finance. When you eat out and add a tip, the settled charge doesn't match the pending authorization from the night before, but there's enough overlap to match them algorithmically. In the commercial fleet world, the specific vehicle, issue flagged, driver, and date give us enough information to pattern-match tickets and force them into a standardized format with an enforced lifecycle. <em>(note: I would specifically look into using VMRS (Vehicle Maintenance Reporting Standards), owned and maintained by ATA's Technology &amp; Maintenance Council (TMC), the de facto industry taxonomy)</em></p>
@@ -436,27 +439,27 @@
       <li>Severity and priority can be addressed to deliver safety flags specific to commercial fleet maintenance so the top issue to attend to is always the highest risk to safety and revenue impact.</li>
       <li>Shop coordination - on the surface this is the weightiest concern because it's the core platform we're offering, but the coordination we can deliver with de-duplicated issue tracking as the foundation ships in half the time.</li>
     </ul>
-    <h2>What people experience</h2>
+    <h3>What people experience</h3>
     <p>A driver experiences a disruption while driving and calls dispatch to log it. He relies on a safe, well-maintained vehicle to do his job, so lack of clarity on status is an anxiety catalyst for him. When he doesn't hear back from dispatch, he goes in and adds the issue himself. He then tells his supervisor; and for her the brake issue is a compliance mandate, so she also goes in and logs it. Three tickets from three angles on the same truck's brakes, leading to four phone calls and zero proactive updates.</p>
     <p>That's likely where the 98 complaints about duplicates in 90 days come from, and those tickets do not mark the brake problem as different from a cosmetic scratch reported earlier that same week, so the office keeps the real truth on a whiteboard (like the mid-size operator on Call 2). The driver, still waiting on the app, calls dispatch for an update on when he should bring the truck in... When the repair completes, he has to call dispatch again to find out or wait for his supervisor to do the same.</p>
     <p>Everything these companies pay for sits downstream of a record everyone can see and trust.</p>
-    <h2>What it costs</h2>
+    <h3>What it costs</h3>
     <p>A single untriaged brake report ages in a flat queue until it becomes a roadside breakdown that costs three to five times planned cost (benchmark) and puts the safety of drivers at risk. Downtime around $450 to $760 per vehicle-day (benchmark), penalty exposure on the missed delivery, potential workplace litigation if the 'deferred emergency' has an audit trail one could point to. Industry benchmarks put a single unplanned breakdown at $3,000 to $9,000 all-in.</p>
     <p><em>And that's just one event.</em> The tickets undercount how many there are: a ticket is a complaint about a pattern, not a count of events. Fleets average an unscheduled event every 10,000 to 33,000 miles (benchmark), which makes service events a daily reality across 1,800 customers (extrapolated), and the information given tells us a meaningful share arrive through more than one channel.</p>
     <p>And the human on the front lines: let's call it 15 status calls per dispatcher per day at four minutes each, an hour of every dispatcher's shift answering a question the system should make obvious.</p>
     <p>The bigger cost is the whiteboard itself. If the wall holds the truth, the system of record has already left the platform, and the renewal is priced on being the operating system. Every workflow that moves to the wall also moves out of reach of the agent layer built on this same backend. They hired us to drive their operations, not to input sticky notes.</p>
-    <h2>What to build first</h2>
+    <h3>What to build first</h3>
     <p>The system cannot work as expected until you've got <strong>one record per real-world issue</strong>, enforced at the only layer that can enforce it. Reports arrive through the app, supervisors, phone calls, agents, and soon telematics. No interface can enforce uniqueness across channels; a real-world issue has no natural global ID. So we need to construct one the way financial systems dedupe transactions: fingerprint matching on aggregate fields. Start with vehicle, defect category, and time window, confidence-scored. High-confidence matches attach to the existing request automatically; borderline ones get suggested to the dispatcher. Either scenario is reversible.</p>
     <p>The first shippable piece is just the matcher, and it can run on top of what already exists. Point it at the current ticket table, let it flag probable duplicates, and have dispatchers confirm or reject the suggestions.</p>
     <p>That covers the first few weeks. The rest of this build is the enforced lifecycle. Reported, triaged, scheduled, in service, ready, closed. Transitions become the only way state changes, and every transition can emit an event so consumers subscribe instead of polling. The status field stops being a suggestion and starts being a fact.</p>
     <p>The outcome is that the record lands in the industry's standard shape: defects and repairs coded to VMRS, the maintenance taxonomy fleets and shops already share. That shape makes the rest of the product easier to manage.</p>
-    <h2>What to build second</h2>
+    <h3>What to build second</h3>
     <p>Once the record is trustworthy, it has to reach people. Today, finding out what's happening means opening the app and hunting for the right ticket. Consumer software settled this years ago: the thing you're waiting on can keep you posted. Call 3 gave us the spec: every update should answer two questions, can I keep driving, and when will it be fixed. Those two answers are the required payload of every notification. The person who reported an issue should hear back automatically, and anyone else can follow a ticket to receive the changes without going looking. Even better if the way they hear back isn't an email. SMS and voice are the right defaults. No new app, no new login - channel preference gets validated during dispatcher shadowing.</p>
     <p>Severity sets the volume, and by then it's close to free: VMRS coding derives priority from the defect itself rather than a dropdown someone guesses at, with out-of-service criteria defining safety-critical. Routine transitions might go through text but safety-critical reports call the point person to ensure things are addressed. Only a human can downgrade or close them. The full agent-versus-human boundary is in the Part 2 rationale.</p>
-    <h2>Why not shop coordination?</h2>
+    <h3>Why not shop coordination?</h3>
     <p>I'd call this a sequencing decision, not a rejection. Eighty-four tickets, second by volume, stated by the largest customers... but building coordination now would export today's incoherent state to the shops; <strong>garbage in motion at higher velocity is still garbage.</strong> Once the record exists, this is a webhook consumer plus a scoped status-write endpoint for shops, on rails that already exist.</p>
     <p>Their pain gets solved faster by not being first.</p>
-    <h2>What would change my mind</h2>
+    <h3>What would change my mind</h3>
     <ul>
       <li>Duplicate rate doesn't fall → the match keys are not working; fix matching before adding anything.</li>
       <li>Auto-merge precision slips → drop to suggest-only merging and use the data to improve the auto-merge mechanism. <strong>Automation is a privilege</strong> the system has to earn.</li>
@@ -464,7 +467,7 @@
       <li>Downgrade rate runs high → threshold for severity is miscalibrated; retune before dispatchers start disregarding our flags.</li>
     </ul>
     <p>One marker outranks the dashboards: if customers are still relying on a whiteboard after 90 days either the product didn't earn trust or inertia is stronger than we thought, and I'd go find out which.</p>
-    <h2>What this signal doesn't tell us</h2>
+    <h3>What this signal doesn't tell us</h3>
     <p>I read this the way I'd read any dataset: ticket counts are complaint data, not volume data. Only the frustrated file them, and generally when they're pretty frustrated. The calls are three accounts rather than a survey, and I'm not sure they map to the customer base overall or have intrinsic skew. I'd want:</p>
     <ul>
       <li><strong>The distribution of incoming reports</strong> (product analytics, plus shadowing two dispatchers): This sets the dedupe match keys.</li>
@@ -539,21 +542,21 @@
   </section>
 
   <section id="rationale" class="section">
-    <h1>Prototype Rationale</h1>
+    <h2 class="doc-title">Prototype Rationale</h2>
     <div class="section-byline">Ben Siverly · Part 2 of 3 (accompanies the prototype)</div>
-    <h3>Vehicle Service Request Management</h3>
+    <h4>Vehicle Service Request Management</h4>
     <p>The prototype runs a simulated morning of service reports through the matcher. This page covers what has to exist underneath it.</p>
-    <h2>API design</h2>
+    <h3>API design</h3>
     <p>One front door. Every channel (app, dispatcher entry, agent, telematics feed) hits the same intake endpoint, so uniqueness is a property of the platform, not a feature of any form.</p>
     <p>Deduplication is two mechanisms with different jobs. An idempotency key kills technical duplicates: a retried or double-tapped submission carries the same key and lands on the same request, guaranteed. A fingerprint matcher kills human duplicates: the driver, the supervisor, and the phone call all describing the same brakes through different doors. It matches on vehicle, defect category, and time window, confidence-scored. High-confidence matches attach automatically, borderline ones get suggested to the dispatcher, and every merge is reversible.</p>
     <p>The surface is small: create a request (idempotency key required, and a duplicate match returns the existing request with the new report attached), read a request with its full state history, post a transition (illegal transitions rejected, since state only changes through this door), and subscribe a webhook to state changes.</p>
     <p>Events over polling is the load-bearing choice. An agent layer that polls for state is millions of calls and a performance problem. An agent layer that subscribes is quiet until something happens. The notification service in build two is just the first webhook consumer. A shop integration or a telematics vendor is the same pattern later. Defects and repairs ride VMRS codes, so third parties read the record without a translation layer. Agent and third-party access runs through scopes: per-client grants that are rate-limitable and auditable.</p>
-    <h2>Agent vs. human boundary</h2>
+    <h3>Agent vs. human boundary</h3>
     <p>The agent alone: structure freeform reports into the standard shape, propose and attach duplicates, classify severity, escalate, and send status updates.</p>
     <p>A human only: downgrade severity, close a safety-critical request (the law already requires a qualified person to certify repair before a vehicle returns to service, so the product enforces what's already true), and commit money, whether that's dispatching to a shop or approving an emergency repair.</p>
     <p>When the agent is wrong, the costs are deliberately lopsided. An over-flag costs a dispatcher one click. A missed brake report costs a breakdown, so the classifier errs toward flagging. A wrong merge is annotated and one click restores both records. If auto-merge precision slips, the system drops to suggest-only until matching earns automation back.</p>
     <p>And one agent I would not build yet: anything that schedules or negotiates with shops. That commits real money against state that doesn't exist.</p>
-    <h2>Success metrics</h2>
+    <h3>Success metrics</h3>
     <p>Targets are set before build and re-based against the discovery baselines in Part 1.</p>
     <ul>
       <li><strong>Duplicate records per hundred real issues:</strong> down 90% or more, measured directly from merge events.</li>
@@ -568,7 +571,7 @@
       <div class="video-card">
         <div class="video-frame">▶</div>
         <div class="video-content">
-          <h2>Part 3 · Video walkthrough (3-5 min)</h2>
+          <h3>Part 3 · Video walkthrough (3-5 min)</h3>
           <p>Video walkthrough of the recommendation and prototype.</p>
           <!-- LOOM_EMBED: replace this comment block with the Loom responsive iframe snippet -->
         </div>
