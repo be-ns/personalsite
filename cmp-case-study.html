@@ -233,13 +233,10 @@
     .video-frame {
       aspect-ratio: 16 / 9;
       background: var(--bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--muted);
-      font: 48px var(--ui);
     }
+    .video-frame iframe { width: 100%; height: 100%; border: 0; display: block; }
     .video-content { padding: 24px; }
+    .video-content a { color: var(--blue); }
     .video-content h3 { font: 18px var(--ui); margin-bottom: 8px; font-weight: 600; }
     .video-content p { color: var(--muted); font: 14px var(--ui); line-height: 1.6; }
 
@@ -373,11 +370,12 @@
   <section id="video" class="section">
     <div class="video-placeholder">
       <div class="video-card">
-        <div class="video-frame">▶</div>
+        <div class="video-frame">
+          <iframe src="https://drive.google.com/file/d/1VgzvAcrTAYZ1bN57S2r-I0KBZPht5HYX/preview" title="Part 3 video walkthrough" allow="autoplay; fullscreen" allowfullscreen></iframe>
+        </div>
         <div class="video-content">
           <h3>Part 3 · Video walkthrough (3-5 min)</h3>
-          <p>Video walkthrough of the recommendation and prototype.</p>
-          <!-- LOOM_EMBED: replace this comment block with the Loom responsive iframe snippet -->
+          <p>Video walkthrough of the recommendation and prototype. If the player does not load, <a href="https://drive.google.com/file/d/1VgzvAcrTAYZ1bN57S2r-I0KBZPht5HYX/view" target="_blank" rel="noopener">open it in Google Drive</a>.</p>
         </div>
       </div>
     </div>
