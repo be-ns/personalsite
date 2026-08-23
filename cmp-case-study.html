@@ -15,6 +15,7 @@
       --ink: #14263B;
       --muted: #62748A;
       --blue: #2E6BE6;
+      --blue-light: #EBF1FD;
       --green: #17B877;
       --green-light: #E7F8F0;
       --amber: #F79009;
@@ -23,14 +24,16 @@
       --red-light: #FEECEA;
       --violet: #6E56CF;
       --violet-light: #F1EEFB;
+      --shadow: 0 1px 2px rgba(16,24,40,.06);
+      --ui: -apple-system, "Segoe UI", Roboto, Inter, sans-serif;
+      --mono: ui-monospace, "SF Mono", Menlo, monospace;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { height: 100%; }
     body {
-      font: 14px -apple-system, "Segoe UI", Roboto, Inter, sans-serif;
+      font: 14px/1.5 var(--ui);
       color: var(--ink);
       background: var(--bg);
-      line-height: 1.5;
       display: flex;
       flex-direction: column;
     }
@@ -45,20 +48,14 @@
       justify-content: space-between;
       align-items: center;
       height: 56px;
-      box-shadow: 0 1px 2px rgba(16,24,40,.06);
+      box-shadow: var(--shadow);
     }
-    #topbar h1 { font: 16px -apple-system; letter-spacing: -.5px; margin: 0; }
-    #tabs {
-      display: flex;
-      gap: 32px;
-      margin: 0;
-      list-style: none;
-    }
-    #tabs li { position: relative; }
+    #topbar h1 { font: 16px var(--ui); letter-spacing: -.5px; margin: 0; }
+    #tabs { display: flex; gap: 32px; margin: 0; list-style: none; }
     #tabs a {
       display: block;
       padding: 6px 0;
-      font: 14px -apple-system;
+      font: 14px var(--ui);
       color: var(--muted);
       text-decoration: none;
       border-bottom: 2px solid transparent;
@@ -66,170 +63,71 @@
       cursor: pointer;
     }
     #tabs a:hover { color: var(--ink); }
-    #tabs a.active {
-      color: var(--blue);
-      border-color: var(--blue);
-    }
-    #main {
-      flex: 1;
-      display: flex;
-      overflow: hidden;
-    }
-    .section {
-      display: none;
-      flex: 1;
-      overflow-y: auto;
-      padding: 40px;
-    }
+    #tabs a.active { color: var(--blue); border-color: var(--blue); }
+    #main { flex: 1; display: flex; overflow: hidden; }
+    .section { display: none; flex: 1; overflow-y: auto; padding: 40px; }
     .section.active { display: flex; flex-direction: column; }
-    #analysis, #rationale {
-      max-width: 720px;
-      margin: 0 auto;
-    }
+    #analysis, #rationale { max-width: 720px; margin: 0 auto; }
     #prototype { padding: 0 !important; }
-    .section h2.doc-title { font: 28px -apple-system; margin-bottom: 8px; font-weight: 700; }
-    .section-byline {
-      font: 13px -apple-system;
-      color: var(--muted);
-      margin-bottom: 32px;
-    }
-    .section h3 { font: 18px -apple-system; margin: 24px 0 12px; font-weight: 700; }
-    .section h4 { font: 16px -apple-system; margin: 20px 0 8px; font-weight: 600; }
+    .section h2.doc-title { font: 28px var(--ui); margin-bottom: 8px; font-weight: 700; }
+    .section-byline { font: 13px var(--ui); color: var(--muted); margin-bottom: 32px; }
+    .section h3 { font: 18px var(--ui); margin: 24px 0 12px; font-weight: 700; }
+    .section h4 { font: 16px var(--ui); margin: 20px 0 8px; font-weight: 600; }
     .section p { margin: 12px 0; line-height: 1.65; }
     .section ul, .section ol { margin: 12px 0 12px 24px; line-height: 1.65; }
     .section li { margin: 8px 0; }
     .section strong { font-weight: 600; }
     .section em { font-style: italic; }
-    .section code {
-      font: 13px ui-monospace, "SF Mono", Menlo, monospace;
-      background: var(--bg);
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
-    .proto-container {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
+
+    /* ---------- Prototype: workspace chrome ---------- */
+    .proto-container { display: flex; flex-direction: column; height: 100%; position: relative; }
     .proto-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 20px 24px;
+      padding: 16px 24px;
       border-bottom: 1px solid var(--border);
       background: var(--card);
       gap: 20px;
     }
-    .proto-title-group { flex: 1; }
-    .proto-title { font: 20px -apple-system; letter-spacing: -.5px; font-weight: 700; }
-    .proto-subtitle { font: 13px -apple-system; color: var(--muted); margin-top: 4px; }
-    .proto-controls {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .btn {
-      padding: 8px 16px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      background: var(--card);
-      color: var(--ink);
-      font: 14px -apple-system;
-      cursor: pointer;
-      transition: all 150ms;
-      white-space: nowrap;
-    }
-    .btn:hover { background: var(--bg); }
-    .btn.primary {
-      background: var(--blue);
-      color: white;
-      border-color: var(--blue);
-      font-weight: 600;
-    }
-    .btn.primary:hover { opacity: .9; }
-    .toggle-group {
-      display: flex;
-      gap: 4px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 3px;
-      background: var(--card);
-    }
-    .toggle-btn {
-      padding: 6px 12px;
-      border: none;
-      background: transparent;
-      color: var(--muted);
-      font: 13px -apple-system;
-      cursor: pointer;
-      transition: all 150ms;
-      border-radius: 6px;
-    }
-    .toggle-btn.active {
-      background: var(--blue);
-      color: white;
-    }
-    .switch {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font: 13px -apple-system;
-    }
-    .switch input {
-      width: 40px;
-      height: 24px;
-      cursor: pointer;
-      accent-color: var(--blue);
-    }
-    .proto-body {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-      background: var(--bg);
-    }
+    .proto-title { font: 20px var(--ui); letter-spacing: -.5px; font-weight: 700; }
+    .proto-subtitle { font: 13px var(--ui); color: var(--muted); margin-top: 2px; }
+    .sim-clock { text-align: right; }
+    .sim-clock .clock-time { font: 600 18px var(--mono); letter-spacing: .5px; }
+    .sim-clock .clock-day { font: 12px var(--ui); color: var(--muted); }
+    .proto-body { display: flex; flex: 1; overflow: hidden; background: var(--bg); }
     .nav-rail {
-      width: 220px;
+      width: 200px;
       background: var(--card);
       border-right: 1px solid var(--border);
       padding: 16px 12px;
       overflow-y: auto;
       flex-shrink: 0;
     }
-    .wordmark { font: 14px -apple-system; font-weight: 600; margin-bottom: 24px; color: var(--ink); }
+    .wordmark { font: 15px var(--ui); font-weight: 700; margin: 0 0 20px 12px; color: var(--ink); }
     .nav-item {
-      padding: 10px 12px;
-      margin: 4px 0;
+      padding: 9px 12px;
+      margin: 2px 0;
       border-radius: 8px;
-      font: 13px -apple-system;
+      font: 13px var(--ui);
       cursor: default;
       color: var(--muted);
       opacity: .6;
       display: flex;
       align-items: center;
-      gap: 8px;
       user-select: none;
     }
-    .nav-item.active {
-      background: var(--blue);
-      color: white;
-      opacity: 1;
-    }
+    .nav-item.active { background: var(--blue); color: white; opacity: 1; }
     .nav-badge {
       margin-left: auto;
       background: var(--red);
       color: white;
-      font: 11px ui-monospace;
-      padding: 3px 6px;
+      font: 600 11px var(--mono);
+      padding: 2px 7px;
       border-radius: 999px;
-      font-weight: 600;
     }
-    .center-col {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
+    .center-col { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+
     .action-banner {
       background: var(--red-light);
       border-left: 4px solid var(--red);
@@ -239,102 +137,233 @@
       align-items: center;
       gap: 16px;
     }
-    .banner-content { flex: 1; }
-    .banner-title { font: 13px -apple-system; font-weight: 600; color: var(--red); }
-    .banner-sub { font: 12px -apple-system; color: var(--muted); margin-top: 2px; }
+    .banner-title { font: 600 13px var(--ui); color: var(--red); }
+    .banner-sub { font: 12px var(--ui); color: var(--muted); margin-top: 2px; }
+    .btn {
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--card);
+      color: var(--ink);
+      font: 13px var(--ui);
+      cursor: pointer;
+      transition: all 150ms;
+      white-space: nowrap;
+    }
+    .btn:hover { background: var(--bg); }
+    .btn.danger { background: var(--red); color: white; border-color: var(--red); font-weight: 600; }
+    .btn.primary { background: var(--blue); color: white; border-color: var(--blue); font-weight: 600; }
+    .btn.primary:hover, .btn.danger:hover { opacity: .9; }
+    .btn:disabled { opacity: .45; cursor: default; }
+    .btn.small { padding: 5px 10px; font-size: 12px; border-radius: 6px; }
+
     .queue-tabs {
       display: flex;
       gap: 24px;
-      padding: 12px 16px;
+      padding: 12px 16px 0;
       border-bottom: 1px solid var(--border);
       background: var(--card);
-      font: 13px -apple-system;
+      font: 13px var(--ui);
     }
     .queue-tabs a {
       color: var(--muted);
       text-decoration: none;
-      padding-bottom: 8px;
+      padding-bottom: 10px;
       border-bottom: 2px solid transparent;
       cursor: pointer;
       transition: all 150ms;
       user-select: none;
     }
     .queue-tabs a:hover { color: var(--ink); }
-    .queue-tabs a.active {
-      color: var(--blue);
-      border-color: var(--blue);
+    .queue-tabs a.active { color: var(--blue); border-color: var(--blue); font-weight: 600; }
+    .queue { flex: 1; overflow-y: auto; padding: 12px 16px 64px; display: flex; flex-direction: column; gap: 10px; }
+    .queue-empty {
+      margin: auto;
+      text-align: center;
+      color: var(--muted);
+      font: 13px var(--ui);
+      max-width: 320px;
+      line-height: 1.6;
     }
-    .queue-tabs .count { color: var(--muted); font-weight: normal; }
-    .queue {
-      flex: 1;
-      overflow-y: auto;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .request-card {
+
+    /* ---------- Request cards ---------- */
+    @keyframes card-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+    .req-card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 12px;
-      cursor: pointer;
-      transition: all 150ms;
+      padding: 14px 16px;
       flex-shrink: 0;
+      box-shadow: var(--shadow);
+      animation: card-in 200ms ease-out;
     }
-    .request-card:hover { border-color: var(--blue); background: #FAFBFC; }
-    .request-card.active { border-color: var(--blue); background: #FAFBFC; }
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 8px;
-    }
-    .card-id {
-      font: 12px ui-monospace;
-      color: var(--muted);
-    }
-    .card-severity {
+    .req-card.safety-card { border-left: 4px solid var(--red); }
+    .req-card.selected { border-color: var(--blue); }
+    .req-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+    .req-flags { display: flex; gap: 6px; align-items: center; }
+    .sev-chip {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      font: 12px -apple-system;
-      padding: 4px 8px;
+      gap: 5px;
+      font: 600 11px var(--ui);
+      padding: 3px 9px;
       border-radius: 999px;
-      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .3px;
     }
     .sev-emergency { background: var(--red-light); color: var(--red); }
     .sev-scheduled { background: #F0F1F3; color: var(--muted); }
-    .sev-non-scheduled { background: var(--amber-light); color: var(--amber); }
-    .card-defect {
-      font: 14px -apple-system;
-      font-weight: 600;
-      margin: 4px 0;
+    .sev-non_scheduled { background: var(--amber-light); color: #B54708; }
+    .safety-chip { background: var(--red); color: white; font: 700 11px var(--ui); padding: 3px 9px; border-radius: 999px; letter-spacing: .4px; }
+    .req-age { font: 12px var(--ui); color: var(--muted); white-space: nowrap; }
+    .req-title { font: 600 16px var(--ui); margin-top: 6px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .vmrs { font: 11px var(--mono); color: var(--muted); background: var(--bg); border: 1px solid var(--border); border-radius: 5px; padding: 1px 6px; }
+    .req-meta { font: 13px var(--ui); color: var(--muted); margin-top: 3px; }
+    .req-channels { display: flex; align-items: center; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+    .chan-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font: 12px var(--ui);
+      color: var(--ink);
+      background: var(--blue-light);
+      border-radius: 6px;
+      padding: 3px 8px 3px 3px;
     }
-    .card-reports {
-      font: 12px -apple-system;
-      color: var(--muted);
-      margin: 8px 0;
+    .chan-chip .chan-init {
+      font: 700 10px var(--mono);
+      background: var(--blue);
+      color: white;
+      border-radius: 4px;
+      padding: 2px 4px;
     }
-    .card-state {
+    .req-count { font: 12px var(--ui); color: var(--muted); margin-left: 2px; }
+    .merge-note {
       display: flex;
+      align-items: center;
       gap: 8px;
-      flex-wrap: wrap;
+      font: 12px var(--ui);
+      color: var(--muted);
+      background: var(--green-light);
+      border-radius: 6px;
+      padding: 6px 10px;
       margin-top: 8px;
     }
+    .merge-note .mn-time { font: 11px var(--mono); }
+    .merge-note button {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: var(--blue);
+      font: 12px var(--ui);
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+    }
+    .suggest-block {
+      border: 1px solid var(--violet);
+      background: var(--violet-light);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-top: 10px;
+    }
+    .suggest-label { font: 700 11px var(--ui); color: var(--violet); text-transform: uppercase; letter-spacing: .4px; }
+    .suggest-body { font: 13px var(--ui); margin: 4px 0 8px; }
+    .suggest-score { font: 12px var(--mono); color: var(--violet); }
+    .suggest-actions { display: flex; gap: 8px; }
+    .req-foot { display: flex; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
     .state-pill {
-      font: 11px -apple-system;
-      padding: 4px 8px;
+      font: 600 11px var(--ui);
+      padding: 4px 10px;
       border-radius: 999px;
       background: #F0F1F3;
       color: var(--muted);
-      font-weight: 600;
     }
-    .state-pill.green { background: var(--green-light); color: var(--green); }
-    .state-pill.red { background: var(--red-light); color: var(--red); }
-    .state-pill.violet { background: transparent; color: var(--violet); border: 1px solid var(--violet); }
+    .state-pill.st-ready, .state-pill.st-closed { background: var(--green-light); color: var(--green); }
+    .state-pill.st-in_service, .state-pill.st-scheduled { background: var(--blue-light); color: var(--blue); }
+    .downgrade-link {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font: 12px var(--ui);
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+    }
+    .req-id { margin-left: auto; font: 11px var(--mono); color: #9AA7B6; }
+    .api-lines {
+      margin-top: 10px;
+      background: #0F1B2D;
+      color: #9FD0A9;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font: 11px/1.6 var(--mono);
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .eng-topline {
+      font: 12px var(--mono);
+      color: var(--muted);
+      background: var(--card);
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      flex-shrink: 0;
+    }
+
+    /* ---------- Raw (without matcher) view ---------- */
+    .raw-group {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 4px 0;
+      flex-shrink: 0;
+      box-shadow: var(--shadow);
+    }
+    .raw-group-head {
+      display: flex;
+      justify-content: flex-end;
+      padding: 6px 12px 0;
+    }
+    .dupe-chip { font: 600 11px var(--ui); color: var(--red); background: var(--red-light); border-radius: 999px; padding: 3px 9px; }
+    .raw-row {
+      display: flex;
+      gap: 12px;
+      align-items: baseline;
+      padding: 8px 16px;
+      font: 13px var(--ui);
+      border-bottom: 1px solid var(--bg);
+    }
+    .raw-row:last-child { border-bottom: none; }
+    .raw-time { font: 12px var(--mono); color: var(--muted); white-space: nowrap; }
+    .raw-main { font-weight: 600; }
+    .raw-sub { color: var(--muted); }
+
+    /* ---------- Insight strip + footnote ---------- */
+    .insight {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      padding: 10px 16px;
+      background: var(--amber-light);
+      border-top: 1px solid var(--border);
+      font: 13px var(--ui);
+      flex-shrink: 0;
+    }
+    .insight .spark { color: var(--amber); font-weight: 700; }
+    .insight b { font-weight: 700; }
+    .footnote {
+      padding: 6px 16px 8px;
+      font: 11px var(--ui);
+      color: var(--muted);
+      text-align: center;
+      background: var(--amber-light);
+      flex-shrink: 0;
+    }
+
+    /* ---------- Driver updates pane ---------- */
     .right-pane {
-      width: 340px;
+      width: 330px;
       background: var(--card);
       border-left: 1px solid var(--border);
       padding: 16px;
@@ -343,51 +372,84 @@
       flex-direction: column;
       flex-shrink: 0;
     }
-    .pane-title { font: 13px -apple-system; font-weight: 600; margin-bottom: 12px; }
-    .sms-thread {
-      flex: 1;
+    .pane-title { font: 600 13px var(--ui); }
+    .pane-sub { font: 12px var(--ui); color: var(--muted); margin: 2px 0 14px; }
+    .voice-line {
       display: flex;
-      flex-direction: column;
       gap: 8px;
-      margin-bottom: 12px;
+      align-items: baseline;
+      font: 12px var(--ui);
+      color: var(--ink);
+      background: var(--red-light);
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-bottom: 10px;
     }
+    .voice-tag { font: 700 10px var(--ui); color: var(--red); border: 1px solid var(--red); border-radius: 4px; padding: 1px 5px; letter-spacing: .5px; }
+    .sms-thread { display: flex; flex-direction: column; gap: 10px; }
+    .sms-meta { font: 11px var(--ui); color: var(--muted); margin-bottom: 3px; }
     .sms-bubble {
-      padding: 8px 12px;
-      border-radius: 8px;
-      font: 12px -apple-system;
-      line-height: 1.5;
+      background: var(--blue-light);
+      border-radius: 10px 10px 10px 3px;
+      padding: 9px 12px;
+      font: 13px/1.5 var(--ui);
     }
-    .sms-in { background: #E3F2FD; text-align: left; color: var(--ink); }
-    .sms-out { background: var(--green-light); text-align: left; color: var(--ink); }
-    .sms-time { font: 11px -apple-system; color: var(--muted); margin-top: 2px; }
-    .pane-footer { font: 11px -apple-system; color: var(--muted); margin-top: auto; padding-top: 8px; border-top: 1px solid var(--border); }
-    .metrics {
-      padding: 12px 16px;
-      background: var(--amber-light);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      margin: 16px;
-      font: 12px -apple-system;
-      line-height: 1.6;
+    .sms-empty { font: 13px var(--ui); color: var(--muted); line-height: 1.6; }
+    .pane-footer { font: 11px var(--ui); color: var(--muted); margin-top: auto; padding-top: 12px; }
+
+    /* ---------- Demo tray ---------- */
+    .demo-tray {
+      position: absolute;
+      bottom: 74px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(20, 38, 59, .94);
+      color: #D6DEE8;
+      border-radius: 999px;
+      padding: 8px 10px 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 4px 16px rgba(16,24,40,.25);
+      z-index: 40;
+      font: 12px var(--ui);
     }
-    .metrics-bold { font-weight: 600; }
-    .footnote {
-      padding: 8px 16px;
-      font: 11px -apple-system;
-      color: var(--muted);
-      text-align: center;
-      border-top: 1px solid var(--border);
+    .demo-label { font: 700 10px var(--ui); letter-spacing: 1px; text-transform: uppercase; color: #8FA3BA; }
+    .demo-tray .btn { background: var(--blue); border-color: var(--blue); color: white; font-weight: 600; }
+    .speed-group { display: flex; border: 1px solid #3D5573; border-radius: 6px; overflow: hidden; }
+    .speed-btn { background: transparent; border: none; color: #8FA3BA; font: 12px var(--ui); padding: 4px 10px; cursor: pointer; }
+    .speed-btn.active { background: #3D5573; color: white; }
+    .demo-switch { display: flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; }
+    .demo-switch input { accent-color: var(--blue); cursor: pointer; }
+
+    /* ---------- Modal ---------- */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(16,24,40,.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
     }
-    .video-placeholder {
-      max-width: 720px;
-      margin: 0 auto;
-    }
-    .video-card {
+    .modal-overlay[hidden] { display: none; }
+    .modal {
       background: var(--card);
-      border: 1px solid var(--border);
       border-radius: 12px;
-      overflow: hidden;
+      padding: 24px;
+      width: 400px;
+      max-width: calc(100vw - 32px);
+      box-shadow: 0 8px 32px rgba(16,24,40,.25);
     }
+    .modal-title { font: 600 16px var(--ui); margin-bottom: 8px; }
+    .modal-body { font: 13px/1.6 var(--ui); color: var(--muted); margin-bottom: 16px; }
+    .modal-check { display: flex; gap: 8px; align-items: flex-start; font: 13px var(--ui); margin-bottom: 18px; cursor: pointer; }
+    .modal-check input { margin-top: 2px; accent-color: var(--blue); }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+    /* ---------- Video section ---------- */
+    .video-placeholder { max-width: 720px; margin: 0 auto; }
+    .video-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
     .video-frame {
       aspect-ratio: 16 / 9;
       background: var(--bg);
@@ -395,22 +457,24 @@
       align-items: center;
       justify-content: center;
       color: var(--muted);
-      font: 48px -apple-system;
+      font: 48px var(--ui);
     }
-    .video-content {
-      padding: 24px;
-    }
-    .video-content h3 { font: 18px -apple-system; margin-bottom: 8px; font-weight: 600; }
-    .video-content p { color: var(--muted); font: 14px -apple-system; line-height: 1.6; }
+    .video-content { padding: 24px; }
+    .video-content h3 { font: 18px var(--ui); margin-bottom: 8px; font-weight: 600; }
+    .video-content p { color: var(--muted); font: 14px var(--ui); line-height: 1.6; }
+
     @media (max-width: 768px) {
-      .proto-controls { gap: 8px; }
-      .btn, .toggle-group { font-size: 12px; padding: 6px 12px; }
-      .proto-header { flex-direction: column; align-items: flex-start; }
-      .proto-body { flex-direction: column; }
-      .nav-rail { width: 100%; border-right: none; border-bottom: 1px solid var(--border); padding: 8px; }
-      .nav-item { font: 12px -apple-system; padding: 8px; }
-      .right-pane { width: 100%; border-left: none; border-top: 1px solid var(--border); height: auto; max-height: 180px; }
-      #tabs { gap: 16px; }
+      #tabs { gap: 14px; }
+      #topbar { padding: 0 12px; }
+      .section { padding: 24px 16px; }
+      .proto-body { flex-direction: column; overflow: visible; }
+      #prototype.section.active { overflow-y: auto; }
+      .center-col, .proto-container { overflow: visible; height: auto; }
+      .queue { overflow: visible; }
+      .nav-rail { display: none; }
+      .right-pane { width: 100%; border-left: none; border-top: 1px solid var(--border); }
+      .demo-tray { position: fixed; bottom: 10px; flex-wrap: wrap; justify-content: center; border-radius: 16px; max-width: calc(100vw - 20px); }
+      .sim-clock { display: none; }
     }
   </style>
 </head>
@@ -481,61 +545,73 @@
   <section id="prototype" class="section">
     <div class="proto-container">
       <div class="proto-header">
-        <div class="proto-title-group">
+        <div>
           <div class="proto-title">Service Requests</div>
           <div class="proto-subtitle">Meridian Logistics (demo customer) · Tuesday morning, simulated</div>
         </div>
-        <div class="proto-controls">
-          <button id="playBtn" class="btn primary">▶ Play</button>
-          <div class="toggle-group">
-            <button class="toggle-btn active" data-speed="1">1x</button>
-            <button class="toggle-btn" data-speed="3">3x</button>
-          </div>
-          <div class="switch">
-            <input type="checkbox" id="withoutMatcher">
-            <label for="withoutMatcher">Without matcher</label>
-          </div>
-          <div class="switch">
-            <input type="checkbox" id="engineerView">
-            <label for="engineerView">Engineer view</label>
-          </div>
+        <div class="sim-clock">
+          <div class="clock-time" id="simClock">7:42 AM</div>
+          <div class="clock-day">Tuesday · Central Dispatch</div>
         </div>
       </div>
       <div class="proto-body">
-        <div class="nav-rail">
+        <nav class="nav-rail">
           <div class="wordmark">FleetOps</div>
           <div class="nav-item">Home</div>
           <div class="nav-item">Dispatch Board</div>
-          <div class="nav-item active">Service Requests <span class="nav-badge" id="navBadge">3</span></div>
+          <div class="nav-item active">Service Requests <span class="nav-badge" id="navBadge">0</span></div>
           <div class="nav-item">Vehicles</div>
           <div class="nav-item">Shops</div>
           <div class="nav-item">Reports</div>
-        </div>
+        </nav>
         <div class="center-col">
-          <div id="actionBanner" class="action-banner" style="display:none;">
-            <div class="banner-content">
-              <div class="banner-title">Safety incident · Immediate review required</div>
-              <div class="banner-sub">Brake issue on Truck 4127 needs your attention</div>
+          <div id="actionBanner" class="action-banner" hidden>
+            <div>
+              <div class="banner-title" id="bannerTitle">Safety-critical: Truck 4127 — Brakes</div>
+              <div class="banner-sub" id="bannerSub">Reported by M. Reyes. Vehicle should not continue driving.</div>
             </div>
-            <button class="btn primary" style="margin: 0;">Review</button>
+            <button class="btn danger" id="bannerReview">Review now</button>
           </div>
           <div class="queue-tabs">
-            <a href="#" class="active" data-tab="review">Needs review <span class="count" id="ct-review">(3)</span></a>
-            <a href="#" data-tab="merged">Merged <span class="count" id="ct-merged">(0)</span></a>
-            <a href="#" data-tab="all">All requests <span class="count" id="ct-all">(3)</span></a>
+            <a class="active" data-qtab="review">Needs review · <span id="ct-review">0</span></a>
+            <a data-qtab="merged">Merged · <span id="ct-merged">0</span></a>
+            <a data-qtab="all">All requests · <span id="ct-all">0</span></a>
           </div>
+          <div id="engTopline" class="eng-topline" style="margin: 12px 16px 0;" hidden>Consumers subscribe to state events. Nothing polls.</div>
           <div class="queue" id="queue"></div>
-          <div class="metrics">
-            <div><span class="metrics-bold" id="metricsMain">11 reports → 4 issues so far.</span> Duplicates collapsed: 7 per 11 raw</div>
-            <div>Dispatcher confirm taps: <span class="metrics-bold" id="metricsTaps">2 of 10</span> budget</div>
-            <div>Status updates pushed: <span class="metrics-bold" id="metricsUpdates">0</span> (calls avoided)</div>
+          <div class="insight">
+            <span class="spark">⌁</span>
+            <span id="insightText"><b>Waiting on the morning.</b> Press Play in the demo controls below.</span>
           </div>
           <div class="footnote">Simulated data. Assumptions and success metrics are defined in the Part 2 rationale.</div>
         </div>
-        <div class="right-pane">
+        <aside class="right-pane">
           <div class="pane-title">Driver updates</div>
+          <div class="pane-sub" id="paneSub">Thread: M. Reyes · Truck 4127</div>
+          <div id="voiceLog"></div>
           <div id="smsThread" class="sms-thread"></div>
           <div class="pane-footer">Messages simulate SMS via the notification service (Part 2).</div>
+        </aside>
+      </div>
+      <div class="demo-tray">
+        <span class="demo-label">Demo controls</span>
+        <button id="playBtn" class="btn small">▶ Play morning</button>
+        <div class="speed-group">
+          <button class="speed-btn active" data-speed="1">1x</button>
+          <button class="speed-btn" data-speed="3">3x</button>
+        </div>
+        <label class="demo-switch"><input type="checkbox" id="withoutMatcher"> Without matcher</label>
+        <label class="demo-switch"><input type="checkbox" id="engineerView"> Engineer view</label>
+      </div>
+    </div>
+    <div class="modal-overlay" id="modal" hidden>
+      <div class="modal">
+        <div class="modal-title" id="modalTitle"></div>
+        <div class="modal-body" id="modalBody"></div>
+        <label class="modal-check"><input type="checkbox" id="modalCheck"> <span id="modalCheckLabel"></span></label>
+        <div class="modal-actions">
+          <button class="btn" id="modalCancel">Cancel</button>
+          <button class="btn primary" id="modalConfirm" disabled>Confirm</button>
         </div>
       </div>
     </div>
@@ -581,242 +657,489 @@
 </div>
 
 <script>
-  const seedDataUnsorted = [
-    { id: 'rpt_1', ts: 27720, channel: 'driver_app', vehicle: '4127', defect: 'brakes', text: 'Grinding when I brake, getting worse', reporter: 'M. Reyes' },
-    { id: 'rpt_2', ts: 27780, channel: 'phone', vehicle: '4127', defect: 'brakes', text: 'logged by dispatcher', reporter: 'Dispatch' },
-    { id: 'rpt_3', ts: 27900, channel: 'supervisor', vehicle: '4127', defect: 'brakes', text: 'Compliance logging', reporter: 'Supervisor' },
-    { id: 'rpt_4', ts: 27750, channel: 'driver_app', vehicle: '2203', defect: 'hvac', text: 'AC not working', reporter: 'J. Chen' },
-    { id: 'rpt_5', ts: 27840, channel: 'driver_app', vehicle: '2214', defect: 'tires', text: 'Vibration at speed', reporter: 'K. Brown' },
-    { id: 'rpt_6', ts: 27900, channel: 'supervisor', vehicle: '2214', defect: 'tires', text: 'Tire check noted', reporter: 'Supervisor' },
-    { id: 'rpt_7', ts: 27810, channel: 'driver_app', vehicle: '4131', defect: 'cosmetic', text: 'Scratch on door', reporter: 'L. Garcia' },
-    { id: 'rpt_8', ts: 28020, channel: 'driver_app', vehicle: '2214', defect: 'brakes', text: 'Minor brake issue', reporter: 'K. Brown' },
-    { id: 'rpt_9', ts: 27930, channel: 'driver_app', vehicle: '4127', defect: 'brakes', text: 'Still grinding', reporter: 'M. Reyes' }
-  ];
+  'use strict';
 
-  const State = {
-    now: 27720, speed: 1, playing: false, withoutMatcher: false, engineerView: false,
-    currentTab: 'review', activeCard: null, requests: new Map(), reports: new Map(),
-    smsMessages: [], simStep: 0, mergeCount: 0, confirmCount: 0, lastProcessed: -1,
-    seedData: seedDataUnsorted.sort((a, b) => a.ts - b.ts)
+  /* ---------- Fleet reference data ---------- */
+  const VEHICLES = {
+    '4127': { label: 'Truck 4127', driver: 'M. Reyes', loc: 'I-40 EB · mi 212, outside Amarillo' },
+    '2203': { label: 'Van 2203', driver: 'J. Chen', loc: 'Local Route 12 · Northside' },
+    '2214': { label: 'Van 2214', driver: 'K. Brown', loc: 'US-287 NB · near Chillicothe' },
+    '4131': { label: 'Rig 4131', driver: 'L. Garcia', loc: 'Yard · Dock 4' }
+  };
+  const DEFECTS = {
+    brakes:    { label: 'Brakes', vmrs: '013' },
+    tires:     { label: 'Tires', vmrs: '017' },
+    hvac:      { label: 'HVAC', vmrs: '001' },
+    cosmetic:  { label: 'Body / cosmetic', vmrs: '002' },
+    alignment: { label: 'Alignment', vmrs: '016' }
+  };
+  const CHANNELS = {
+    driver_app: { label: 'Driver App', init: 'DA', key: 'drv' },
+    phone:      { label: 'Phone', init: 'PH', key: 'ph' },
+    supervisor: { label: 'Supervisor', init: 'SV', key: 'sv' }
+  };
+  const SAFETY_DEFECTS = ['brakes', 'steering', 'tires', 'coupling', 'lights'];
+
+  /* Deterministic morning timeline. ts = minutes since midnight; 462 = 7:42 AM. */
+  const TIMELINE = [
+    { id: 'r01', ts: 462, veh: '4127', defect: 'brakes', ch: 'driver_app', by: 'M. Reyes', text: 'Grinding when I brake, getting worse' },
+    { id: 'r02', ts: 465, veh: '2203', defect: 'hvac', ch: 'driver_app', by: 'J. Chen', text: 'AC blowing warm, cab at 88 degrees' },
+    { id: 'r03', ts: 471, veh: '4131', defect: 'cosmetic', ch: 'driver_app', by: 'L. Garcia', text: 'Scratch on passenger door at dock 4' },
+    { id: 'r04', ts: 478, veh: '4127', defect: 'brakes', ch: 'phone', by: 'Dispatch, call from M. Reyes', text: 'Driver called it in again, grinding worse on downhills' },
+    { id: 'r05', ts: 485, veh: '2214', defect: 'tires', ch: 'driver_app', by: 'K. Brown', text: 'Vibration at highway speed' },
+    { id: 'r06', ts: 495, veh: '4127', defect: 'brakes', ch: 'supervisor', by: 'D. Okafor', text: 'Logging to be safe - compliance' },
+    { id: 'r07', ts: 504, veh: '2203', defect: 'hvac', ch: 'phone', by: 'Dispatch, call from J. Chen', text: 'Asking when the AC will be looked at' },
+    { id: 'r08', ts: 512, veh: '4127', defect: 'brakes', ch: 'driver_app', by: 'M. Reyes', text: 'Parked at the yard, still grinding on a test roll' },
+    { id: 'r09', ts: 525, veh: '2214', defect: 'alignment', ch: 'supervisor', by: 'D. Okafor', text: 'Wheel shake reported at end of shift' },
+    { id: 'r10', ts: 542, veh: '2214', defect: 'brakes', ch: 'driver_app', by: 'K. Brown', text: 'Pedal feels a little soft' },
+    { id: 'r11', ts: 550, veh: '4131', defect: 'cosmetic', ch: 'supervisor', by: 'D. Okafor', text: 'Dock camera confirms the scratch' }
+  ];
+  const MORNING_END = 556;
+
+  /* SMS copy for Truck 4127's reporter. Every message answers: can I keep driving, when will it be fixed. */
+  const SMS_4127 = {
+    intake: 'We got your brake report on truck 4127. Do NOT continue driving. A tow is being arranged. Next update by 8:30am.',
+    triaged: 'Update on 4127: brake issue is confirmed safety-critical and with dispatch. Keep driving? No. Repair slot being arranged, next update within the hour.',
+    scheduled: 'Update on 4127: brakes confirmed safety-critical. Keep driving? No. Repair scheduled today, ready tomorrow 3:00 PM.',
+    in_service: '4127 is in the shop. Keep driving? No, the vehicle is in service. Still on track for tomorrow 3:00 PM.',
+    ready: '4127 is ready for pickup. Cleared to drive.',
+    closed: '4127 repair certified and the request is closed. Cleared to drive.'
   };
 
-  function sev(defect) {
-    const safety = ['brakes', 'steering', 'tires', 'coupling', 'lights'].includes(defect);
-    if (safety) return { sev: 'emergency', safety: true };
-    if (['hvac', 'cosmetic'].includes(defect)) return { sev: 'scheduled', safety: false };
+  const STATES = ['reported', 'triaged', 'scheduled', 'in_service', 'ready', 'closed'];
+  const STATE_LABEL = { reported: 'Reported', triaged: 'Triaged', scheduled: 'Scheduled', in_service: 'In Service', ready: 'Ready', closed: 'Closed' };
+  const SEV_GLYPH = { emergency: '●', non_scheduled: '△', scheduled: '○' };
+  const SEV_LABEL = { emergency: 'Emergency', non_scheduled: 'Non-scheduled', scheduled: 'Scheduled' };
+
+  const S = {
+    clock: 462, playing: false, speed: 1, done: false, cursor: 0, timer: null,
+    withoutMatcher: false, engineerView: false, qtab: 'review', selected: null,
+    reports: [], requests: [], suggestions: [], sms: [], voice: [], confirmTaps: 0
+  };
+
+  /* ---------- Helpers ---------- */
+  const $ = (id) => document.getElementById(id);
+  function fmtTime(min) {
+    const h24 = Math.floor(min / 60), m = min % 60;
+    const h = ((h24 + 11) % 12) + 1;
+    return h + ':' + String(m).padStart(2, '0') + ' ' + (h24 < 12 ? 'AM' : 'PM');
+  }
+  function elapsed(ts) {
+    const d = S.clock - ts;
+    if (d < 1) return 'just now';
+    if (d < 60) return d + ' min ago';
+    return Math.floor(d / 60) + ' hr ' + (d % 60) + ' min ago';
+  }
+  function severityFor(defect) {
+    if (SAFETY_DEFECTS.includes(defect)) return { sev: 'emergency', safety: true };
+    if (defect === 'hvac' || defect === 'cosmetic') return { sev: 'scheduled', safety: false };
     return { sev: 'non_scheduled', safety: false };
   }
+  function requestId(veh, defect) {
+    const base = 'req_' + veh + defect[0];
+    let id = base, n = 2;
+    while (S.requests.some((r) => r.id === id)) { id = base + n; n++; }
+    return id;
+  }
+  function idemKey(r) { return CHANNELS[r.ch].key + '-' + r.id; }
 
-  function matchScore(r1, r2) {
-    let score = 0;
-    if (r1.vehicle === r2.vehicle) score += 0.55;
-    if (r1.defect === r2.defect) score += 0.30;
-    if (Math.abs(r1.ts - r2.ts) <= 240) score += 0.15;
-    const cats = ['brakes', 'tires', 'steering'];
-    if (cats.includes(r1.defect) && cats.includes(r2.defect)) {
-      const d = Math.abs(cats.indexOf(r1.defect) - cats.indexOf(r2.defect));
-      if (d === 1) score -= 0.10;
-    }
-    return Math.round(score * 100) / 100;
+  /* ---------- Matcher ---------- */
+  const RELATED = { 'alignment|tires': 0.19, 'tires|alignment': 0.19 };
+  const ADJACENT = { 'brakes|tires': true, 'tires|brakes': true };
+  function matchScore(rpt, req) {
+    let s = 0;
+    if (rpt.veh === req.veh) s += 0.55;
+    const lastTs = req.reportRefs.length ? req.reportRefs[req.reportRefs.length - 1].ts : req.openedAt;
+    const inWindow = Math.abs(rpt.ts - lastTs) <= 240;
+    const pair = rpt.defect + '|' + req.defect;
+    if (rpt.defect === req.defect) { s += 0.30; if (inWindow) s += 0.15; }
+    else if (RELATED[pair]) { s += RELATED[pair]; }
+    else if (ADJACENT[pair]) { if (inWindow) s += 0.15; s -= 0.12; }
+    return Math.min(1, Math.round(s * 100) / 100);
   }
 
-  function findOrCreateRequest(report) {
+  function createRequest(rpt) {
+    const { sev, safety } = severityFor(rpt.defect);
+    const req = {
+      id: requestId(rpt.veh, rpt.defect),
+      veh: rpt.veh, defect: rpt.defect, sev, safety,
+      state: 'reported', ack: false, openedAt: rpt.ts, lastActivity: rpt.ts,
+      reportRefs: [rpt], mergeNotes: [], api: []
+    };
+    req.api.push('POST /service-requests · Idempotency-Key: ' + idemKey(rpt) + ' → 201 created ' + req.id + ' · scope: intake.create');
+    S.requests.push(req);
+    if (req.veh === '4127' && req.safety) {
+      S.voice.push({ ts: rpt.ts, text: 'Voice call placed to dispatch point person (safety-critical intake)' });
+      sendSms(rpt.ts, 'intake');
+    }
+    return req;
+  }
+
+  function attachReport(req, rpt, how, score) {
+    req.reportRefs.push(rpt);
+    req.lastActivity = rpt.ts;
+    const label = how === 'auto'
+      ? 'Attached ' + CHANNELS[rpt.ch].label.toLowerCase() + ' report · same issue'
+      : 'Merged ' + CHANNELS[rpt.ch].label.toLowerCase() + ' report · dispatcher confirmed';
+    req.mergeNotes.push({ ts: rpt.ts, reportId: rpt.id, label });
+    req.api.push('POST /service-requests · Idempotency-Key: ' + idemKey(rpt) + ' → 200 matched ' + req.id + ' (' + score.toFixed(2) + '), report attached · scope: intake.create');
+  }
+
+  function ingest(rpt) {
+    S.reports.push(rpt);
     let best = null, bestScore = 0;
-    for (const [id, req] of State.requests) {
-      if (req.vehicle !== report.vehicle || req.merged) continue;
-      const baseRpt = State.reports.get(req.reports[0]);
-      if (!baseRpt) continue;
-      const score = matchScore(baseRpt, report);
-      if (score > bestScore) { best = { id, req, score }; bestScore = score; }
+    for (const req of S.requests) {
+      if (req.state === 'closed') continue;
+      const sc = matchScore(rpt, req);
+      if (sc > bestScore) { best = req; bestScore = sc; }
     }
-
-    if (bestScore >= 0.9) {
-      best.req.reports.push(report.id);
-      State.mergeCount++;
-      return { id: best.id, type: 'auto', score: bestScore };
+    if (best && bestScore >= 0.9) { attachReport(best, rpt, 'auto', bestScore); return; }
+    if (best && bestScore >= 0.6) {
+      S.suggestions.push({ rpt, reqId: best.id, score: bestScore });
+      best.lastActivity = rpt.ts;
+      best.api.push('POST /service-requests · Idempotency-Key: ' + idemKey(rpt) + ' → 202 borderline match (' + bestScore.toFixed(2) + '), suggestion queued for dispatcher');
+      return;
     }
-    if (bestScore >= 0.6) {
-      return { type: 'suggest', target: best.id, score: bestScore };
+    const req = createRequest(rpt);
+    if (best && bestScore >= 0.4) {
+      req.api.push('matcher: closest open request ' + best.id + ' scored ' + bestScore.toFixed(2) + ' — below 0.60, new request created');
     }
-
-    const newId = 'req_' + Math.random().toString(36).substr(2, 4);
-    const { sev: severity, safety } = sev(report.defect);
-    State.requests.set(newId, {
-      id: newId, vehicle: report.vehicle, defect: report.defect,
-      sev: severity, safety, state: 'reported', reports: [report.id]
-    });
-    return { id: newId, type: 'new' };
   }
 
-  function init() {
-    State.requests.set('req_4127b', {
-      id: 'req_4127b', vehicle: '4127', defect: 'brakes', sev: 'emergency',
-      safety: true, state: 'reported', reports: ['rpt_1']
-    });
-    State.reports.set('rpt_1', State.seedData[0]);
-    State.smsMessages.push({
-      ts: 27720, from: 'System',
-      text: 'We got your brake report on truck 4127. Do NOT continue driving. A tow is being arranged. Next update by 8:30am.'
-    });
+  /* ---------- Dispatcher actions ---------- */
+  function resolveSuggestion(reportId, accept) {
+    const i = S.suggestions.findIndex((sg) => sg.rpt.id === reportId);
+    if (i < 0) return;
+    const sg = S.suggestions.splice(i, 1)[0];
+    const req = S.requests.find((r) => r.id === sg.reqId);
+    S.confirmTaps++;
+    if (accept && req) {
+      attachReport(req, sg.rpt, 'confirmed', sg.score);
+    } else {
+      const nr = createRequest(sg.rpt);
+      if (req) req.api.push('dispatcher: not-a-duplicate for ' + sg.rpt.id + ' → ' + nr.id + ' opened separately');
+    }
     render();
   }
 
-  function render() {
-    const queue = document.getElementById('queue');
-    queue.innerHTML = '';
+  function undoMerge(reqId, reportId) {
+    const req = S.requests.find((r) => r.id === reqId);
+    if (!req) return;
+    const ri = req.reportRefs.findIndex((r) => r.id === reportId);
+    if (ri < 0) return;
+    const rpt = req.reportRefs.splice(ri, 1)[0];
+    req.mergeNotes = req.mergeNotes.filter((n) => n.reportId !== reportId);
+    req.lastActivity = S.clock;
+    const nr = createRequest(rpt);
+    req.api.push('POST /service-requests/' + req.id + '/unmerge {report:"' + rpt.id + '"} → 200 · ' + nr.id + ' restored, unmerge logged on both records');
+    nr.api.push('event: unmerged from ' + req.id + ' by dispatcher · full report history retained');
+    nr.mergeNotes.push({ ts: S.clock, reportId: null, label: 'Split from ' + req.id + ' by dispatcher' });
+    render();
+  }
 
-    const requests = Array.from(State.requests.values()).filter(r => !r.merged);
-    const tab = State.currentTab;
+  function sendSms(ts, key) {
+    S.sms.push({ ts, text: SMS_4127[key] });
+  }
 
-    for (const req of requests) {
-      if (tab === 'review' && req.state !== 'reported') continue;
-      if (tab === 'merged' && req.state === 'reported') continue;
-
-      const card = document.createElement('div');
-      card.className = 'request-card' + (State.activeCard === req.id ? ' active' : '');
-      card.onclick = () => { State.activeCard = req.id; render(); };
-
-      const sevClass = req.sev === 'emergency' ? 'sev-emergency' : req.sev === 'scheduled' ? 'sev-scheduled' : 'sev-non-scheduled';
-      const sevSymbol = req.sev === 'emergency' ? '●' : req.sev === 'scheduled' ? '○' : '△';
-
-      card.innerHTML = `
-        <div class="card-header">
-          <span class="card-id">${req.id}</span>
-          <span class="card-severity ${sevClass}">${sevSymbol} ${req.sev}</span>
-        </div>
-        <div class="card-defect">${req.defect}</div>
-        <div class="card-reports">${req.reports.length} report${req.reports.length !== 1 ? 's' : ''}</div>
-        <div class="card-state">
-          <span class="state-pill">${req.state}</span>
-          ${req.safety ? '<span class="state-pill red">Safety</span>' : ''}
-        </div>
-      `;
-      queue.appendChild(card);
+  function advance(reqId) {
+    const req = S.requests.find((r) => r.id === reqId);
+    if (!req) return;
+    const next = STATES[STATES.indexOf(req.state) + 1];
+    if (!next) return;
+    if (next === 'closed' && req.safety) {
+      openModal({
+        title: 'Certify repair · ' + VEHICLES[req.veh].label,
+        body: 'Repair certified by qualified personnel? This is a human-only action.',
+        check: 'Repair has been certified by qualified personnel.',
+        onConfirm: () => { doTransition(req, 'closed'); }
+      });
+      return;
     }
+    doTransition(req, next);
+  }
 
-    const safety = requests.some(r => r.safety && r.state === 'reported');
-    document.getElementById('actionBanner').style.display = safety ? 'flex' : 'none';
+  function doTransition(req, next) {
+    req.state = next;
+    req.ack = true;
+    req.lastActivity = S.clock;
+    req.api.push('POST /service-requests/' + req.id + '/transitions {to:"' + next + '"} → event emitted → webhook: sms.notify');
+    if (req.veh === '4127' && SMS_4127[next]) sendSms(S.clock, next);
+    render();
+  }
 
-    let review = 0, merged = 0;
-    for (const req of requests) {
-      if (req.state === 'reported') review++;
-      else merged++;
+  function downgrade(reqId) {
+    const req = S.requests.find((r) => r.id === reqId);
+    if (!req || !req.safety) return;
+    openModal({
+      title: 'Downgrade severity · ' + VEHICLES[req.veh].label,
+      body: 'Only a human can downgrade a safety flag. The downgrade is recorded on the request history with your name.',
+      check: 'I confirm this is not a safety-critical defect.',
+      onConfirm: () => {
+        req.safety = false;
+        req.sev = 'non_scheduled';
+        req.lastActivity = S.clock;
+        req.api.push('POST /service-requests/' + req.id + '/severity {to:"non_scheduled", by:"dispatcher"} → 200 · human-only action logged');
+        render();
+      }
+    });
+  }
+
+  function acknowledge(reqId) {
+    const req = S.requests.find((r) => r.id === reqId);
+    if (!req) return;
+    req.ack = true;
+    S.selected = reqId;
+    render();
+  }
+
+  /* ---------- Modal ---------- */
+  let modalAction = null;
+  function openModal({ title, body, check, onConfirm }) {
+    $('modalTitle').textContent = title;
+    $('modalBody').textContent = body;
+    $('modalCheckLabel').textContent = check;
+    $('modalCheck').checked = false;
+    $('modalConfirm').disabled = true;
+    modalAction = onConfirm;
+    $('modal').hidden = false;
+  }
+  $('modalCheck').addEventListener('change', (e) => { $('modalConfirm').disabled = !e.target.checked; });
+  $('modalCancel').addEventListener('click', () => { $('modal').hidden = true; modalAction = null; });
+  $('modalConfirm').addEventListener('click', () => {
+    $('modal').hidden = true;
+    if (modalAction) modalAction();
+    modalAction = null;
+  });
+
+  /* ---------- Simulation engine ---------- */
+  function tick() {
+    S.clock += S.speed;
+    while (S.cursor < TIMELINE.length && TIMELINE[S.cursor].ts <= S.clock) {
+      ingest(TIMELINE[S.cursor]);
+      S.cursor++;
     }
+    if (S.clock >= MORNING_END && S.cursor >= TIMELINE.length) {
+      S.playing = false;
+      S.done = true;
+      clearInterval(S.timer);
+      S.timer = null;
+    }
+    render();
+  }
 
-    document.getElementById('ct-review').textContent = `(${review})`;
-    document.getElementById('ct-merged').textContent = `(${merged})`;
-    document.getElementById('ct-all').textContent = `(${requests.length})`;
-    document.getElementById('navBadge').textContent = review;
+  function resetSim() {
+    if (S.timer) clearInterval(S.timer);
+    Object.assign(S, {
+      clock: 462, playing: false, done: false, cursor: 0, timer: null, selected: null,
+      reports: [], requests: [], suggestions: [], sms: [], voice: [], confirmTaps: 0
+    });
+  }
 
-    const totalReports = State.reports.size;
-    const duplicatesCollapsed = totalReports - requests.length;
-    document.getElementById('metricsMain').textContent = `${totalReports} reports → ${requests.length} issues so far.`;
-    document.getElementById('metricsTaps').textContent = `${State.confirmCount} of 10`;
-    document.getElementById('metricsUpdates').textContent = State.smsMessages.length - 1;
+  $('playBtn').addEventListener('click', () => {
+    if (S.done) { resetSim(); render(); }
+    S.playing = !S.playing;
+    if (S.playing && !S.timer) S.timer = setInterval(tick, 400);
+    if (!S.playing && S.timer) { clearInterval(S.timer); S.timer = null; }
+    render();
+  });
+  document.querySelectorAll('.speed-btn').forEach((b) => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.speed-btn').forEach((x) => x.classList.remove('active'));
+      b.classList.add('active');
+      S.speed = parseInt(b.dataset.speed, 10);
+    });
+  });
+  $('withoutMatcher').addEventListener('change', (e) => { S.withoutMatcher = e.target.checked; render(); });
+  $('engineerView').addEventListener('change', (e) => { S.engineerView = e.target.checked; render(); });
+  $('bannerReview').addEventListener('click', () => {
+    const req = bannerTarget();
+    if (req) acknowledge(req.id);
+  });
+  document.querySelectorAll('.queue-tabs a').forEach((a) => {
+    a.addEventListener('click', () => {
+      document.querySelectorAll('.queue-tabs a').forEach((x) => x.classList.remove('active'));
+      a.classList.add('active');
+      S.qtab = a.dataset.qtab;
+      render();
+    });
+  });
 
-    document.getElementById('smsThread').innerHTML = State.smsMessages.map(m =>
-      `<div class="sms-bubble sms-${m.from === 'System' ? 'in' : 'out'}">${m.text}</div>`
+  function bannerTarget() {
+    return S.requests.find((r) => r.safety && r.state === 'reported' && !r.ack) || null;
+  }
+
+  /* ---------- Rendering ---------- */
+  function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  function channelChips(req) {
+    const seen = [];
+    for (const r of req.reportRefs) if (!seen.includes(r.ch)) seen.push(r.ch);
+    return seen.map((ch) =>
+      '<span class="chan-chip"><span class="chan-init">' + CHANNELS[ch].init + '</span>' + CHANNELS[ch].label + '</span>'
     ).join('');
   }
 
-  document.getElementById('playBtn').onclick = () => {
-    if (State.simStep >= State.seedData.length) {
-      State.simStep = 0;
-      State.requests.clear();
-      State.reports.clear();
-      State.smsMessages = [];
-      State.mergeCount = 0;
-      State.confirmCount = 0;
-      State.now = 27720;
-      init();
+  function cardHtml(req) {
+    const v = VEHICLES[req.veh], d = DEFECTS[req.defect];
+    const first = req.reportRefs[0];
+    const pieces = [];
+    pieces.push('<div class="req-top"><div class="req-flags">');
+    pieces.push('<span class="sev-chip sev-' + req.sev + '">' + SEV_GLYPH[req.sev] + ' ' + SEV_LABEL[req.sev] + '</span>');
+    if (req.safety) pieces.push('<span class="safety-chip">SAFETY</span>');
+    pieces.push('</div><span class="req-age">Reported ' + fmtTime(req.openedAt) + ' · ' + elapsed(req.openedAt) + '</span></div>');
+    pieces.push('<div class="req-title">' + v.label + ' — ' + d.label + ' <span class="vmrs">VMRS ' + d.vmrs + '</span></div>');
+    pieces.push('<div class="req-meta">' + v.driver + ' · ' + v.loc + '</div>');
+    if (first) pieces.push('<div class="req-meta">&ldquo;' + esc(first.text) + '&rdquo;</div>');
+    pieces.push('<div class="req-channels">' + channelChips(req) +
+      '<span class="req-count">' + req.reportRefs.length + ' report' + (req.reportRefs.length !== 1 ? 's' : '') + ', one record</span></div>');
+    for (const n of req.mergeNotes) {
+      pieces.push('<div class="merge-note"><span class="mn-time">' + fmtTime(n.ts) + '</span> ' + n.label +
+        (n.reportId ? ' <button data-undo="' + req.id + ':' + n.reportId + '">Undo</button>' : '') + '</div>');
     }
-    State.playing = !State.playing;
-    document.getElementById('playBtn').textContent = State.playing ? '⏸ Pause' : '▶ Play';
-    if (State.playing) runSim();
-  };
-
-  document.querySelectorAll('.toggle-btn').forEach(btn => {
-    btn.onclick = () => {
-      document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      State.speed = parseInt(btn.dataset.speed);
-    };
-  });
-
-  document.getElementById('withoutMatcher').onchange = (e) => {
-    State.withoutMatcher = e.target.checked;
-    render();
-  };
-
-  document.getElementById('engineerView').onchange = (e) => {
-    State.engineerView = e.target.checked;
-    render();
-  };
-
-  document.querySelectorAll('.queue-tabs a').forEach(a => {
-    a.onclick = (e) => {
-      e.preventDefault();
-      document.querySelectorAll('.queue-tabs a').forEach(x => x.classList.remove('active'));
-      a.classList.add('active');
-      State.currentTab = a.dataset.tab;
-      render();
-    };
-  });
-
-  function runSim() {
-    if (!State.playing) return;
-
-    State.now += State.speed * 5;
-
-    while (State.simStep < State.seedData.length && State.now >= State.seedData[State.simStep].ts) {
-      const rpt = State.seedData[State.simStep];
-      State.reports.set(rpt.id, rpt);
-      const result = findOrCreateRequest(rpt);
-
-      if (rpt.id === 'rpt_1') {
-        State.smsMessages.push({
-          ts: rpt.ts, from: 'System',
-          text: 'We got your brake report on truck 4127. Do NOT continue driving. A tow is being arranged.'
-        });
-      }
-      if (rpt.id === 'rpt_2') State.confirmCount++;
-      if (rpt.id === 'rpt_3') State.confirmCount++;
-
-      State.simStep++;
+    for (const sg of S.suggestions) {
+      if (sg.reqId !== req.id) continue;
+      pieces.push('<div class="suggest-block"><div class="suggest-label">Possible duplicate</div>' +
+        '<div class="suggest-body">' + CHANNELS[sg.rpt.ch].label + ' report ' + fmtTime(sg.rpt.ts) + ': &ldquo;' + esc(sg.rpt.text) + '&rdquo; ' +
+        '<span class="suggest-score">match ' + sg.score.toFixed(2) + '</span></div>' +
+        '<div class="suggest-actions"><button class="btn small primary" data-suggest="' + sg.rpt.id + ':yes">Confirm merge</button>' +
+        '<button class="btn small" data-suggest="' + sg.rpt.id + ':no">Not the same</button></div></div>');
     }
-
-    if (State.simStep >= State.seedData.length) {
-      State.playing = false;
-      document.getElementById('playBtn').textContent = '▶ Replay';
-      render();
-      return;
+    pieces.push('<div class="req-foot"><span class="state-pill st-' + req.state + '">' + STATE_LABEL[req.state] + '</span>');
+    const next = STATES[STATES.indexOf(req.state) + 1];
+    if (next) pieces.push('<button class="btn small" data-advance="' + req.id + '">Advance → ' + STATE_LABEL[next] + '</button>');
+    if (req.safety && req.state !== 'closed') pieces.push('<button class="downgrade-link" data-downgrade="' + req.id + '">Downgrade severity</button>');
+    pieces.push('<span class="req-id">' + req.id + '</span></div>');
+    if (S.engineerView && req.api.length) {
+      pieces.push('<div class="api-lines">' + esc(req.api.slice(-2).join('\n')) + '</div>');
     }
-
-    render();
-    setTimeout(runSim, 200);
+    const cls = 'req-card' + (req.safety && req.sev === 'emergency' ? ' safety-card' : '') + (S.selected === req.id ? ' selected' : '');
+    return '<div class="' + cls + '" data-req="' + req.id + '">' + pieces.join('') + '</div>';
   }
 
-  window.addEventListener('hashchange', () => {
-    const hash = location.hash.slice(1) || 'analysis';
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.getElementById(hash)?.classList.add('active');
-    document.querySelectorAll('#tabs a').forEach(a => a.classList.remove('active'));
-    document.querySelector(`#tabs a[data-tab="${hash}"]`)?.classList.add('active');
+  function rawViewHtml() {
+    if (!S.reports.length) {
+      return '<div class="queue-empty">No tickets yet. Press ▶ Play morning in the demo controls.</div>';
+    }
+    const groups = new Map();
+    for (const r of S.reports) {
+      const k = r.veh + '|' + r.defect;
+      if (!groups.has(k)) groups.set(k, []);
+      groups.get(k).push(r);
+    }
+    const out = [];
+    for (const [k, rows] of groups) {
+      const veh = VEHICLES[rows[0].veh];
+      out.push('<div class="raw-group">');
+      if (rows.length > 1) {
+        out.push('<div class="raw-group-head"><span class="dupe-chip">' + rows.length + ' open tickets · 1 ' +
+          (veh.label.split(' ')[0].toLowerCase()) + '</span></div>');
+      }
+      for (const r of rows) {
+        out.push('<div class="raw-row"><span class="raw-time">' + fmtTime(r.ts) + '</span>' +
+          '<span class="raw-main">' + veh.label + ' — ' + DEFECTS[r.defect].label + '</span>' +
+          '<span class="raw-sub">' + CHANNELS[r.ch].label + ' · ' + esc(r.by) + '</span></div>');
+      }
+      out.push('</div>');
+    }
+    return out.join('');
+  }
+
+  function render() {
+    $('simClock').textContent = fmtTime(S.clock);
+    $('playBtn').textContent = S.done ? '↻ Replay morning' : (S.playing ? '⏸ Pause' : '▶ Play morning');
+
+    const open = S.requests;
+    const needsReview = open.filter((r) => r.state === 'reported');
+    const merged = open.filter((r) => r.reportRefs.length > 1);
+    $('ct-review').textContent = needsReview.length;
+    $('ct-merged').textContent = merged.length;
+    $('ct-all').textContent = open.length;
+    $('navBadge').textContent = needsReview.length;
+    $('navBadge').style.display = needsReview.length ? '' : 'none';
+
+    const target = bannerTarget();
+    if (!S.withoutMatcher && target) {
+      const v = VEHICLES[target.veh];
+      $('bannerTitle').textContent = 'Safety-critical: ' + v.label + ' — ' + DEFECTS[target.defect].label;
+      $('bannerSub').textContent = 'Reported by ' + v.driver + ' · ' + fmtTime(target.openedAt) + '. Vehicle should not continue driving.';
+      $('actionBanner').hidden = false;
+    } else {
+      $('actionBanner').hidden = true;
+    }
+
+    $('engTopline').hidden = !(S.engineerView && !S.withoutMatcher);
+
+    const queue = $('queue');
+    if (S.withoutMatcher) {
+      queue.innerHTML = rawViewHtml();
+    } else if (!open.length) {
+      queue.innerHTML = '<div class="queue-empty">Quiet so far. Press <b>▶ Play morning</b> in the demo controls to stream the simulated morning of reports.</div>';
+    } else {
+      let list = open;
+      if (S.qtab === 'review') list = needsReview;
+      else if (S.qtab === 'merged') list = merged;
+      const rank = (r) => (r.safety && r.state !== 'closed') ? (r.ack ? 1 : 2) : 0;
+      const sorted = [...list].sort((a, b) => {
+        if (rank(a) !== rank(b)) return rank(b) - rank(a);
+        if (rank(a) > 0) return a.openedAt - b.openedAt;
+        return b.lastActivity - a.lastActivity;
+      });
+      queue.innerHTML = sorted.map(cardHtml).join('') ||
+        '<div class="queue-empty">Nothing in this tab yet.</div>';
+    }
+
+    /* insight strip */
+    if (S.withoutMatcher) {
+      $('insightText').innerHTML = '<b>' + S.reports.length + ' open tickets from ' + S.reports.length + ' reports.</b> Nothing merged, nothing prioritized. Status lives with whoever answers the phone.';
+    } else if (!S.reports.length) {
+      $('insightText').innerHTML = '<b>Waiting on the morning.</b> Press Play in the demo controls below.';
+    } else {
+      const collapsed = S.reports.length - open.length - S.suggestions.length;
+      $('insightText').innerHTML = '<b>' + S.reports.length + ' reports → ' + open.length + ' open requests.</b> ' +
+        collapsed + ' duplicate' + (collapsed !== 1 ? 's' : '') + ' collapsed · ' + S.confirmTaps + ' of 10 confirm taps used · ' +
+        S.sms.length + ' status update' + (S.sms.length !== 1 ? 's' : '') + ' pushed (calls avoided)';
+    }
+
+    /* driver pane */
+    if (S.withoutMatcher) {
+      $('voiceLog').innerHTML = '';
+      $('smsThread').innerHTML = '<div class="sms-empty">Driver is calling dispatch for status…</div>';
+    } else {
+      $('voiceLog').innerHTML = S.voice.map((vl) =>
+        '<div class="voice-line"><span class="voice-tag">VOICE</span><span>' + fmtTime(vl.ts) + ' · ' + vl.text + '</span></div>'
+      ).join('');
+      $('smsThread').innerHTML = S.sms.length ? S.sms.map((m) =>
+        '<div><div class="sms-meta">To M. Reyes · Truck 4127 · ' + fmtTime(m.ts) + '</div><div class="sms-bubble">' + m.text + '</div></div>'
+      ).join('') : '<div class="sms-empty">No updates yet. When a report lands, the reporter hears back automatically.</div>';
+    }
+  }
+
+  /* Delegated clicks for card actions */
+  $('queue').addEventListener('click', (e) => {
+    const undo = e.target.closest('[data-undo]');
+    if (undo) { const [rq, rp] = undo.dataset.undo.split(':'); undoMerge(rq, rp); return; }
+    const sug = e.target.closest('[data-suggest]');
+    if (sug) { const [rp, ans] = sug.dataset.suggest.split(':'); resolveSuggestion(rp, ans === 'yes'); return; }
+    const adv = e.target.closest('[data-advance]');
+    if (adv) { advance(adv.dataset.advance); return; }
+    const dg = e.target.closest('[data-downgrade]');
+    if (dg) { downgrade(dg.dataset.downgrade); return; }
+    const card = e.target.closest('[data-req]');
+    if (card) { S.selected = card.dataset.req; render(); }
   });
 
-  document.querySelectorAll('#tabs a').forEach(a => {
-    a.onclick = (e) => {
-      e.preventDefault();
-      const tab = a.dataset.tab;
-      location.hash = tab;
-      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-      document.getElementById(tab)?.classList.add('active');
-      document.querySelectorAll('#tabs a').forEach(x => x.classList.remove('active'));
-      a.classList.add('active');
-    };
-  });
+  /* ---------- Hub routing ---------- */
+  function routeTo(hash) {
+    const tab = ['analysis', 'prototype', 'rationale', 'video'].includes(hash) ? hash : 'analysis';
+    document.querySelectorAll('.section').forEach((s) => s.classList.remove('active'));
+    const el = document.getElementById(tab);
+    if (el) el.classList.add('active');
+    document.querySelectorAll('#tabs a').forEach((a) => a.classList.toggle('active', a.dataset.tab === tab));
+  }
+  window.addEventListener('hashchange', () => routeTo(location.hash.slice(1)));
+  routeTo(location.hash.slice(1));
 
-  init();
+  render();
 </script>
 </body>
 </html>
