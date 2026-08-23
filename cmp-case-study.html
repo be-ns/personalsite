@@ -350,25 +350,24 @@
     <h2 class="doc-title">Prototype Rationale</h2>
     <div class="section-byline">Ben Siverly · Part 2 of 3 (accompanies the prototype)</div>
     <h4>Vehicle Service Request Management</h4>
-    <p>The prototype runs a simulated morning of service reports through the matcher. This page covers what has to exist underneath it.</p>
+    <p>The prototype runs a simulated morning of reports through the matcher. This page is what has to exist underneath it.</p>
     <h3>API design</h3>
-    <p>One front door. Every channel (app, dispatcher entry, agent, telematics feed) hits the same intake endpoint, so uniqueness is a property of the platform, not a feature of any form.</p>
-    <p>Deduplication is two mechanisms with different jobs. An idempotency key kills technical duplicates: a retried or double-tapped submission carries the same key and lands on the same request, guaranteed. A fingerprint matcher kills human duplicates: the driver, the supervisor, and the phone call all describing the same brakes through different doors. It matches on vehicle, defect category, and time window, confidence-scored. High-confidence matches attach automatically, borderline ones get suggested to the dispatcher, and every merge is reversible.</p>
-    <p>The surface is small: create a request (idempotency key required, and a duplicate match returns the existing request with the new report attached), read a request with its full state history, post a transition (illegal transitions rejected, since state only changes through this door), and subscribe a webhook to state changes.</p>
-    <p>Events over polling is the load-bearing choice. An agent layer that polls for state is millions of calls and a performance problem. An agent layer that subscribes is quiet until something happens. The notification service in build two is just the first webhook consumer. A shop integration or a telematics vendor is the same pattern later. Defects and repairs ride VMRS codes, so third parties read the record without a translation layer. Agent and third-party access runs through scopes: per-client grants that are rate-limitable and auditable.</p>
+    <p>One front door. Every way a report can arrive (the app, a dispatcher typing, an agent, a sensor on the truck) walks up to the same door and hands the record over the same way, because the only place you can catch a duplicate is the place where everything arrives. No side doors.</p>
+    <p>Two kinds of duplicates, two tools. An idempotency key handles the accidental kind: tap submit twice and both copies carry the same stamp, so the second one lands on the first. The matcher handles the human kind: the driver, the supervisor, and the phone call, all describing the same brakes. It compares the truck, the issue, and the clock. When it's sure, it merges. When it's close, it asks the dispatcher. Either way, one click puts it back.</p>
+    <p>The rest of the surface stays small. Read a request and its whole history. Move it through the lifecycle, where the door refuses illegal moves. And subscribe to changes instead of asking on a timer. That last one is the choice everything else leans on: a fleet of agents asking "anything new?" every few seconds is millions of calls that mostly hear nothing, while a fleet of agents that subscribed is silent until a truck actually needs something. The driver texts in build two are just the first subscriber. A shop hookup later is the same wire.</p>
+    <p>Every caller shows a permission slip at the door: what it may do, how often, and every knock gets logged.</p>
     <h3>Agent vs. human boundary</h3>
-    <p>The agent alone: structure freeform reports into the standard shape, propose and attach duplicates, classify severity, escalate, and send status updates.</p>
-    <p>A human only: downgrade severity, close a safety-critical request (the law already requires a qualified person to certify repair before a vehicle returns to service, so the product enforces what's already true), and commit money, whether that's dispatching to a shop or approving an emergency repair.</p>
-    <p>When the agent is wrong, the costs are deliberately lopsided. An over-flag costs a dispatcher one click. A missed brake report costs a breakdown, so the classifier errs toward flagging. A wrong merge is annotated and one click restores both records. If auto-merge precision slips, the system drops to suggest-only until matching earns automation back.</p>
-    <p>And one agent I would not build yet: anything that schedules or negotiates with shops. That commits real money against state that doesn't exist.</p>
+    <p>The agent does the work you can undo: turn a rambling phone report into a structured one, propose a merge, set a severity, escalate, send the text. A person does the rest: take a safety flag off, close out a brake job (the law already wants a qualified human signing that before the truck rolls), spend the money. The line isn't about which of them is smarter. It's about what you can take back.</p>
+    <p>When the agent is wrong, the costs are lopsided on purpose. A false flag costs a dispatcher one click. A missed brake report costs a tow truck on the shoulder. So it flags too eagerly, merges undo in one click, and if the merges start missing, it drops back to asking permission until it earns the automation again.</p>
+    <p>The one agent I wouldn't build yet is anything that calls shops and books work. That's real money moving on a record we haven't made trustworthy yet.</p>
     <h3>Success metrics</h3>
-    <p>Targets are set before build and re-based against the discovery baselines in Part 1.</p>
+    <p>Targets set before the build, re-set once the Part 1 baselines come in.</p>
     <ul>
-      <li><strong>Duplicate records per hundred real issues:</strong> down 90% or more, measured directly from merge events.</li>
-      <li><strong>Status calls per dispatcher per day:</strong> down 60% or more, from call logs against the discovery baseline.</li>
+      <li><strong>Duplicate records per hundred real issues:</strong> down 90% or more, measured from merge events.</li>
+      <li><strong>Status calls per dispatcher per day:</strong> down 60% or more, from call logs.</li>
       <li><strong>Median time-to-triage for safety-critical reports:</strong> under 15 minutes.</li>
     </ul>
-    <p>One guardrail, with the arithmetic shown. At roughly 40 requests per dispatcher per day (assumed) and a 10% safety-critical base rate (assumed), a recall-tuned classifier flagging at twice the base rate produces about eight confirmations a day, around two minutes of work. The budget is ten actions a day. If flags exceed it, thresholds get retuned before trust erodes. <strong>An alert everyone ignores is worse than no alert.</strong></p>
+    <p>One guardrail, with the arithmetic. Forty requests per dispatcher per day, one in ten truly safety-critical, flagging at twice that rate to be safe: call it eight confirmations a day, about two minutes of work, inside a ten-tap budget. Both of those inputs are assumptions, and I say that as someone who likes his own arithmetic a little too much - the baseline data replaces them first. Past the budget we retune, because an alert everyone ignores is worse than no alert.</p>
   </section>
 
   <section id="video" class="section">
