@@ -331,10 +331,11 @@
         <ul class="bullets" id="appfolioBullets">
           <li data-bullet="payments"><strong>Owned the payment experience for $200M a year in application fees.</strong> 70% of applications carry an embedded payment. Built checkout, assumed-success logic, and the failed-payment recovery path on AppFolio’s internal payments API. Reached a <strong>99% first-time payment success rate</strong>.</li>
           <li data-bullet="two-sided"><strong>Served a two-sided payment:</strong> the applicant pays, the property manager uses the product. Set strategy and roadmap so both sides succeed.</li>
+          <li data-bullet="payments-team">On the payments team, sized offline rent from accounting receipts and interviewed renters on why they pay offline: irregular gig pay, unbanked renters driving 15–30 minutes for certified funds, 2–3 day ACH. Led to <strong>rent-split payments with Flex</strong> and a live <strong>digital certified-funds partnership</strong>.</li>
+          <li data-bullet="person-model">Designed a person-level model so one person can be a prospect, applicant, and resident, keeping payments split between people on the right ledger.</li>
           <li data-bullet="rebuild">Rebuilt the rental application end to end. Submission rates went from <strong>44% to 70%</strong>, and properties on the new flow fill vacancies <strong>3.4 days faster</strong> than offline workflows.</li>
           <li data-bullet="zillow">Built a secure applicant-data API and launched it with Zillow. Reached 70% customer adoption, then <strong>pushed to wind it down</strong> when the frictionless path buried property managers in unqualified applicants.</li>
           <li data-bullet="ai-review">Shipped follow-up for incomplete applications inside the authenticated app, not over email or text, so every interaction stays auditable for screening compliance. Customer satisfaction on rental applications rose 18% after launch.</li>
-          <li data-bullet="payments-team">One year on the payments team: explored rent-split payments and how reminders change on-time rent payment.</li>
           <li data-bullet="research">Built a jobs-to-be-done map from 50–100 customer calls a year. Run a spec-driven process: behavior defined before code, every release gated by tests and evals.</li>
         </ul>
       </div>
@@ -347,6 +348,7 @@
         <p class="job-desc">HSA platform for tax-advantaged health spending, offered through financial-institution partners.</p>
         <ul class="bullets">
           <li><strong>Built the money-movement platform:</strong> bank and card-network transfers, processor integrations, ledgers, and the partner data model. Financial-institution partners could offer compliant HSAs without building their own infrastructure.</li>
+          <li>Worked with our second partner bank’s executives to scope the multi-tenancy changes our product needed. Captured rising Fed funds rates: <strong>~90 bps more yield on AUM</strong>, plus room for future partners.</li>
           <li>Built partner APIs and migration pipelines that moved <strong>$50M+ in HSA assets</strong> between financial institutions with <strong>zero data loss</strong>. Cut the work from two migration teams to one.</li>
           <li>Stood up the company’s first data-science function and data-services platform; promoted to PM in 2021 as the work became the roadmap.</li>
         </ul>
@@ -399,19 +401,19 @@
       const VERSIONS = {
         'payments': {
           title: 'Product Manager · Payments & Money Movement',
-          bulletOrder: ['payments', 'two-sided', 'rebuild', 'zillow', 'ai-review', 'payments-team', 'research'],
+          bulletOrder: ['payments', 'two-sided', 'payments-team', 'person-model', 'rebuild', 'zillow', 'ai-review', 'research'],
           pdf: 'Ben-Siverly-Resume-Payments.pdf',
           label: 'Payments (primary)'
         },
         'ai-native': {
           title: 'Senior Product Manager · AI-Native Products',
-          bulletOrder: ['two-sided', 'payments', 'rebuild', 'ai-review', 'zillow', 'research', 'payments-team'],
+          bulletOrder: ['two-sided', 'payments', 'rebuild', 'ai-review', 'zillow', 'research', 'payments-team', 'person-model'],
           pdf: 'Ben-Siverly-Resume-AI-Native.pdf',
           label: 'AI-Native'
         },
         'general': {
           title: 'Senior Product Manager',
-          bulletOrder: ['rebuild', 'payments', 'two-sided', 'zillow', 'ai-review', 'payments-team', 'research'],
+          bulletOrder: ['rebuild', 'payments', 'two-sided', 'payments-team', 'zillow', 'ai-review', 'person-model', 'research'],
           pdf: 'Ben-Siverly-Resume.pdf',
           label: 'General'
         }
