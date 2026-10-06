@@ -22,6 +22,7 @@ const server = http.createServer((req, res) => {
 });
 
 const VERSIONS = [
+  { q: 'payments', out: 'Ben-Siverly-Resume-Payments.pdf' },
   { q: 'ai-native', out: 'Ben-Siverly-Resume-AI-Native.pdf' },
   { q: 'general', out: 'Ben-Siverly-Resume.pdf' },
 ];
