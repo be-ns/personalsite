@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ben Siverly · Senior Product Manager · Resume</title>
-  <meta name="description" content="Resume of Ben Siverly, Senior Product Manager. AI-Native and General versions, each downloadable as a one-page PDF.">
+  <title>Ben Siverly · Product Manager · Resume</title>
+  <meta name="description" content="Resume of Ben Siverly, Product Manager. Payments and money movement. Downloadable as a one-page PDF.">
 
   <link rel="canonical" href="https://bensiverly.com/resume.html">
 
-  <meta property="og:title" content="Ben Siverly · Senior Product Manager · Resume">
-  <meta property="og:description" content="Resume of Ben Siverly, Senior Product Manager. AI-Native and General versions, each downloadable as a one-page PDF.">
+  <meta property="og:title" content="Ben Siverly · Product Manager · Resume">
+  <meta property="og:description" content="Resume of Ben Siverly, Product Manager. Payments and money movement. Downloadable as a one-page PDF.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://bensiverly.com/resume.html">
   <meta property="og:image" content="https://bensiverly.com/images/og-resume.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Ben Siverly · Senior Product Manager resume">
+  <meta property="og:image:alt" content="Ben Siverly · Product Manager resume">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Ben Siverly · Senior Product Manager · Resume">
-  <meta name="twitter:description" content="Resume of Ben Siverly, Senior Product Manager. AI-Native and General versions, each downloadable as a one-page PDF.">
+  <meta name="twitter:title" content="Ben Siverly · Product Manager · Resume">
+  <meta name="twitter:description" content="Resume of Ben Siverly, Product Manager. Payments and money movement. Downloadable as a one-page PDF.">
   <meta name="twitter:image" content="https://bensiverly.com/images/og-resume.png">
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -90,22 +90,6 @@
     .toolbar a:hover, .toolbar button:hover { background: var(--ink); color: #fff; }
     .toolbar button.primary:hover { background: var(--cobalt); border-color: var(--cobalt); }
     .toolbar .back { background: transparent; border-color: var(--rule); color: var(--muted); }
-    .role-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      color: var(--muted);
-    }
-    .role-label select {
-      font-family: inherit;
-      font-size: inherit;
-      color: var(--ink);
-      background: var(--paper);
-      border: 1px solid var(--cobalt);
-      border-radius: 4px;
-      padding: 0.4rem 0.5rem;
-      cursor: pointer;
-    }
 
     /* Screen-only list of downloadable versions */
     .versions {
@@ -169,13 +153,6 @@
       color: var(--cobalt);
       margin: 0.45rem 0 0;
     }
-    .title-tag {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 8pt;
-      letter-spacing: 0.04em;
-      color: var(--faint);
-      margin: 0.22rem 0 0;
-    }
     .contact {
       font-family: 'JetBrains Mono', monospace;
       font-size: 8pt;
@@ -220,6 +197,7 @@
     .job-company a { color: inherit; text-decoration: none; }
     .job-company a:hover { color: var(--cobalt); }
     .job-role { font-weight: 600; color: var(--ink); }
+    .job-scope { color: var(--ink); font-weight: 500; }
     .job-desc {
       font-size: 8.5pt;
       color: var(--muted);
@@ -247,6 +225,7 @@
       color: var(--cobalt);
       font-size: 0.85em;
     }
+    ul.bullets li strong, .skills-row strong { font-weight: 600; color: var(--ink); }
 
     .skills-row, .projects-row, .edu-row {
       font-size: 9.7pt;
@@ -254,7 +233,7 @@
       margin: 0;
       color: #2a2a2a;
     }
-    .projects-row a, .edu-row a { color: var(--cobalt); text-decoration: none; }
+    .projects-row a, .edu-row a, .skills-row a { color: var(--cobalt); text-decoration: none; }
     .projects-row + .projects-row { margin-top: 0.3rem; }
 
     @media (max-width: 720px) {
@@ -295,25 +274,16 @@
   <a class="skip-link" href="#main">Skip to content</a>
   <div class="toolbar">
     <a class="back" href="index.html">&larr; Back to site</a>
-    <label class="role-label">Tailor for
-      <select id="roleSelect" aria-label="Tailor resume for a role">
-        <option value="ai-native">AI-Native (primary)</option>
-        <option value="general">General</option>
-      </select>
-    </label>
     <button class="primary" type="button" id="printBtn">Print / Save as PDF</button>
-    <a id="dlLink" href="Ben-Siverly-Resume-AI-Native.pdf" download>Download PDF</a>
+    <a id="dlLink" href="Ben-Siverly-Resume-Payments.pdf" download>Download PDF</a>
   </div>
-
-  <p id="resume-status" class="sr-only" aria-live="polite"></p>
 
   <main id="main" class="sheet">
     <!-- HEADER -->
     <header class="resume-head">
       <div>
         <h1 class="name"><span class="mark">Ben Siverly</span></h1>
-        <p class="title" id="roleTitle">Senior Product Manager · AI-Native Products</p>
-        <p class="title-tag">Technical PM · Recovering Data Scientist</p>
+        <p class="title" id="roleTitle">Product Manager · Payments &amp; Money Movement</p>
       </div>
       <div class="contact">
         San Francisco Bay Area<br>
@@ -330,16 +300,18 @@
       <div class="job">
         <div class="job-head">
           <h3 class="job-company"><a href="https://www.appfolio.com" target="_blank" rel="noopener">AppFolio</a> &middot; <span class="job-role">Product Manager, Rental Applications &amp; Payments</span></h3>
-          <span class="job-meta">Jan 2023 – Present</span>
+          <span class="job-meta">Jan 2023 – Oct 2026</span>
         </div>
-        <p class="job-desc">Property-management software for 20k+ residential operators.</p>
+        <p class="job-desc">Property-management software for 23,000+ customers. <span class="job-scope">Sole PM for the rental application line, across two codebases.</span></p>
         <ul class="bullets" id="appfolioBullets">
-          <li data-bullet="rebuild">Rebuilt the rental application end to end. Submission rates went from 44% to 70% with a zero change-failure rate, and properties on the new flow fill vacancies 3.4 days faster than offline workflows.</li>
-          <li data-bullet="ai-review">Shipped follow-up for incomplete applications inside the authenticated app, not over email or text, so every interaction stays auditable for screening compliance. Customer satisfaction scores on rental applications rose 18% after it shipped.</li>
-          <li data-bullet="zillow">Built an API for securely moving applicant PII between platforms to pre-fill rental applications. We launched with Zillow as the first use case and got to 70% customer adoption. Pushed to wind it down when the frictionless path buried property managers in unqualified applicants.</li>
-          <li data-bullet="sole-pm">Sole PM for the application line, ~$40M in payments a year: strategy and roadmap across the applicant and property-manager experiences, three stakeholder types, and two codebases that have to move together. The payer and the user are different people, and the product has to serve both.</li>
-          <li data-bullet="calls">Built a verified jobs-to-be-done map from 50–100 customer calls a year: a structured model of what renters and property managers actually need. Every product bet traces back to it. The transcript is the easy part. The model is the work.</li>
-          <li data-bullet="sdd">Building a spec-driven way of working with my team: we write down how the product should behave, pressure-test it before any code, and gate every release behind tests and evals.</li>
+          <li data-bullet="payments"><strong>Owned the payment experience for $200M a year in application fees, earning nearly $20M in revenue.</strong> 70% of applications carry an embedded payment. Built checkout, assumed-success logic, and the failed-payment recovery path on AppFolio’s internal payments API. Reached a <strong>99% first-time payment success rate</strong>.</li>
+          <li data-bullet="two-sided"><strong>Served a two-sided payment:</strong> the applicant pays, the property manager uses the product. Set strategy and roadmap so both sides succeed.</li>
+          <li data-bullet="payments-team">On the payments team, sized offline rent from accounting receipts and interviewed renters on why they pay offline: irregular gig pay, unbanked renters driving 15–30 minutes for certified funds, 2–3 day ACH. Led to <strong>rent-split payments with Flex</strong> and a live <strong>digital certified-funds partnership</strong>.</li>
+          <li data-bullet="person-model">Designed a person-level model so one person can be a prospect, applicant, and resident, keeping payments split between people on the right ledger.</li>
+          <li data-bullet="rebuild">Rebuilt the rental application end to end. Submission rates went from <strong>44% to 70%</strong>, and properties on the new flow fill vacancies <strong>3.4 days faster</strong> than offline workflows.</li>
+          <li data-bullet="zillow">Built a secure applicant-data API and launched it with Zillow. Reached 70% customer adoption, then <strong>pushed to wind it down</strong> when the frictionless path buried property managers in unqualified applicants.</li>
+          <li data-bullet="ai-review">Shipped follow-up for incomplete applications inside the authenticated app, not over email or text, so every interaction stays auditable for screening compliance. Customer satisfaction on rental applications rose 18% after launch.</li>
+          <li data-bullet="research">Built a jobs-to-be-done map from 50–100 customer calls a year. Run a spec-driven process: behavior defined before code, every release gated by tests and evals.</li>
         </ul>
       </div>
 
@@ -348,10 +320,11 @@
           <h3 class="job-company"><a href="https://livelyme.com" target="_blank" rel="noopener">Lively</a> &middot; <span class="job-role">Data Scientist &rarr; Product Manager</span></h3>
           <span class="job-meta">Nov 2019 – Dec 2022</span>
         </div>
-        <p class="job-desc">Modern HSA platform for tax-advantaged health spending.</p>
+        <p class="job-desc">HSA platform for tax-advantaged health spending, offered through financial-institution partners.</p>
         <ul class="bullets">
-          <li>Built the partner APIs and migration pipelines that moved $50M+ in HSA assets across financial institutions with zero data loss, cutting the work from two migration teams down to one.</li>
-          <li>Built the platform under it: money movement across banks and card networks, processor integrations, ledgers, and the data model partners built on. That let them offer compliant HSA accounts without building the infrastructure themselves.</li>
+          <li><strong>Built the money-movement platform:</strong> bank and card-network transfers, processor integrations, ledgers, and the partner data model. Financial-institution partners could offer compliant HSAs without building their own infrastructure.</li>
+          <li>Worked with our second partner bank’s executives to scope the multi-tenancy changes our product needed. Captured rising Fed funds rates: <strong>~90 bps more yield on AUM</strong>, plus room for future partners.</li>
+          <li>Built partner APIs and migration pipelines that moved <strong>$50M+ in HSA assets</strong> between financial institutions with <strong>zero data loss</strong>. Cut the work from two migration teams to one.</li>
           <li>Stood up the company’s first data-science function and data-services platform; promoted to PM in 2021 as the work became the roadmap.</li>
         </ul>
       </div>
@@ -361,10 +334,8 @@
           <h3 class="job-company"><a href="https://www.oracle.com" target="_blank" rel="noopener">Oracle</a> &middot; <span class="job-role">Data Scientist, Applied Research</span></h3>
           <span class="job-meta">Sep 2017 – Sep 2019</span>
         </div>
-        <p class="job-desc">Enterprise software; consumer-data research in Data Cloud.</p>
         <ul class="bullets">
-          <li>Rebuilt the model-validation methodology on a representative U.S. population sample, correcting a data skew that had been distorting how we measured model performance.</li>
-          <li>Automated the ad-viewability data pipeline with Python and the JIRA API, replacing extraction and cleaning that had taken two analysts full-time.</li>
+          <li>Rebuilt model validation on a representative U.S. population sample, correcting a skew that distorted model performance. Automated a data pipeline that had taken two analysts full-time.</li>
         </ul>
       </div>
     </section>
@@ -372,14 +343,17 @@
     <!-- SELECTED WORK -->
     <section>
       <h2 class="section-title">Selected Work</h2>
-      <p class="projects-row">Brava (<a href="https://bravamade.com">bravamade.com</a>). Recruiting profiles for women’s soccer athletes outside the major metros, built with my brother. Coach-verified stats, benchmark rankings, an AI-assisted production pipeline. Designed and shipped the whole thing myself, from the first research call to the brand on the page.</p>
-      <p class="projects-row">AbiertoClaw (<a href="https://github.com/be-ns/AbiertoClaw">github.com/be-ns/AbiertoClaw</a>). Open-source AI assistant over iMessage, built on parental leave to run our family calendar without touching the baby-leave budget. Swappable model sources, a complexity router, and a daily best-free-model picker keep it free by default.</p>
+      <p class="projects-row">Brava (<a href="https://bravamade.com">bravamade.com</a>). A complete collegiate recruiting toolkit for youth athletes, built with my brother. Coach-verified stats, benchmark rankings, AI-assisted production pipeline. Shipped end to end.</p>
+      <p class="projects-row">AbiertoClaw (<a href="https://github.com/be-ns/AbiertoClaw">github.com/be-ns/AbiertoClaw</a>). Open-source AI assistant over iMessage for our family calendar. Lets your personal agent find the best free model for itself every day, or fall back to a local model.</p>
     </section>
 
     <!-- SKILLS -->
     <section>
       <h2 class="section-title">Skills</h2>
-      <p class="skills-row">AI products (RAG, tool use, agents, evals) · AI-augmented workflows · experimentation · SQL · Python · data pipelines &amp; APIs · object modeling (OOUX)</p>
+      <p class="skills-row"><strong>Payments:</strong>&nbsp;checkout, failed-payment recovery, money movement, ledgers, processor integrations, partner APIs</p>
+      <p class="skills-row"><strong>Data:</strong>&nbsp;SQL, Python, experimentation, pipelines</p>
+      <p class="skills-row"><strong>AI:</strong>&nbsp;RAG, tool use, agents, evals · OOUX</p>
+      <p class="skills-row"><strong>Writing:</strong>&nbsp;Published Poet (<a href="https://opol.space">opol.space</a>, 2026)</p>
     </section>
 
     <!-- EDUCATION -->
@@ -389,67 +363,53 @@
     </section>
   </main>
 
-  <nav class="versions" aria-label="Download a version">
-    <span class="versions-label">Download a version</span>
-    <a href="Ben-Siverly-Resume-AI-Native.pdf" download>AI-Native (primary)</a>
-    <a href="Ben-Siverly-Resume.pdf" download>General</a>
+  <nav class="versions" aria-label="Download the resume">
+    <span class="versions-label">Download</span>
+    <a href="Ben-Siverly-Resume-Payments.pdf" download>Payments</a>
   </nav>
 
   <script>
     (function () {
+      const DEFAULT = 'payments';
       const VERSIONS = {
+        'payments': {
+          title: 'Product Manager · Payments & Money Movement',
+          bulletOrder: ['payments', 'two-sided', 'payments-team', 'person-model', 'rebuild', 'zillow', 'ai-review', 'research'],
+          pdf: 'Ben-Siverly-Resume-Payments.pdf'
+        },
         'ai-native': {
           title: 'Senior Product Manager · AI-Native Products',
-          bulletOrder: ['rebuild', 'ai-review', 'zillow', 'sole-pm', 'calls', 'sdd'],
-          pdf: 'Ben-Siverly-Resume-AI-Native.pdf',
-          label: 'AI-Native (primary)'
+          bulletOrder: ['two-sided', 'payments', 'rebuild', 'ai-review', 'zillow', 'research', 'payments-team', 'person-model'],
+          pdf: 'Ben-Siverly-Resume-AI-Native.pdf'
         },
         'general': {
           title: 'Senior Product Manager',
-          bulletOrder: ['rebuild', 'zillow', 'ai-review', 'sole-pm', 'calls', 'sdd'],
-          pdf: 'Ben-Siverly-Resume.pdf',
-          label: 'General'
+          bulletOrder: ['rebuild', 'payments', 'two-sided', 'payments-team', 'zillow', 'ai-review', 'person-model', 'research'],
+          pdf: 'Ben-Siverly-Resume.pdf'
         }
       };
 
       const titleEl = document.getElementById('roleTitle');
       const listEl = document.getElementById('appfolioBullets');
       const dlEl = document.getElementById('dlLink');
-      const selectEl = document.getElementById('roleSelect');
 
       function apply(version) {
-        const v = VERSIONS[version] || VERSIONS['ai-native'];
+        const v = VERSIONS[version] || VERSIONS[DEFAULT];
         titleEl.textContent = v.title;
         v.bulletOrder.forEach(function (key) {
           const li = listEl.querySelector('[data-bullet="' + key + '"]');
           if (li) listEl.appendChild(li);
         });
         dlEl.setAttribute('href', v.pdf);
-        if (selectEl) selectEl.value = VERSIONS[version] ? version : 'ai-native';
       }
 
       const params = new URLSearchParams(window.location.search);
       const initial = params.get('version') || params.get('role');
-      apply(VERSIONS[initial] ? initial : 'ai-native');
+      apply(VERSIONS[initial] ? initial : DEFAULT);
 
       const printBtn = document.getElementById('printBtn');
       if (printBtn) {
         printBtn.addEventListener('click', function () { window.print(); });
-      }
-
-      if (selectEl) {
-        selectEl.addEventListener('change', function () {
-          apply(this.value);
-          const statusEl = document.getElementById('resume-status');
-          if (statusEl) {
-            const v = VERSIONS[this.value] || VERSIONS['ai-native'];
-            statusEl.textContent = 'Showing the ' + v.label + ' resume.';
-          }
-          const url = new URL(window.location.href);
-          url.searchParams.delete('role');
-          url.searchParams.set('version', this.value);
-          history.replaceState(null, '', url);
-        });
       }
     })();
   </script>
