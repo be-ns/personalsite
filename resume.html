@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ben Siverly · Senior Product Manager · Resume</title>
-  <meta name="description" content="Resume of Ben Siverly, Senior Product Manager. Payments, AI-Native, and General versions, each downloadable as a one-page PDF.">
+  <title>Ben Siverly · Product Manager · Resume</title>
+  <meta name="description" content="Resume of Ben Siverly, Product Manager. Payments and money movement. Downloadable as a one-page PDF.">
 
   <link rel="canonical" href="https://bensiverly.com/resume.html">
 
-  <meta property="og:title" content="Ben Siverly · Senior Product Manager · Resume">
-  <meta property="og:description" content="Resume of Ben Siverly, Senior Product Manager. Payments, AI-Native, and General versions, each downloadable as a one-page PDF.">
+  <meta property="og:title" content="Ben Siverly · Product Manager · Resume">
+  <meta property="og:description" content="Resume of Ben Siverly, Product Manager. Payments and money movement. Downloadable as a one-page PDF.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://bensiverly.com/resume.html">
   <meta property="og:image" content="https://bensiverly.com/images/og-resume.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Ben Siverly · Senior Product Manager resume">
+  <meta property="og:image:alt" content="Ben Siverly · Product Manager resume">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Ben Siverly · Senior Product Manager · Resume">
-  <meta name="twitter:description" content="Resume of Ben Siverly, Senior Product Manager. Payments, AI-Native, and General versions, each downloadable as a one-page PDF.">
+  <meta name="twitter:title" content="Ben Siverly · Product Manager · Resume">
+  <meta name="twitter:description" content="Resume of Ben Siverly, Product Manager. Payments and money movement. Downloadable as a one-page PDF.">
   <meta name="twitter:image" content="https://bensiverly.com/images/og-resume.png">
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -90,22 +90,6 @@
     .toolbar a:hover, .toolbar button:hover { background: var(--ink); color: #fff; }
     .toolbar button.primary:hover { background: var(--cobalt); border-color: var(--cobalt); }
     .toolbar .back { background: transparent; border-color: var(--rule); color: var(--muted); }
-    .role-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      color: var(--muted);
-    }
-    .role-label select {
-      font-family: inherit;
-      font-size: inherit;
-      color: var(--ink);
-      background: var(--paper);
-      border: 1px solid var(--cobalt);
-      border-radius: 4px;
-      padding: 0.4rem 0.5rem;
-      cursor: pointer;
-    }
 
     /* Screen-only list of downloadable versions */
     .versions {
@@ -290,18 +274,9 @@
   <a class="skip-link" href="#main">Skip to content</a>
   <div class="toolbar">
     <a class="back" href="index.html">&larr; Back to site</a>
-    <label class="role-label">Tailor for
-      <select id="roleSelect" aria-label="Tailor resume for a role">
-        <option value="payments">Payments (primary)</option>
-        <option value="ai-native">AI-Native</option>
-        <option value="general">General</option>
-      </select>
-    </label>
     <button class="primary" type="button" id="printBtn">Print / Save as PDF</button>
     <a id="dlLink" href="Ben-Siverly-Resume-Payments.pdf" download>Download PDF</a>
   </div>
-
-  <p id="resume-status" class="sr-only" aria-live="polite"></p>
 
   <main id="main" class="sheet">
     <!-- HEADER -->
@@ -388,11 +363,9 @@
     </section>
   </main>
 
-  <nav class="versions" aria-label="Download a version">
-    <span class="versions-label">Download a version</span>
-    <a href="Ben-Siverly-Resume-Payments.pdf" download>Payments (primary)</a>
-    <a href="Ben-Siverly-Resume-AI-Native.pdf" download>AI-Native</a>
-    <a href="Ben-Siverly-Resume.pdf" download>General</a>
+  <nav class="versions" aria-label="Download the resume">
+    <span class="versions-label">Download</span>
+    <a href="Ben-Siverly-Resume-Payments.pdf" download>Payments</a>
   </nav>
 
   <script>
@@ -402,27 +375,23 @@
         'payments': {
           title: 'Product Manager · Payments & Money Movement',
           bulletOrder: ['payments', 'two-sided', 'payments-team', 'person-model', 'rebuild', 'zillow', 'ai-review', 'research'],
-          pdf: 'Ben-Siverly-Resume-Payments.pdf',
-          label: 'Payments (primary)'
+          pdf: 'Ben-Siverly-Resume-Payments.pdf'
         },
         'ai-native': {
           title: 'Senior Product Manager · AI-Native Products',
           bulletOrder: ['two-sided', 'payments', 'rebuild', 'ai-review', 'zillow', 'research', 'payments-team', 'person-model'],
-          pdf: 'Ben-Siverly-Resume-AI-Native.pdf',
-          label: 'AI-Native'
+          pdf: 'Ben-Siverly-Resume-AI-Native.pdf'
         },
         'general': {
           title: 'Senior Product Manager',
           bulletOrder: ['rebuild', 'payments', 'two-sided', 'payments-team', 'zillow', 'ai-review', 'person-model', 'research'],
-          pdf: 'Ben-Siverly-Resume.pdf',
-          label: 'General'
+          pdf: 'Ben-Siverly-Resume.pdf'
         }
       };
 
       const titleEl = document.getElementById('roleTitle');
       const listEl = document.getElementById('appfolioBullets');
       const dlEl = document.getElementById('dlLink');
-      const selectEl = document.getElementById('roleSelect');
 
       function apply(version) {
         const v = VERSIONS[version] || VERSIONS[DEFAULT];
@@ -432,7 +401,6 @@
           if (li) listEl.appendChild(li);
         });
         dlEl.setAttribute('href', v.pdf);
-        if (selectEl) selectEl.value = VERSIONS[version] ? version : DEFAULT;
       }
 
       const params = new URLSearchParams(window.location.search);
@@ -442,21 +410,6 @@
       const printBtn = document.getElementById('printBtn');
       if (printBtn) {
         printBtn.addEventListener('click', function () { window.print(); });
-      }
-
-      if (selectEl) {
-        selectEl.addEventListener('change', function () {
-          apply(this.value);
-          const statusEl = document.getElementById('resume-status');
-          if (statusEl) {
-            const v = VERSIONS[this.value] || VERSIONS[DEFAULT];
-            statusEl.textContent = 'Showing the ' + v.label + ' resume.';
-          }
-          const url = new URL(window.location.href);
-          url.searchParams.delete('role');
-          url.searchParams.set('version', this.value);
-          history.replaceState(null, '', url);
-        });
       }
     })();
   </script>
