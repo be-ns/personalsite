@@ -13,8 +13,8 @@ what production runs.
 
 I keep it this way on purpose. Plain files outlive any toolchain, pages are interactive the
 moment they load, and the source stays readable — what you read is what runs. The tools work
-entirely in the browser: no accounts, no servers, no tracking. State lives in the URL or
-`localStorage`, and PDFs are generated client-side with [jsPDF](https://github.com/parallax/jsPDF),
+entirely in the browser: no accounts, no servers, no tracking. Inputs can arrive in the URL,
+saved state lives in `localStorage`, and PDFs are generated client-side with [jsPDF](https://github.com/parallax/jsPDF),
 loaded only on the pages that need it.
 
 The single dev dependency that touches pixels, [sharp](https://sharp.pixelplumbing.com/),
@@ -33,13 +33,30 @@ Each tool is one self-contained HTML file.
 | [Service of Life Builder](https://bensiverly.com/service-of-life.html) | Assemble an order of service for a memorial or celebration of life. |
 | [Memorial Preferences Worksheet](https://bensiverly.com/memorial-preferences.html) | A one-page form to print and fill out by hand — record service wishes on paper, no screen required. |
 | [Decision Assist](https://bensiverly.com/decision-assist.html) | A weighted-criteria decision matrix: score your options against what matters most. |
-| [Fleet Service Request Triage](https://bensiverly.com/fleet-service-requests.html) | One truck, three reports, one record. A dispatcher console prototype. |
 | [Writings](https://bensiverly.com/writings.html) | Poetry and prose. |
+
+## For AI agents
+
+Every tool is built to be found, read, and run by someone's agent, not just clicked by a
+person:
+
+- **[`llms.txt`](llms.txt)** at the site root lists each tool, what it does, its URL
+  parameters, and its WebMCP tools, in plain Markdown.
+- **URL parameters** prefill a tool, so an agent can hand its person a link that opens on
+  the answer (for example `native-plant-finder.html?zip=94110&sun=full_sun`).
+- **WebMCP**: in browsers that expose `document.modelContext` (or the older
+  `navigator.modelContext`), each tool registers callable tools that run the page's own
+  logic and return JSON. Elsewhere the code is a no-op.
+- **JSON-LD**: each tool page describes itself as a schema.org `WebApplication` with a
+  `potentialAction` URL template.
+
+Nothing is hidden from people: there is no invisible text aimed at models.
 
 ## Repository layout
 
 ```
 index.html                 Home: intro, work, tools, contact
+llms.txt                   Agent-readable guide to the tools
 styles.css                 Design system for the home page (custom properties + components)
 life-strategy.html         Self-contained tools, each one file
 native-plant-finder.html   (HTML + scoped CSS + JS)

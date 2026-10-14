@@ -48,7 +48,23 @@
     "browserRequirements": "Requires JavaScript",
     "isAccessibleForFree": true,
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-    "author": { "@type": "Person", "name": "Ben Siverly", "url": "https://bensiverly.com/" }
+    "author": { "@type": "Person", "@id": "https://bensiverly.com/#ben", "name": "Ben Siverly", "url": "https://bensiverly.com/" },
+    "potentialAction": {
+      "@type": "SearchAction",
+      "name": "Find California native plants for a ZIP code and sun exposure",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://bensiverly.com/native-plant-finder.html?zip={zip}&sun={sun}&water={water}&wildlife={wildlife}&care={care}",
+        "actionPlatform": "https://schema.org/DesktopWebPlatform"
+      },
+      "query-input": [
+        "required name=zip",
+        "optional name=sun",
+        "optional name=water",
+        "optional name=wildlife",
+        "optional name=care"
+      ]
+    }
   }
   </script>
 
@@ -160,6 +176,9 @@
     html {
       font-size: 16px;
       -webkit-text-size-adjust: 100%;
+      /* Keep scrolled-to and focused content clear of the fixed header
+         plus the sticky actions bar (~100px together) */
+      scroll-padding-top: 7.5rem;
     }
 
     body {
@@ -2298,7 +2317,7 @@
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
           <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
         </svg>
-        Nothing is saved. All data stays in your browser.
+        Nothing leaves your browser. Saved plants stay on this device.
       </p>
       <p class="data-source">Plant data sourced from <a href="https://calscape.org" target="_blank" rel="noopener">Calscape.org</a> / California Native Plant Society</p>
     </div>
@@ -2774,13 +2793,13 @@
           zipInput.classList.add('is-invalid');
           zipError.classList.add('is-visible');
           zipInput.focus();
-          return;
+          return Promise.resolve(false);
         }
 
         findBtn.setAttribute('disabled', 'true');
         resultsSection.setAttribute('aria-busy', 'true');
 
-        dataReadyPromise.then(function() {
+        return dataReadyPromise.then(function() {
           return resolveZipToRegion(zip);
         }).then(function(resolved) {
           state.zipResolved = resolved;
@@ -2802,6 +2821,8 @@
         }).finally(function() {
           findBtn.removeAttribute('disabled');
           resultsSection.removeAttribute('aria-busy');
+        }).then(function() {
+          return true;
         });
       }
 
@@ -2825,6 +2846,7 @@
         zipInput.value = '';
         sunInput.value = 3;
         sunValue.textContent = getSunLabel(3);
+        sunInput.setAttribute('aria-valuenow', 3);
         sunInput.setAttribute('aria-valuetext', 'Part Sun, 4 to 6 hours');
         zipInput.classList.remove('is-invalid');
         zipError.classList.remove('is-visible');
@@ -2979,6 +3001,7 @@
         attachFilterListeners();
         attachLayerListeners();
         attachFavoriteListeners();
+        attachMyGardenListeners();
         attachCategoryTooltipListeners();
       }
 
@@ -3000,10 +3023,11 @@
 
         plantsSection.innerHTML = html;
 
-        // Update filter count
-        const filterCount = document.querySelector('.filter-count');
-        if (filterCount) {
-          filterCount.innerHTML = 'Showing <strong>' + state.displayedPlants.length + '</strong> of ' + state.filteredPlants.length + ' plants';
+        // Re-render the filter bar so the count and "Clear filters" stay current
+        const filterSection = document.querySelector('.filter-section');
+        if (filterSection) {
+          filterSection.outerHTML = renderFilters();
+          attachFilterListeners();
         }
 
         // Update layers overview
@@ -3043,7 +3067,7 @@
           html += '' +
             '<div class="my-garden-plant" data-plant-id="' + plant.id + '">' +
               '<span>' + plant.commonName + '</span>' +
-              '<button class="my-garden-plant-remove" data-plant-id="' + plant.id + '" aria-label="Remove ' + plant.commonName + ' from My Garden">' +
+              '<button type="button" class="my-garden-plant-remove" data-plant-id="' + plant.id + '" aria-label="Remove ' + plant.commonName + ' from My Garden">' +
                 ICONS.x +
               '</button>' +
             '</div>';
@@ -3057,15 +3081,18 @@
         const section = document.getElementById('my-garden-section');
         if (section) {
           section.outerHTML = renderMyGarden();
-          // Re-attach remove listeners
-          document.querySelectorAll('.my-garden-plant-remove').forEach(function(btn) {
-            btn.addEventListener('click', function(e) {
-              e.stopPropagation();
-              const plantId = btn.getAttribute('data-plant-id');
-              toggleFavorite(plantId);
-            });
-          });
+          attachMyGardenListeners();
         }
+      }
+
+      function attachMyGardenListeners() {
+        document.querySelectorAll('.my-garden-plant-remove').forEach(function(btn) {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const plantId = btn.getAttribute('data-plant-id');
+            toggleFavorite(plantId);
+          });
+        });
       }
 
       // ==========================================================================
@@ -3083,13 +3110,13 @@
               '<div class="filter-group">' +
                 '<span class="filter-group-label">Water Needs</span>' +
                 '<div class="filter-pills">' +
-                  '<button class="filter-pill' + (state.filters.water.indexOf('very_low') !== -1 ? ' is-active' : '') + '" data-filter="water" data-value="very_low">' +
+                  '<button type="button" class="filter-pill' + (state.filters.water.indexOf('very_low') !== -1 ? ' is-active' : '') + '" aria-pressed="' + (state.filters.water.indexOf('very_low') !== -1) + '" data-filter="water" data-value="very_low">' +
                     ICONS.droplet + ' Very Low' +
                   '</button>' +
-                  '<button class="filter-pill' + (state.filters.water.indexOf('low') !== -1 ? ' is-active' : '') + '" data-filter="water" data-value="low">' +
+                  '<button type="button" class="filter-pill' + (state.filters.water.indexOf('low') !== -1 ? ' is-active' : '') + '" aria-pressed="' + (state.filters.water.indexOf('low') !== -1) + '" data-filter="water" data-value="low">' +
                     ICONS.droplet + ' Low' +
                   '</button>' +
-                  '<button class="filter-pill' + (state.filters.water.indexOf('moderate') !== -1 ? ' is-active' : '') + '" data-filter="water" data-value="moderate">' +
+                  '<button type="button" class="filter-pill' + (state.filters.water.indexOf('moderate') !== -1 ? ' is-active' : '') + '" aria-pressed="' + (state.filters.water.indexOf('moderate') !== -1) + '" data-filter="water" data-value="moderate">' +
                     ICONS.droplet + ' Moderate' +
                   '</button>' +
                 '</div>' +
@@ -3098,13 +3125,13 @@
               '<div class="filter-group">' +
                 '<span class="filter-group-label">Wildlife</span>' +
                 '<div class="filter-pills">' +
-                  '<button class="filter-pill' + (state.filters.wildlife.indexOf('hummingbirds') !== -1 ? ' is-active' : '') + '" data-filter="wildlife" data-value="hummingbirds">' +
+                  '<button type="button" class="filter-pill' + (state.filters.wildlife.indexOf('hummingbirds') !== -1 ? ' is-active' : '') + '" aria-pressed="' + (state.filters.wildlife.indexOf('hummingbirds') !== -1) + '" data-filter="wildlife" data-value="hummingbirds">' +
                     ICONS.hummingbird + ' Hummingbirds' +
                   '</button>' +
-                  '<button class="filter-pill' + (state.filters.wildlife.indexOf('butterflies') !== -1 ? ' is-active' : '') + '" data-filter="wildlife" data-value="butterflies">' +
+                  '<button type="button" class="filter-pill' + (state.filters.wildlife.indexOf('butterflies') !== -1 ? ' is-active' : '') + '" aria-pressed="' + (state.filters.wildlife.indexOf('butterflies') !== -1) + '" data-filter="wildlife" data-value="butterflies">' +
                     ICONS.butterfly + ' Butterflies' +
                   '</button>' +
-                  '<button class="filter-pill' + (state.filters.wildlife.indexOf('birds') !== -1 ? ' is-active' : '') + '" data-filter="wildlife" data-value="birds">' +
+                  '<button type="button" class="filter-pill' + (state.filters.wildlife.indexOf('birds') !== -1 ? ' is-active' : '') + '" aria-pressed="' + (state.filters.wildlife.indexOf('birds') !== -1) + '" data-filter="wildlife" data-value="birds">' +
                     ICONS.feather + ' Birds' +
                   '</button>' +
                 '</div>' +
@@ -3113,10 +3140,10 @@
               '<div class="filter-group">' +
                 '<span class="filter-group-label">Care</span>' +
                 '<div class="filter-pills">' +
-                  '<button class="filter-pill' + (state.filters.care.indexOf('easy') !== -1 ? ' is-active' : '') + '" data-filter="care" data-value="easy">' +
+                  '<button type="button" class="filter-pill' + (state.filters.care.indexOf('easy') !== -1 ? ' is-active' : '') + '" aria-pressed="' + (state.filters.care.indexOf('easy') !== -1) + '" data-filter="care" data-value="easy">' +
                     ICONS.check + ' Easy' +
                   '</button>' +
-                  '<button class="filter-pill' + (state.filters.care.indexOf('deer') !== -1 ? ' is-active' : '') + '" data-filter="care" data-value="deer">' +
+                  '<button type="button" class="filter-pill' + (state.filters.care.indexOf('deer') !== -1 ? ' is-active' : '') + '" aria-pressed="' + (state.filters.care.indexOf('deer') !== -1) + '" data-filter="care" data-value="deer">' +
                     ICONS.deer + ' Deer Resistant' +
                   '</button>' +
                 '</div>' +
@@ -3124,7 +3151,7 @@
             '</div>' +
             '<div class="filter-summary">' +
               '<span class="filter-count">Showing <strong>' + state.displayedPlants.length + '</strong> of ' + state.filteredPlants.length + ' plants</span>' +
-              (hasActiveFilters ? '<button class="filter-clear" id="filter-clear">Clear filters</button>' : '') +
+              (hasActiveFilters ? '<button type="button" class="filter-clear" id="filter-clear">Clear filters</button>' : '') +
             '</div>' +
           '</div>';
 
@@ -3140,13 +3167,14 @@
             const idx = state.filters[filterType].indexOf(value);
             if (idx === -1) {
               state.filters[filterType].push(value);
-              pill.classList.add('is-active');
             } else {
               state.filters[filterType].splice(idx, 1);
-              pill.classList.remove('is-active');
             }
 
             updatePlantsDisplay();
+            // The filter bar was re-rendered; keep keyboard focus on this pill
+            const samePill = document.querySelector('.filter-pill[data-filter="' + filterType + '"][data-value="' + value + '"]');
+            if (samePill) samePill.focus();
           });
         });
 
@@ -3154,9 +3182,6 @@
         if (clearBtn) {
           clearBtn.addEventListener('click', function() {
             state.filters = { water: [], wildlife: [], care: [] };
-            document.querySelectorAll('.filter-pill.is-active').forEach(function(p) {
-              p.classList.remove('is-active');
-            });
             updatePlantsDisplay();
           });
         }
@@ -3250,19 +3275,19 @@
             }
           });
         });
-
-        // Close tooltips when clicking outside
-        document.addEventListener('click', function(e) {
-          if (!e.target.closest('.category-info-btn') && !e.target.closest('.category-tooltip')) {
-            document.querySelectorAll('.category-info-btn').forEach(function(btn) {
-              btn.setAttribute('aria-expanded', 'false');
-            });
-            document.querySelectorAll('.category-tooltip').forEach(function(tooltip) {
-              tooltip.classList.remove('is-visible');
-            });
-          }
-        });
       }
+
+      // Close tooltips when clicking outside (registered once, not per re-render)
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.category-info-btn') && !e.target.closest('.category-tooltip')) {
+          document.querySelectorAll('.category-info-btn').forEach(function(btn) {
+            btn.setAttribute('aria-expanded', 'false');
+          });
+          document.querySelectorAll('.category-tooltip').forEach(function(tooltip) {
+            tooltip.classList.remove('is-visible');
+          });
+        }
+      });
 
       function scrollToCategory(categoryKey) {
         const section = document.querySelector('.plants-category[data-category="' + categoryKey + '"]');
@@ -3297,7 +3322,7 @@
                 '<span class="category-label">' + category.label.toUpperCase() + '</span>' +
                 '<div class="category-title-row">' +
                   '<h3 class="category-title">' + categoryDescriptions[categoryKey] + '</h3>' +
-                  '<button class="category-info-btn" aria-expanded="false" aria-controls="' + tooltipId + '" aria-label="Learn more about ' + category.label.toLowerCase() + '">' +
+                  '<button type="button" class="category-info-btn" aria-expanded="false" aria-controls="' + tooltipId + '" aria-label="Learn more about ' + category.label.toLowerCase() + '">' +
                     ICONS.info +
                   '</button>' +
                 '</div>' +
@@ -3353,7 +3378,7 @@
                   '<h4 class="plant-name">' + plant.commonName + '</h4>' +
                   '<p class="plant-scientific">' + plant.scientificName + '</p>' +
                 '</div>' +
-                '<button class="plant-favorite' + (isFav ? ' is-favorited' : '') + '" data-plant-id="' + plant.id + '" aria-label="' + (isFav ? 'Remove from' : 'Add to') + ' My Garden">' +
+                '<button type="button" class="plant-favorite' + (isFav ? ' is-favorited' : '') + '" data-plant-id="' + plant.id + '" aria-label="' + (isFav ? 'Remove from' : 'Add to') + ' My Garden">' +
                   (isFav ? ICONS.heartFilled : ICONS.heart) +
                 '</button>' +
               '</div>' +
@@ -3424,15 +3449,6 @@
       // Attach favorite button listeners
       function attachFavoriteListeners() {
         document.querySelectorAll('.plant-favorite').forEach(function(btn) {
-          btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const plantId = btn.getAttribute('data-plant-id');
-            toggleFavorite(plantId);
-          });
-        });
-
-        // My garden remove buttons
-        document.querySelectorAll('.my-garden-plant-remove').forEach(function(btn) {
           btn.addEventListener('click', function(e) {
             e.stopPropagation();
             const plantId = btn.getAttribute('data-plant-id');
@@ -3568,14 +3584,14 @@
         const shareData = {
           title: 'Native Plants for ' + locationName,
           text: state.displayedPlants.length + ' California native plants for ' + getSunLabel(state.sunLevel).toLowerCase() + ' in ' + regionName + '.',
-          url: window.location.href
+          url: buildResultUrl(window.location.origin + window.location.pathname)
         };
 
         if (navigator.share) {
           // Rejection usually means the user dismissed the share sheet
           navigator.share(shareData).catch(function() {});
-        } else {
-          navigator.clipboard.writeText(window.location.href).then(function() {
+        } else if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(shareData.url).then(function() {
             const btn = document.getElementById('share-btn');
             const originalHTML = btn.innerHTML;
             btn.innerHTML = ICONS.check + ' Link Copied!';
@@ -3693,7 +3709,8 @@
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(10);
 
-        const pdfNurseryIds = ((state.regionProfile && state.regionProfile.nurseryIds) || DATA_CACHE.nurseries.defaultNurseryIds || []);
+        const pdfRegionNurseryIds = (state.regionProfile && state.regionProfile.nurseryIds) || [];
+        const pdfNurseryIds = pdfRegionNurseryIds.length > 0 ? pdfRegionNurseryIds : (DATA_CACHE.nurseries.defaultNurseryIds || []);
         pdfNurseryIds.forEach(function(id) {
           const nursery = DATA_CACHE.nurseries.nurseries[id];
           if (!nursery) {
@@ -3725,6 +3742,173 @@
 
         // Save
         doc.save('native-plants-' + state.zipCode + '.pdf');
+      }
+
+      // ==========================================================================
+      // Links and agents: ?zip=94110&sun=full_sun&water=low,very_low
+      // ==========================================================================
+      const SUN_KEYS = { 1: 'full_shade', 2: 'part_shade', 3: 'part_sun', 4: 'full_sun' };
+      const SUN_ALIASES = {
+        '1': 1, full_shade: 1, shade: 1,
+        '2': 2, part_shade: 2,
+        '3': 3, part_sun: 3,
+        '4': 4, full_sun: 4, full: 4, sun: 4
+      };
+      const FILTER_VALUES = {
+        water: ['very_low', 'low', 'moderate'],
+        wildlife: ['hummingbirds', 'butterflies', 'birds'],
+        care: ['easy', 'deer']
+      };
+
+      function parseSun(value) {
+        if (value === undefined || value === null) return null;
+        return SUN_ALIASES[String(value).trim().toLowerCase().replace(/[\s-]+/g, '_')] || null;
+      }
+
+      function parseFilterList(type, value) {
+        const list = Array.isArray(value) ? value : String(value || '').split(',');
+        return list.map(function(v) { return String(v).trim().toLowerCase(); })
+          .filter(function(v, i, all) { return FILTER_VALUES[type].indexOf(v) !== -1 && all.indexOf(v) === i; });
+      }
+
+      // A link that reproduces the current result
+      function buildResultUrl(base) {
+        const params = new URLSearchParams();
+        params.set('zip', state.zipCode);
+        params.set('sun', SUN_KEYS[state.sunLevel]);
+        ['water', 'wildlife', 'care'].forEach(function(type) {
+          if (state.filters[type].length) params.set(type, state.filters[type].join(','));
+        });
+        return base + '?' + params.toString().replace(/%2C/g, ',');
+      }
+
+      // Fill the form exactly as a person would, then run the same search.
+      function runSearch(input) {
+        const zip = String(input.zip || '').replace(/\D/g, '');
+        if (!validateZip(zip)) return Promise.resolve(false);
+        const sun = parseSun(input.sun);
+        if (sun) {
+          sunInput.value = sun;
+          sunInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        zipInput.value = zip;
+        zipInput.dispatchEvent(new Event('input', { bubbles: true }));
+        state.filters = {
+          water: parseFilterList('water', input.water),
+          wildlife: parseFilterList('wildlife', input.wildlife),
+          care: parseFilterList('care', input.care)
+        };
+        return handleFind();
+      }
+
+      function describePlant(plant) {
+        return {
+          id: plant.id,
+          common_name: plant.commonName,
+          scientific_name: plant.scientificName,
+          layer: PLANT_DATA.heightCategories[plant.heightCategory].label,
+          height: formatHeight(plant.heightInches),
+          spread_ft: Math.round(plant.spreadInches / 12),
+          sun: formatSunRange(plant.sunMin, plant.sunMax),
+          water: PLANT_DATA.waterNeeds[plant.waterNeeds],
+          blooms: formatSeason(plant.bloomSeason),
+          bloom_color: plant.bloomColor,
+          supports: plant.ecologicalValue.map(function(v) { return PLANT_DATA.ecologicalIcons[v] || v; }),
+          easy_care: plant.difficulty === 'easy',
+          deer_resistant: !!plant.deerResistant,
+          description: plant.description,
+          calscape_url: 'https://calscape.org/loc-California/cat-All/ord-popular/vw-list/np-1?srch=' + encodeURIComponent(plant.scientificName)
+        };
+      }
+
+      function describeResult() {
+        if (!state.zipResolved || !state.zipResolved.regionKey) {
+          const error = state.zipResolved && state.zipResolved.error;
+          return {
+            zip: state.zipCode,
+            error: error === 'non_ca' ? 'Only California ZIP codes are supported.'
+              : error === 'missing_meta' ? 'Plant data failed to load.'
+              : 'That California ZIP code is not in the offline index.',
+            alternative: 'https://calscape.org'
+          };
+        }
+        const regionNurseryIds = (state.regionProfile && state.regionProfile.nurseryIds) || [];
+        const nurseryIds = regionNurseryIds.length > 0 ? regionNurseryIds : (DATA_CACHE.nurseries.defaultNurseryIds || []);
+        return {
+          zip: state.zipCode,
+          location: getLocationLabel(),
+          usda_zone: state.regionProfile && state.regionProfile.usdaZone ? state.regionProfile.usdaZone : null,
+          sun: SUN_KEYS[state.sunLevel],
+          filters: state.filters,
+          plant_count: state.displayedPlants.length,
+          plants: state.displayedPlants.map(describePlant),
+          nurseries: nurseryIds.map(function(id) { return DATA_CACHE.nurseries.nurseries[id]; }).filter(Boolean).map(function(n) {
+            return { name: n.name, address: n.address, url: n.url, notes: n.notes || null };
+          }),
+          url: buildResultUrl('https://bensiverly.com/native-plant-finder.html'),
+          data_source: 'Calscape.org / California Native Plant Society'
+        };
+      }
+
+      // Prefill from the query string. Anything invalid is ignored.
+      (function() {
+        const params = new URLSearchParams(window.location.search);
+        const sun = parseSun(params.get('sun'));
+        if (sun) {
+          sunInput.value = sun;
+          sunInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        if (validateZip(params.get('zip') || '')) {
+          runSearch({
+            zip: params.get('zip'),
+            water: params.get('water'),
+            wildlife: params.get('wildlife'),
+            care: params.get('care')
+          });
+        }
+      })();
+
+      // WebMCP: lets a browser agent run the same search and read the result.
+      const mc = document.modelContext || navigator.modelContext;
+      if (mc && typeof mc.registerTool === 'function') {
+        try {
+          mc.registerTool({
+            name: 'find_native_plants',
+            description: 'Find California native plants for a California ZIP code and sun exposure, optionally filtered by water needs, wildlife, and care. Returns each plant (name, layer, height, sun, water, bloom, wildlife supported) plus local nurseries and a link to the same result. Also shows the result on the page.',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                zip: { type: 'string', pattern: '^[0-9]{5}$', description: 'California 5-digit ZIP code, e.g. 94110.' },
+                sun: { type: 'string', enum: ['full_shade', 'part_shade', 'part_sun', 'full_sun'], description: 'Direct sun per day: full_shade (<2 h), part_shade (2-4 h), part_sun (4-6 h), full_sun (6+ h). Defaults to part_sun.' },
+                water: { type: 'array', items: { type: 'string', enum: FILTER_VALUES.water }, description: 'Keep plants with any of these water needs.' },
+                wildlife: { type: 'array', items: { type: 'string', enum: FILTER_VALUES.wildlife }, description: 'Keep plants that support any of these.' },
+                care: { type: 'array', items: { type: 'string', enum: FILTER_VALUES.care }, description: 'easy = easy to grow; deer = deer resistant.' }
+              },
+              required: ['zip']
+            },
+            annotations: { readOnlyHint: true },
+            async execute(input) {
+              input = input || {};
+              if (!input.sun) input.sun = 'part_sun';
+              const ran = await runSearch(input);
+              const result = ran ? describeResult() : { error: 'zip must be a 5-digit California ZIP code.' };
+              return { content: [{ type: 'text', text: JSON.stringify(result) }] };
+            }
+          });
+          mc.registerTool({
+            name: 'get_saved_native_plants',
+            description: 'List the plants the person has saved to My Garden in this browser.',
+            inputSchema: { type: 'object', properties: {} },
+            annotations: { readOnlyHint: true },
+            async execute() {
+              await dataReadyPromise;
+              const saved = state.favorites.map(function(id) {
+                return DATA_CACHE.plants.find(function(p) { return p.id === id; });
+              }).filter(Boolean).map(describePlant);
+              return { content: [{ type: 'text', text: JSON.stringify({ plants: saved }) }] };
+            }
+          });
+        } catch (e) {}
       }
 
       // ==========================================================================

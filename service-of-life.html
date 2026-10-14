@@ -41,13 +41,23 @@
     "@type": "WebApplication",
     "name": "Service of Life Builder",
     "url": "https://bensiverly.com/service-of-life.html",
-    "description": "Assemble an order of service or liturgy for a memorial or celebration of life, then print a clean PDF.",
+    "description": "Assemble an order of service or liturgy for a memorial or celebration of life, then print a clean PDF. The draft is saved only in the browser that made it.",
     "applicationCategory": "UtilitiesApplication",
     "operatingSystem": "Any",
     "browserRequirements": "Requires JavaScript",
     "isAccessibleForFree": true,
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-    "author": { "@type": "Person", "name": "Ben Siverly", "url": "https://bensiverly.com/" }
+    "author": { "@id": "https://bensiverly.com/#ben" },
+    "potentialAction": {
+      "@type": "CreateAction",
+      "name": "Start an order of service prefilled with these details",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://bensiverly.com/service-of-life.html?name={name}&date={date}&location={location}&officiant={officiant}&service_type={service_type}&tradition={tradition}",
+        "actionPlatform": ["https://schema.org/DesktopWebPlatform", "https://schema.org/MobileWebPlatform"]
+      },
+      "result": { "@type": "DigitalDocument", "name": "Printable order of service" }
+    }
   }
   </script>
 
@@ -927,8 +937,7 @@
       .sol-builder,
       .sol-mobile-tabs,
       .sol-preview-header,
-      .sol-modal-overlay,
-      .page-loader {
+      .sol-modal-overlay {
         display: none !important;
       }
 
@@ -992,11 +1001,6 @@
   </style>
 </head>
 <body class="sol-app">
-  <!-- Page Loader -->
-  <div class="page-loader" aria-hidden="true">
-    <div class="page-loader__dot"></div>
-  </div>
-
   <header class="site-header">
     <a href="index.html" class="site-brand" aria-label="Return to home">BS.</a>
     <a class="page-link" href="index.html">Back to home</a>
@@ -1137,11 +1141,7 @@
               <span class="sol-action-icon">&#x2191;</span>
               Import JSON
             </button>
-            <button class="sol-action-btn" id="duplicate-btn">
-              <span class="sol-action-icon">&#x2398;</span>
-              Duplicate
-            </button>
-            <button class="sol-action-btn" id="reset-btn" style="grid-column: span 2;">
+            <button class="sol-action-btn" id="reset-btn">
               <span class="sol-action-icon">&#x21BA;</span>
               Start Over
             </button>
@@ -1342,14 +1342,84 @@
         return 'sol_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
       }
 
+      const TRADITIONS = ['anglican_default', 'anglican_with_lutheran_headings', 'anglican_with_catholic_station_mode'];
+      const ROLES = ['leader', 'all', 'reader', 'soloist', 'silent'];
+      const MUSIC_KINDS = ['hymn', 'song', 'instrumental'];
+
+      // Every component type's fields, with defaults for a new one
+      const COMPONENT_DEFAULTS = {
+        text_block: { title: '', role: 'leader', body: '', rubric: '' },
+        reading_ref: { label: '', citation: '', reader_name: '', full_text: '' },
+        music_item: { title: '', kind: 'hymn', details: '', performer: '' },
+        tribute_slot: { speaker: '', prompt: '', time_limit_minutes: null },
+        silence: { label: 'A moment of silence', duration_seconds: 30 }
+      };
+      const NUMBER_RANGES = { time_limit_minutes: [1, 30], duration_seconds: [5, 300] };
+
+      function cleanText(value, max) {
+        if (typeof value === 'number') value = String(value);
+        return typeof value === 'string' ? value.slice(0, max || 10000) : '';
+      }
+
+      // Keep only known fields, in range, so imported or agent-supplied data can't break rendering
+      function normalizePayload(type, payload) {
+        const defaults = COMPONENT_DEFAULTS[type];
+        const p = payload && typeof payload === 'object' ? payload : {};
+        const clean = {};
+        Object.keys(defaults).forEach(field => {
+          if (NUMBER_RANGES[field]) {
+            const n = parseInt(p[field], 10);
+            const range = NUMBER_RANGES[field];
+            clean[field] = isNaN(n) ? (field in p ? '' : defaults[field]) : Math.min(range[1], Math.max(range[0], n));
+          } else if (field === 'role') {
+            clean[field] = ROLES.includes(p.role) ? p.role : defaults.role;
+          } else if (field === 'kind') {
+            clean[field] = MUSIC_KINDS.includes(p.kind) ? p.kind : defaults.kind;
+          } else {
+            clean[field] = field in p ? cleanText(p[field]) : defaults[field];
+          }
+        });
+        return clean;
+      }
+
+      function normalizeService(data) {
+        if (!data || typeof data !== 'object' || !Array.isArray(data.sections)) return null;
+        const service = createEmptyService();
+        if (typeof data.id === 'string') service.id = data.id;
+        if (SERVICE_TYPES[data.service_type]) service.service_type = data.service_type;
+        if (TRADITIONS.includes(data.tradition_profile)) service.tradition_profile = data.tradition_profile;
+        const meta = data.meta && typeof data.meta === 'object' ? data.meta : {};
+        Object.keys(service.meta).forEach(key => {
+          service.meta[key] = cleanText(meta[key], 300);
+        });
+        const seen = {};
+        service.sections = data.sections
+          .filter(s => s && SECTIONS.hasOwnProperty(s.section_id) && !seen[s.section_id] && (seen[s.section_id] = true))
+          .map(s => ({
+            section_id: s.section_id,
+            label_override: cleanText(s.label_override, 120).trim() || null,
+            enabled: SECTIONS[s.section_id].optional ? Boolean(s.enabled) : true,
+            components: (Array.isArray(s.components) ? s.components : [])
+              .filter(c => c && COMPONENT_DEFAULTS.hasOwnProperty(c.component_type))
+              .map(c => ({ component_type: c.component_type, payload: normalizePayload(c.component_type, c.payload) }))
+          }));
+        return service;
+      }
+
       function loadState() {
+        let saved = null;
         try {
-          const saved = localStorage.getItem(STORAGE_KEY);
+          saved = localStorage.getItem(STORAGE_KEY);
           if (saved) {
-            return JSON.parse(saved);
+            const service = normalizeService(JSON.parse(saved));
+            if (service) return service;
           }
         } catch (e) {
           console.warn('Failed to load state:', e);
+        }
+        if (saved) {
+          // Unreadable draft: set it aside rather than overwrite someone's work
+          try { localStorage.setItem(STORAGE_KEY + '_unreadable', saved); } catch (e) { /* storage full */ }
         }
         return createEmptyService();
       }
@@ -1418,7 +1488,6 @@
         printBtn: document.getElementById('print-btn'),
         exportBtn: document.getElementById('export-btn'),
         importBtn: document.getElementById('import-btn'),
-        duplicateBtn: document.getElementById('duplicate-btn'),
         resetBtn: document.getElementById('reset-btn'),
 
         // Preview
@@ -1494,14 +1563,14 @@
 
         // Form inputs
         elements.serviceType.addEventListener('change', () => {
-          state.service_type = elements.serviceType.value;
-          // Reset sections when service type changes
-          state.sections = [];
-          initializeSections();
-          saveState(state);
-          renderSectionsList();
-          renderSectionsEditList();
-          renderPreview();
+          const newType = elements.serviceType.value;
+          const lost = sectionsLostBy(newType);
+          if (lost.length && !confirm('Switching to ' + SERVICE_TYPES[newType].label + ' removes ' +
+              lost.join(', ') + ' and the content in ' + (lost.length > 1 ? 'them' : 'it') + '. Switch anyway?')) {
+            elements.serviceType.value = state.service_type;
+            return;
+          }
+          applyServiceType(newType);
         });
 
         elements.tradition.addEventListener('change', () => {
@@ -1539,6 +1608,8 @@
           editingSectionId = null;
           elements.sectionSelector.style.display = 'block';
           elements.sectionEditor.classList.remove('is-active');
+          // Item counts change while editing
+          renderSectionsEditList();
         });
 
         // Add component
@@ -1563,18 +1634,22 @@
         elements.exportBtn.addEventListener('click', exportService);
         elements.importBtn.addEventListener('click', () => {
           elements.importModal.classList.add('is-open');
+          elements.importTextarea.focus();
         });
-        elements.duplicateBtn.addEventListener('click', duplicateService);
         elements.resetBtn.addEventListener('click', resetService);
 
         // Modal
-        elements.importModal.querySelector('.sol-modal-close').addEventListener('click', () => {
-          elements.importModal.classList.remove('is-open');
-        });
+        elements.importModal.querySelector('.sol-modal-close').addEventListener('click', closeImportModal);
 
         elements.importModal.addEventListener('click', (e) => {
           if (e.target === elements.importModal) {
-            elements.importModal.classList.remove('is-open');
+            closeImportModal();
+          }
+        });
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && elements.importModal.classList.contains('is-open')) {
+            closeImportModal();
           }
         });
 
@@ -1602,6 +1677,38 @@
             elements.previewContent.classList.add('hide-rubrics');
           }
         });
+      }
+
+      // Labels of sections holding content that the given service type doesn't have
+      function sectionsLostBy(typeId) {
+        const keep = SERVICE_TYPES[typeId].sections;
+        return state.sections
+          .filter(s => s.components.length && !keep.includes(s.section_id))
+          .map(s => s.label_override || SECTIONS[s.section_id].label);
+      }
+
+      // Switch service type, carrying over any section the new type shares
+      function applyServiceType(typeId) {
+        const existing = {};
+        state.sections.forEach(s => { existing[s.section_id] = s; });
+        state.service_type = typeId;
+        state.sections = SERVICE_TYPES[typeId].sections.map(sectionId => existing[sectionId] || {
+          section_id: sectionId,
+          label_override: null,
+          enabled: !SECTIONS[sectionId].optional,
+          components: []
+        });
+        elements.serviceType.value = typeId;
+        // The section being edited may be gone; fall back to the section picker
+        if (editingSectionId && !SERVICE_TYPES[typeId].sections.includes(editingSectionId)) {
+          editingSectionId = null;
+          elements.sectionSelector.style.display = 'block';
+          elements.sectionEditor.classList.remove('is-active');
+        }
+        saveState(state);
+        renderSectionsList();
+        renderSectionsEditList();
+        renderPreview();
       }
 
       // ==========================================================================
@@ -1650,7 +1757,7 @@
           li.innerHTML = `
             <span class="sol-section-drag">&#x2630;</span>
             <div class="sol-section-info">
-              <span class="sol-section-name">${section.label_override || sectionDef.label}</span>
+              <span class="sol-section-name">${escapeHtml(section.label_override || sectionDef.label)}</span>
               ${sectionDef.optional ? '<span class="sol-section-badge">Optional</span>' : ''}
             </div>
             <div class="sol-section-actions">
@@ -1712,7 +1819,7 @@
 
           li.innerHTML = `
             <div class="sol-section-info">
-              <span class="sol-section-name">${section.label_override || sectionDef.label}</span>
+              <span class="sol-section-name">${escapeHtml(section.label_override || sectionDef.label)}</span>
               <span class="sol-section-badge">${section.components.length} item${section.components.length !== 1 ? 's' : ''}</span>
             </div>
             <span style="color: var(--color-muted);">&rarr;</span>
@@ -1965,7 +2072,7 @@
               </div>
               <div class="sol-form-group">
                 <label class="sol-label">Time Limit (minutes)</label>
-                <input type="number" class="sol-input" data-field="time_limit_minutes" value="${p.time_limit_minutes || ''}" min="1" max="30">
+                <input type="number" class="sol-input" data-field="time_limit_minutes" value="${escapeHtml(p.time_limit_minutes)}" min="1" max="30">
               </div>
             `;
           case 'silence':
@@ -1976,7 +2083,7 @@
               </div>
               <div class="sol-form-group">
                 <label class="sol-label">Duration (seconds)</label>
-                <input type="number" class="sol-input" data-field="duration_seconds" value="${p.duration_seconds || ''}" min="5" max="300">
+                <input type="number" class="sol-input" data-field="duration_seconds" value="${escapeHtml(p.duration_seconds)}" min="5" max="300">
               </div>
             `;
           default:
@@ -1988,28 +2095,9 @@
         const section = state.sections.find(s => s.section_id === editingSectionId);
         if (!section) return;
 
-        let payload = {};
-        switch (type) {
-          case 'text_block':
-            payload = { title: '', role: 'leader', body: '', rubric: '' };
-            break;
-          case 'reading_ref':
-            payload = { label: '', citation: '', reader_name: '', full_text: '' };
-            break;
-          case 'music_item':
-            payload = { title: '', kind: 'hymn', details: '', performer: '' };
-            break;
-          case 'tribute_slot':
-            payload = { speaker: '', prompt: '', time_limit_minutes: null };
-            break;
-          case 'silence':
-            payload = { label: 'A moment of silence', duration_seconds: 30 };
-            break;
-        }
-
         section.components.push({
           component_type: type,
-          payload: payload
+          payload: normalizePayload(type, {})
         });
 
         saveState(state);
@@ -2061,7 +2149,7 @@
 
           html += `
             <div class="sol-service-section">
-              <h3 class="sol-service-section-title">${section.label_override || sectionDef.label}</h3>
+              <h3 class="sol-service-section-title">${escapeHtml(section.label_override || sectionDef.label)}</h3>
           `;
 
           if (section.components.length === 0) {
@@ -2089,7 +2177,7 @@
               <div class="sol-service-component">
                 <h4 class="sol-service-component-title">
                   ${escapeHtml(p.title)}
-                  <span class="sol-service-role">${p.role}</span>
+                  <span class="sol-service-role">${escapeHtml(p.role)}</span>
                 </h4>
                 ${p.rubric ? `<p class="sol-service-rubric">${escapeHtml(p.rubric)}</p>` : ''}
                 <div class="sol-service-body ${p.role === 'all' ? 'sol-role-all' : ''}">${escapeHtml(replaceName(p.body || ''))}</div>
@@ -2110,7 +2198,7 @@
             return `
               <div class="sol-service-component">
                 <div class="sol-service-music">
-                  <span class="sol-service-music-kind">${p.kind || 'Music'}</span>
+                  <span class="sol-service-music-kind">${escapeHtml(p.kind || 'Music')}</span>
                   <span class="sol-service-music-title">${escapeHtml(p.title)}</span>
                   ${p.details ? `<span style="color: var(--color-muted);">(${escapeHtml(p.details)})</span>` : ''}
                 </div>
@@ -2123,7 +2211,7 @@
                 <div class="sol-service-tribute">
                   <strong>${escapeHtml(p.speaker || 'Tribute')}</strong>
                   ${p.prompt ? `<p style="margin: 0.25rem 0 0 0; font-size: 0.875rem;">${escapeHtml(p.prompt)}</p>` : ''}
-                  ${p.time_limit_minutes ? `<div style="font-size: 0.75rem; color: var(--color-muted);">(${p.time_limit_minutes} minutes)</div>` : ''}
+                  ${p.time_limit_minutes ? `<div style="font-size: 0.75rem; color: var(--color-muted);">(${escapeHtml(p.time_limit_minutes)} minutes)</div>` : ''}
                 </div>
               </div>
             `;
@@ -2132,7 +2220,7 @@
               <div class="sol-service-component">
                 <div class="sol-service-silence">
                   ${escapeHtml(p.label || 'Silence')}
-                  ${p.duration_seconds ? ` (${p.duration_seconds} seconds)` : ''}
+                  ${p.duration_seconds ? ` (${escapeHtml(p.duration_seconds)} seconds)` : ''}
                 </div>
               </div>
             `;
@@ -2170,34 +2258,40 @@
         reader.readAsText(file);
       }
 
-      function confirmImport() {
-        try {
-          const data = JSON.parse(elements.importTextarea.value);
-          if (!data.id || !data.sections) {
-            throw new Error('Invalid service data');
-          }
-          state = data;
-          state.id = generateId(); // Generate new ID
-          saveState(state);
-          populateForm();
-          renderSectionsList();
-          renderSectionsEditList();
-          renderPreview();
-          elements.importModal.classList.remove('is-open');
-          elements.importTextarea.value = '';
-          elements.importFile.value = '';
-        } catch (e) {
-          alert('Invalid JSON data. Please check and try again.');
-        }
+      function closeImportModal() {
+        elements.importModal.classList.remove('is-open');
+        elements.importBtn.focus();
       }
 
-      function duplicateService() {
-        state.id = generateId();
-        state.meta.name_of_deceased = state.meta.name_of_deceased + ' (Copy)';
+      function hasDraftContent() {
+        return Boolean(state.meta.name_of_deceased) || state.sections.some(s => s.components.length > 0);
+      }
+
+      function confirmImport() {
+        let data = null;
+        try {
+          data = normalizeService(JSON.parse(elements.importTextarea.value));
+        } catch (e) {
+          data = null;
+        }
+        if (!data) {
+          alert('Invalid JSON data. Please check and try again.');
+          return;
+        }
+        if (hasDraftContent() && !confirm('Replace your current draft with the imported service?')) {
+          return;
+        }
+        state = data;
+        state.id = generateId(); // Generate new ID
+        initializeSections();
         saveState(state);
         populateForm();
+        renderSectionsList();
+        renderSectionsEditList();
         renderPreview();
-        alert('Service duplicated.');
+        closeImportModal();
+        elements.importTextarea.value = '';
+        elements.importFile.value = '';
       }
 
       function starterComponent(key) {
@@ -2268,9 +2362,7 @@
       }
 
       function loadSampleService() {
-        const hasContent = state.meta.name_of_deceased ||
-          state.sections.some(s => s.components.length > 0);
-        if (hasContent && !confirm('Replace your current draft with the sample service?')) {
+        if (hasDraftContent() && !confirm('Replace your current draft with the sample service?')) {
           return;
         }
 
@@ -2305,11 +2397,13 @@
       // Utilities
       // ==========================================================================
 
+      // Also escapes quotes: these values go inside value="..." attributes, where a
+      // hymn title like The "Old Rugged" Cross would otherwise be cut off
       function escapeHtml(text) {
-        if (!text) return '';
+        if (text === null || text === undefined || text === '') return '';
         const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
+        div.textContent = String(text);
+        return div.innerHTML.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
       }
 
       function populateForm() {
@@ -2319,6 +2413,200 @@
         elements.serviceDate.value = state.meta.date_time || '';
         elements.serviceLocation.value = state.meta.location || '';
         elements.officiant.value = state.meta.officiant || '';
+      }
+
+      // ==========================================================================
+      // Links and agents
+      // ==========================================================================
+
+      // Prefill from the link, e.g. ?name=Ruth%20Price&service_type=funeral.
+      // Fills only empty fields, and changes type or tradition only on an empty
+      // draft, so work saved on this device is never replaced.
+      const URL_META = { name: 'name_of_deceased', date: 'date_time', location: 'location', officiant: 'officiant' };
+
+      function applyUrlPrefill() {
+        const params = new URLSearchParams(window.location.search);
+        const fresh = !hasDraftContent();
+        let changed = false;
+
+        if (fresh) {
+          const type = params.get('service_type');
+          if (type && SERVICE_TYPES.hasOwnProperty(type) && type !== state.service_type) {
+            applyServiceType(type);
+          }
+          const tradition = params.get('tradition');
+          if (TRADITIONS.includes(tradition)) {
+            state.tradition_profile = tradition;
+            changed = true;
+          }
+        }
+
+        Object.keys(URL_META).forEach(param => {
+          const value = cleanText((params.get(param) || '').trim(), 300);
+          const key = URL_META[param];
+          if (value && !state.meta[key]) {
+            state.meta[key] = value;
+            changed = true;
+          }
+        });
+
+        if (changed) {
+          saveState(state);
+          populateForm();
+          renderPreview();
+        }
+      }
+
+      // WebMCP: lets an AI agent in the browser build this service for the person
+      // using it. Feature-detected; nothing happens in browsers without it.
+      function registerAgentTools() {
+        const mc = document.modelContext || navigator.modelContext;
+        if (!mc || typeof mc.registerTool !== 'function') return;
+
+        const asResult = obj => ({ content: [{ type: 'text', text: JSON.stringify(obj) }] });
+        const NEXT_STEP = 'Ask the person to review the preview, then use Print / Save PDF on the Export step.';
+
+        function refresh() {
+          saveState(state);
+          populateForm();
+          renderSectionsList();
+          renderSectionsEditList();
+          renderPreview();
+          const editing = state.sections.find(s => s.section_id === editingSectionId);
+          if (editing) renderComponents(editing);
+        }
+
+        function draftSummary() {
+          return {
+            service_type: state.service_type,
+            tradition_profile: state.tradition_profile,
+            meta: Object.assign({}, state.meta),
+            sections: state.sections.map(s => ({
+              section_id: s.section_id,
+              label: s.label_override || SECTIONS[s.section_id].label,
+              optional: SECTIONS[s.section_id].optional,
+              enabled: s.enabled,
+              components: s.components.map(c => ({ component_type: c.component_type, fields: Object.assign({}, c.payload) }))
+            })),
+            preview_ready: Boolean(state.meta.name_of_deceased)
+          };
+        }
+
+        try {
+          mc.registerTool({
+            name: 'list_service_of_life_options',
+            description: 'List what this Service of Life Builder supports: service types and the sections each includes, tradition profiles, component types and their fields, suggested Scripture readings, and ready-made prayer texts.',
+            inputSchema: { type: 'object', properties: {} },
+            annotations: { readOnlyHint: true },
+            execute: async () => asResult({
+              service_types: Object.keys(SERVICE_TYPES).map(id => ({
+                id: id,
+                label: SERVICE_TYPES[id].label,
+                sections: SERVICE_TYPES[id].sections.map(sid => ({ section_id: sid, label: SECTIONS[sid].label, optional: SECTIONS[sid].optional }))
+              })),
+              tradition_profiles: TRADITIONS,
+              component_types: COMPONENT_DEFAULTS,
+              roles: ROLES,
+              music_kinds: MUSIC_KINDS,
+              number_ranges: NUMBER_RANGES,
+              reading_suggestions: READING_SUGGESTIONS.map(r => r.citation),
+              starter_texts: Object.keys(STARTER_BLOCKS).map(key => Object.assign({}, STARTER_BLOCKS[key].payload)),
+              notes: '[Name] in any text is replaced with the name of the deceased in the preview.'
+            })
+          });
+
+          mc.registerTool({
+            name: 'get_service_of_life_draft',
+            description: 'Read the order of service as it currently stands on this page: service type, tradition, name, date, place, officiant, and every section with its components.',
+            inputSchema: { type: 'object', properties: {} },
+            annotations: { readOnlyHint: true },
+            execute: async () => asResult(draftSummary())
+          });
+
+          mc.registerTool({
+            name: 'set_service_of_life_details',
+            description: 'Set the basics of the order of service on this page. Only the fields you pass change. Changing service_type keeps the content of sections the new type shares; if it would remove sections that hold content, it refuses unless allow_removing_content is true, so ask the person first.',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                name_of_deceased: { type: 'string', description: 'Full name, as it should appear on the order of service.' },
+                date_time: { type: 'string', description: 'e.g. "Saturday, January 25, 2026 at 2:00 PM".' },
+                location: { type: 'string', description: 'e.g. "St. Mary\'s Church".' },
+                officiant: { type: 'string', description: 'e.g. "The Rev. Jane Doe".' },
+                service_type: { type: 'string', enum: Object.keys(SERVICE_TYPES) },
+                tradition_profile: { type: 'string', enum: TRADITIONS },
+                allow_removing_content: { type: 'boolean', description: 'Only after the person agrees: lets a service_type change remove sections that hold content.' }
+              },
+              additionalProperties: false
+            },
+            execute: async (input) => {
+              input = input || {};
+              if (input.service_type !== undefined) {
+                if (!SERVICE_TYPES.hasOwnProperty(input.service_type)) {
+                  return asResult({ error: 'Unknown service_type. Use one of: ' + Object.keys(SERVICE_TYPES).join(', ') });
+                }
+                const lost = sectionsLostBy(input.service_type);
+                if (lost.length && input.allow_removing_content !== true) {
+                  return asResult({ error: 'Switching to ' + SERVICE_TYPES[input.service_type].label + ' would remove these sections and their content: ' + lost.join(', ') + '. Ask the person first, then call again with allow_removing_content: true.' });
+                }
+              }
+              if (input.tradition_profile !== undefined && !TRADITIONS.includes(input.tradition_profile)) {
+                return asResult({ error: 'Unknown tradition_profile. Use one of: ' + TRADITIONS.join(', ') });
+              }
+              Object.keys(state.meta).forEach(key => {
+                if (typeof input[key] === 'string') state.meta[key] = cleanText(input[key].trim(), 300);
+              });
+              if (input.tradition_profile) state.tradition_profile = input.tradition_profile;
+              if (input.service_type && input.service_type !== state.service_type) applyServiceType(input.service_type);
+              refresh();
+              return asResult({ draft: draftSummary(), next_step: NEXT_STEP });
+            }
+          });
+
+          mc.registerTool({
+            name: 'add_service_of_life_component',
+            description: 'Add one item (a prayer or other text, a reading, music, a tribute, or a silence) to a section of the order of service on this page. Adding to a switched-off optional section switches it on. Use list_service_of_life_options for section ids and fields.',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                section_id: { type: 'string', description: 'A section_id from get_service_of_life_draft, e.g. "gathering" or "word".' },
+                component_type: { type: 'string', enum: Object.keys(COMPONENT_DEFAULTS) },
+                fields: {
+                  type: 'object',
+                  description: 'text_block: title, role (leader|all|reader|soloist|silent), body, rubric. reading_ref: label, citation, reader_name, full_text. music_item: title, kind (hymn|song|instrumental), details, performer. tribute_slot: speaker, prompt, time_limit_minutes (1-30). silence: label, duration_seconds (5-300). Unknown fields are ignored.'
+                },
+                position: { type: 'integer', minimum: 0, description: 'Where in the section, 0 = first. Defaults to the end.' }
+              },
+              required: ['section_id', 'component_type'],
+              additionalProperties: false
+            },
+            execute: async (input) => {
+              input = input || {};
+              const section = state.sections.find(s => s.section_id === input.section_id);
+              if (!section) {
+                return asResult({ error: 'This service has no section "' + input.section_id + '". Its sections are: ' + state.sections.map(s => s.section_id).join(', ') });
+              }
+              if (!COMPONENT_DEFAULTS.hasOwnProperty(input.component_type)) {
+                return asResult({ error: 'Unknown component_type. Use one of: ' + Object.keys(COMPONENT_DEFAULTS).join(', ') });
+              }
+              const component = {
+                component_type: input.component_type,
+                payload: normalizePayload(input.component_type, Object.assign({}, input.fields))
+              };
+              let note = null;
+              if (SECTIONS[section.section_id].optional && !section.enabled) {
+                section.enabled = true;
+                note = 'Switched on the optional section ' + SECTIONS[section.section_id].label + '.';
+              }
+              const at = Number.isInteger(input.position) ? Math.min(Math.max(input.position, 0), section.components.length) : section.components.length;
+              section.components.splice(at, 0, component);
+              refresh();
+              return asResult({ added: { section_id: section.section_id, position: at, component_type: component.component_type, fields: component.payload }, note: note, next_step: NEXT_STEP });
+            }
+          });
+        } catch (e) {
+          // Agent tools are an extra; never let them break the page
+        }
       }
 
       // ==========================================================================
@@ -2332,6 +2620,8 @@
         renderSectionsList();
         renderSectionsEditList();
         renderPreview();
+        applyUrlPrefill();
+        registerAgentTools();
 
         // Hide rubrics by default
         elements.previewContent.classList.add('hide-rubrics');
@@ -2343,40 +2633,6 @@
       } else {
         init();
       }
-
-      // Page loader
-      (function() {
-        const loader = document.querySelector('.page-loader');
-        if (!loader) return;
-
-        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const animationDuration = reduceMotion ? 150 : 600;
-        const fadeOutDuration = reduceMotion ? 150 : 200;
-        const maxTimeout = 900;
-
-        document.body.style.overflow = 'hidden';
-
-        function removeLoader() {
-          loader.classList.add('is-fading');
-          setTimeout(function() {
-            if (loader && loader.parentNode) {
-              loader.parentNode.removeChild(loader);
-            }
-            document.body.style.overflow = '';
-          }, fadeOutDuration);
-        }
-
-        const animationTimer = setTimeout(removeLoader, animationDuration);
-
-        setTimeout(function() {
-          clearTimeout(animationTimer);
-          if (loader && loader.parentNode) {
-            loader.style.display = 'none';
-            loader.parentNode.removeChild(loader);
-            document.body.style.overflow = '';
-          }
-        }, maxTimeout);
-      })();
 
     })();
   </script>
