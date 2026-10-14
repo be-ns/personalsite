@@ -47,7 +47,16 @@
     "browserRequirements": "Requires JavaScript",
     "isAccessibleForFree": true,
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-    "author": { "@type": "Person", "name": "Ben Siverly", "url": "https://bensiverly.com/" }
+    "author": { "@type": "Person", "@id": "https://bensiverly.com/#ben", "name": "Ben Siverly", "url": "https://bensiverly.com/" },
+    "potentialAction": {
+      "@type": "ViewAction",
+      "name": "Open the worksheet ready to print",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://bensiverly.com/memorial-preferences.html?print=1",
+        "actionPlatform": "https://schema.org/DesktopWebPlatform"
+      }
+    }
   }
   </script>
 
@@ -372,7 +381,6 @@
     @media print {
       .site-header,
       .skip-link,
-      .page-loader,
       .mpw-hero,
       .mpw-steps,
       .mpw-actions,
@@ -415,11 +423,6 @@
   </style>
 </head>
 <body class="mpw-app">
-
-  <!-- Page Loader -->
-  <div class="page-loader" aria-hidden="true">
-    <div class="page-loader__dot"></div>
-  </div>
 
   <header class="site-header">
     <a href="index.html" class="site-brand" aria-label="Return to home">BS.</a>
@@ -553,39 +556,70 @@
         window.print();
       });
 
-      // Page loader
-      (function() {
-        const loader = document.querySelector('.page-loader');
-        if (!loader) return;
+      const PRINT_URL = 'https://bensiverly.com/memorial-preferences.html?print=1';
 
-        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const animationDuration = reduceMotion ? 150 : 600;
-        const fadeOutDuration = reduceMotion ? 150 : 200;
-        const maxTimeout = 900;
-
-        document.body.style.overflow = 'hidden';
-
-        function removeLoader() {
-          loader.classList.add('is-fading');
-          setTimeout(function() {
-            if (loader && loader.parentNode) {
-              loader.parentNode.removeChild(loader);
-            }
-            document.body.style.overflow = '';
-          }, fadeOutDuration);
-        }
-
-        const animationTimer = setTimeout(removeLoader, animationDuration);
-
-        setTimeout(function() {
-          clearTimeout(animationTimer);
-          if (loader && loader.parentNode) {
-            loader.style.display = 'none';
-            loader.parentNode.removeChild(loader);
-            document.body.style.overflow = '';
+      // Read the worksheet straight off the printed sheet, so what an agent
+      // describes is always what actually prints.
+      function readWorksheet() {
+        const sheet = document.querySelector('.mpw-sheet');
+        function text(el) { return el ? el.textContent.replace(/\s+/g, ' ').trim() : ''; }
+        return {
+          title: text(sheet.querySelector('.mpw-sheet-title')),
+          intro: text(sheet.querySelector('.mpw-sheet-intro')),
+          header_fields: Array.prototype.map.call(sheet.querySelectorAll('.mpw-id-row .mpw-field-label'), text),
+          sections: Array.prototype.map.call(sheet.querySelectorAll('.mpw-section'), function(section) {
+            return {
+              heading: text(section.querySelector('h3')),
+              hint: text(section.querySelector('.mpw-hint')) || null,
+              checkboxes: Array.prototype.map.call(section.querySelectorAll('.mpw-check'), text),
+              fields: Array.prototype.map.call(section.querySelectorAll('.mpw-field-label'), text),
+              blank_lines: section.querySelectorAll(':scope > .mpw-line').length
+            };
+          }),
+          closing: Array.prototype.map.call(sheet.querySelectorAll('.mpw-sheet-foot p'), text),
+          pages: 1,
+          paper: 'Letter or A4, portrait',
+          print_url: PRINT_URL,
+          related_tools: {
+            service_of_life: 'https://bensiverly.com/service-of-life.html',
+            memorial_pamphlet: 'https://bensiverly.com/memorial-pamphlet.html'
           }
-        }, maxTimeout);
-      })();
+        };
+      }
+
+      // ?print=1 opens the print dialog once the page (and its fonts) are ready.
+      if (new URLSearchParams(window.location.search).get('print') === '1') {
+        window.addEventListener('load', function() {
+          (document.fonts ? document.fonts.ready : Promise.resolve()).then(function() {
+            window.print();
+          });
+        });
+      }
+
+      // WebMCP: lets a browser agent read the worksheet or print it.
+      const mc = document.modelContext || navigator.modelContext;
+      if (mc && typeof mc.registerTool === 'function') {
+        try {
+          mc.registerTool({
+            name: 'get_memorial_preferences_worksheet',
+            description: 'Returns the questions on the one-page printable Memorial Preferences Worksheet (gathering type, music, prayers, readings, people, special touches, own words) as structured JSON, plus a link that opens it ready to print.',
+            inputSchema: { type: 'object', properties: {} },
+            annotations: { readOnlyHint: true },
+            async execute() {
+              return { content: [{ type: 'text', text: JSON.stringify(readWorksheet()) }] };
+            }
+          });
+          mc.registerTool({
+            name: 'print_memorial_preferences_worksheet',
+            description: 'Opens the browser print dialog for the one-page Memorial Preferences Worksheet. Only the worksheet prints.',
+            inputSchema: { type: 'object', properties: {} },
+            async execute() {
+              window.print();
+              return { content: [{ type: 'text', text: JSON.stringify({ status: 'print_dialog_opened' }) }] };
+            }
+          });
+        } catch (e) {}
+      }
     })();
   </script>
 </body>

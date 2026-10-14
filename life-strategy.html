@@ -42,13 +42,23 @@
     "@type": "WebApplication",
     "name": "Life Strategy Matrix",
     "url": "https://bensiverly.com/life-strategy.html",
-    "description": "Score eight life areas on importance and satisfaction and see where to invest next. Prints a one-page plan.",
+    "description": "Score eight life areas (health, work, family, spirituality, creativity, relationships, financial, rest) on importance and satisfaction from 1 to 6, see each one sorted into Invest, Maintain, Rebalance, or Release, and get one priority. Prints a one-page plan. Prefill ratings from the URL to open straight to the result.",
     "applicationCategory": "ProductivityApplication",
     "operatingSystem": "Any",
     "browserRequirements": "Requires JavaScript",
     "isAccessibleForFree": true,
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-    "author": { "@type": "Person", "name": "Ben Siverly", "url": "https://bensiverly.com/" }
+    "author": { "@type": "Person", "@id": "https://bensiverly.com/#ben", "name": "Ben Siverly", "url": "https://bensiverly.com/" },
+    "potentialAction": {
+      "@type": "UseAction",
+      "name": "Map life areas by importance and satisfaction",
+      "description": "Each area takes importance,satisfaction as two whole numbers from 1 to 6. With all eight areas set, the page opens on the results; otherwise it opens on the first unanswered question.",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://bensiverly.com/life-strategy.html?health={health}&work={work}&family={family}&spirituality={spirituality}&creativity={creativity}&relationships={relationships}&financial={financial}&rest={rest}",
+        "actionPlatform": ["https://schema.org/DesktopWebPlatform", "https://schema.org/MobileWebPlatform"]
+      }
+    }
   }
   </script>
 
@@ -727,6 +737,10 @@
 
     .matrix-point {
       cursor: pointer;
+      /* Scale around the point itself, not the SVG origin; otherwise hover
+         throws the point out from under the cursor and it flickers. */
+      transform-box: fill-box;
+      transform-origin: center;
       transition: transform var(--transition-fast);
     }
 
@@ -1059,6 +1073,17 @@
     @media (max-width: 480px) {
       .site-header {
         padding: var(--space-xs) var(--space-sm);
+      }
+
+      /* The uppercase headers can't wrap; at full padding the table ran
+         past a 390px screen and the browser zoomed the page out. */
+      .scores-table th,
+      .scores-table td {
+        padding: 0.5rem 0.375rem;
+      }
+
+      .scores-table th {
+        letter-spacing: 0.02em;
       }
 
       main {
@@ -1440,9 +1465,10 @@
         return padding + normalized * (100 - 2 * padding);
       }
 
-      function getFocus() {
+      function getFocus(scores) {
+        scores = scores || state.scores;
         const buckets = { maintain: [], invest: [], rebalance: [], release: [] };
-        state.scores.forEach(function(s) {
+        scores.forEach(function(s) {
           if (s.importance === null || s.satisfaction === null) return;
           const q = getQuadrant(s);
           const gap = (s.importance - 3.5) + (3.5 - s.satisfaction);
@@ -1468,7 +1494,7 @@
         }
 
         // Fallback: category furthest from center
-        const sorted = state.scores.slice().filter(function(s) {
+        const sorted = scores.slice().filter(function(s) {
           return s.importance !== null && s.satisfaction !== null;
         }).sort(function(a, b) {
           const distA = Math.abs(a.importance - 3.5) + Math.abs(a.satisfaction - 3.5);
@@ -1650,16 +1676,19 @@
         });
 
         document.getElementById('nav-back').addEventListener('click', function() {
+          if (transitioning) return;
           goBack();
         });
 
         nextBtn.addEventListener('click', function() {
+          if (transitioning) return;
           const currentValue = isImportance ? category.importance : category.satisfaction;
           if (currentValue === null) return;
           goNext();
         });
 
         document.getElementById('nav-skip').addEventListener('click', function() {
+          if (transitioning) return;
           if (isImportance) {
             category.importance = null;
           } else {
@@ -1724,6 +1753,10 @@
         }
       }
 
+      // True while a step is fading out, so a double click or a held Enter
+      // can't advance two categories at once.
+      let transitioning = false;
+
       function transitionTo(step) {
         const card = document.getElementById('score-card');
         const results = document.querySelector('.results');
@@ -1732,7 +1765,9 @@
 
         if (target && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
           target.classList.add('is-transitioning');
+          transitioning = true;
           setTimeout(function() {
+            transitioning = false;
             state.step = step;
             render();
           }, 150);
@@ -1933,7 +1968,11 @@
 
               const rect = point.getBoundingClientRect();
               const containerRect = container.getBoundingClientRect();
-              tooltip.style.left = (rect.left - containerRect.left + rect.width / 2) + 'px';
+              // Keep the tooltip inside the matrix; centered on an edge point it
+              // would hang past the viewport and widen the page on phones.
+              const half = tooltip.offsetWidth / 2;
+              const center = rect.left - containerRect.left + rect.width / 2;
+              tooltip.style.left = Math.max(half, Math.min(container.clientWidth - half, center)) + 'px';
               tooltip.style.top = (rect.top - containerRect.top - 8) + 'px';
               tooltip.classList.add('is-visible');
             }
@@ -1943,9 +1982,14 @@
             point.addEventListener('click', showTip);
           });
 
-          container.addEventListener('mouseleave', function() {
+          function hideTip() {
             tooltip.classList.remove('is-visible');
+          }
+
+          points.forEach(function(point) {
+            point.addEventListener('blur', hideTip);
           });
+          container.addEventListener('mouseleave', hideTip);
         }
       }
 
@@ -2072,7 +2116,15 @@
 
       // Keyboard navigation
       document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          const tip = document.querySelector('.matrix-tooltip.is-visible');
+          if (tip) tip.classList.remove('is-visible');
+          return;
+        }
         if (e.key === 'Enter' && (state.step === 'importance' || state.step === 'satisfaction')) {
+          // Enter on Back, Skip, or a link already does its own thing.
+          const active = document.activeElement;
+          if (active && active !== document.body && active.id !== 'slider-input') return;
           const nextBtn = document.getElementById('nav-next');
           if (nextBtn && document.activeElement !== nextBtn) {
             nextBtn.click();
@@ -2080,7 +2132,120 @@
         }
       });
 
-      render();
+      // ---- Links and agents ----------------------------------------------
+      // The same ratings a person enters, accepted from a link or an AI agent.
+      // Nothing is written back to the URL and nothing leaves the page.
+      const PAGE_URL = 'https://bensiverly.com/life-strategy.html';
+
+      function rating(value) {
+        const n = Number(value);
+        return Number.isInteger(n) && n >= 1 && n <= 6 ? n : null;
+      }
+
+      // input: { health: { importance, satisfaction }, work: {...}, ... }
+      function buildScores(input) {
+        return categories.map(function(c) {
+          const entry = (input && input[c.id]) || {};
+          return {
+            id: c.id,
+            label: c.label,
+            importance: rating(entry.importance),
+            satisfaction: rating(entry.satisfaction)
+          };
+        });
+      }
+
+      // Show ratings in the UI: the results when all eight are in,
+      // otherwise the first question still unanswered.
+      function showScores(scores) {
+        if (!scores.some(function(s) { return s.importance !== null || s.satisfaction !== null; })) return false;
+        state.scores = scores;
+        state.highlightedId = null;
+        state.step = 'results';
+        for (let i = 0; i < scores.length; i++) {
+          if (scores[i].importance === null || scores[i].satisfaction === null) {
+            state.categoryIndex = i;
+            state.step = scores[i].importance === null ? 'importance' : 'satisfaction';
+            break;
+          }
+        }
+        render();
+        return true;
+      }
+
+      function shareUrl(scores) {
+        const parts = scores.filter(function(s) {
+          return s.importance !== null && s.satisfaction !== null;
+        }).map(function(s) {
+          return s.id + '=' + s.importance + ',' + s.satisfaction;
+        });
+        return PAGE_URL + (parts.length ? '?' + parts.join('&') : '');
+      }
+
+      // ?health=6,2&work=5,5&family=6,5  (importance,satisfaction, each 1-6)
+      function readUrl() {
+        const params = new URLSearchParams(window.location.search);
+        const input = {};
+        categories.forEach(function(c) {
+          const pair = (params.get(c.id) || '').split(',');
+          input[c.id] = { importance: pair[0], satisfaction: pair[1] };
+        });
+        return buildScores(input);
+      }
+
+      const modelContext = document.modelContext || navigator.modelContext;
+      if (modelContext && typeof modelContext.registerTool === 'function') {
+        const pairSchema = {
+          type: 'object',
+          properties: {
+            importance: { type: 'integer', minimum: 1, maximum: 6, description: '1 not important, 6 essential.' },
+            satisfaction: { type: 'integer', minimum: 1, maximum: 6, description: '1 struggling, 6 thriving.' }
+          },
+          required: ['importance', 'satisfaction']
+        };
+        const properties = {};
+        categories.forEach(function(c) { properties[c.id] = pairSchema; });
+
+        try {
+          modelContext.registerTool({
+            name: 'assess_life_balance',
+            description: 'Sort eight life areas (health, work, family, spirituality, creativity, relationships, financial, rest) into Invest, Maintain, Rebalance, or Release from how much each matters (importance 1-6) and how it is going (satisfaction 1-6), with 3.5 as the midpoint, and name the one area to focus on next. Rate as many areas as you know; all eight gives the full matrix. Returns each area\'s quadrant, the priority, and a link that reopens the same result. Also shows the result on the page.',
+            inputSchema: { type: 'object', properties: properties, minProperties: 1 },
+            annotations: { readOnlyHint: true },
+            async execute(input) {
+              const scores = buildScores(input || {});
+              const rated = scores.filter(function(s) { return s.importance !== null && s.satisfaction !== null; });
+              if (!rated.length) {
+                return {
+                  content: [{ type: 'text', text: JSON.stringify({ error: 'Rate at least one area with whole-number importance and satisfaction from 1 to 6.' }) }],
+                  isError: true
+                };
+              }
+              const groups = { maintain: [], invest: [], rebalance: [], release: [] };
+              const areas = rated.map(function(s) {
+                const q = getQuadrant(s);
+                groups[q].push(s.label);
+                return { area: s.label, importance: s.importance, satisfaction: s.satisfaction, quadrant: quadrants[q].label, guidance: quadrants[q].note };
+              });
+              const focus = getFocus(scores);
+              showScores(scores);
+              return {
+                content: [{ type: 'text', text: JSON.stringify({
+                  priority: { area: focus.category, why: focus.message },
+                  areas: areas,
+                  quadrants: { invest: groups.invest, maintain: groups.maintain, rebalance: groups.rebalance, release: groups.release },
+                  missing: scores.filter(function(s) { return rated.indexOf(s) === -1; }).map(function(s) { return s.label; }),
+                  url: shareUrl(scores)
+                }) }]
+              };
+            }
+          });
+        } catch (err) { /* tool registration is optional */ }
+      }
+
+      if (!showScores(readUrl())) {
+        render();
+      }
     })();
   </script>
 </body>

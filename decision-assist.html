@@ -42,13 +42,23 @@
     "@type": "WebApplication",
     "name": "Decision Assist",
     "url": "https://bensiverly.com/decision-assist.html",
-    "description": "A weighted-criteria decision tool. Compare options by scoring them against what matters most to you.",
+    "description": "A weighted-criteria decision tool. Compare 2-6 options against 2-10 criteria weighted 1-5, score each option 1-5 per criterion, and get a ranking with the math shown. Prefill everything from the URL to open straight to the result.",
     "applicationCategory": "ProductivityApplication",
     "operatingSystem": "Any",
     "browserRequirements": "Requires JavaScript",
     "isAccessibleForFree": true,
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-    "author": { "@type": "Person", "name": "Ben Siverly", "url": "https://bensiverly.com/" }
+    "author": { "@type": "Person", "@id": "https://bensiverly.com/#ben", "name": "Ben Siverly", "url": "https://bensiverly.com/" },
+    "potentialAction": {
+      "@type": "UseAction",
+      "name": "Rank options with a weighted decision matrix",
+      "description": "options: 2-6 names separated by |. criteria: 2-10 names separated by |, each optionally followed by :weight (1-5, default 3). scores: one row per option separated by |, each row a comma-separated 1-5 score per criterion in order. With all three complete, the page opens on the results.",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://bensiverly.com/decision-assist.html?decision={decision}&options={options}&criteria={criteria}&scores={scores}",
+        "actionPlatform": ["https://schema.org/DesktopWebPlatform", "https://schema.org/MobileWebPlatform"]
+      }
+    }
   }
   </script>
 
@@ -102,6 +112,7 @@
     html {
       font-size: 16px;
       -webkit-text-size-adjust: 100%;
+      overflow-x: clip;
     }
 
     body {
@@ -114,6 +125,10 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      /* The scoring slide moves a step 28px past the edge; without this,
+         phones widen the page to fit it and stay zoomed out. Both html and
+         body are needed on iOS Safari. */
+      overflow-x: clip;
     }
 
     /* ==========================================================================
@@ -1351,9 +1366,10 @@
           case 'scoring': {
             const currentConsideration = state.considerations[state.scoringIndex];
             if (!currentConsideration) return false;
-            const validOptions = state.options.filter(function(o) { return o.trim().length > 0; });
-            return validOptions.every(function(_, i) {
-              return state.scores[i + '-' + currentConsideration.id] !== undefined;
+            // Scores are keyed by each option's slot in state.options, so a
+            // blank option in the middle must not shift the lookup.
+            return state.options.every(function(o, i) {
+              return o.trim().length === 0 || state.scores[i + '-' + currentConsideration.id] !== undefined;
             });
           }
           default:
@@ -1361,23 +1377,26 @@
         }
       }
 
-      function calculateResults() {
-        const validOptions = state.options
+      // Pure over its argument (defaults to the live state) so the URL
+      // prefill and the agent tool rank with exactly the same math.
+      function calculateResults(s) {
+        s = s || state;
+        const validOptions = s.options
           .map(function(o, i) { return { label: o.trim(), index: i }; })
           .filter(function(o) { return o.label.length > 0; });
 
         let maxPossibleScore = 0;
-        state.considerations.forEach(function(c) {
-          maxPossibleScore += (state.weights[c.id] || 3) * 5;
+        s.considerations.forEach(function(c) {
+          maxPossibleScore += (s.weights[c.id] || 3) * 5;
         });
 
         const results = validOptions.map(function(opt) {
           let totalScore = 0;
           const breakdown = [];
 
-          state.considerations.forEach(function(c) {
-            const weight = state.weights[c.id] || 3;
-            const score = state.scores[opt.index + '-' + c.id] || 3;
+          s.considerations.forEach(function(c) {
+            const weight = s.weights[c.id] || 3;
+            const score = s.scores[opt.index + '-' + c.id] || 3;
             const weighted = weight * score;
             totalScore += weighted;
             breakdown.push({
@@ -1648,6 +1667,16 @@
             if (state.options.length > 2) {
               const index = parseInt(btn.dataset.index, 10);
               state.options.splice(index, 1);
+              // Scores are keyed by option slot; drop the removed option's and
+              // shift later options down one so they keep their own scores.
+              const shifted = {};
+              Object.keys(state.scores).forEach(function(key) {
+                const dash = key.indexOf('-');
+                const optIndex = parseInt(key.slice(0, dash), 10);
+                if (optIndex === index) return;
+                shifted[(optIndex > index ? optIndex - 1 : optIndex) + key.slice(dash)] = state.scores[key];
+              });
+              state.scores = shifted;
               render();
             }
           });
@@ -1697,7 +1726,8 @@
 
         let customChipsHtml = '';
         customConsiderations.forEach(function(c) {
-          customChipsHtml += '<button type="button" class="chip is-custom is-selected" data-id="' + c.id + '">' +
+          customChipsHtml += '<button type="button" class="chip is-custom is-selected" data-id="' + c.id + '"' +
+            ' aria-label="Remove ' + escapeHtml(c.label) + '">' +
             escapeHtml(c.label) +
             '<span class="chip-delete" aria-hidden="true">&times;</span>' +
           '</button>';
@@ -1955,6 +1985,7 @@
             const container = btn.closest('.scoring-option');
             container.querySelectorAll('.score-btn').forEach(function(b) {
               b.classList.toggle('is-selected', b === btn);
+              b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
             });
 
             nextBtn.disabled = !canProceed();
@@ -2157,7 +2188,243 @@
         }
       });
 
-      render();
+      // ---- Links and agents ----------------------------------------------
+      // The same inputs a person types, accepted from a link or an AI agent.
+      // Nothing is written back to the URL and nothing leaves the page.
+      const PAGE_URL = 'https://bensiverly.com/decision-assist.html';
+
+      function suggestionFor(label) {
+        const key = label.toLowerCase();
+        for (let i = 0; i < CATEGORIES.length; i++) {
+          for (let j = 0; j < CATEGORIES[i].suggestions.length; j++) {
+            const suggestion = CATEGORIES[i].suggestions[j];
+            if (suggestion.toLowerCase() === key) {
+              return {
+                id: CATEGORIES[i].id + '_' + key.replace(/[^a-z0-9]/g, '_'),
+                label: suggestion,
+                category: CATEGORIES[i].id,
+                isCustom: false
+              };
+            }
+          }
+        }
+        return null;
+      }
+
+      function wholeNumber(value, min, max) {
+        const n = Number(value);
+        return Number.isInteger(n) && n >= min && n <= max ? n : null;
+      }
+
+      // input: { decision, context, options: [string], criteria: [{ name, weight }],
+      // scores: [[1-5 per criterion] per option] }. Invalid pieces are dropped.
+      function buildState(input) {
+        const s = {
+          step: 'define',
+          decision: {
+            title: String(input.decision || '').trim().slice(0, 200),
+            context: String(input.context || '').trim().slice(0, 2000)
+          },
+          options: [],
+          considerations: [],
+          weights: {},
+          scores: {},
+          scoringIndex: 0
+        };
+        const optionSlot = [];
+        const criterionSlot = [];
+
+        (Array.isArray(input.options) ? input.options : []).forEach(function(o, i) {
+          const label = String(o == null ? '' : o).replace(/\|/g, '/').trim().slice(0, 120);
+          optionSlot[i] = label && s.options.length < 6 ? s.options.push(label) - 1 : -1;
+        });
+
+        const seen = {};
+        (Array.isArray(input.criteria) ? input.criteria : []).forEach(function(c, i) {
+          const name = String((c && c.name) || '').replace(/\|/g, '/').trim().slice(0, 80);
+          criterionSlot[i] = -1;
+          if (!name || seen[name.toLowerCase()] || s.considerations.length >= 10) return;
+          seen[name.toLowerCase()] = true;
+          const consideration = suggestionFor(name) || {
+            id: 'c_' + i + '_' + name.toLowerCase().replace(/[^a-z0-9]/g, '_'),
+            label: name,
+            category: 'custom',
+            isCustom: true
+          };
+          criterionSlot[i] = s.considerations.push(consideration) - 1;
+          s.weights[consideration.id] = wholeNumber(c.weight, 1, 5) || 3;
+        });
+
+        (Array.isArray(input.scores) ? input.scores : []).forEach(function(row, oi) {
+          if (!Array.isArray(row) || optionSlot[oi] === undefined || optionSlot[oi] < 0) return;
+          row.forEach(function(value, ci) {
+            const score = wholeNumber(value, 1, 5);
+            if (score === null || criterionSlot[ci] === undefined || criterionSlot[ci] < 0) return;
+            s.scores[optionSlot[oi] + '-' + s.considerations[criterionSlot[ci]].id] = score;
+          });
+        });
+
+        const unscored = s.considerations.findIndex(function(c) {
+          return s.options.some(function(_, oi) { return s.scores[oi + '-' + c.id] === undefined; });
+        });
+        const ready = s.options.length >= 2 && s.considerations.length >= 2;
+        return { state: s, ready: ready, complete: ready && unscored === -1, firstUnscored: unscored };
+      }
+
+      function shareUrl(s) {
+        function enc(v) { return encodeURIComponent(v).replace(/%20/g, '+'); }
+        const parts = [];
+        if (s.decision.title) parts.push('decision=' + enc(s.decision.title));
+        parts.push('options=' + s.options.map(enc).join('|'));
+        parts.push('criteria=' + s.considerations.map(function(c) {
+          return enc(c.label) + ':' + s.weights[c.id];
+        }).join('|'));
+        parts.push('scores=' + s.options.map(function(_, oi) {
+          return s.considerations.map(function(c) { return s.scores[oi + '-' + c.id] || ''; }).join(',');
+        }).join('|'));
+        return PAGE_URL + '?' + parts.join('&');
+      }
+
+      // Show a built state in the UI at the furthest step it supports.
+      function showBuilt(built) {
+        const s = built.state;
+        if (built.complete) {
+          s.step = 'results';
+        } else if (built.ready) {
+          s.step = 'scoring';
+          s.scoringIndex = built.firstUnscored;
+        } else if (s.options.length > 0) {
+          s.step = 'options';
+        } else if (s.decision.title) {
+          s.step = 'options';
+        } else {
+          return false;
+        }
+        while (s.options.length < 2) s.options.push('');
+        state = s;
+        render();
+        return true;
+      }
+
+      // ?decision=Take+the+job&options=Take+it|Stay&criteria=Pay:5|Commute:3&scores=4,2|3,5
+      function readUrl() {
+        const params = new URLSearchParams(window.location.search);
+        if (!['decision', 'options', 'criteria', 'scores'].some(function(k) { return params.has(k); })) return null;
+        function list(name) {
+          return (params.get(name) || '').split('|').map(function(v) { return v.trim(); }).filter(Boolean);
+        }
+        return {
+          decision: params.get('decision') || '',
+          context: params.get('context') || '',
+          options: list('options'),
+          criteria: list('criteria').map(function(c) {
+            const m = /^(.*?)(?:\s*:\s*([1-5]))?$/.exec(c);
+            return { name: m[1], weight: m[2] ? Number(m[2]) : 3 };
+          }),
+          scores: list('scores').map(function(row) { return row.split(','); })
+        };
+      }
+
+      function rankingFor(s) {
+        return calculateResults(s).map(function(r, i) {
+          return {
+            rank: i + 1,
+            option: r.label,
+            percentage: r.percentage,
+            weighted_score: r.totalScore,
+            max_score: r.breakdown.reduce(function(sum, b) { return sum + b.weight * 5; }, 0),
+            breakdown: r.breakdown.map(function(b) {
+              return { criterion: b.consideration.label, weight: b.weight, score: b.score, weighted: b.weighted };
+            })
+          };
+        });
+      }
+
+      function toolText(value) {
+        return { content: [{ type: 'text', text: JSON.stringify(value) }] };
+      }
+
+      const modelContext = document.modelContext || navigator.modelContext;
+      if (modelContext && typeof modelContext.registerTool === 'function') {
+        try {
+          modelContext.registerTool({
+            name: 'score_decision',
+            description: 'Rank 2-6 options with a weighted decision matrix. Give the options, 2-10 criteria with a weight from 1 (nice to have) to 5 (critical), and a 1-5 score for every option on every criterion (1 poor fit, 5 strong fit). Each option\'s total is the sum of weight x score; percentage is that total over the best possible. Returns the ranking with the math per criterion and a link that reopens the same result. Also shows the result on the page.',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                decision: { type: 'string', description: 'The decision in a few words, e.g. "Take the new job or stay put".' },
+                context: { type: 'string', description: 'Optional background.' },
+                options: { type: 'array', minItems: 2, maxItems: 6, items: { type: 'string' }, description: 'The choices being compared.' },
+                criteria: {
+                  type: 'array',
+                  minItems: 2,
+                  maxItems: 10,
+                  items: {
+                    type: 'object',
+                    properties: {
+                      name: { type: 'string', description: 'What matters, e.g. "Commute".' },
+                      weight: { type: 'integer', minimum: 1, maximum: 5, description: '1 nice to have, 2 somewhat important, 3 important (default), 4 very important, 5 critical.' }
+                    },
+                    required: ['name']
+                  }
+                },
+                scores: {
+                  type: 'array',
+                  description: 'One row per option, in options order. Each row holds one 1-5 score per criterion, in criteria order.',
+                  items: { type: 'array', items: { type: 'integer', minimum: 1, maximum: 5 } }
+                }
+              },
+              required: ['options', 'criteria', 'scores']
+            },
+            annotations: { readOnlyHint: true },
+            async execute(input) {
+              const built = buildState(input || {});
+              const s = built.state;
+              if (!built.complete) {
+                const result = toolText({
+                  error: 'Need 2-6 options, 2-10 criteria, and a 1-5 score for every option on every criterion.',
+                  options_accepted: s.options.length,
+                  criteria_accepted: s.considerations.length,
+                  first_unscored_criterion: built.firstUnscored >= 0 ? s.considerations[built.firstUnscored].label : null
+                });
+                result.isError = true;
+                return result;
+              }
+              const ranking = rankingFor(s);
+              showBuilt(built);
+              return toolText({
+                decision: s.decision.title || null,
+                top_choice: ranking[0].option,
+                tied_for_top: ranking.filter(function(r) { return r.weighted_score === ranking[0].weighted_score; }).length > 1,
+                ranking: ranking,
+                url: shareUrl(s)
+              });
+            }
+          });
+        } catch (err) { /* tool registration is optional */ }
+
+        try {
+          modelContext.registerTool({
+            name: 'list_decision_factors',
+            description: 'List the suggested decision criteria by category (financial, time, relationships, health, growth, values, practical, emotional) and what each weight and score number means. Use it to help someone choose criteria before calling score_decision; any other criterion name works too.',
+            inputSchema: { type: 'object', properties: {} },
+            annotations: { readOnlyHint: true },
+            async execute() {
+              return toolText({
+                categories: CATEGORIES.map(function(c) { return { category: c.label, suggestions: c.suggestions }; }),
+                weight_scale: WEIGHT_LABELS,
+                score_scale: SCORE_LABELS
+              });
+            }
+          });
+        } catch (err) { /* tool registration is optional */ }
+      }
+
+      const fromUrl = readUrl();
+      if (!fromUrl || !showBuilt(buildState(fromUrl))) {
+        render();
+      }
     })();
   </script>
 </body>

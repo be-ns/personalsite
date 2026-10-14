@@ -1,0 +1,155 @@
+# Ben Siverly
+
+> Personal site of Ben Siverly, a product manager (AppFolio, rental applications and payments) and builder. It hosts free browser tools that need no account and send nothing to a server. An AI agent can use each tool three ways: send its person a prefilled link (URL parameters), call it in the browser over WebMCP, or read its data directly.
+
+How to use the tools:
+
+- **Prefilled links.** Every tool reads its inputs from the query string on load and shows the result. Unknown or invalid parameters are ignored. Nothing is written back to the URL, and nothing leaves the browser.
+- **WebMCP.** In a browser that exposes `document.modelContext` (or the older `navigator.modelContext`), each tool page registers the tools listed below. They run the page's own logic, return JSON as text content, and update the page so the person can see the same result.
+- **Structured data.** Each tool page carries schema.org `WebApplication` JSON-LD with a `potentialAction` URL template.
+- Everything is free. Saved work lives in the person's own browser (`localStorage`). PDFs are made on the device.
+
+## Life Strategy Matrix
+
+https://bensiverly.com/life-strategy.html
+
+Sort eight life areas into Invest, Maintain, Rebalance, or Release by importance vs. satisfaction, and get one priority.
+
+URL parameters: one per area (`health`, `work`, `family`, `spirituality`, `creativity`, `relationships`, `financial`, `rest`), each `importance,satisfaction` as whole numbers 1-6 (importance: 1 not important … 6 essential; satisfaction: 1 struggling … 6 thriving). With all eight, the page opens on the results; otherwise on the first unanswered question. Out-of-range values are ignored.
+
+Example: https://bensiverly.com/life-strategy.html?health=6,2&work=5,5&family=6,5&spirituality=3,3&creativity=2,5&relationships=4,4&financial=5,2&rest=3,2 (priority: Health)
+
+Quadrants split at 3.5: high importance and low satisfaction = Invest; both high = Maintain; low importance and high satisfaction = Rebalance; both low = Release. The priority is the Invest area with the biggest gap, else the most satisfied Rebalance area, else the area furthest from center.
+
+WebMCP tools:
+
+- `assess_life_balance` {health: {importance, satisfaction}, work: {…}, …} (any subset, at least one; integers 1-6): returns {priority: {area, why}, areas: [{area, importance, satisfaction, quadrant, guidance}], quadrants, missing, url}. Also shows the result on the page.
+
+## Native Plant Finder
+
+https://bensiverly.com/native-plant-finder.html
+
+Find California native plants for a ZIP code and sun exposure, with local nurseries.
+
+URL parameters (the page runs the search on load; invalid values are ignored):
+
+- `zip` (required): 5-digit California ZIP code, e.g. 94110
+- `sun`: `full_shade` (under 2 h direct sun), `part_shade` (2-4 h), `part_sun` (4-6 h, default), `full_sun` (6+ h). Also accepts 1-4, `shade`, `full`.
+- `water`: comma list of `very_low`, `low`, `moderate`
+- `wildlife`: comma list of `hummingbirds`, `butterflies`, `birds`
+- `care`: comma list of `easy`, `deer` (deer resistant)
+
+Example: https://bensiverly.com/native-plant-finder.html?zip=94110&sun=full_sun&water=very_low,low&wildlife=hummingbirds
+
+WebMCP tools:
+
+- `find_native_plants` {zip, sun?, water[]?, wildlife[]?, care[]?}: returns location, USDA zone, plants (common and scientific name, layer, height, spread, sun, water, bloom season and color, wildlife supported, easy care, deer resistant, description, Calscape link), nurseries (name, address, url), and a shareable URL. Non-California ZIPs return an `error`.
+- `get_saved_native_plants` {}: plants saved to My Garden in this browser.
+
+Raw data (static JSON, readable directly; source: Calscape.org / California Native Plant Society):
+
+- [meta.json](https://bensiverly.com/assets/native-plants/meta.json): vocabularies and supported ZIP prefixes
+- [plants-core.json](https://bensiverly.com/assets/native-plants/plants/plants-core.json)
+- [regions.json](https://bensiverly.com/assets/native-plants/regions/regions.json)
+- [nurseries.json](https://bensiverly.com/assets/native-plants/nurseries/nurseries.json)
+- `https://bensiverly.com/assets/native-plants/zip-index/ca-zip-prefix-{90..96}.json`: ZIP to region
+
+## Memorial Pamphlet Creator
+
+https://bensiverly.com/memorial-pamphlet.html
+
+Lay out a fold-in-half memorial service pamphlet (cover with photo, name, and dates; obituary; order of service; closing line) and download a 2-page landscape PDF to print double-sided. Nothing is uploaded or saved.
+
+URL parameters (all optional, URL-encoded; only empty fields are filled):
+
+- `name` (up to 80 chars), `dates` (e.g. `March 3, 1942 - May 18, 2026`), or `born` + `died` (joined as "born - died")
+- `title`: cover title (default "In Loving Memory"); `service_date` (up to 100); `location` (up to 200)
+- `obituary` (up to 1,800; `%0A` for line breaks); `order` (repeat once per item, or `%0A`-separated; up to 2,000 total); `closing` (up to 240)
+- `template`: `classic` | `modern`; `paper`: `letter` | `a4`
+
+Example: https://bensiverly.com/memorial-pamphlet.html?name=Eleanor%20Grace%20Whitman&born=March%203%2C%201942&died=May%2018%2C%202026&service_date=Saturday%2C%20May%2030%2C%202026%20at%2011%3A00%20AM&location=Grace%20Community%20Chapel&order=Prelude&order=Opening%20Prayer&order=Eulogy&template=classic
+
+WebMCP tools:
+
+- `fill_memorial_pamphlet` {full_name?, dates?, cover_title?, service_date_time?, service_location?, obituary?, order_of_service?: string[], closing_line?, template?: classic|modern, paper_size?: letter|a4}: changes only the fields passed; returns the current draft and the next step.
+- `get_memorial_pamphlet_draft` {} (read-only): every field, template, paper size, whether photos are added, whether it is ready to export, and the allowed options and length limits.
+
+Output: the person adds photos (optional) and clicks Generate PDF to download `Last_First_Memorial_Pamphlet_YYYY-MM-DD.pdf`. Agents cannot upload photos or start the download.
+
+## Service of Life Builder
+
+https://bensiverly.com/service-of-life.html
+
+Build an order of service for a memorial, funeral, graveside committal, or vigil in the Anglican tradition (prayers, readings, music, tributes, silences), then print it or save it as a PDF. The draft is saved only in this browser's `localStorage` and can be exported or imported as JSON.
+
+URL parameters (optional; only fill empty fields; `service_type` and `tradition` apply only to an empty draft):
+
+- `name`, `date` (free text, e.g. `Saturday, January 25, 2026 at 2:00 PM`), `location`, `officiant` (each up to 300 chars)
+- `service_type`: `memorial` | `funeral` | `graveside` | `vigil`
+- `tradition`: `anglican_default` | `anglican_with_lutheran_headings` | `anglican_with_catholic_station_mode`
+
+Example: https://bensiverly.com/service-of-life.html?name=Margaret%20Anne%20Walker&date=Saturday%2C%20June%2020%2C%202026%20at%202%3A00%20PM&location=St.%20Luke%27s%20Episcopal%20Church&officiant=The%20Rev.%20Sarah%20Bennett&service_type=funeral
+
+WebMCP tools:
+
+- `list_service_of_life_options` {} (read-only): service types and their sections, tradition profiles, component types and fields, roles, music kinds, number ranges, suggested readings, ready-made prayer texts.
+- `get_service_of_life_draft` {} (read-only): service type, tradition profile, details (name of deceased, date and time, location, officiant), and sections with their components.
+- `set_service_of_life_details` {name_of_deceased?, date_time?, location?, officiant?, service_type?, tradition_profile?, allow_removing_content?: bool}: refuses a type change that would drop content unless `allow_removing_content` is true.
+- `add_service_of_life_component` {section_id, component_type: text_block|reading_ref|music_item|tribute_slot|silence, fields, position?}: switches on an optional section when content is added to it.
+
+`[Name]` in any text is replaced with the name of the deceased in the preview. Output: the person reviews the preview and uses Print / Save PDF, or Export JSON.
+
+## Memorial Preferences Worksheet
+
+https://bensiverly.com/memorial-preferences.html
+
+A one-page form to print and fill out by hand: the kind of gathering, music, prayers, readings, people, and personal wishes for a memorial service. It has no inputs; it exists to be printed.
+
+URL parameters:
+
+- `print=1`: opens the print dialog once the page is ready. Only the worksheet prints (Letter or A4, one page).
+
+Example: https://bensiverly.com/memorial-preferences.html?print=1
+
+WebMCP tools:
+
+- `get_memorial_preferences_worksheet` {}: returns the title, intro, header fields, the 8 sections (heading, hint, checkboxes, fields, blank lines), closing text, print URL, and links to the related tools.
+- `print_memorial_preferences_worksheet` {}: opens the print dialog.
+
+## Decision Assist
+
+https://bensiverly.com/decision-assist.html
+
+Rank 2-6 options with a weighted decision matrix and see the math.
+
+URL parameters (all optional; with options, criteria, and scores complete, the page opens on the results, otherwise on the furthest step filled):
+
+- `decision`: the decision in a few words.
+- `options`: 2-6 names separated by `|`.
+- `criteria`: 2-10 names separated by `|`, each optionally `:weight` (1 nice to have … 5 critical; default 3). Names matching a built-in suggestion (e.g. "Upfront cost", "Gut feeling") select it.
+- `scores`: one row per option, separated by `|`, in `options` order; each row is comma-separated 1-5 scores (1 poor fit, 5 strong fit) in `criteria` order.
+
+Example: https://bensiverly.com/decision-assist.html?decision=Take+the+job&options=Take+it|Stay&criteria=Pay:5|Commute:3&scores=4,2|3,5 (Stay 75%, Take it 65%)
+
+Math: each option's total = sum of weight × score; percentage = total ÷ (sum of weights × 5).
+
+WebMCP tools:
+
+- `score_decision` {decision?, context?, options: string[2-6], criteria: [{name, weight?: 1-5}] (2-10), scores: integer[1-5][][] (one row per option)}: returns {decision, top_choice, tied_for_top, ranking: [{rank, option, percentage, weighted_score, max_score, breakdown}], url}. Incomplete input returns an error naming the first unscored criterion. Also shows the result on the page.
+- `list_decision_factors` {}: the suggested criteria by category, plus the weight and score scales.
+
+## Projects
+
+- [AbiertoClaw](https://github.com/be-ns/AbiertoClaw): an open-source (MIT) plugin for the [Hermes Agent](https://github.com/NousResearch/hermes-agent). Each day it finds the best free OpenRouter model that passes a real tool-call smoke test, sets it as Hermes's default model, and keeps a local Ollama or LM Studio model as the fallback. Install: `hermes plugins install be-ns/AbiertoClaw --enable`, then `hermes abiertoclaw pick`.
+- [Brava](https://bravamade.com): women's soccer recruiting profiles with coach-verified stats, built with his brother.
+
+## About
+
+- [Home](https://bensiverly.com/): intro, work history, tools, and how he works.
+- [Résumé](https://bensiverly.com/resume.html): one page, with PDF downloads.
+- [Writings](https://bensiverly.com/writings.html): poetry and prose. Written content is © Ben Siverly, all rights reserved, and is not covered by the code's MIT license.
+
+## Optional
+
+- [Source code](https://github.com/be-ns/personalsite): plain HTML, CSS, and JavaScript, MIT licensed.
+- [Sitemap](https://bensiverly.com/sitemap.xml)

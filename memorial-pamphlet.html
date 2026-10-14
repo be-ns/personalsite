@@ -48,7 +48,17 @@
     "browserRequirements": "Requires JavaScript",
     "isAccessibleForFree": true,
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-    "author": { "@type": "Person", "name": "Ben Siverly", "url": "https://bensiverly.com/" }
+    "author": { "@id": "https://bensiverly.com/#ben" },
+    "potentialAction": {
+      "@type": "CreateAction",
+      "name": "Open a memorial pamphlet prefilled with these details",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://bensiverly.com/memorial-pamphlet.html?name={name}&dates={dates}&title={title}&service_date={service_date}&location={location}&obituary={obituary}&order={order}&closing={closing}&template={template}&paper={paper}",
+        "actionPlatform": ["https://schema.org/DesktopWebPlatform", "https://schema.org/MobileWebPlatform"]
+      },
+      "result": { "@type": "DigitalDocument", "encodingFormat": "application/pdf", "name": "Two-page, fold-in-half memorial pamphlet" }
+    }
   }
   </script>
 
@@ -980,6 +990,15 @@
       .pamphlet-preview {
         border: none;
       }
+
+      /* Print both spreads, one per page, whichever one is showing on screen */
+      .pamphlet-spread {
+        display: grid !important;
+      }
+
+      #spread-front {
+        break-after: page;
+      }
     }
   </style>
 </head>
@@ -1204,6 +1223,8 @@
         paperSize: 'letter',
         photoPrimary: null,
         photoSecondary: null,
+        // Width / height of each photo, so the PDF crops instead of stretching
+        photoRatios: { primary: 1, secondary: 1 },
         showBackSpread: false
       };
 
@@ -1241,19 +1262,53 @@
         attachFormListeners();
         attachPhotoListeners();
         attachActionListeners();
+        attachLeaveGuards();
         updatePreview();
+        applyUrlPrefill();
+        registerAgentTools();
+      }
+
+      const FIELD_DEFAULTS = { serviceTitle: 'In Loving Memory' };
+
+      function hasWork() {
+        return Boolean(state.photoPrimary || state.photoSecondary) || fields.some(function(fieldId) {
+          const value = document.getElementById(fieldId).value;
+          return value.trim() !== '' && value !== FIELD_DEFAULTS[fieldId];
+        });
+      }
+
+      // Nothing is saved, so guard the two ways typed work silently disappears
+      function attachLeaveGuards() {
+        // A photo dropped just outside a dropzone makes the browser open the file
+        // in place of this page
+        document.addEventListener('dragover', function(e) { e.preventDefault(); });
+        document.addEventListener('drop', function(e) { e.preventDefault(); });
+
+        window.addEventListener('beforeunload', function(e) {
+          if (hasWork()) {
+            e.preventDefault();
+            e.returnValue = '';
+          }
+        });
       }
 
       // Template selection
       function attachTemplateListeners() {
         templateCards.forEach(function(card) {
           card.addEventListener('click', function() {
-            templateCards.forEach(function(c) { c.classList.remove('is-selected'); });
-            card.classList.add('is-selected');
-            state.template = card.querySelector('input').value;
-            updatePreviewTemplate();
+            selectTemplate(card.querySelector('input').value);
           });
         });
+      }
+
+      function selectTemplate(value) {
+        templateCards.forEach(function(c) {
+          const input = c.querySelector('input');
+          c.classList.toggle('is-selected', input.value === value);
+          input.checked = input.value === value;
+        });
+        state.template = value;
+        updatePreviewTemplate();
       }
 
       function updatePreviewTemplate() {
@@ -1265,11 +1320,150 @@
       function attachPaperSizeListeners() {
         paperButtons.forEach(function(btn) {
           btn.addEventListener('click', function() {
-            paperButtons.forEach(function(b) { b.classList.remove('is-selected'); });
-            btn.classList.add('is-selected');
-            state.paperSize = btn.dataset.value;
+            selectPaperSize(btn.dataset.value);
           });
         });
+      }
+
+      function selectPaperSize(value) {
+        paperButtons.forEach(function(b) {
+          b.classList.toggle('is-selected', b.dataset.value === value);
+        });
+        state.paperSize = value;
+      }
+
+      // Set form fields by id, trimmed to each field's length limit, then refresh
+      function applyFieldValues(values) {
+        Object.keys(values).forEach(function(fieldId) {
+          const input = document.getElementById(fieldId);
+          if (!input) return;
+          const limit = input.maxLength > 0 ? input.maxLength : undefined;
+          input.value = String(values[fieldId]).slice(0, limit);
+        });
+        Object.keys(CHAR_LIMITS).forEach(updateCharCount);
+        updatePreview();
+      }
+
+      // Prefill from the link, e.g. ?name=Ruth%20Price&dates=1940%20-%202026&template=modern.
+      // Fills only fields that are still empty, so a draft the browser restored is kept.
+      const URL_PARAMS = {
+        name: 'fullName', dates: 'datesLine', title: 'serviceTitle',
+        service_date: 'serviceDateTime', location: 'serviceLocation',
+        obituary: 'shortObituary', order: 'orderOfService', closing: 'closingLine'
+      };
+
+      function applyUrlPrefill() {
+        const params = new URLSearchParams(window.location.search);
+        const values = {};
+        Object.keys(URL_PARAMS).forEach(function(key) {
+          const given = params.getAll(key).map(function(v) { return v.trim(); }).filter(Boolean);
+          if (!given.length) return;
+          // order can repeat, one item per param
+          values[URL_PARAMS[key]] = key === 'order' ? given.join('\n') : given[0];
+        });
+        if (!values.datesLine && (params.get('born') || params.get('died'))) {
+          values.datesLine = [params.get('born'), params.get('died')]
+            .map(function(v) { return (v || '').trim(); }).filter(Boolean).join(' - ');
+        }
+        Object.keys(values).forEach(function(fieldId) {
+          const current = document.getElementById(fieldId).value;
+          if (current.trim() !== '' && current !== FIELD_DEFAULTS[fieldId]) delete values[fieldId];
+        });
+        if (Object.keys(values).length) applyFieldValues(values);
+
+        const template = params.get('template');
+        if (template === 'classic' || template === 'modern') selectTemplate(template);
+        const paper = params.get('paper');
+        if (paper && Object.prototype.hasOwnProperty.call(PAPER_SIZES, paper)) selectPaperSize(paper);
+      }
+
+      // WebMCP: lets an AI agent in the browser fill and read this pamphlet for the
+      // person using it. Feature-detected; nothing happens in browsers without it.
+      function registerAgentTools() {
+        const mc = document.modelContext || navigator.modelContext;
+        if (!mc || typeof mc.registerTool !== 'function') return;
+
+        const TOOL_FIELDS = {
+          full_name: 'fullName', dates: 'datesLine', cover_title: 'serviceTitle',
+          service_date_time: 'serviceDateTime', service_location: 'serviceLocation',
+          obituary: 'shortObituary', order_of_service: 'orderOfService', closing_line: 'closingLine'
+        };
+
+        function asResult(obj) {
+          return { content: [{ type: 'text', text: JSON.stringify(obj) }] };
+        }
+
+        function draftSummary() {
+          const draft = {};
+          const maxLength = {};
+          Object.keys(TOOL_FIELDS).forEach(function(key) {
+            const input = document.getElementById(TOOL_FIELDS[key]);
+            draft[key] = input.value;
+            maxLength[key] = input.maxLength;
+          });
+          draft.template = state.template;
+          draft.paper_size = state.paperSize;
+          draft.has_cover_photo = Boolean(state.photoPrimary);
+          draft.has_back_photo = Boolean(state.photoSecondary);
+          draft.ready_to_export = draft.full_name.trim() !== '';
+          draft.options = { template: ['classic', 'modern'], paper_size: Object.keys(PAPER_SIZES), max_length: maxLength };
+          return draft;
+        }
+
+        const text = function(description) { return { type: 'string', description: description }; };
+
+        try {
+          mc.registerTool({
+            name: 'fill_memorial_pamphlet',
+            description: 'Fill in the memorial pamphlet on this page: a letter or A4 sheet, printed both sides and folded in half, to hand out at a funeral or memorial service. Only the fields you pass change, and the person sees the preview update. Photos and the PDF download stay with the person: tell them to add photos if they want, then click Generate PDF.',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                full_name: text('Full name of the person who died (required before export, up to 80 characters).'),
+                dates: text('Dates line under the name, e.g. "March 3, 1942 - May 18, 2026".'),
+                cover_title: text('Small title above the photo. Default "In Loving Memory".'),
+                service_date_time: text('e.g. "Saturday, May 30, 2026 at 11:00 AM".'),
+                service_location: text('e.g. "Grace Community Chapel, 415 Oak Avenue".'),
+                obituary: text('Short obituary or life summary, up to 1,800 characters. Blank lines separate paragraphs.'),
+                order_of_service: { type: 'array', items: { type: 'string' }, description: 'Parts of the service in order, one per item, e.g. ["Prelude", "Opening Prayer", "Eulogy - Daniel Whitman"]. Up to 2,000 characters in all.' },
+                closing_line: text('Short line on the back cover, e.g. "Forever in our hearts."'),
+                template: { type: 'string', enum: ['classic', 'modern'], description: 'classic: centered serif cover. modern: dark cover, bolder name.' },
+                paper_size: { type: 'string', enum: ['letter', 'a4'] }
+              },
+              additionalProperties: false
+            },
+            execute: async function(input) {
+              input = input || {};
+              const values = {};
+              Object.keys(TOOL_FIELDS).forEach(function(key) {
+                let value = input[key];
+                if (Array.isArray(value)) value = value.join('\n');
+                if (typeof value === 'string') values[TOOL_FIELDS[key]] = value;
+              });
+              applyFieldValues(values);
+              if (input.template === 'classic' || input.template === 'modern') selectTemplate(input.template);
+              if (typeof input.paper_size === 'string' && Object.prototype.hasOwnProperty.call(PAPER_SIZES, input.paper_size)) {
+                selectPaperSize(input.paper_size);
+              }
+              return asResult({
+                draft: draftSummary(),
+                next_step: 'Ask the person to review the preview, add photos if they want, and click Generate PDF.'
+              });
+            }
+          });
+
+          mc.registerTool({
+            name: 'get_memorial_pamphlet_draft',
+            description: 'Read the memorial pamphlet as it is currently filled in on this page, plus the allowed templates, paper sizes, and field length limits.',
+            inputSchema: { type: 'object', properties: {} },
+            annotations: { readOnlyHint: true },
+            execute: async function() {
+              return asResult(draftSummary());
+            }
+          });
+        } catch (e) {
+          // Agent tools are an extra; never let them break the page
+        }
       }
 
       // Form listeners
@@ -1317,11 +1511,7 @@
         if (!input || !dropzone) return;
 
         // File input change
-        input.addEventListener('change', function(e) {
-          if (e.target.files && e.target.files[0]) {
-            handlePhotoFile(e.target.files[0], type);
-          }
-        });
+        input.addEventListener('change', onPhotoInputChange(type));
 
         // Drag and drop
         dropzone.addEventListener('dragover', function(e) {
@@ -1340,6 +1530,20 @@
             handlePhotoFile(e.dataTransfer.files[0], type);
           }
         });
+      }
+
+      function onPhotoInputChange(type) {
+        return function(e) {
+          if (e.target.files && e.target.files[0]) {
+            handlePhotoFile(e.target.files[0], type);
+          }
+          // Clear so choosing the same file again (after a rejection) still fires
+          e.target.value = '';
+        };
+      }
+
+      function photoReadError() {
+        alert('That image could not be read. Please try a different JPG, PNG, or WebP file.');
       }
 
       function handlePhotoFile(file, type) {
@@ -1379,6 +1583,9 @@
             canvas.width = width;
             canvas.height = height;
             const ctx = canvas.getContext('2d');
+            // JPEG has no transparency; without a white base, clear PNG pixels turn black
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, width, height);
             ctx.drawImage(img, 0, 0, width, height);
 
             const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
@@ -1388,12 +1595,15 @@
             } else {
               state.photoSecondary = dataUrl;
             }
+            state.photoRatios[type] = width / height;
 
             updatePhotoPreview(type);
             updatePreview();
           };
+          img.onerror = photoReadError;
           img.src = e.target.result;
         };
+        reader.onerror = photoReadError;
         reader.readAsDataURL(file);
       }
 
@@ -1427,11 +1637,7 @@
 
         // innerHTML replaced the input either way; reattach its listener
         const newInput = dropzone.querySelector('input');
-        newInput.addEventListener('change', function(e) {
-          if (e.target.files && e.target.files[0]) {
-            handlePhotoFile(e.target.files[0], type);
-          }
-        });
+        newInput.addEventListener('change', onPhotoInputChange(type));
       }
 
       function removePhoto(type) {
@@ -1664,6 +1870,54 @@
           const coverText = isModern ? [255, 255, 255] : [26, 26, 26];
           const coverMuted = isModern ? [180, 180, 180] : [102, 102, 102];
 
+          const lineFactor = doc.getLineHeightFactor();
+          const tooLong = [];
+
+          // Distance from the first baseline to the last, at the current font size
+          function linesSpan(lines) {
+            return Math.max(lines.length - 1, 0) * doc.getFontSize() * lineFactor;
+          }
+
+          // Crop the photo to fill its box, matching the preview's object-fit: cover
+          function addCoverImage(data, ratio, x, y, w, h) {
+            let drawW = w;
+            let drawH = h;
+            if (ratio > w / h) {
+              drawW = h * ratio;
+            } else {
+              drawH = w / ratio;
+            }
+            doc.saveGraphicsState();
+            doc.rect(x, y, w, h, null);
+            doc.clip();
+            doc.discardPath();
+            doc.addImage(data, 'JPEG', x - (drawW - w) / 2, y - (drawH - h) / 2, drawW, drawH);
+            doc.restoreGraphicsState();
+          }
+
+          // Long text steps down in size, then splits into two columns, so it stays on the page
+          function drawFittedText(text, x, top, label) {
+            const avail = pageHeight - margin - top;
+            const gap = 14;
+            let fit = null;
+            for (let cols = 1; cols <= 2 && !(fit && fit.fits); cols++) {
+              const colWidth = (contentWidth - gap * (cols - 1)) / cols;
+              for (let size = 10; size >= 7; size -= 0.5) {
+                doc.setFontSize(size);
+                const lines = doc.splitTextToSize(text, colWidth);
+                const perCol = Math.floor(avail / (size * lineFactor)) + 1;
+                fit = { lines: lines, size: size, cols: cols, colWidth: colWidth, perCol: perCol, fits: lines.length <= perCol * cols };
+                if (fit.fits) break;
+              }
+            }
+            doc.setFontSize(fit.size);
+            for (let c = 0; c < fit.cols; c++) {
+              const chunk = fit.lines.slice(c * fit.perCol, (c + 1) * fit.perCol);
+              if (chunk.length) doc.text(chunk, x + c * (fit.colWidth + gap), top);
+            }
+            if (!fit.fits) tooLong.push(label);
+          }
+
           // ============================================
           // PAGE 1: Outside spread (Back cover | Front cover)
           // When printed and folded: Front cover on right, back on left
@@ -1674,37 +1928,50 @@
           doc.rect(0, 0, panelWidth, pageHeight, 'F');
 
           const backCenterX = panelWidth / 2;
-          const backY = pageHeight - margin - 100;
 
           // Secondary photo on back (if exists)
           if (state.photoSecondary) {
             try {
               const imgHeight = 80;
               const imgWidth = 100;
-              doc.addImage(state.photoSecondary, 'JPEG',
+              addCoverImage(state.photoSecondary, state.photoRatios.secondary,
                 backCenterX - imgWidth/2, margin + 40, imgWidth, imgHeight);
             } catch (e) {
               console.warn('Could not add secondary image:', e);
             }
           }
 
+          // Measure the closing line and service info first, so a long one
+          // lifts the block instead of overlapping or running off the panel
+          doc.setFont('helvetica', 'italic');
+          doc.setFontSize(14);
+          const closingLines = doc.splitTextToSize(closingLine, contentWidth);
+          const closingSpan = linesSpan(closingLines);
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(9);
+          const dateTimeLines = serviceDateTime ? doc.splitTextToSize(serviceDateTime, contentWidth - 20) : [];
+          const locLines = serviceLocation ? doc.splitTextToSize(serviceLocation, contentWidth - 20) : [];
+          const infoStep = 9 * lineFactor;
+          const infoSpan = (dateTimeLines.length + locLines.length) * infoStep;
+          const backY = Math.min(pageHeight - margin - 100, pageHeight - margin - closingSpan - 30 - infoSpan);
+
           // Closing line
           doc.setTextColor(26, 26, 26);
           doc.setFont('helvetica', 'italic');
           doc.setFontSize(14);
-          const closingLines = doc.splitTextToSize(closingLine, contentWidth);
           doc.text(closingLines, backCenterX, backY, { align: 'center' });
 
           // Service info
           doc.setFont('helvetica', 'normal');
           doc.setFontSize(9);
           doc.setTextColor(102, 102, 102);
-          if (serviceDateTime) {
-            doc.text(serviceDateTime, backCenterX, backY + 30, { align: 'center' });
+          let infoY = backY + closingSpan + 30;
+          if (dateTimeLines.length) {
+            doc.text(dateTimeLines, backCenterX, infoY, { align: 'center' });
+            infoY += dateTimeLines.length * infoStep + 4;
           }
-          if (serviceLocation) {
-            const locLines = doc.splitTextToSize(serviceLocation, contentWidth - 20);
-            doc.text(locLines, backCenterX, backY + 45, { align: 'center' });
+          if (locLines.length) {
+            doc.text(locLines, backCenterX, infoY, { align: 'center' });
           }
 
           // --- Front Cover (Right Panel) ---
@@ -1718,15 +1985,16 @@
           doc.setTextColor(coverMuted[0], coverMuted[1], coverMuted[2]);
           doc.setFont('helvetica', 'italic');
           doc.setFontSize(12);
-          doc.text(serviceTitle, frontCenterX, coverY, { align: 'center' });
+          const titleLines = doc.splitTextToSize(serviceTitle, contentWidth);
+          doc.text(titleLines, frontCenterX, coverY, { align: 'center' });
 
           // Primary photo
-          let photoY = coverY + 20;
+          let photoY = coverY + 20 + linesSpan(titleLines);
           if (state.photoPrimary) {
             try {
               const imgWidth = isModern ? 140 : 120;
               const imgHeight = isModern ? 160 : 140;
-              doc.addImage(state.photoPrimary, 'JPEG',
+              addCoverImage(state.photoPrimary, state.photoRatios.primary,
                 frontCenterX - imgWidth/2, photoY, imgWidth, imgHeight);
               photoY += imgHeight + 20;
             } catch (e) {
@@ -1743,13 +2011,15 @@
           doc.setFontSize(isModern ? 24 : 20);
           const nameLines = doc.splitTextToSize(fullName, contentWidth);
           doc.text(nameLines, frontCenterX, photoY, { align: 'center' });
+          const nameSpan = linesSpan(nameLines);
 
           // Dates
           if (datesLine) {
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(10);
             doc.setTextColor(coverMuted[0], coverMuted[1], coverMuted[2]);
-            doc.text(datesLine, frontCenterX, photoY + 25, { align: 'center' });
+            const datesLines = doc.splitTextToSize(datesLine, contentWidth);
+            doc.text(datesLines, frontCenterX, photoY + nameSpan + 25, { align: 'center' });
           }
 
           // Fold guide (dashed line)
@@ -1780,9 +2050,7 @@
           if (shortObituary) {
             doc.setTextColor(26, 26, 26);
             doc.setFont('helvetica', 'normal');
-            doc.setFontSize(10);
-            const obituaryLines = doc.splitTextToSize(shortObituary, contentWidth);
-            doc.text(obituaryLines, margin, margin + 35);
+            drawFittedText(shortObituary, margin, margin + 35, 'obituary');
           }
 
           // --- Inside Right (Order of Service) ---
@@ -1801,9 +2069,7 @@
           if (orderOfService) {
             doc.setTextColor(26, 26, 26);
             doc.setFont('helvetica', 'normal');
-            doc.setFontSize(10);
-            const orderLines = doc.splitTextToSize(orderOfService, contentWidth);
-            doc.text(orderLines, panelWidth + margin, margin + 35);
+            drawFittedText(orderOfService, panelWidth + margin, margin + 35, 'order of service');
           }
 
           // Fold guide
@@ -1811,8 +2077,8 @@
           doc.setLineDashPattern([3, 3], 0);
           doc.line(panelWidth, 0, panelWidth, pageHeight);
 
-          // Generate filename
-          const nameParts = fullName.split(' ');
+          // Generate filename (accents folded so "José" stays "Jose", not "Jos_")
+          const nameParts = fullName.normalize('NFD').replace(/[̀-ͯ]/g, '').split(' ');
           const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : nameParts[0];
           const firstName = nameParts[0];
           const today = new Date().toISOString().split('T')[0];
@@ -1820,6 +2086,11 @@
           filename = filename.replace(/[^a-zA-Z0-9_\-\.]/g, '_');
 
           doc.save(filename);
+
+          if (tooLong.length) {
+            alert('The PDF was saved, but the ' + tooLong.join(' and ') +
+              ' is too long to fit and is cut off at the bottom. Shorten it and generate again.');
+          }
 
         } catch (error) {
           console.error('PDF generation error:', error);

@@ -65,7 +65,9 @@
         "name": "AbiertoClaw",
         "codeRepository": "https://github.com/be-ns/AbiertoClaw",
         "programmingLanguage": "Python",
-        "description": "Free-by-default personal AI assistant over iMessage or CLI, with swappable model sources, a complexity router, and a daily best-free-model picker.",
+        "description": "A Hermes Agent plugin that keeps Hermes on today's best free OpenRouter model, smoke-tested with a real tool call, with a local Ollama or LM Studio model as the fallback.",
+        "runtimePlatform": "Hermes Agent",
+        "license": "https://opensource.org/licenses/MIT",
         "author": { "@id": "https://bensiverly.com/#ben" }
       },
       {
@@ -75,6 +77,20 @@
         "name": "Ben Siverly",
         "description": "Personal site and a workshop of free, private, no-account browser tools.",
         "author": { "@id": "https://bensiverly.com/#ben" }
+      },
+      {
+        "@type": "ItemList",
+        "@id": "https://bensiverly.com/#tools",
+        "name": "Free browser tools",
+        "description": "No-account tools that run entirely in the browser. Each accepts URL parameters and registers WebMCP tools; see https://bensiverly.com/llms.txt.",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "url": "https://bensiverly.com/life-strategy.html", "name": "Life Strategy Matrix" },
+          { "@type": "ListItem", "position": 2, "url": "https://bensiverly.com/native-plant-finder.html", "name": "Native Plant Finder" },
+          { "@type": "ListItem", "position": 3, "url": "https://bensiverly.com/memorial-pamphlet.html", "name": "Memorial Pamphlet Creator" },
+          { "@type": "ListItem", "position": 4, "url": "https://bensiverly.com/service-of-life.html", "name": "Service of Life Builder" },
+          { "@type": "ListItem", "position": 5, "url": "https://bensiverly.com/memorial-preferences.html", "name": "Memorial Preferences Worksheet" },
+          { "@type": "ListItem", "position": 6, "url": "https://bensiverly.com/decision-assist.html", "name": "Decision Assist" }
+        ]
       }
     ]
   }
@@ -90,11 +106,6 @@
 <body>
   <!-- Scroll progress -->
   <div class="scroll-progress" aria-hidden="true"></div>
-
-  <!-- Page Loader -->
-  <div class="page-loader" aria-hidden="true">
-    <div class="page-loader__dot"></div>
-  </div>
 
   <!-- Navigation -->
   <header class="site-header">
@@ -230,7 +241,7 @@
     <section class="tools" aria-labelledby="tools-heading">
       <header class="section-header">
         <h2 id="tools-heading" class="section-title">Tools</h2>
-        <p class="section-tagline">Free tools. No accounts. Built to be useful.</p>
+        <p class="section-tagline">Free tools. No accounts. Your AI agent can run them too.</p>
       </header>
 
       <div class="tools-bento">
@@ -239,7 +250,6 @@
           <div class="tool-featured-content">
             <div class="tool-featured-header">
               <h3 class="tool-featured-title">Life Strategy Matrix</h3>
-              <span class="tool-badge tool-badge--live">Live</span>
             </div>
             <p class="tool-featured-description">Pick one area of your life, score it, and see where to invest next. Then print the matrix as a one-page guide.</p>
             <span class="tool-featured-cta">
@@ -253,7 +263,6 @@
           <div class="tool-featured-content">
             <div class="tool-featured-header">
               <h3 class="tool-featured-title">Native Plant Finder</h3>
-              <span class="tool-badge tool-badge--live">Live</span>
             </div>
             <p class="tool-featured-description">Find native plants for your garden based on your location and sun conditions. Support local pollinators while reducing water and maintenance.</p>
             <span class="tool-featured-cta">
@@ -267,7 +276,6 @@
           <div class="tool-featured-content">
             <div class="tool-featured-header">
               <h3 class="tool-featured-title">Memorial Pamphlet Creator</h3>
-              <span class="tool-badge tool-badge--live">Live</span>
             </div>
             <p class="tool-featured-description">Create a simple, dignified pamphlet for a memorial service.</p>
             <span class="tool-featured-cta">
@@ -281,7 +289,6 @@
           <div class="tool-featured-content">
             <div class="tool-featured-header">
               <h3 class="tool-featured-title">Service of Life Builder</h3>
-              <span class="tool-badge tool-badge--live">Live</span>
             </div>
             <p class="tool-featured-description">Build a liturgy for a memorial or celebration of life.</p>
             <span class="tool-featured-cta">
@@ -295,7 +302,6 @@
           <div class="tool-featured-content">
             <div class="tool-featured-header">
               <h3 class="tool-featured-title">Memorial Preferences Worksheet</h3>
-              <span class="tool-badge tool-badge--live">Live</span>
             </div>
             <p class="tool-featured-description">A one-page form to print and fill out by hand. Record service wishes on paper, no screen required.</p>
             <span class="tool-featured-cta">
@@ -309,7 +315,6 @@
           <div class="tool-featured-content">
             <div class="tool-featured-header">
               <h3 class="tool-featured-title">Decision Assist</h3>
-              <span class="tool-badge tool-badge--live">Live</span>
             </div>
             <p class="tool-featured-description">Weigh your options with clarity. Score choices against what matters most.</p>
             <span class="tool-featured-cta">
@@ -323,9 +328,9 @@
           <div class="tool-featured-content">
             <div class="tool-featured-header">
               <h3 class="tool-featured-title">AbiertoClaw</h3>
-              <span class="tool-badge tool-badge--oss">Open source</span>
+              <span class="tool-badge tool-badge--oss">Hermes plugin</span>
             </div>
-            <p class="tool-featured-description">A free-by-default personal AI assistant over iMessage or the CLI. Swappable model sources (OpenRouter, OpenCode Zen, bring your own, or fully local) with a complexity router and a daily best-free-model picker.</p>
+            <p class="tool-featured-description">A plugin for the Hermes agent that keeps it on today&rsquo;s best free model. Every day it smoke-tests the free models with a real tool call, sets the winner as the default, and keeps a local model as the fallback.</p>
             <span class="tool-featured-cta">
               <span>View on GitHub</span>
               <span aria-hidden="true">&rarr;</span>
@@ -333,6 +338,11 @@
           </div>
         </a>
       </div>
+
+      <a href="llms.txt" class="work-linkedin tools-agents">
+        <span>For AI agents: how to run these tools (llms.txt)</span>
+        <span aria-hidden="true">&rarr;</span>
+      </a>
     </section>
 
     <!-- Skills Section -->
@@ -429,40 +439,6 @@
       '%cMy initials are BS. The work isn\'t.',
       'font: italic 600 15px/1.4 Georgia, serif; color:#1A1A1A; background:#FFE227; padding:6px 12px; border-radius:4px;'
     );
-
-    // Page Loader
-    (function() {
-      const loader = document.querySelector('.page-loader');
-      if (!loader) return;
-
-      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const animationDuration = reduceMotion ? 150 : 600;
-      const fadeOutDuration = reduceMotion ? 150 : 200;
-      const maxTimeout = 900;
-
-      document.body.style.overflow = 'hidden';
-
-      function removeLoader() {
-        loader.classList.add('is-fading');
-        setTimeout(function() {
-          if (loader && loader.parentNode) {
-            loader.parentNode.removeChild(loader);
-          }
-          document.body.style.overflow = '';
-        }, fadeOutDuration);
-      }
-
-      const animationTimer = setTimeout(removeLoader, animationDuration);
-
-      setTimeout(function() {
-        clearTimeout(animationTimer);
-        if (loader && loader.parentNode) {
-          loader.style.display = 'none';
-          loader.parentNode.removeChild(loader);
-          document.body.style.overflow = '';
-        }
-      }, maxTimeout);
-    })();
 
     (function() {
       const menuToggle = document.querySelector('.menu-toggle');
