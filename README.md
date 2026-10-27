@@ -57,6 +57,10 @@ Nothing is hidden from people: there is no invisible text aimed at models.
 ```
 index.html                 Home: intro, work, tools, contact
 llms.txt                   Agent-readable guide to the tools
+theme.json                 Theme source of truth: color, type, space, texture, motion, components
+tokens.css                 Generated from theme.json by build-tokens.js (npm run tokens)
+kit.html                   Design kit: every token rendered, Night and Day editions (noindex)
+brand.md                   Brand brief: the reasoning behind the theme
 styles.css                 Design system for the home page (custom properties + components)
 life-strategy.html         Self-contained tools, each one file
 native-plant-finder.html   (HTML + scoped CSS + JS)

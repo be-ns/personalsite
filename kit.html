@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design Kit · Ben Siverly</title>
+  <meta name="description" content="The Ben Siverly design kit: every token in theme.json rendered as a cover, a story, a chart and the controls, in the Night and Day editions.">
+  <meta name="robots" content="noindex">
+  <link rel="canonical" href="https://bensiverly.com/kit.html">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="theme-color" content="#2A2625">
+  <script>
+    // Apply a saved edition before first paint. Night is the default.
+    (function () {
+      try {
+        const saved = localStorage.getItem('edition');
+        if (saved === 'day' || saved === 'night') document.documentElement.dataset.edition = saved;
+      } catch (err) { /* storage blocked: stay on Night */ }
+    })();
+  </script>
+  <link rel="preload" href="assets/fonts/fraunces-roman.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/newsreader-roman.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="tokens.css">
+  <style>
+    /* Seed of the shared stylesheet. Everything here reads tokens.css. */
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-size-adjust: 100%; }
+
+    body {
+      background: var(--ground);
+      color: var(--ink);
+      font: var(--type-body-style) var(--type-body-weight) var(--type-body-size) / var(--type-body-line) var(--type-body-family);
+      letter-spacing: var(--type-body-tracking);
+      overflow-x: clip;
+      transition: background-color var(--motion-duration-medium) var(--motion-easing-standard), color var(--motion-duration-medium) var(--motion-easing-standard);
+    }
+
+    /* Atmosphere: film grain over everything, light falloff at the edges. */
+    body::before, body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 50; }
+    body::before { background: var(--vignette); }
+    body::after {
+      background-image: var(--texture-grain);
+      background-size: var(--texture-grain-tile);
+      opacity: var(--grain-opacity);
+      mix-blend-mode: var(--grain-blend);
+    }
+
+    ::selection { background: var(--spot-fill); color: var(--on-spot-fill); }
+    :focus-visible { outline: var(--focus-ring-width) solid var(--focus); outline-offset: var(--focus-ring-offset); }
+
+    a { color: var(--spot); text-decoration-line: underline; text-decoration-thickness: var(--link-underline); text-underline-offset: var(--link-underline-offset); }
+    a:hover { text-decoration-thickness: var(--link-underline-hover); }
+
+    .skip-link { position: absolute; left: var(--space-2); top: -4rem; z-index: 60; padding: var(--space-3) var(--space-4); background: var(--spot-fill); color: var(--on-spot-fill); font: var(--type-label-weight) var(--type-label-size) / 1 var(--type-label-family); letter-spacing: var(--type-label-tracking); text-transform: uppercase; text-decoration: none; }
+    .skip-link:focus { top: var(--space-2); }
+
+    .wrap { width: min(100% - 2 * var(--layout-gutter), var(--layout-page)); margin-inline: auto; }
+
+    /* Type roles as utilities */
+    .t-kicker, .t-label, .t-folio, .t-byline {
+      font-family: var(--font-label);
+      font-style: normal;
+    }
+    .t-kicker { font-size: var(--type-kicker-size); font-weight: var(--type-kicker-weight); line-height: var(--type-kicker-line); letter-spacing: var(--type-kicker-tracking); text-transform: uppercase; color: var(--leaf); }
+    .t-folio { font-size: var(--type-folio-size); font-weight: var(--type-folio-weight); line-height: var(--type-folio-line); letter-spacing: var(--type-folio-tracking); text-transform: uppercase; font-feature-settings: var(--type-folio-features); color: var(--ink-quiet); }
+    .t-byline { font-size: var(--type-byline-size); font-weight: var(--type-byline-weight); line-height: var(--type-byline-line); letter-spacing: var(--type-byline-tracking); color: var(--ink-quiet); }
+
+    /* ---------- Top bar ---------- */
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding-block: var(--space-4); border-bottom: var(--rule-hairline) solid var(--rule); }
+    .topbar a { color: inherit; text-decoration: none; }
+
+    /* M3 segmented button */
+    .segmented { display: inline-flex; border: var(--button-outline-width) solid var(--outline); border-radius: 1.25rem; overflow: hidden; }
+    .segmented button {
+      position: relative; display: inline-flex; align-items: center; gap: var(--space-1);
+      min-height: 2.5rem; padding-inline: var(--space-4);
+      font: var(--type-label-weight) var(--type-label-size) / 1 var(--type-label-family); letter-spacing: var(--type-label-tracking); text-transform: uppercase;
+      color: var(--ink); background: transparent; border: 0; cursor: pointer;
+    }
+    .segmented button + button { border-left: var(--button-outline-width) solid var(--outline); }
+    .segmented button[aria-pressed="true"] { background: var(--leaf-container); }
+    .segmented button[aria-pressed="true"]::before { content: "✓"; font-size: 0.9em; }
+    .segmented button::after { content: ""; position: absolute; inset: 0; background: currentColor; opacity: 0; transition: opacity var(--motion-duration-short) var(--motion-easing-standard); }
+    .segmented button:hover::after { opacity: var(--state-hover); }
+    .segmented button:active::after { opacity: var(--state-pressed); }
+    .segmented button:focus-visible { outline-offset: -4px; }
+
+    /* ---------- Cover ---------- */
+    .cover { padding-block: var(--space-6) var(--space-section); text-align: center; }
+    .nameplate {
+      font-family: var(--type-nameplate-family);
+      font-size: var(--type-nameplate-size);
+      font-weight: var(--type-nameplate-weight);
+      line-height: var(--type-nameplate-line);
+      letter-spacing: var(--type-nameplate-tracking);
+      text-transform: var(--type-nameplate-case);
+      font-variation-settings: var(--type-nameplate-axes);
+      filter: url(#ink-bleed);
+      white-space: nowrap;
+    }
+    .issue-line {
+      display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: var(--space-2) var(--space-3);
+      margin-top: var(--space-4); padding-block: var(--space-3);
+      border-block: var(--rule-hairline) solid var(--rule);
+      font-family: var(--font-text); font-size: var(--type-body-sm-size); font-weight: var(--text-weight);
+    }
+    .issue-line span + span::before { content: ""; display: inline-block; width: 1.75em; height: var(--rule-hairline); margin-right: var(--space-3); background: var(--ink-quiet); vertical-align: middle; }
+
+    @media (max-width: 599px) {
+      .issue-line .issue-subject { order: -1; flex-basis: 100%; }
+      .issue-line .issue-subject::before { display: none !important; }
+    }
+
+    .cover-frame {
+      display: grid; grid-template-columns: 1fr; gap: var(--space-4);
+      margin-top: var(--space-6);
+    }
+    .cover-art { position: relative; border: var(--rule-hairline) solid var(--ink-quiet); padding: var(--space-2); }
+    .cover-art figcaption { margin-top: var(--space-2); text-align: left; }
+
+    .cover-lines { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-2) var(--space-3); font-family: var(--font-text); font-size: var(--type-body-sm-size); line-height: 1.35; }
+    .cover-lines a { color: var(--ink); text-decoration: none; }
+    .cover-lines a:hover { color: var(--spot); }
+    .cover-lines a + a::before { content: ""; display: inline-block; width: 1.25em; height: var(--rule-hairline); margin-right: var(--space-3); background: var(--ink-quiet); vertical-align: middle; }
+    .cover-lines::before, .cover-lines::after { content: var(--rule-terminal); font-family: var(--font-label); color: var(--ink-quiet); }
+    @media (max-width: 839px) {
+      .cover-lines { flex-direction: column; align-items: center; gap: var(--space-2); }
+      .cover-lines a + a::before { display: none; }
+      .cover-lines::before, .cover-lines::after { display: none; }
+      .cover-lines--left::before { display: block; }
+      .cover-lines--bottom::after { display: block; }
+    }
+
+    @media (min-width: 840px) {
+      .cover-frame { grid-template-columns: auto minmax(0, 34rem) auto; justify-content: center; gap: var(--space-5); }
+      .cover-lines--left, .cover-lines--right { writing-mode: vertical-rl; flex-wrap: nowrap; justify-content: space-between; }
+      .cover-lines--left { transform: rotate(180deg); }
+      .cover-lines--left a + a::before, .cover-lines--right a + a::before { width: var(--rule-hairline); height: 1.25em; margin: 0 0 var(--space-3); }
+      .cover-lines--bottom { grid-column: 1 / -1; justify-content: space-between; }
+      .cover-art { grid-row: 1; grid-column: 2; }
+      .cover-lines--left { grid-row: 1; grid-column: 1; }
+      .cover-lines--right { grid-row: 1; grid-column: 3; }
+    }
+
+    /* Photo treatment: a faded print. Blacks lifted, highlights held at cream,
+       color pulled back, heavy grain, edges dissolving into the page. */
+    .photo { position: relative; isolation: isolate; overflow: hidden; aspect-ratio: 4 / 5;
+      -webkit-mask-image: radial-gradient(130% 115% at 50% 42%, #000 62%, transparent 100%);
+      mask-image: radial-gradient(130% 115% at 50% 42%, #000 62%, transparent 100%); }
+    .photo img { display: block; width: 100%; height: 100%; object-fit: cover;
+      filter: saturate(var(--texture-photo-saturation)) sepia(var(--texture-photo-sepia)) contrast(var(--texture-photo-contrast)); }
+    .photo::before, .photo::after, .photo .grain { content: ""; position: absolute; inset: 0; pointer-events: none; }
+    .photo::before { background: var(--texture-photo-shadows); mix-blend-mode: lighten; }
+    .photo::after { background: var(--texture-photo-highlights); mix-blend-mode: darken; }
+    .photo .grain { z-index: 1; background-image: var(--texture-grain); background-size: 120px; opacity: var(--texture-photo-grain); mix-blend-mode: overlay; }
+
+    /* ---------- Departments ---------- */
+    .department { padding-block: var(--space-section); }
+    .department + .department { border-top: var(--rule-hairline) solid var(--rule); }
+    .department--fade { background: linear-gradient(to bottom, var(--ground), var(--sunk) 30%, var(--sunk) 70%, var(--ground)); border-top: 0 !important; }
+    .dept-head { display: grid; gap: var(--space-2); margin-bottom: var(--space-7); }
+    .dept-head h2 {
+      font-family: var(--type-headline-family); font-size: var(--type-headline-size); font-weight: var(--type-headline-weight);
+      line-height: var(--type-headline-line); letter-spacing: var(--type-headline-tracking); font-variation-settings: var(--type-headline-axes);
+    }
+    .dept-head p { color: var(--ink-quiet); max-width: var(--layout-measure); }
+
+    /* Contents, Monocle style */
+    .contents { list-style: none; display: grid; gap: 0; max-width: 52rem; }
+    .contents li { display: grid; grid-template-columns: 3rem 1fr; gap: var(--space-4); align-items: baseline; padding-block: var(--space-4); border-bottom: var(--rule-hairline) solid var(--rule); }
+    .contents .num { font-family: var(--font-display); font-size: var(--type-title-size); font-variation-settings: 'SOFT' 0; color: var(--spot); font-feature-settings: 'lnum' 1, 'tnum' 1; }
+    .contents a { color: var(--ink); text-decoration: none; font-family: var(--font-display); font-size: var(--type-title-size); font-weight: var(--type-title-weight); line-height: var(--type-title-line); font-variation-settings: var(--type-title-axes); }
+    .contents a:hover { color: var(--spot); }
+    .contents p { margin-top: var(--space-1); color: var(--ink-quiet); font-size: var(--type-body-sm-size); }
+
+    /* Palette */
+    .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); gap: var(--space-4); }
+    .swatch { border: var(--rule-hairline) solid var(--rule); }
+    .swatch .chip-color { height: 6.5rem; border-bottom: var(--rule-hairline) solid var(--rule); }
+    .swatch div:last-child { padding: var(--space-3); display: grid; gap: 2px; }
+    .swatch strong { font-family: var(--font-display); font-weight: 500; font-size: 1.125rem; font-variation-settings: 'SOFT' 30; }
+
+    /* Type specimen */
+    .specimen { display: grid; gap: var(--space-6); }
+    .specimen-row { display: grid; gap: var(--space-2); padding-bottom: var(--space-5); border-bottom: var(--rule-hairline) solid var(--rule); }
+    @media (min-width: 840px) { .specimen-row { grid-template-columns: 12rem 1fr; gap: var(--space-5); align-items: baseline; } }
+
+    .r-display { font-family: var(--type-display-family); font-size: var(--type-display-size); font-weight: var(--type-display-weight); line-height: var(--type-display-line); letter-spacing: var(--type-display-tracking); font-variation-settings: var(--type-display-axes); }
+    .r-headline { font-family: var(--type-headline-family); font-size: var(--type-headline-size); font-weight: var(--type-headline-weight); line-height: var(--type-headline-line); letter-spacing: var(--type-headline-tracking); font-variation-settings: var(--type-headline-axes); }
+    .r-title { font-family: var(--type-title-family); font-size: var(--type-title-size); font-weight: var(--type-title-weight); line-height: var(--type-title-line); letter-spacing: var(--type-title-tracking); font-variation-settings: var(--type-title-axes); }
+    .r-deck { font-family: var(--type-deck-family); font-size: var(--type-deck-size); font-weight: var(--type-deck-weight); line-height: var(--type-deck-line); font-style: var(--type-deck-style); }
+    .r-sidenote { font-family: var(--type-sidenote-family); font-size: var(--type-sidenote-size); font-weight: var(--type-sidenote-weight); line-height: var(--type-sidenote-line); color: var(--ink-quiet); }
+    .r-soft { font-family: var(--font-display); font-size: var(--type-display-size); line-height: 1.05; font-weight: 700; }
+
+    /* ---------- Story ---------- */
+    .story { display: grid; gap: var(--space-5); }
+    .running-head { display: flex; justify-content: space-between; gap: var(--space-4); padding-bottom: var(--space-3); border-bottom: var(--rule-hairline) solid var(--rule); }
+    .story-head { display: grid; gap: var(--space-4); max-width: 48rem; margin-block: var(--space-6) var(--space-4); }
+    .story-head h3 { font-family: var(--type-display-family); font-size: var(--type-display-size); font-weight: var(--type-display-weight); line-height: var(--type-display-line); letter-spacing: var(--type-display-tracking); font-variation-settings: var(--type-display-axes); text-wrap: balance; }
+
+    .prose { max-width: var(--layout-measure); }
+    .prose p + p { margin-top: var(--space-4); }
+    .prose .dropcap::first-letter {
+      float: left; margin: 0.06em 0.08em 0 0;
+      font-family: var(--font-display); font-size: 4.6em; line-height: 0.82; font-weight: 500; font-variation-settings: 'SOFT' 0;
+      color: var(--spot);
+    }
+
+    /* Sidenotes: margin column when there is room, tap to open on phones. */
+    .sn-ref { counter-increment: sidenote; }
+    .sn-ref::after { content: counter(sidenote); font-family: var(--font-label); font-size: 0.7em; font-weight: 600; vertical-align: super; line-height: 0; color: var(--spot); margin-left: 1px; }
+    .prose { counter-reset: sidenote; }
+    .sn-toggle { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    .sidenote { display: none; font-family: var(--type-sidenote-family); font-size: var(--type-sidenote-size); font-weight: var(--type-sidenote-weight); line-height: var(--type-sidenote-line); color: var(--ink-quiet); }
+    .sn-toggle:checked + .sidenote { display: block; margin: var(--space-3) 0 var(--space-3) var(--space-4); padding-left: var(--space-3); border-left: var(--rule-heavy) solid var(--spot); }
+    label.sn-ref { cursor: pointer; }
+    .sn-toggle:focus-visible ~ label.sn-ref, label.sn-ref:has(+ .sn-toggle:focus-visible) { outline: var(--focus-ring-width) solid var(--focus); }
+    @media (min-width: 1200px) {
+      .prose-with-margin { display: grid; grid-template-columns: minmax(0, var(--layout-measure)) var(--layout-margin-column); gap: var(--space-7); }
+      .sidenote { display: block; float: right; clear: right; width: var(--layout-margin-column); margin-right: calc(-1 * (var(--layout-margin-column) + var(--space-7))); margin-bottom: var(--space-4); }
+      .sidenote::before { content: counter(sidenote) ". "; font-family: var(--font-label); font-weight: 600; color: var(--spot); }
+      .sn-toggle:checked + .sidenote { margin: 0 calc(-1 * (var(--layout-margin-column) + var(--space-7))) var(--space-4) 0; padding: 0; border: 0; }
+      label.sn-ref { cursor: default; }
+    }
+
+    .big-figure { display: grid; gap: var(--space-2); margin-block: var(--space-7); padding-block: var(--space-5); border-block: var(--rule-hairline) solid var(--rule); max-width: var(--layout-measure); }
+    .big-figure .num { font-family: var(--type-figure-family); font-size: var(--type-figure-size); font-weight: var(--type-figure-weight); line-height: var(--type-figure-line); letter-spacing: var(--type-figure-tracking); font-variation-settings: var(--type-figure-axes); font-feature-settings: var(--type-figure-features); }
+    .big-figure .num span { color: var(--spot); }
+
+    .pullquote { max-width: 40rem; margin-block: var(--space-7); padding-left: var(--space-5); border-left: var(--rule-heavy) solid var(--leaf); }
+    .pullquote p { font-family: var(--type-pullquote-family); font-size: var(--type-pullquote-size); font-weight: var(--type-pullquote-weight); line-height: var(--type-pullquote-line); font-style: var(--type-pullquote-style); font-variation-settings: var(--type-pullquote-axes); }
+    .pullquote footer { margin-top: var(--space-3); }
+
+    /* One-color chart plate */
+    .plate { max-width: 40rem; margin-block: var(--space-7); }
+    .plate svg { display: block; width: 100%; height: auto; }
+    .plate .frame { fill: none; stroke: var(--spot); stroke-width: 1; }
+    .plate .grid { stroke: var(--rule); stroke-dasharray: 2 4; }
+    .plate .line { stroke: var(--spot); stroke-width: 2.5; fill: none; }
+    .plate .dot { fill: var(--spot); }
+    .plate .title { font-family: var(--font-label); font-size: 11px; font-weight: 600; letter-spacing: 0.16em; fill: var(--spot); }
+    .plate .axis { font-family: var(--font-label); font-size: 12px; fill: var(--ink-quiet); letter-spacing: 0.06em; }
+    .plate .val { font-family: var(--font-display); font-size: 34px; font-weight: 500; fill: var(--ink); }
+    .plate figcaption { margin-top: var(--space-3); font-family: var(--type-caption-family); font-size: var(--type-caption-size); font-style: var(--type-caption-style); line-height: var(--type-caption-line); color: var(--ink-quiet); }
+    .plate figcaption b { font-style: normal; font-family: var(--font-label); font-weight: 600; color: var(--spot); margin-right: var(--space-1); }
+
+    .end-mark { display: block; width: 4.5rem; margin-top: var(--space-6); border-top: 3px dotted var(--ink-quiet); }
+
+    /* ---------- Controls: Material 3, dressed quiet ---------- */
+    .control-grid { display: grid; gap: var(--space-7); }
+    .control-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+
+    .btn {
+      position: relative; isolation: isolate; overflow: hidden;
+      display: inline-flex; align-items: center; justify-content: center; gap: var(--button-gap);
+      min-height: var(--button-height); padding-inline: var(--button-padding-x);
+      border: 0; border-radius: min(var(--button-shape), calc(var(--button-height) / 2));
+      font: var(--type-label-weight) var(--type-label-size) / var(--type-label-line) var(--type-label-family);
+      letter-spacing: var(--type-label-tracking); text-transform: uppercase; text-decoration: none;
+      cursor: pointer;
+      transition: border-radius var(--motion-duration-short) var(--motion-easing-standard);
+    }
+    .btn::after { content: ""; position: absolute; inset: 0; z-index: -1; background: currentColor; opacity: 0; transition: opacity var(--motion-duration-short) var(--motion-easing-standard); }
+    .btn:hover::after { opacity: var(--state-hover); }
+    .btn:focus-visible::after { opacity: var(--state-focus); }
+    .btn:active { border-radius: var(--button-shape-pressed); }
+    .btn:active::after { opacity: var(--state-pressed); }
+    .btn:disabled { cursor: not-allowed; color: color-mix(in srgb, var(--ink) calc(var(--state-disabled-content) * 100%), transparent); background: color-mix(in srgb, var(--ink) calc(var(--state-disabled-container) * 100%), transparent); }
+    .btn:disabled::after { display: none; }
+    .btn--spot { background: var(--spot-fill); color: var(--on-spot-fill); }
+    .btn--filled { background: var(--ink); color: var(--ground); }
+    .btn--tonal { background: var(--leaf-container); color: var(--ink); }
+    .btn--outlined { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 var(--button-outline-width) var(--outline); }
+    .btn--text { background: transparent; color: var(--spot); padding-inline: var(--space-3); }
+    .btn .arrow { font-family: var(--font-text); font-size: 1.15em; letter-spacing: 0; text-transform: none; }
+
+    .chip {
+      position: relative; isolation: isolate; overflow: hidden;
+      display: inline-flex; align-items: center; gap: var(--space-2);
+      min-height: var(--chip-height); padding-inline: var(--chip-padding-x);
+      border-radius: var(--chip-shape); border: 0; box-shadow: inset 0 0 0 1px var(--outline);
+      background: transparent; color: var(--ink);
+      font: 500 0.875rem / 1 var(--font-label); letter-spacing: 0.02em; cursor: pointer;
+    }
+    .chip::after { content: ""; position: absolute; inset: 0; z-index: -1; background: currentColor; opacity: 0; transition: opacity var(--motion-duration-short) var(--motion-easing-standard); }
+    .chip:hover::after { opacity: var(--state-hover); }
+    .chip[aria-pressed="true"] { background: var(--leaf-container); box-shadow: none; }
+    .chip[aria-pressed="true"]::before { content: "✓"; }
+
+    .field { position: relative; display: grid; max-width: 22rem; }
+    .field input {
+      min-height: var(--field-height); padding: var(--space-4) var(--space-4) var(--space-2);
+      border: 1px solid var(--outline); border-radius: var(--field-shape);
+      background: transparent; color: var(--ink);
+      font: var(--type-ui-weight) var(--type-ui-size) / var(--type-ui-line) var(--type-ui-family);
+    }
+    .field input:focus { outline: none; border: 2px solid var(--focus); padding: calc(var(--space-4) - 1px) calc(var(--space-4) - 1px) calc(var(--space-2) - 1px); }
+    .field label { position: absolute; left: var(--space-3); top: -0.6em; padding-inline: var(--space-1); background: var(--ground); font: 500 0.75rem / 1.2 var(--font-label); letter-spacing: 0.04em; color: var(--ink-quiet); }
+    .field input:focus + label { color: var(--focus); }
+    .field small { margin-top: var(--space-1); padding-left: var(--space-4); font: 400 0.8125rem / 1.4 var(--font-label); color: var(--ink-quiet); }
+
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: var(--space-4); }
+    .card { display: grid; align-content: start; gap: var(--space-3); padding: var(--card-padding); border-radius: var(--card-shape); background: var(--surface); border-top: var(--rule-heavy) solid var(--spot-on-surface); }
+    .card h4 { font-family: var(--type-title-family); font-size: var(--type-title-size); font-weight: var(--type-title-weight); line-height: var(--type-title-line); font-variation-settings: var(--type-title-axes); }
+    .card p { font-size: var(--type-body-sm-size); color: var(--ink-quiet); }
+    .card a { color: var(--spot-on-surface); }
+    .card .t-kicker { color: var(--leaf); }
+    .card--leaf { background: var(--leaf-fill); color: var(--on-leaf-fill); border-top-color: var(--on-leaf-fill); }
+    .card--leaf p, .card--leaf .t-kicker, .card--leaf a { color: var(--on-leaf-fill); }
+
+    .portrait-badge { width: 7rem; aspect-ratio: 1; clip-path: url(#scallop); }
+    .portrait-badge img { width: 100%; height: 100%; object-fit: cover; }
+
+    .footer { background: var(--sunk); padding-block: var(--space-7); margin-top: var(--space-section); }
+    .footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-4); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+    }
+    @media print {
+      body::before, body::after { display: none; }
+      .topbar .segmented { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <svg width="0" height="0" aria-hidden="true" focusable="false" style="position: absolute">
+    <filter id="ink-bleed" x="-2%" y="-10%" width="104%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <clipPath id="scallop" clipPathUnits="objectBoundingBox">
+      <path d="M0.500,0.000 L0.522,0.004 L0.542,0.016 L0.561,0.035 L0.578,0.057 L0.593,0.079 L0.607,0.099 L0.621,0.115 L0.637,0.124 L0.655,0.127 L0.675,0.124 L0.699,0.118 L0.725,0.110 L0.752,0.104 L0.778,0.102 L0.802,0.106 L0.821,0.117 L0.835,0.134 L0.843,0.157 L0.846,0.183 L0.845,0.211 L0.842,0.238 L0.840,0.262 L0.841,0.283 L0.846,0.300 L0.858,0.314 L0.876,0.325 L0.898,0.335 L0.923,0.346 L0.947,0.359 L0.969,0.374 L0.984,0.393 L0.992,0.413 L0.992,0.435 L0.984,0.458 L0.969,0.480 L0.950,0.500 L0.930,0.519 L0.913,0.536 L0.900,0.553 L0.894,0.569 L0.894,0.587 L0.901,0.607 L0.911,0.630 L0.923,0.654 L0.933,0.680 L0.940,0.705 L0.940,0.729 L0.933,0.750 L0.918,0.767 L0.898,0.778 L0.872,0.786 L0.845,0.789 L0.818,0.791 L0.793,0.793 L0.773,0.798 L0.757,0.806 L0.746,0.820 L0.738,0.840 L0.732,0.863 L0.725,0.890 L0.717,0.916 L0.705,0.940 L0.690,0.958 L0.671,0.970 L0.649,0.973 L0.626,0.969 L0.602,0.958 L0.578,0.943 L0.556,0.927 L0.536,0.913 L0.518,0.903 L0.500,0.900 L0.482,0.903 L0.464,0.913 L0.444,0.927 L0.422,0.943 L0.398,0.958 L0.374,0.969 L0.351,0.973 L0.329,0.970 L0.310,0.958 L0.295,0.940 L0.283,0.916 L0.275,0.890 L0.268,0.863 L0.262,0.840 L0.254,0.820 L0.243,0.806 L0.227,0.798 L0.207,0.793 L0.182,0.791 L0.155,0.789 L0.128,0.786 L0.102,0.778 L0.082,0.767 L0.067,0.750 L0.060,0.729 L0.060,0.705 L0.067,0.680 L0.077,0.654 L0.089,0.630 L0.099,0.607 L0.106,0.587 L0.106,0.569 L0.100,0.553 L0.087,0.536 L0.070,0.519 L0.050,0.500 L0.031,0.480 L0.016,0.458 L0.008,0.435 L0.008,0.413 L0.016,0.393 L0.031,0.374 L0.053,0.359 L0.077,0.346 L0.102,0.335 L0.124,0.325 L0.142,0.314 L0.154,0.300 L0.159,0.283 L0.160,0.262 L0.158,0.238 L0.155,0.211 L0.154,0.183 L0.157,0.157 L0.165,0.134 L0.179,0.117 L0.198,0.106 L0.222,0.102 L0.248,0.104 L0.275,0.110 L0.301,0.118 L0.325,0.124 L0.345,0.127 L0.363,0.124 L0.379,0.115 L0.393,0.099 L0.407,0.079 L0.422,0.057 L0.439,0.035 L0.458,0.016 L0.478,0.004 Z"/>
+    </clipPath>
+  </svg>
+
+  <div class="wrap">
+    <header class="topbar">
+      <a class="t-folio" href="index.html">Ben Siverly &middot; Design kit 0.1</a>
+      <div class="segmented" role="group" aria-label="Edition">
+        <button type="button" data-edition-choice="night" aria-pressed="true">Night</button>
+        <button type="button" data-edition-choice="day" aria-pressed="false">Day</button>
+      </div>
+    </header>
+  </div>
+
+  <main id="main">
+    <!-- Cover -->
+    <section class="cover wrap" aria-labelledby="nameplate">
+      <h1 class="nameplate" id="nameplate">Ben Siverly</h1>
+      <p class="issue-line"><span>2026</span><span class="issue-subject">Product, data and AI</span><span data-edition-label>Night edition</span><span data-season>Autumn</span></p>
+
+      <div class="cover-frame">
+        <figure class="cover-art">
+          <div class="photo">
+            <img src="images/ben.jpg" srcset="images/ben.jpg 560w, images/ben@2x.jpg 1120w" sizes="(min-width: 840px) 34rem, 90vw" width="560" height="700" alt="Ben Siverly in front of a wooden fence draped with greenery and string lights">
+            <span class="grain" aria-hidden="true"></span>
+          </div>
+          <figcaption class="t-folio">Photo treatment: a faded print, grain and all</figcaption>
+        </figure>
+        <nav class="cover-lines cover-lines--left" aria-label="Cover stories">
+          <a href="#story">The application nobody could finish</a>
+          <a href="index.html#skills-heading">Map the world first</a>
+        </nav>
+        <nav class="cover-lines cover-lines--right" aria-label="From the workshop">
+          <a href="native-plant-finder.html">Native Plant Finder</a>
+          <a href="nobody-claps.html">Nobody Claps</a>
+        </nav>
+        <nav class="cover-lines cover-lines--bottom" aria-label="Also in this issue">
+          <a href="#controls">Fractional product leadership</a>
+          <a href="resume.html">One-page résumé</a>
+          <a href="llms.txt">For agents: llms.txt</a>
+        </nav>
+      </div>
+    </section>
+
+    <!-- Contents -->
+    <section class="department department--fade" aria-labelledby="contents-heading">
+      <div class="wrap">
+        <header class="dept-head">
+          <span class="t-kicker">In this issue</span>
+          <h2 id="contents-heading">Contents</h2>
+        </header>
+        <ol class="contents">
+          <li><span class="num">01</span><div><a href="#story">Work</a><p>The application nobody could finish, and four other rebuilds.</p></div></li>
+          <li><span class="num">02</span><div><a href="index.html#skills-heading">Method</a><p>Start with the job. Map the world. Write it down first.</p></div></li>
+          <li><span class="num">03</span><div><a href="index.html#tools-heading">Workshop</a><p>Free tools your agent can run too.</p></div></li>
+          <li><span class="num">04</span><div><a href="writings.html">Writing</a><p>Nobody Claps, and other essays and poems.</p></div></li>
+          <li><span class="num">05</span><div><a href="#controls">Fractional</a><p>Product leadership, a few days a week.</p></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Palette -->
+    <section class="department" aria-labelledby="palette-heading">
+      <div class="wrap">
+        <header class="dept-head">
+          <span class="t-kicker">Kit &middot; Color</span>
+          <h2 id="palette-heading">The nudibranch</h2>
+          <p>A dark field, a pale green body, an orange rim. About 80% charcoal, 15% newsprint and green, 5% orange.</p>
+        </header>
+        <div class="swatches">
+          <div class="swatch"><div class="chip-color" style="background: var(--ground)"></div><div><strong>Ground</strong><span class="t-folio">--ground</span></div></div>
+          <div class="swatch"><div class="chip-color" style="background: var(--surface)"></div><div><strong>Surface</strong><span class="t-folio">--surface</span></div></div>
+          <div class="swatch"><div class="chip-color" style="background: var(--raised)"></div><div><strong>Raised</strong><span class="t-folio">--raised</span></div></div>
+          <div class="swatch"><div class="chip-color" style="background: var(--ink)"></div><div><strong>Ink</strong><span class="t-folio">--ink</span></div></div>
+          <div class="swatch"><div class="chip-color" style="background: var(--ink-quiet)"></div><div><strong>Quiet ink</strong><span class="t-folio">--ink-quiet</span></div></div>
+          <div class="swatch"><div class="chip-color" style="background: var(--spot-fill)"></div><div><strong>Toxic Orange</strong><span class="t-folio">--spot-fill</span></div></div>
+          <div class="swatch"><div class="chip-color" style="background: var(--leaf-fill)"></div><div><strong>Goody Gumdrop</strong><span class="t-folio">--leaf-fill</span></div></div>
+          <div class="swatch"><div class="chip-color" style="background: var(--leaf-container)"></div><div><strong>Leaf tint</strong><span class="t-folio">--leaf-container</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Type -->
+    <section class="department" aria-labelledby="type-heading">
+      <div class="wrap">
+        <header class="dept-head">
+          <span class="t-kicker">Kit &middot; Type</span>
+          <h2 id="type-heading">Two serifs and a plain sans</h2>
+          <p>Fraunces for display, Newsreader for reading, Instrument Sans for everything you press or scan.</p>
+        </header>
+        <div class="specimen">
+          <div class="specimen-row"><span class="t-folio">Display &middot; Fraunces</span><p class="r-display">Grow things that last</p></div>
+          <div class="specimen-row"><span class="t-folio">Headline</span><p class="r-headline">The application nobody could finish</p></div>
+          <div class="specimen-row"><span class="t-folio">Title</span><p class="r-title">Native Plant Finder</p></div>
+          <div class="specimen-row"><span class="t-folio">Soft axis 0 &rarr; 100</span><p class="r-soft"><span style="font-variation-settings: 'SOFT' 0">Crisp</span> <span style="font-variation-settings: 'SOFT' 100">soft</span></p></div>
+          <div class="specimen-row"><span class="t-folio">Deck &middot; Newsreader italic</span><p class="r-deck">Applicants couldn&rsquo;t save the form or come back to it. So we rebuilt it.</p></div>
+          <div class="specimen-row"><span class="t-folio">Body &middot; Newsreader</span><p>I thrive in the unglamorous middle: the customer calls, the half-clean data, the code that has to actually run, the half-dug-up yard. That&rsquo;s where the real work happens, long before the demo.</p></div>
+          <div class="specimen-row"><span class="t-folio">Sidenote</span><p class="r-sidenote">Measured on properties using the new flow, compared with offline workflows.</p></div>
+          <div class="specimen-row"><span class="t-folio">Kicker &middot; Instrument Sans</span><p class="t-kicker">01 &middot; Work &middot; AppFolio</p></div>
+          <div class="specimen-row"><span class="t-folio">Byline</span><p class="t-byline">By Ben Siverly &middot; Rental Applications &amp; Payments</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Story -->
+    <section class="department" id="story" aria-labelledby="story-heading">
+      <div class="wrap story">
+        <header class="dept-head">
+          <span class="t-kicker">Kit &middot; Story</span>
+          <h2 id="story-heading">A feature, laid out</h2>
+        </header>
+
+        <div class="running-head t-folio"><span>01 &middot; Work</span><span>The application nobody could finish</span></div>
+
+        <header class="story-head">
+          <span class="t-kicker">AppFolio &middot; Rental applications</span>
+          <h3>The application nobody could finish</h3>
+          <p class="r-deck">Applicants couldn&rsquo;t save the form or come back to it. Property managers couldn&rsquo;t see what was working. So we rebuilt it.</p>
+          <p class="t-byline">By Ben Siverly</p>
+        </header>
+
+        <div class="prose-with-margin">
+          <div class="prose">
+            <p class="dropcap">The old rental application was stuck. Applicants couldn&rsquo;t save the form or come back to it. Property managers had no way to see what was working, and every applicant was anonymous.</p>
+            <p>I rebuilt the experience so it feels like a modern app, added accounts so applicants can finish later and we can measure what works, and built reporting so property managers can finally see what&rsquo;s happening with their applications. Properties on the new flow fill vacancies 3.4 days faster<label class="sn-ref" for="sn-1"></label><input class="sn-toggle" type="checkbox" id="sn-1"><span class="sidenote">Properties on the new flow, compared with offline workflows.</span> than they did before.</p>
+
+            <div class="big-figure">
+              <span class="num">70<span>%</span></span>
+              <span class="t-kicker">Submission rate after the rebuild, up from 44%</span>
+            </div>
+
+            <p>Zero change-failure rate across the rollout<label class="sn-ref" for="sn-2"></label><input class="sn-toggle" type="checkbox" id="sn-2"><span class="sidenote">No deploy in the rollout had to be rolled back or hot-fixed.</span>. The number matters less than what it bought: a form people trust enough to start, and a reason to come back and finish it.</p>
+
+            <figure class="plate">
+              <svg viewBox="0 0 560 300" role="img" aria-labelledby="fig1-title">
+                <title id="fig1-title">Submission rate rose from 44% on the old form to 70% on the rebuilt flow.</title>
+                <rect class="frame" x="0.5" y="0.5" width="559" height="299"/>
+                <text class="title" x="24" y="34">SUBMISSION RATE</text>
+                <line class="grid" x1="24" x2="536" y1="80" y2="80"/>
+                <line class="grid" x1="24" x2="536" y1="160" y2="160"/>
+                <line class="grid" x1="24" x2="536" y1="240" y2="240"/>
+                <polyline class="line" points="150,200 410,96"/>
+                <circle class="dot" cx="150" cy="200" r="6"/>
+                <circle class="dot" cx="410" cy="96" r="6"/>
+                <text class="val" x="64" y="212">44%</text>
+                <text class="val" x="428" y="108">70%</text>
+                <text class="axis" x="150" y="276" text-anchor="middle">OLD FORM</text>
+                <text class="axis" x="410" y="276" text-anchor="middle">REBUILT FLOW</text>
+              </svg>
+              <figcaption><b>Fig. 1</b>Started rental applications that were submitted, old form vs. the rebuilt flow.</figcaption>
+            </figure>
+
+            <blockquote class="pullquote">
+              <p>There is no dashboard for a household. I say that as a man whose job is dashboards.</p>
+              <footer class="t-byline">From <a href="nobody-claps.html">Nobody Claps</a></footer>
+            </blockquote>
+
+            <p>That&rsquo;s the method in one line: find the moment someone gives up, name it plainly, and build until they don&rsquo;t.</p>
+            <span class="end-mark" aria-hidden="true"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Controls -->
+    <section class="department" id="controls" aria-labelledby="controls-heading">
+      <div class="wrap">
+        <header class="dept-head">
+          <span class="t-kicker">Kit &middot; Controls</span>
+          <h2 id="controls-heading">Material 3, dressed quiet</h2>
+          <p>Familiar anatomy and states. Pill shapes, tracked caps, no shadows. One orange button per page.</p>
+        </header>
+
+        <div class="control-grid">
+          <div class="control-row">
+            <a class="btn btn--spot" href="#story">Read the case study <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <a class="btn btn--filled" href="resume.html">Résumé</a>
+            <a class="btn btn--tonal" href="index.html#tools-heading">Browse tools</a>
+            <a class="btn btn--outlined" href="https://www.linkedin.com/in/be-ns/" rel="noopener">LinkedIn</a>
+            <a class="btn btn--text" href="llms.txt">llms.txt</a>
+            <button class="btn btn--filled" type="button" disabled>Disabled</button>
+          </div>
+
+          <div class="control-row" role="group" aria-label="Filter by topic">
+            <button class="chip" type="button" aria-pressed="true">Product</button>
+            <button class="chip" type="button" aria-pressed="true">Data</button>
+            <button class="chip" type="button" aria-pressed="false">AI</button>
+            <button class="chip" type="button" aria-pressed="false">Writing</button>
+            <button class="chip" type="button" aria-pressed="false">Garden</button>
+          </div>
+
+          <div class="field">
+            <input id="kit-email" type="email" autocomplete="email" placeholder=" ">
+            <label for="kit-email">Your email</label>
+            <small>For the occasional letter. No tracking.</small>
+          </div>
+
+          <div class="cards">
+            <article class="card">
+              <span class="t-kicker">03 &middot; Workshop</span>
+              <h4>Native Plant Finder</h4>
+              <p>California natives for your ZIP code and sun. Runs in your browser; your agent can run it too.</p>
+              <a href="native-plant-finder.html">Open the finder</a>
+            </article>
+            <article class="card">
+              <span class="t-kicker">04 &middot; Writing</span>
+              <h4>Nobody Claps</h4>
+              <p>On the two most durable things I&rsquo;ll ever make, asleep down the hall.</p>
+              <a href="nobody-claps.html">Read the essay</a>
+            </article>
+            <article class="card card--leaf">
+              <span class="t-kicker">05 &middot; Fractional</span>
+              <h4>Product leadership, a few days a week</h4>
+              <p>The Fractional department sits on a Goody Gumdrop ground with Char ink.</p>
+              <a href="#controls">How it works</a>
+            </article>
+          </div>
+
+          <div class="control-row">
+            <div class="portrait-badge"><img src="images/ben.jpg" width="560" height="700" alt="" loading="lazy"></div>
+            <p class="r-sidenote" style="max-width: 24rem">Scalloped mask from the Material 3 Expressive shape family, for the portrait and status badge only.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <span class="t-folio">Generated from theme.json &middot; tokens.css</span>
+      <a class="t-folio" href="brand.md">Brand brief</a>
+    </div>
+  </footer>
+
+  <script>
+    // Edition toggle (M3 segmented button) and the live issue line.
+    (function () {
+      const root = document.documentElement;
+      const buttons = document.querySelectorAll('[data-edition-choice]');
+      const label = document.querySelector('[data-edition-label]');
+      const apply = (edition) => {
+        root.dataset.edition = edition;
+        buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.editionChoice === edition)));
+        label.textContent = edition === 'day' ? 'Day edition' : 'Night edition';
+      };
+      apply(root.dataset.edition || 'night');
+      buttons.forEach((b) => b.addEventListener('click', () => {
+        apply(b.dataset.editionChoice);
+        try { localStorage.setItem('edition', b.dataset.editionChoice); } catch (err) { /* storage blocked */ }
+      }));
+
+      const month = new Date().getMonth();
+      const season = ['Winter', 'Winter', 'Spring', 'Spring', 'Spring', 'Summer', 'Summer', 'Summer', 'Autumn', 'Autumn', 'Autumn', 'Winter'][month];
+      document.querySelector('[data-season]').textContent = season;
+    })();
+  </script>
+</body>
+</html>

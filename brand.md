@@ -1,8 +1,8 @@
 # Ben Siverly - brand
 
-Draft 1, October 2026. Step 1 of the redesign: this feeds `theme.json` (step 2)
-and the specimen page (step 3). Copy rules live in [`my-voice.md`](my-voice.md);
-this file covers how the site looks and behaves.
+Draft 2, October 2026. The reasoning behind the theme. The values live in
+[`theme.json`](theme.json), compile to `tokens.css` (`npm run tokens`), and render
+on [`kit.html`](kit.html). Copy rules live in [`my-voice.md`](my-voice.md).
 
 ## The idea
 
@@ -80,8 +80,7 @@ earthy neutrals, lots of air, nothing shouts. We take the manners.
 - **Night** (default). Charcoal ground. This is the brand.
 - **Day.** Paper ground. A one-tap toggle, remembered. Always used for print and
   the résumé PDF.
-- Night stays the default even when the device asks for light mode
-  (recommended; open below).
+- Night stays the default even when the device asks for light mode.
 
 ## Color
 
@@ -126,11 +125,11 @@ plain sans, which is Works in Progress's pairing plus Monocle's sans.
 | Text: body, decks, sidenotes | **Newsreader** (variable, optical sizes 6-72) | Our Plantin and GT Alpina. Built for reading news on screens. |
 | Labels, nav, buttons, folios | **Instrument Sans** (variable width) | The sportswear voice: tracked uppercase. |
 
-- The specimen tests one fallback each: Newsreader at display size instead of
-  Fraunces, and Hanken Grotesk instead of Instrument Sans.
 - Zilla Slab, Inter and JetBrains Mono retire from the editorial pages. The
   numbers carry the data story; a code font doesn't need to.
-- Budget: 200 KB of fonts or less on first load (Latin subset, woff2).
+- Optical size is pinned to keep the files small: Fraunces at 72, Newsreader at
+  16. The three romans weigh about 157 KB together (Latin subset, woff2);
+  italics load only on pages that use them.
 
 ## Texture: grain and fades
 
@@ -197,9 +196,10 @@ plain sans, which is Works in Progress's pairing plus Monocle's sans.
 - Focus ring: 2px Toxic Orange (Burnt Orange on Day) with a 2px offset.
 - Print: Day edition, no grain, no fades.
 
-## Open, to settle in the theme step
+## Decided
 
-1. Night as the default even when the device asks for light mode.
-2. Fraunces or Newsreader for display (the specimen decides).
-3. Tool pages: header, buttons and type adopt the theme; their work surfaces stay
-   calm and their printed outputs don't change.
+1. Night is the default on every device, whatever the system setting.
+2. Fraunces for display.
+3. The whole kit gets the redesign, tool pages included, not just their headers.
+   Anything a tool prints (pamphlets, worksheets, the résumé PDF) prints in the
+   Day edition, on paper.

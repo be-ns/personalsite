@@ -1,0 +1,267 @@
+{
+  "$description": "Ben Siverly theme. Source of truth for color, type, space, shape, texture, motion and components. Tokens use $value/$type with {alias} references. `npm run tokens` compiles this file to tokens.css; never edit tokens.css by hand. The brand reasoning lives in brand.md.",
+  "meta": {
+    "name": "Ben Siverly",
+    "version": "0.1.0",
+    "defaultEdition": "night"
+  },
+
+  "palette": {
+    "$description": "Primitives. Pages never use these directly; they use the edition roles below.",
+    "toxic-orange": { "$type": "color", "$value": "#FE5F35" },
+    "ember": { "$type": "color", "$value": "#FF6A43", "$description": "Toxic Orange lifted a hair so it holds 4.5:1 on Gondola." },
+    "burnt-orange": { "$type": "color", "$value": "#B63A14", "$description": "Orange as text on paper." },
+    "goody-gumdrop": { "$type": "color", "$value": "#CAD576" },
+    "olive": { "$type": "color", "$value": "#5C6B1E", "$description": "Green as text on paper." },
+    "char": { "$type": "color", "$value": "#1F1B1A", "$description": "The darkest ink. Labels on orange and green fills." },
+    "sunk-gondola": { "$type": "color", "$value": "#232020" },
+    "deep-gondola": { "$type": "color", "$value": "#2A2625" },
+    "gondola": { "$type": "color", "$value": "#34302F" },
+    "high-gondola": { "$type": "color", "$value": "#3E3937" },
+    "stone": { "$type": "color", "$value": "#8C8379" },
+    "ash": { "$type": "color", "$value": "#B8AFA3" },
+    "newsprint": { "$type": "color", "$value": "#EFE8DC" },
+    "paper": { "$type": "color", "$value": "#F4EFE6" },
+    "paper-sunk": { "$type": "color", "$value": "#EDE7DC" },
+    "paper-card": { "$type": "color", "$value": "#E9E2D6" },
+    "paper-high": { "$type": "color", "$value": "#E1D9CB" },
+    "flint": { "$type": "color", "$value": "#7A7168" },
+    "umber": { "$type": "color", "$value": "#655D55" }
+  },
+
+  "editions": {
+    "$description": "Semantic roles. Night is the default on every device; Day is a toggle and always used for print. Rule: orange and green text only on ground, sunk or surface. Tinted containers take ink labels. Raised surfaces take ink only.",
+    "night": {
+      "color-scheme": { "$value": "dark" },
+      "ground": { "$type": "color", "$value": "{palette.deep-gondola}", "$description": "Page background." },
+      "sunk": { "$type": "color", "$value": "{palette.sunk-gondola}", "$description": "Wells: footer, code, inset panels." },
+      "surface": { "$type": "color", "$value": "{palette.gondola}", "$description": "Cards. One step up in tone, no shadow." },
+      "raised": { "$type": "color", "$value": "{palette.high-gondola}", "$description": "Menus, sheets, dialogs." },
+      "ink": { "$type": "color", "$value": "{palette.newsprint}" },
+      "ink-quiet": { "$type": "color", "$value": "{palette.ash}", "$description": "Captions, bylines, meta." },
+      "outline": { "$type": "color", "$value": "{palette.stone}", "$description": "Boundaries of controls (3:1 minimum)." },
+      "rule": { "$type": "color", "$value": "rgb(239 232 220 / 0.16)", "$description": "Decorative hairlines. Never the only cue for a control." },
+      "spot": { "$type": "color", "$value": "{palette.toxic-orange}", "$description": "Orange text and links on ground and sunk." },
+      "spot-on-surface": { "$type": "color", "$value": "{palette.ember}", "$description": "Orange text and links on surface." },
+      "spot-fill": { "$type": "color", "$value": "{palette.toxic-orange}" },
+      "on-spot-fill": { "$type": "color", "$value": "{palette.char}" },
+      "spot-container": { "$type": "color", "$value": "#4C2F28", "$description": "Orange tint at 16% over ground. Ink labels." },
+      "leaf": { "$type": "color", "$value": "{palette.goody-gumdrop}", "$description": "Green text: kickers, highlights, status." },
+      "leaf-fill": { "$type": "color", "$value": "{palette.goody-gumdrop}" },
+      "on-leaf-fill": { "$type": "color", "$value": "{palette.char}" },
+      "leaf-container": { "$type": "color", "$value": "#444232", "$description": "Green tint at 16% over ground. Ink or leaf labels." },
+      "focus": { "$type": "color", "$value": "{palette.toxic-orange}" },
+      "scrim": { "$type": "color", "$value": "rgb(20 18 17 / 0.64)" },
+      "text-weight": { "$type": "fontWeight", "$value": 370, "$description": "Light text on dark reads heavier, so body text drops a touch." },
+      "grain-opacity": { "$type": "number", "$value": 0.16 },
+      "grain-blend": { "$value": "overlay" },
+      "vignette": { "$value": "radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(20 18 17 / 0.5) 100%)" }
+    },
+    "day": {
+      "color-scheme": { "$value": "light" },
+      "ground": { "$type": "color", "$value": "{palette.paper}" },
+      "sunk": { "$type": "color", "$value": "{palette.paper-sunk}" },
+      "surface": { "$type": "color", "$value": "{palette.paper-card}" },
+      "raised": { "$type": "color", "$value": "{palette.paper-high}" },
+      "ink": { "$type": "color", "$value": "{palette.gondola}" },
+      "ink-quiet": { "$type": "color", "$value": "{palette.umber}" },
+      "outline": { "$type": "color", "$value": "{palette.flint}" },
+      "rule": { "$type": "color", "$value": "rgb(52 48 47 / 0.18)" },
+      "spot": { "$type": "color", "$value": "{palette.burnt-orange}" },
+      "spot-on-surface": { "$type": "color", "$value": "{palette.burnt-orange}" },
+      "spot-fill": { "$type": "color", "$value": "{palette.toxic-orange}" },
+      "on-spot-fill": { "$type": "color", "$value": "{palette.char}" },
+      "spot-container": { "$type": "color", "$value": "#F5DBCD" },
+      "leaf": { "$type": "color", "$value": "{palette.olive}" },
+      "leaf-fill": { "$type": "color", "$value": "{palette.goody-gumdrop}" },
+      "on-leaf-fill": { "$type": "color", "$value": "{palette.char}" },
+      "leaf-container": { "$type": "color", "$value": "#E1E3B4" },
+      "focus": { "$type": "color", "$value": "{palette.burnt-orange}" },
+      "scrim": { "$type": "color", "$value": "rgb(52 48 47 / 0.4)" },
+      "text-weight": { "$type": "fontWeight", "$value": 400 },
+      "grain-opacity": { "$type": "number", "$value": 0.08 },
+      "grain-blend": { "$value": "multiply" },
+      "vignette": { "$value": "radial-gradient(120% 90% at 50% 40%, transparent 60%, rgb(52 48 47 / 0.08) 100%)" }
+    }
+  },
+
+  "contrast": {
+    "$description": "Pairs the test suite checks against WCAG AA. min 4.5 for text, 3 for large text and control boundaries.",
+    "night": [
+      ["ink", "ground", 4.5], ["ink", "sunk", 4.5], ["ink", "surface", 4.5], ["ink", "raised", 4.5],
+      ["ink-quiet", "ground", 4.5], ["ink-quiet", "sunk", 4.5], ["ink-quiet", "surface", 4.5], ["ink-quiet", "raised", 4.5],
+      ["spot", "ground", 4.5], ["spot", "sunk", 4.5], ["spot-on-surface", "surface", 4.5],
+      ["leaf", "ground", 4.5], ["leaf", "sunk", 4.5], ["leaf", "surface", 4.5], ["leaf", "leaf-container", 4.5],
+      ["ink", "leaf-container", 4.5], ["ink", "spot-container", 4.5],
+      ["on-spot-fill", "spot-fill", 4.5], ["on-leaf-fill", "leaf-fill", 4.5], ["ground", "ink", 4.5],
+      ["outline", "ground", 3], ["outline", "surface", 3], ["outline", "raised", 3],
+      ["focus", "ground", 3], ["focus", "surface", 3]
+    ],
+    "day": [
+      ["ink", "ground", 4.5], ["ink", "sunk", 4.5], ["ink", "surface", 4.5], ["ink", "raised", 4.5],
+      ["ink-quiet", "ground", 4.5], ["ink-quiet", "sunk", 4.5], ["ink-quiet", "surface", 4.5], ["ink-quiet", "raised", 4.5],
+      ["spot", "ground", 4.5], ["spot", "sunk", 4.5], ["spot-on-surface", "surface", 4.5],
+      ["leaf", "ground", 4.5], ["leaf", "sunk", 4.5], ["leaf", "surface", 4.5],
+      ["ink", "leaf-container", 4.5], ["ink", "spot-container", 4.5],
+      ["on-spot-fill", "spot-fill", 4.5], ["on-leaf-fill", "leaf-fill", 4.5], ["ground", "ink", 4.5],
+      ["outline", "ground", 3], ["outline", "surface", 3], ["outline", "raised", 3],
+      ["focus", "ground", 3], ["focus", "surface", 3]
+    ]
+  },
+
+  "font": {
+    "$description": "Free (SIL OFL), self-hosted, Latin subset. Optical size is pinned per family to keep the weight down: Fraunces at 72 (display), Newsreader at 16 (text). The three romans total about 157 KB; italics load only where used.",
+    "display": { "$type": "fontFamily", "$value": "'Fraunces', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif" },
+    "text": { "$type": "fontFamily", "$value": "'Newsreader', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif" },
+    "label": { "$type": "fontFamily", "$value": "'Instrument Sans', 'Helvetica Neue', Arial, sans-serif" },
+    "faces": {
+      "$value": [
+        { "family": "Fraunces", "file": "assets/fonts/fraunces-roman.woff2", "weight": "300 700", "style": "normal" },
+        { "family": "Fraunces", "file": "assets/fonts/fraunces-italic.woff2", "weight": "300 700", "style": "italic" },
+        { "family": "Newsreader", "file": "assets/fonts/newsreader-roman.woff2", "weight": "300 700", "style": "normal" },
+        { "family": "Newsreader", "file": "assets/fonts/newsreader-italic.woff2", "weight": "300 700", "style": "italic" },
+        { "family": "Instrument Sans", "file": "assets/fonts/instrument-sans.woff2", "weight": "400 700", "style": "normal" }
+      ]
+    }
+  },
+
+  "type": {
+    "$description": "Roles, not sizes. Each expands to --type-<role>-family/size/weight/line/tracking/case/style/axes. 'axes' is font-variation-settings: SOFT is Fraunces's organic dial (0 crisp, 100 soft).",
+    "nameplate": { "$type": "typography", "$value": { "fontFamily": "{font.display}", "fontSize": "clamp(2.5rem, 14vw, 8.5rem)", "fontWeight": 600, "lineHeight": 0.92, "letterSpacing": "-0.01em", "textTransform": "uppercase", "fontVariationSettings": "'SOFT' 0" } },
+    "display": { "$type": "typography", "$value": { "fontFamily": "{font.display}", "fontSize": "clamp(2.5rem, 6.5vw, 4.75rem)", "fontWeight": 500, "lineHeight": 1.02, "letterSpacing": "-0.02em", "fontVariationSettings": "'SOFT' 10" } },
+    "headline": { "$type": "typography", "$value": { "fontFamily": "{font.display}", "fontSize": "clamp(1.875rem, 4.2vw, 2.875rem)", "fontWeight": 500, "lineHeight": 1.08, "letterSpacing": "-0.015em", "fontVariationSettings": "'SOFT' 20" } },
+    "title": { "$type": "typography", "$value": { "fontFamily": "{font.display}", "fontSize": "clamp(1.375rem, 2.4vw, 1.75rem)", "fontWeight": 560, "lineHeight": 1.18, "letterSpacing": "-0.01em", "fontVariationSettings": "'SOFT' 30" } },
+    "figure": { "$type": "typography", "$value": { "fontFamily": "{font.display}", "fontSize": "clamp(4rem, 13vw, 8.5rem)", "fontWeight": 400, "lineHeight": 0.9, "letterSpacing": "-0.03em", "fontVariationSettings": "'SOFT' 0", "fontFeatureSettings": "'lnum' 1, 'tnum' 1" } },
+    "pullquote": { "$type": "typography", "$value": { "fontFamily": "{font.display}", "fontSize": "clamp(1.625rem, 3.4vw, 2.25rem)", "fontWeight": 400, "lineHeight": 1.2, "letterSpacing": "-0.01em", "fontStyle": "italic", "fontVariationSettings": "'SOFT' 100" } },
+    "deck": { "$type": "typography", "$value": { "fontFamily": "{font.text}", "fontSize": "clamp(1.25rem, 2.1vw, 1.5rem)", "fontWeight": "var(--text-weight)", "lineHeight": 1.4, "letterSpacing": "0", "fontStyle": "italic" } },
+    "body": { "$type": "typography", "$value": { "fontFamily": "{font.text}", "fontSize": "1.1875rem", "fontWeight": "var(--text-weight)", "lineHeight": 1.6, "letterSpacing": "0.002em" } },
+    "body-sm": { "$type": "typography", "$value": { "fontFamily": "{font.text}", "fontSize": "1.0625rem", "fontWeight": "var(--text-weight)", "lineHeight": 1.55, "letterSpacing": "0.003em" } },
+    "sidenote": { "$type": "typography", "$value": { "fontFamily": "{font.text}", "fontSize": "0.9375rem", "fontWeight": "var(--text-weight)", "lineHeight": 1.45, "letterSpacing": "0.004em" } },
+    "caption": { "$type": "typography", "$value": { "fontFamily": "{font.text}", "fontSize": "0.9375rem", "fontWeight": "var(--text-weight)", "lineHeight": 1.4, "letterSpacing": "0.004em", "fontStyle": "italic" } },
+    "kicker": { "$type": "typography", "$value": { "fontFamily": "{font.label}", "fontSize": "0.75rem", "fontWeight": 600, "lineHeight": 1.3, "letterSpacing": "0.16em", "textTransform": "uppercase" } },
+    "label": { "$type": "typography", "$value": { "fontFamily": "{font.label}", "fontSize": "0.8125rem", "fontWeight": 600, "lineHeight": 1.25, "letterSpacing": "0.08em", "textTransform": "uppercase" } },
+    "folio": { "$type": "typography", "$value": { "fontFamily": "{font.label}", "fontSize": "0.75rem", "fontWeight": 500, "lineHeight": 1.3, "letterSpacing": "0.12em", "textTransform": "uppercase", "fontFeatureSettings": "'tnum' 1" } },
+    "byline": { "$type": "typography", "$value": { "fontFamily": "{font.label}", "fontSize": "0.875rem", "fontWeight": 500, "lineHeight": 1.4, "letterSpacing": "0.01em" } },
+    "ui": { "$type": "typography", "$value": { "fontFamily": "{font.label}", "fontSize": "1rem", "fontWeight": 400, "lineHeight": 1.45, "letterSpacing": "0" }, "$description": "Form fields, tool controls, tables." }
+  },
+
+  "space": {
+    "$description": "4px base.",
+    "1": { "$type": "dimension", "$value": "0.25rem" },
+    "2": { "$type": "dimension", "$value": "0.5rem" },
+    "3": { "$type": "dimension", "$value": "0.75rem" },
+    "4": { "$type": "dimension", "$value": "1rem" },
+    "5": { "$type": "dimension", "$value": "1.5rem" },
+    "6": { "$type": "dimension", "$value": "2rem" },
+    "7": { "$type": "dimension", "$value": "3rem" },
+    "8": { "$type": "dimension", "$value": "4rem" },
+    "9": { "$type": "dimension", "$value": "6rem" },
+    "10": { "$type": "dimension", "$value": "8rem" },
+    "section": { "$type": "dimension", "$value": "clamp(4rem, 10vw, 8rem)", "$description": "Between departments." }
+  },
+
+  "layout": {
+    "$description": "Window classes follow Material 3: compact < 600, medium 600-839, expanded 840-1199, large 1200+.",
+    "page": { "$type": "dimension", "$value": "78rem" },
+    "measure": { "$type": "dimension", "$value": "64ch", "$description": "Text column." },
+    "margin-column": { "$type": "dimension", "$value": "15rem", "$description": "Sidenotes, expanded and up." },
+    "gutter": { "$type": "dimension", "$value": "clamp(1rem, 4vw, 2.5rem)", "$description": "16px on phones." },
+    "columns": { "$type": "number", "$value": 12 },
+    "bp-medium": { "$type": "dimension", "$value": "600px" },
+    "bp-expanded": { "$type": "dimension", "$value": "840px" },
+    "bp-large": { "$type": "dimension", "$value": "1200px" }
+  },
+
+  "shape": {
+    "$description": "Material 3 shape scale. Editorial blocks are square; controls are pills.",
+    "none": { "$type": "dimension", "$value": "0" },
+    "xs": { "$type": "dimension", "$value": "4px" },
+    "sm": { "$type": "dimension", "$value": "8px" },
+    "md": { "$type": "dimension", "$value": "12px" },
+    "lg": { "$type": "dimension", "$value": "16px" },
+    "xl": { "$type": "dimension", "$value": "28px" },
+    "full": { "$type": "dimension", "$value": "999px" }
+  },
+
+  "rule": {
+    "hairline": { "$type": "dimension", "$value": "1px" },
+    "heavy": { "$type": "dimension", "$value": "2px" },
+    "double": { "$value": "4px double", "$description": "Under the nameplate." },
+    "terminal": { "$value": "+", "$description": "Ends of cover rules, Works in Progress style." }
+  },
+
+  "state": {
+    "$description": "Material 3 state layers: a wash of the label color over the container.",
+    "hover": { "$type": "number", "$value": 0.08 },
+    "focus": { "$type": "number", "$value": 0.10 },
+    "pressed": { "$type": "number", "$value": 0.10 },
+    "dragged": { "$type": "number", "$value": 0.16 },
+    "disabled-container": { "$type": "number", "$value": 0.12 },
+    "disabled-content": { "$type": "number", "$value": 0.38 }
+  },
+
+  "motion": {
+    "$description": "Material 3 durations and easings. Things arrive once, then sit still.",
+    "duration": {
+      "short": { "$type": "duration", "$value": "150ms" },
+      "medium": { "$type": "duration", "$value": "300ms" },
+      "long": { "$type": "duration", "$value": "500ms" }
+    },
+    "easing": {
+      "standard": { "$type": "cubicBezier", "$value": [0.2, 0, 0, 1] },
+      "emphasized-decelerate": { "$type": "cubicBezier", "$value": [0.05, 0.7, 0.1, 1] },
+      "emphasized-accelerate": { "$type": "cubicBezier", "$value": [0.3, 0, 0.8, 0.15] }
+    },
+    "arrive-distance": { "$type": "dimension", "$value": "8px" }
+  },
+
+  "texture": {
+    "$description": "Grain is generated as an inline SVG noise tile. Opacity and blend come from the edition. Photo parameters drive the offline photo script.",
+    "grain": {
+      "$value": { "baseFrequency": 0.8, "octaves": 3, "tile": 180 }
+    },
+    "photo": {
+      "$value": { "shadows": "#4A413B", "highlights": "#E8DCC8", "saturation": 0.72, "sepia": 0.22, "contrast": 0.88, "grain": 0.35 },
+      "$description": "A faded print: blacks lifted to a warm charcoal, highlights held at cream, color pulled back, heavy grain. The offline photo script bakes the same values."
+    },
+    "ink-bleed": {
+      "$value": { "baseFrequency": 0.9, "scale": 1.5 },
+      "$description": "Nameplate only. Never body text."
+    }
+  },
+
+  "component": {
+    "$description": "Material 3 anatomy, dressed quiet. Prefix 'component' is dropped in CSS: component.button.height -> --button-height.",
+    "button": {
+      "height": { "$type": "dimension", "$value": "3rem" },
+      "padding-x": { "$type": "dimension", "$value": "1.5rem" },
+      "gap": { "$type": "dimension", "$value": "0.5rem" },
+      "shape": { "$type": "dimension", "$value": "{shape.full}" },
+      "shape-pressed": { "$type": "dimension", "$value": "{shape.md}", "$description": "Material 3 Expressive shape morph on press." },
+      "outline-width": { "$type": "dimension", "$value": "1px" }
+    },
+    "chip": {
+      "height": { "$type": "dimension", "$value": "2rem" },
+      "padding-x": { "$type": "dimension", "$value": "0.875rem" },
+      "shape": { "$type": "dimension", "$value": "{shape.sm}" }
+    },
+    "field": {
+      "height": { "$type": "dimension", "$value": "3.5rem" },
+      "shape": { "$type": "dimension", "$value": "{shape.xs}" }
+    },
+    "card": {
+      "padding": { "$type": "dimension", "$value": "clamp(1.25rem, 3vw, 2rem)" },
+      "shape": { "$type": "dimension", "$value": "{shape.none}" }
+    },
+    "focus-ring": {
+      "width": { "$type": "dimension", "$value": "2px" },
+      "offset": { "$type": "dimension", "$value": "2px" }
+    },
+    "link": {
+      "underline": { "$type": "dimension", "$value": "1px" },
+      "underline-hover": { "$type": "dimension", "$value": "2px" },
+      "underline-offset": { "$type": "dimension", "$value": "0.2em" }
+    },
+    "touch-target": { "$type": "dimension", "$value": "48px" }
+  }
+}
