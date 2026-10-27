@@ -78,6 +78,7 @@ const TYPE_PROPS = [
   ['tracking', 'letterSpacing', '0'],
   ['case', 'textTransform', 'none'],
   ['style', 'fontStyle', 'normal'],
+  ['stretch', 'fontStretch', 'normal'],
   ['axes', 'fontVariationSettings', 'normal'],
   ['features', 'fontFeatureSettings', 'normal'],
 ];
@@ -94,11 +95,23 @@ function typeLines(theme) {
   return lines;
 }
 
+// Grain: one tile of light and dark specks. Two thresholds on independent
+// noise channels, so the tile shows on charcoal (light specks) and on paper or
+// colour fields (dark specks). gain sets how hard the speck edges are;
+// threshold sets how far from mid-grey the noise must be to leave a speck.
 function grainImage(theme) {
-  const { baseFrequency, octaves, tile } = theme.texture.grain.$value;
+  const { baseFrequency, octaves, tile, gain, threshold, light, dark } = theme.texture.grain.$value;
+  const rgb = (hex) => [1, 3, 5].map((i) => (parseInt(hex.slice(i, i + 2), 16) / 255).toFixed(3));
+  const [lr, lg, lb] = rgb(light);
+  const [dr, dg, db] = rgb(dark);
+  const lightBias = (-(0.5 + threshold) * gain).toFixed(3);
+  const darkBias = ((0.5 - threshold) * gain).toFixed(3);
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${tile}' height='${tile}'>` +
-    `<filter id='g'><feTurbulence type='fractalNoise' baseFrequency='${baseFrequency}' numOctaves='${octaves}' stitchTiles='stitch'/>` +
-    `<feColorMatrix type='saturate' values='0'/></filter>` +
+    `<filter id='g' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'>` +
+    `<feTurbulence type='fractalNoise' baseFrequency='${baseFrequency}' numOctaves='${octaves}' seed='7' stitchTiles='stitch' result='n'/>` +
+    `<feColorMatrix in='n' type='matrix' values='0 0 0 0 ${lr} 0 0 0 0 ${lg} 0 0 0 0 ${lb} ${gain} 0 0 0 ${lightBias}' result='l'/>` +
+    `<feColorMatrix in='n' type='matrix' values='0 0 0 0 ${dr} 0 0 0 0 ${dg} 0 0 0 0 ${db} 0 -${gain} 0 0 ${darkBias}' result='d'/>` +
+    `<feMerge><feMergeNode in='d'/><feMergeNode in='l'/></feMerge></filter>` +
     `<rect width='100%' height='100%' filter='url(%23g)'/></svg>`;
   return `url("data:image/svg+xml,${svg.replace(/</g, '%3C').replace(/>/g, '%3E')}")`;
 }
@@ -132,6 +145,7 @@ function build(theme = loadTheme()) {
     `src: url('${f.file}') format('woff2');`,
     `font-weight: ${f.weight};`,
     `font-style: ${f.style};`,
+    ...(f.stretch ? [`font-stretch: ${f.stretch};`] : []),
     'font-display: swap;',
   ]));
 

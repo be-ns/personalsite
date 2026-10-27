@@ -53,3 +53,18 @@ test('every edition defines the same roles as the default edition', () => {
     assert.deepEqual(keys(edition), keys(theme.meta.defaultEdition), `${edition} matches`);
   }
 });
+
+test('kit.html only reads custom properties that tokens.css or the page defines', () => {
+  const kit = fs.readFileSync(path.join(ROOT, 'kit.html'), 'utf8');
+  const tokens = fs.readFileSync(OUT, 'utf8');
+  const defined = new Set([...`${tokens}\n${kit}`.matchAll(/(--[a-z0-9-]+)\s*:/g)].map((m) => m[1]));
+  // var(--name, fallback) may be undefined on purpose; a bare var(--name) may not.
+  const bare = [...kit.matchAll(/var\((--[a-z0-9-]+)\)/g)].map((m) => m[1]);
+  const missing = [...new Set(bare.filter((name) => !defined.has(name)))];
+  assert.deepEqual(missing, [], `undefined custom properties: ${missing.join(', ')}`);
+});
+
+test('kit.html copy has no em dashes (my-voice.md)', () => {
+  const kit = fs.readFileSync(path.join(ROOT, 'kit.html'), 'utf8');
+  assert.doesNotMatch(kit, /—|&mdash;|&#8212;|&#x2014;/i);
+});
