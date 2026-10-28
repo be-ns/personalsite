@@ -761,7 +761,7 @@ function main(argv = process.argv.slice(2)) {
 
 module.exports = {
   parseHtml, decodeEntities, findAll, hasClass, textContent, words, readingMinutes,
-  loadSite, stamp, check, plan, chromePages, regionsOf, validate, main,
+  loadSite, stamp, check, plan, chromePages, regionsOf, blankRegions, validate, main,
   REGIONS, PARAMS, COLOPHONS, WPM,
 };
 

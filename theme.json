@@ -28,7 +28,9 @@
     "paper-card": { "$type": "color", "$value": "#E9E2D6" },
     "paper-high": { "$type": "color", "$value": "#E1D9CB" },
     "flint": { "$type": "color", "$value": "#7A7168" },
-    "umber": { "$type": "color", "$value": "#655D55" }
+    "umber": { "$type": "color", "$value": "#655D55" },
+    "cinder": { "$type": "color", "$value": "#503730", "$description": "Toxic Orange at 14% on Gondola: the one chart wash in Night." },
+    "paper-blush": { "$type": "color", "$value": "#F5DED1", "$description": "Toxic Orange at 12% on paper: the one chart wash in Day and in print." }
   },
 
   "editions": {
@@ -57,6 +59,7 @@
       "scrim": { "$type": "color", "$value": "rgb(20 18 17 / 0.64)" },
       "art-ink": { "$type": "color", "$value": "{palette.newsprint}", "$description": "Engraving line work on the page ground." },
       "art-ground": { "$type": "color", "$value": "{palette.deep-gondola}", "$description": "The murky ground inside the cover frame." },
+      "spot-wash": { "$type": "color", "$value": "{palette.cinder}", "$description": "Charts: a wash of the spot colour over the one region that asks for action (Invest on the Life Strategy matrix). Type on it keeps its ink." },
       "text-weight": { "$type": "fontWeight", "$value": 370, "$description": "Light text on dark reads heavier, so body text drops a touch." },
       "grain-opacity": { "$type": "number", "$value": 0.24 },
       "grain-blend": { "$value": "normal" },
@@ -88,6 +91,7 @@
       "scrim": { "$type": "color", "$value": "rgb(52 48 47 / 0.4)" },
       "art-ink": { "$type": "color", "$value": "{palette.char}" },
       "art-ground": { "$type": "color", "$value": "{palette.deep-gondola}" },
+      "spot-wash": { "$type": "color", "$value": "{palette.paper-blush}" },
       "text-weight": { "$type": "fontWeight", "$value": 400 },
       "grain-opacity": { "$type": "number", "$value": 0.18 },
       "grain-blend": { "$value": "multiply" },
@@ -98,7 +102,7 @@
   },
 
   "contrast": {
-    "$description": "Every text/background pair kit.html uses, checked against WCAG AA by the test suite: 4.5 for text, 3 for large text (24px and up), control boundaries and chart ink. spot on raised is the 24px department numerals in the menu sheet.",
+    "$description": "Every text/background pair kit.html uses, checked against WCAG AA by the test suite: 4.5 for text, 3 for large text (24px and up), control boundaries and chart ink. spot on raised is the 24px department numerals in the menu sheet. A fourth entry names the control a pair belongs to: the Workshop tools' slider and progress steps, and the chart wash.",
     "night": [
       ["ink", "ground", 4.5], ["ink", "sunk", 4.5], ["ink", "surface", 4.5], ["ink", "raised", 4.5],
       ["ink-quiet", "ground", 4.5], ["ink-quiet", "sunk", 4.5], ["ink-quiet", "surface", 4.5], ["ink-quiet", "raised", 4.5],
@@ -110,7 +114,10 @@
       ["ink", "art-ground", 4.5],
       ["outline", "ground", 3], ["outline", "surface", 3], ["outline", "raised", 3],
       ["focus", "ground", 3], ["focus", "sunk", 3], ["spot-fill", "ground", 3], ["leaf-fill", "ground", 3],
-      ["inverse", "spot-fill", 3], ["inverse", "leaf-fill", 3]
+      ["inverse", "spot-fill", 3], ["inverse", "leaf-fill", 3],
+      ["ink", "ground", 3, "slider: the handle"], ["leaf", "ground", 3, "slider: the active track"], ["outline", "ground", 3, "slider: the track"],
+      ["spot-large", "ground", 3, "steps: the current step"], ["leaf", "ground", 3, "steps: an answered step"], ["outline", "ground", 3, "steps: a step not answered"],
+      ["ink", "spot-wash", 4.5, "chart wash: labels"], ["ink-quiet", "spot-wash", 4.5, "chart wash: quiet labels"], ["spot", "spot-wash", 4.5, "chart wash: the region's name"], ["outline", "spot-wash", 3, "chart wash: rules and points"]
     ],
     "day": [
       ["ink", "ground", 4.5], ["ink", "sunk", 4.5], ["ink", "surface", 4.5], ["ink", "raised", 4.5],
@@ -123,7 +130,10 @@
       ["on-inverse", "art-ground", 4.5],
       ["outline", "ground", 3], ["outline", "surface", 3], ["outline", "raised", 3],
       ["focus", "ground", 3], ["focus", "sunk", 3],
-      ["inverse", "spot-fill", 3], ["inverse", "leaf-fill", 3]
+      ["inverse", "spot-fill", 3], ["inverse", "leaf-fill", 3],
+      ["ink", "ground", 3, "slider: the handle"], ["leaf", "ground", 3, "slider: the active track"], ["outline", "ground", 3, "slider: the track"],
+      ["spot-large", "ground", 3, "steps: the current step"], ["leaf", "ground", 3, "steps: an answered step"], ["outline", "ground", 3, "steps: a step not answered"],
+      ["ink", "spot-wash", 4.5, "chart wash: labels"], ["ink-quiet", "spot-wash", 4.5, "chart wash: quiet labels"], ["spot", "spot-wash", 4.5, "chart wash: the region's name"], ["outline", "spot-wash", 3, "chart wash: rules and points"]
     ]
   },
 
@@ -281,6 +291,21 @@
       "underline": { "$type": "dimension", "$value": "1px" },
       "underline-hover": { "$type": "dimension", "$value": "2px" },
       "underline-offset": { "$type": "dimension", "$value": "0.22em" }
+    },
+    "slider": {
+      "$description": "Material 3 Expressive slider, dressed quiet: a hairline track, a heavier active track in leaf, and a bar handle in ink with a gap either side. Whole-number stops are labelled below, a ruler tick over each number, the chosen one underlined in orange like the edition words. The control is a native range input, so it keeps the keyboard and the screen reader.",
+      "height": { "$type": "dimension", "$value": "{component.touch-target}" },
+      "track": { "$type": "dimension", "$value": "2px", "$description": "The whole track, in outline." },
+      "track-active": { "$type": "dimension", "$value": "4px", "$description": "From the start to the handle, in leaf. Thicker as well as green, so the two parts differ in Day, where olive and flint sit close." },
+      "handle-width": { "$type": "dimension", "$value": "4px" },
+      "handle-height": { "$type": "dimension", "$value": "2.5rem" },
+      "handle-gap": { "$type": "dimension", "$value": "6px", "$description": "Clear track either side of the handle." }
+    },
+    "steps": {
+      "$description": "Progress steps: one real button per step, a bar over a tracked-caps name. A step not answered has a hairline bar in outline, an answered one a leaf bar and its value, the current one a heavier orange bar. Each step is a full touch target, and the names give way to the values on phones.",
+      "height": { "$type": "dimension", "$value": "{component.touch-target}" },
+      "bar": { "$type": "dimension", "$value": "2px" },
+      "bar-current": { "$type": "dimension", "$value": "4px" }
     },
     "touch-target": { "$type": "dimension", "$value": "48px" }
   }

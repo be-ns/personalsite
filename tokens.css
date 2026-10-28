@@ -70,6 +70,8 @@
   --palette-paper-high: #E1D9CB;
   --palette-flint: #7A7168;
   --palette-umber: #655D55;
+  --palette-cinder: #503730;
+  --palette-paper-blush: #F5DED1;
   --font-display: 'Fraunces', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
   --font-display-cut: 'Fraunces Display', 'Fraunces', 'Iowan Old Style', Georgia, serif;
   --font-text: 'Newsreader', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
@@ -138,6 +140,15 @@
   --link-underline: 1px;
   --link-underline-hover: 2px;
   --link-underline-offset: 0.22em;
+  --slider-height: var(--touch-target);
+  --slider-track: 2px;
+  --slider-track-active: 4px;
+  --slider-handle-width: 4px;
+  --slider-handle-height: 2.5rem;
+  --slider-handle-gap: 6px;
+  --steps-height: var(--touch-target);
+  --steps-bar: 2px;
+  --steps-bar-current: 4px;
   --touch-target: 48px;
   --type-nameplate-family: var(--font-display-cut);
   --type-nameplate-size: clamp(2.5rem, 14.6cqi, 9rem);
@@ -342,6 +353,7 @@
   --scrim: rgb(20 18 17 / 0.64);
   --art-ink: var(--palette-newsprint);
   --art-ground: var(--palette-deep-gondola);
+  --spot-wash: var(--palette-cinder);
   --text-weight: 370;
   --grain-opacity: 0.24;
   --grain-blend: normal;
@@ -379,6 +391,7 @@
   --scrim: rgb(52 48 47 / 0.4);
   --art-ink: var(--palette-char);
   --art-ground: var(--palette-deep-gondola);
+  --spot-wash: var(--palette-paper-blush);
   --text-weight: 400;
   --grain-opacity: 0.18;
   --grain-blend: multiply;
@@ -418,6 +431,7 @@
     --scrim: rgb(20 18 17 / 0.64);
     --art-ink: var(--palette-newsprint);
     --art-ground: var(--palette-deep-gondola);
+    --spot-wash: var(--palette-cinder);
     --text-weight: 370;
     --grain-opacity: 0.24;
     --grain-blend: normal;
@@ -458,6 +472,7 @@
     --scrim: rgb(52 48 47 / 0.4);
     --art-ink: var(--palette-char);
     --art-ground: var(--palette-deep-gondola);
+    --spot-wash: var(--palette-paper-blush);
     --text-weight: 400;
     --grain-opacity: 0.18;
     --grain-blend: multiply;

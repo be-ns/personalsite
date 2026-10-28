@@ -1,0 +1,11 @@
+{
+  "$comment": "The frozen chrome (redesign-plan.md, step 2): sha256 of each shared region (head, top, colophon, script) as stamped on the frozen pages, with the per-page parameters taken out (see the freeze in test/chrome.test.js). Change these only in a commit that changes the chrome on purpose, and say why there.",
+  "frozenAt": "Step 2: the home page and Life Strategy Matrix on the new design",
+  "pages": ["index.html", "kit.html", "404.html", "life-strategy.html"],
+  "regions": {
+    "head": "c0bf0465f23410fd791123c81d41f1d6f16593c4ee0c937a2e3f1b404dc8f171",
+    "top": "0c8f021e4d991a3a6766577bb60b927162b75b9994012f2e96b522b6a7a6dd49",
+    "colophon": "e47ee8206308a6564ebf02bd9c550dbf313ab04184fcedbda3bd9fb636d67274",
+    "script": "9dcd1ce24fc00635ba312c64a2ef3d6ff5569f30b1edaf78865ed734671bb847"
+  }
+}

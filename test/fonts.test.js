@@ -135,3 +135,12 @@ for (const page of chromePages()) {
 test('site.css uses only characters every face carries', () => {
   assert.deepEqual(outside(fs.readFileSync(path.join(ROOT, 'site.css'), 'utf8')), []);
 });
+
+// The wizard tools render their screens from script, so the characters in
+// their inline scripts reach the page too.
+for (const page of chromePages()) {
+  test(`${page}: what its scripts render uses only characters every face carries`, () => {
+    const { inlineScripts } = require('./helpers');
+    assert.deepEqual(outside(inlineScripts(readPage(page)).join('\n')), []);
+  });
+}

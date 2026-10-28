@@ -47,6 +47,20 @@ for (const [edition, pairs] of Object.entries(theme.contrast)) {
   });
 }
 
+test('the Workshop tools\' slider, steps and chart wash are specified with contrast pairs in both editions', () => {
+  for (const name of ['slider', 'steps']) {
+    assert.ok(theme.component[name] && theme.component[name].$description, `component.${name} is specified`);
+  }
+  for (const [edition, pairs] of Object.entries(theme.contrast)) {
+    if (edition.startsWith('$')) continue;
+    const named = (prefix) => pairs.filter((p) => typeof p[3] === 'string' && p[3].startsWith(prefix));
+    for (const [prefix, want] of [['slider:', 3], ['steps:', 3], ['chart wash:', 4]]) {
+      assert.ok(named(prefix).length >= want, `${edition}: ${prefix} has its contrast pairs`);
+    }
+    for (const p of pairs) assert.ok(p.length === 3 || (p.length === 4 && typeof p[3] === 'string'), `${edition}: ${JSON.stringify(p)} is [fg, bg, min] or [fg, bg, min, control]`);
+  }
+});
+
 test('every edition defines the same roles as the default edition', () => {
   const keys = (e) => Object.keys(theme.editions[e]).filter((k) => !k.startsWith('$')).sort();
   for (const edition of Object.keys(theme.editions).filter((k) => !k.startsWith('$'))) {

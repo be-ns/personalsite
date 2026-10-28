@@ -24,16 +24,26 @@
 
   <!-- Canonical -->
   <link rel="canonical" href="https://bensiverly.com/life-strategy.html">
-
-  <!-- Favicon & PWA -->
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#0047AB">
-  <style>
-    .skip-link { position: absolute; left: 8px; top: -56px; z-index: 1000; padding: 0.6rem 1rem; background: #0047AB; color: #fff; border-radius: 0 0 6px 6px; font: 600 0.95rem/1 system-ui, sans-serif; text-decoration: none; }
-    .skip-link:focus { top: 0; }
-    ::selection { background-color: #FFE227; color: #1A1A1A; }
-  </style>
+  <!-- chrome:head -->
+  <meta name="theme-color" content="#34302F">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="manifest" href="site.webmanifest">
+  <script>
+    // Apply a saved edition before first paint. Night is the default on every device.
+    (function () {
+      document.documentElement.classList.add('js');
+      try {
+        const saved = localStorage.getItem('edition');
+        if (saved === 'day' || saved === 'night') document.documentElement.dataset.edition = saved;
+      } catch (err) { /* storage blocked: stay on Night */ }
+    })();
+  </script>
+  <link rel="preload" href="assets/fonts/fraunces-roman.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/newsreader-roman.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="site.css">
+  <!-- /chrome:head -->
 
   <!-- Structured data -->
   <script type="application/ld+json">
@@ -62,1312 +72,273 @@
   }
   </script>
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Zilla+Slab:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
   <style>
-    /* ==========================================================================
-       CSS Variables
-       ========================================================================== */
-    :root {
-      --color-bg: #FFFFFF;
-      --color-bg-alt: #F8F8F6;
-      --color-text: #1A1A1A;
-      --color-accent: #FFE227;
-      --color-accent-hover: #FFD800;
-      --color-muted: #666666;
-      --color-border: #E5E5E5;
-
-      --font-heading: 'Zilla Slab', Georgia, serif;
-      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-
-      --space-xs: 0.5rem;
-      --space-sm: 1rem;
-      --space-md: 1.5rem;
-      --space-lg: 2.5rem;
-      --space-xl: 4rem;
-
-      --radius-sm: 4px;
-      --radius-md: 8px;
-
-      --transition-fast: 150ms ease;
-      --transition-base: 250ms ease;
-    }
-
-    /* ==========================================================================
-       Base Styles
-       ========================================================================== */
-    *, *::before, *::after {
-      box-sizing: border-box;
-    }
-
-    html {
-      font-size: 16px;
-      -webkit-text-size-adjust: 100%;
-    }
-
-    body {
-      margin: 0;
-      font-family: var(--font-body);
-      font-size: 1rem;
-      line-height: 1.6;
-      color: var(--color-text);
-      background-color: var(--color-bg);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* ==========================================================================
-       Header - Minimal
-       ========================================================================== */
-    .site-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: var(--space-sm) var(--space-md);
-      border-bottom: 1px solid var(--color-border);
-    }
-
-    .site-brand {
-      font-family: var(--font-heading);
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--color-text);
-      text-decoration: none;
-      transition: color var(--transition-fast);
-    }
-
-    .site-brand:hover {
-      color: var(--color-muted);
-    }
-
-    .header-meta {
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-    }
-
-    .tool-label {
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--color-muted);
-    }
-
-    .reset-link {
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--color-muted);
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0.25rem 0.5rem;
-      border-radius: var(--radius-sm);
-      transition: color var(--transition-fast), background-color var(--transition-fast);
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .reset-link.is-visible {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .reset-link:hover {
-      color: var(--color-text);
-      background-color: var(--color-bg-alt);
-    }
-
-    /* ==========================================================================
-       Main Container
-       ========================================================================== */
-    main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      max-width: 560px;
-      width: 100%;
-      margin: 0 auto;
-      padding: var(--space-lg) var(--space-md);
-    }
-
-    /* ==========================================================================
-       Tool Container
-       ========================================================================== */
-    .tool {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Progress indicator - subtle, single line */
-    .progress {
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--color-muted);
-      margin-bottom: var(--space-md);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .progress-phase {
-      color: var(--color-text);
-      font-weight: 500;
-    }
-
-    .progress-count {
-      color: var(--color-muted);
-    }
-
-    .progress-count::before {
-      content: '·';
-      margin-right: 0.5rem;
-    }
-
-    /* ==========================================================================
-       Intro / Start screen
-       ========================================================================== */
-    .intro {
-      max-width: 30rem;
-      margin: 0 auto;
-      padding: var(--space-lg) 0;
-      width: 100%;
-      opacity: 1;
-      transition: opacity var(--transition-fast);
-    }
-
-    .intro.is-transitioning {
-      opacity: 0;
-    }
-
-    .intro-eyebrow {
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--color-muted);
-      margin: 0 0 var(--space-sm) 0;
-    }
-
-    .intro-title {
-      font-family: var(--font-heading);
-      font-weight: 700;
-      font-size: clamp(1.75rem, 5vw, 2.5rem);
-      line-height: 1.15;
-      margin: 0 0 var(--space-md) 0;
-      color: var(--color-text);
-    }
-
-    .intro-lead {
-      font-size: 1.0625rem;
-      line-height: 1.6;
-      color: var(--color-text);
-      margin: 0 0 var(--space-lg) 0;
-    }
-
-    .intro-steps {
-      list-style: none;
-      margin: 0 0 var(--space-lg) 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-sm);
-    }
-
-    .intro-steps li {
-      display: flex;
-      gap: var(--space-sm);
-      align-items: baseline;
-      font-size: 0.95rem;
-      line-height: 1.5;
-      color: var(--color-text);
-    }
-
-    .intro-step-num {
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      color: var(--color-muted);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-sm);
-      min-width: 1.5rem;
-      height: 1.5rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .intro-privacy {
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      line-height: 1.5;
-      color: var(--color-muted);
-      border-top: 1px solid var(--color-border);
-      padding-top: var(--space-md);
-      margin: 0 0 var(--space-lg) 0;
-    }
-
-    .intro-cta {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.5rem;
-      margin: 0 0 var(--space-lg) 0;
-    }
-
-    .intro-cta .nav-btn {
-      padding: 1rem 2rem;
-      font-size: 0.875rem;
-    }
-
-    .intro-cta-note {
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--color-muted);
-    }
-
-    .intro-example {
-      margin: 0 0 var(--space-lg) 0;
-    }
-
-    .intro-example-label {
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--color-muted);
-      margin: 0 0 var(--space-xs) 0;
-    }
-
-    .intro-example-caption {
-      font-size: 0.8125rem;
-      line-height: 1.5;
-      color: var(--color-muted);
-      margin: var(--space-xs) 0 0 0;
-    }
-
-    /* ==========================================================================
-       Score Card - The hero of each scoring step
-       ========================================================================== */
-    .score-card {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: var(--space-lg) 0;
-      opacity: 1;
-      transition: opacity var(--transition-fast);
-    }
-
-    .score-card.is-transitioning {
-      opacity: 0;
-    }
-
-    .category-name {
-      font-family: var(--font-heading);
-      font-size: clamp(2.5rem, 8vw, 3.5rem);
-      font-weight: 700;
-      line-height: 1.1;
-      margin: 0 0 var(--space-sm) 0;
-      color: var(--color-text);
-    }
-
-    .score-hint {
-      font-size: 0.9375rem;
-      line-height: 1.5;
-      color: var(--color-muted);
-      max-width: 22rem;
-      margin: 0 0 var(--space-lg) 0;
-    }
-
-    /* Slider */
-    .slider-container {
-      width: 100%;
-      max-width: 320px;
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-sm);
-    }
-
-    .slider-value {
-      font-family: var(--font-heading);
-      font-size: 2.5rem;
-      font-weight: 700;
-      line-height: 1;
-      color: var(--color-text);
-      min-height: 2.5rem;
-    }
-
-    .slider-value.is-unset {
-      color: var(--color-border);
-    }
-
-    .slider-value-label {
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--color-muted);
-      min-height: 1.25rem;
-      margin-top: -0.25rem;
-    }
-
-    .slider-value-label.is-hint {
-      color: var(--color-text);
-      animation: hint-fade 2s ease-in-out infinite;
-    }
-
-    @keyframes hint-fade {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.45; }
-    }
-
-    @keyframes thumb-pulse {
-      0%, 100% { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); }
-      50% { box-shadow: 0 0 0 9px rgba(255, 226, 39, 0.55); }
-    }
-
-    .slider-input.is-unset::-webkit-slider-thumb {
-      animation: thumb-pulse 1.8s ease-in-out infinite;
-    }
-
-    .slider-input.is-unset::-moz-range-thumb {
-      animation: thumb-pulse 1.8s ease-in-out infinite;
-    }
-
-    .slider-track {
-      position: relative;
-      width: 100%;
-      padding: 0.75rem 0;
-    }
-
-    .slider-input {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 100%;
-      height: 6px;
-      background: var(--color-border);
-      border-radius: 3px;
-      outline: none;
-      cursor: pointer;
-    }
-
-    .slider-input::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 32px;
-      height: 32px;
-      background: var(--color-text);
-      border-radius: 50%;
-      cursor: grab;
-      border: 3px solid var(--color-bg);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-    }
-
-    .slider-input::-webkit-slider-thumb:hover {
-      transform: scale(1.1);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    }
-
-    .slider-input::-webkit-slider-thumb:active {
-      cursor: grabbing;
-      transform: scale(1.05);
-    }
-
-    .slider-input::-moz-range-thumb {
-      width: 32px;
-      height: 32px;
-      background: var(--color-text);
-      border-radius: 50%;
-      cursor: grab;
-      border: 3px solid var(--color-bg);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    }
-
-    .slider-input:focus-visible {
-      outline: 2px solid var(--color-text);
-      outline-offset: 4px;
-    }
-
-    .slider-input:focus-visible::-webkit-slider-thumb {
-      box-shadow: 0 0 0 3px var(--color-accent);
-    }
-
-    .slider-ticks {
-      display: flex;
-      justify-content: space-between;
-      padding: 0 2px;
-    }
-
-    .slider-tick {
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      color: var(--color-muted);
-      width: 20px;
-      text-align: center;
-      cursor: pointer;
-      padding: 0.25rem;
-      border-radius: var(--radius-sm);
-      transition: color var(--transition-fast), background-color var(--transition-fast);
-    }
-
-    .slider-tick:hover {
-      color: var(--color-text);
-      background-color: var(--color-bg-alt);
-    }
-
-    .slider-tick.is-active {
-      color: var(--color-text);
-      font-weight: 500;
-    }
-
-    .slider-scale {
-      display: flex;
-      justify-content: space-between;
-      padding: 0 2px;
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--color-muted);
-    }
-
-    /* ==========================================================================
-       Navigation
-       ========================================================================== */
-    .nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-top: var(--space-md);
-      margin-top: auto;
-      border-top: 1px solid var(--color-border);
-    }
-
-    .nav-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-family: var(--font-mono);
-      font-size: 0.8125rem;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 0.875rem 1.25rem;
-      border: 2px solid var(--color-text);
-      background-color: transparent;
-      color: var(--color-text);
-      cursor: pointer;
-      border-radius: var(--radius-sm);
-      transition: all var(--transition-fast);
-    }
-
-    .nav-btn:hover,
-    .nav-btn:focus {
-      background-color: var(--color-text);
-      color: var(--color-bg);
-    }
-
-    .nav-btn:focus-visible {
-      outline: 2px solid var(--color-text);
-      outline-offset: 2px;
-    }
-
-    .nav-btn--back {
-      border-color: var(--color-border);
-      color: var(--color-muted);
-      padding: 0.875rem 1rem;
-    }
-
-    .nav-btn--back:hover,
-    .nav-btn--back:focus {
-      border-color: var(--color-text);
-      background-color: transparent;
-      color: var(--color-text);
-    }
-
-    .nav-btn--back.is-hidden {
-      visibility: hidden;
-    }
-
-    .nav-btn--next {
-      background-color: var(--color-text);
-      color: var(--color-bg);
-    }
-
-    .nav-btn--next:hover,
-    .nav-btn--next:focus {
-      background-color: var(--color-accent);
-      border-color: var(--color-accent);
-      color: var(--color-text);
-    }
-
-    .nav-btn--next:disabled,
-    .nav-btn--next:disabled:hover,
-    .nav-btn--next:disabled:focus {
-      background-color: var(--color-border);
-      border-color: var(--color-border);
-      color: var(--color-muted);
-      cursor: not-allowed;
-    }
-
-    .nav-center {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.25rem;
-    }
-
-    .skip-btn {
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--color-muted);
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0.375rem 0.5rem;
-      border-radius: var(--radius-sm);
-      transition: color var(--transition-fast), background-color var(--transition-fast);
-      opacity: 0.7;
-    }
-
-    .skip-btn:hover {
-      color: var(--color-text);
-      background-color: var(--color-bg-alt);
-      opacity: 1;
-    }
-
-    .skip-btn.is-hidden {
-      display: none;
-    }
-
-    /* ==========================================================================
-       Results Panel
-       ========================================================================== */
-    .results {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-      opacity: 1;
-      transition: opacity var(--transition-base);
-    }
-
-    .results.is-transitioning {
-      opacity: 0;
-    }
-
-    .results-header {
-      text-align: center;
-    }
-
-    .results-title {
-      font-family: var(--font-heading);
-      font-size: 1.75rem;
-      font-weight: 700;
-      margin: 0 0 var(--space-xs) 0;
-    }
-
-    .results-subtitle {
-      font-size: 0.9375rem;
-      color: var(--color-muted);
-      margin: 0;
-    }
-
-    /* Matrix */
-    .matrix-container {
-      position: relative;
-      background-color: var(--color-bg);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-md);
-      padding: var(--space-sm);
-    }
-
-    .matrix-svg {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    .matrix-quadrant {
-      fill: transparent;
-    }
-
-    .quadrant-maintain {
-      fill: rgba(61, 90, 71, 0.06);
-    }
-
-    .quadrant-invest {
-      fill: rgba(255, 226, 39, 0.15);
-    }
-
-    .quadrant-rebalance {
-      fill: rgba(100, 116, 139, 0.04);
-    }
-
-    .quadrant-release {
-      fill: rgba(100, 116, 139, 0.02);
-    }
-
-    .matrix-label {
-      font-family: var(--font-mono);
-      font-size: 3px;
-      font-weight: 500;
-      fill: var(--color-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.02em;
-    }
-
-    .matrix-point {
-      cursor: pointer;
-      /* Scale around the point itself, not the SVG origin; otherwise hover
-         throws the point out from under the cursor and it flickers. */
-      transform-box: fill-box;
-      transform-origin: center;
-      transition: transform var(--transition-fast);
-    }
-
-    .matrix-point:hover {
-      transform: scale(1.15);
-    }
-
-    .matrix-point-dot {
-      fill: var(--color-text);
-      stroke: var(--color-bg);
-      stroke-width: 0.5;
-      transition: fill var(--transition-fast), stroke var(--transition-fast);
-    }
-
-    .matrix-point-text {
-      font-family: var(--font-mono);
-      font-size: 2.5px;
-      font-weight: 600;
-      fill: var(--color-text);
-    }
-
-    .matrix-point.is-active .matrix-point-dot {
-      fill: var(--color-accent);
-      stroke: var(--color-text);
-      stroke-width: 0.8;
-    }
-
-    .matrix-tooltip {
-      position: absolute;
-      transform: translate(-50%, -100%);
-      background-color: var(--color-bg);
-      border: 1px solid var(--color-text);
-      border-radius: var(--radius-sm);
-      padding: 0.5rem 0.75rem;
-      font-size: 0.8125rem;
-      color: var(--color-text);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity var(--transition-fast);
-      white-space: nowrap;
-      z-index: 10;
-    }
-
-    .matrix-tooltip.is-visible {
-      opacity: 1;
-    }
-
-    .matrix-tooltip strong {
-      display: block;
-      font-weight: 600;
-    }
-
-    .matrix-tooltip span {
-      font-size: 0.75rem;
-      color: var(--color-muted);
-    }
-
-    .matrix-axes {
-      display: flex;
-      justify-content: space-between;
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--color-muted);
-      padding: var(--space-xs) 0 0 0;
-    }
-
-    /* Focus Card */
-    .focus-card {
-      background-color: var(--color-accent);
-      border-radius: var(--radius-md);
-      padding: var(--space-md);
-    }
-
-    .focus-label {
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--color-text);
-      opacity: 0.7;
-      margin: 0 0 var(--space-xs) 0;
-    }
-
-    .focus-category {
-      font-family: var(--font-heading);
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin: 0 0 var(--space-xs) 0;
-    }
-
-    .focus-message {
-      font-size: 0.9375rem;
-      line-height: 1.5;
-      margin: 0;
-      color: var(--color-text);
-      opacity: 0.85;
-    }
-
-    /* Quadrant Summary */
-    .quadrant-summary {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: var(--space-xs);
-    }
-
-    .quadrant-block {
-      padding: var(--space-sm);
-      background-color: var(--color-bg-alt);
-      border-radius: var(--radius-sm);
-    }
-
-    .quadrant-block-title {
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--color-muted);
-      margin: 0 0 0.375rem 0;
-    }
-
-    .quadrant-block-list {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      font-size: 0.875rem;
-    }
-
-    .quadrant-block-list li {
-      padding: 0.125rem 0;
-    }
-
-    .quadrant-block-list .is-empty {
-      color: var(--color-muted);
-      font-style: italic;
-    }
-
-    /* Results Navigation */
-    .results-nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-top: var(--space-md);
-      margin-top: auto;
-      border-top: 1px solid var(--color-border);
-    }
-
-    /* ==========================================================================
-       Print Layout
-       ========================================================================== */
-    .print-view {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .print-header {
-      text-align: center;
-      padding-bottom: var(--space-sm);
-      border-bottom: 2px solid var(--color-text);
-    }
-
-    .print-title {
-      font-family: var(--font-heading);
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin: 0 0 var(--space-xs) 0;
-    }
-
-    .print-tagline {
-      font-size: 0.9375rem;
-      color: var(--color-muted);
-      margin: 0;
-    }
-
-    .print-date-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: var(--space-xs);
-    }
-
-    .print-date-label {
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--color-muted);
-    }
-
-    .print-date-input {
-      font-family: var(--font-body);
-      font-size: 0.9375rem;
-      padding: 0.375rem 0.5rem;
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-sm);
-      width: 140px;
-    }
-
-    .print-date-output {
-      display: none;
-    }
-
-    /* Scores Table */
-    .scores-table-section {
-      margin-top: var(--space-sm);
-    }
-
-    .scores-table-title {
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--color-muted);
-      margin: 0 0 var(--space-xs) 0;
-    }
-
-    .scores-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.875rem;
-    }
-
-    .scores-table th,
-    .scores-table td {
-      padding: 0.5rem 0.625rem;
-      border: 1px solid var(--color-border);
-      text-align: left;
-    }
-
-    .scores-table th {
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--color-muted);
-      font-weight: 500;
-      background-color: var(--color-bg-alt);
-    }
-
-    .scores-table td:nth-child(2),
-    .scores-table td:nth-child(3) {
-      text-align: center;
-      font-family: var(--font-mono);
-      font-size: 0.8125rem;
-    }
-
-    .recommendation-cell {
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .recommendation-invest {
-      color: #92400E;
-      background-color: rgba(255, 226, 39, 0.2);
-    }
-
-    .recommendation-maintain {
-      color: #3D5A47;
-      background-color: rgba(61, 90, 71, 0.1);
-    }
-
-    .recommendation-rebalance {
-      color: #475569;
-      background-color: rgba(100, 116, 139, 0.1);
-    }
-
-    .recommendation-release {
-      color: var(--color-muted);
-      background-color: rgba(100, 116, 139, 0.05);
-    }
-
-    .print-actions {
-      display: flex;
-      gap: var(--space-sm);
-      padding-top: var(--space-md);
-      margin-top: auto;
-      border-top: 1px solid var(--color-border);
-    }
-
-    .print-btn {
-      flex: 1;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      font-family: var(--font-mono);
-      font-size: 0.8125rem;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 0.875rem 1.25rem;
-      border: 2px solid var(--color-text);
-      background-color: var(--color-text);
-      color: var(--color-bg);
-      cursor: pointer;
-      border-radius: var(--radius-sm);
-      transition: all var(--transition-fast);
-    }
-
-    .print-btn:hover {
-      background-color: var(--color-accent);
-      border-color: var(--color-accent);
-      color: var(--color-text);
-    }
-
-    /* ==========================================================================
-       Footer - Minimal
-       ========================================================================== */
-    .site-footer {
-      padding: var(--space-sm) var(--space-md);
-      text-align: center;
-      font-size: 0.75rem;
-      color: var(--color-muted);
-    }
-
-    .privacy-note {
-      margin: 0;
-    }
-
-    /* ==========================================================================
-       Responsive Adjustments
-       ========================================================================== */
-    @media (max-width: 480px) {
-      .site-header {
-        padding: var(--space-xs) var(--space-sm);
-      }
-
-      /* The uppercase headers can't wrap; at full padding the table ran
-         past a 390px screen and the browser zoomed the page out. */
-      .scores-table th,
-      .scores-table td {
-        padding: 0.5rem 0.375rem;
-      }
-
-      .scores-table th {
-        letter-spacing: 0.02em;
-      }
-
-      main {
-        padding: var(--space-md) var(--space-sm);
-      }
-
-      .category-name {
-        font-size: 2rem;
-      }
-
-      .slider-container {
-        max-width: 280px;
-      }
-
-      .nav-btn {
-        padding: 0.75rem 1rem;
-        font-size: 0.75rem;
-      }
-
-      .nav-btn--back {
-        padding: 0.75rem 0.875rem;
-      }
-
-      .quadrant-summary {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* ==========================================================================
-       Reduced Motion
-       ========================================================================== */
-    @media (prefers-reduced-motion: reduce) {
-      .score-card,
-      .results,
-      .matrix-point,
-      .slider-input::-webkit-slider-thumb {
-        transition: none;
-      }
-
-      .slider-input.is-unset::-webkit-slider-thumb,
-      .slider-input.is-unset::-moz-range-thumb,
-      .slider-value-label.is-hint {
-        animation: none;
-      }
-    }
-
-    /* ==========================================================================
-       Print Styles
-       ========================================================================== */
+    /* Life Strategy Matrix: the screens the script renders into #tool. The
+       Workshop tool template (tool bar, opener, slider, steps, nav, proof) is
+       in site.css; these rules are this tool's own. */
+    .tool > .intro, .tool > .score-card, .tool > .results { transition: opacity var(--motion-duration-short) var(--motion-easing-standard); }
+    .tool > .is-transitioning { opacity: 0; }
+    .tool h1:focus, .tool h1:focus-visible { outline: none; }
+
+    /* ---------- Intro: the opener spread ----------
+       The copy and How it works on the left; the marigold and Fig. 1 on the
+       right. On phones they stack in that order, copy first. */
+    .intro { padding-bottom: var(--space-4); }
+    .intro-example .plate { padding: var(--space-3) var(--space-3) var(--space-4); }
+    .intro-example .plate-title { margin-bottom: var(--space-3); }
+    .intro-steps { list-style: none; display: grid; margin-top: var(--space-3); border-top: 1px solid var(--ink-quiet); }
+    .intro-steps li { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr); gap: var(--space-3); padding-block: var(--space-4); border-bottom: var(--rule-hairline) solid var(--rule); }
+    .intro-steps .n { font: 300 2rem / 0.85 var(--font-display); font-variation-settings: 'SOFT' 100; letter-spacing: -0.04em; color: var(--spot-large); }
+    .intro-steps p { max-width: 30em; }
+    @media (max-width: 599px) { .intro-example { max-width: 30rem; } }
+    @media (min-width: 600px) and (max-width: 839px) {
+      .intro { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: var(--space-6); }
+      .intro .opener-copy, .intro .opener-art { grid-column: 1 / -1; }
+    }
+    @media (min-width: 840px) {
+      .intro { grid-template-columns: minmax(0, 1fr) clamp(17rem, 27vw, 22rem); column-gap: clamp(3rem, 8vw, 7rem); row-gap: var(--space-7); }
+      .intro .opener-copy { align-self: end; }
+      .intro-how { grid-area: 2 / 1; align-self: start; }
+      .intro-example { grid-area: 2 / 2; align-self: start; }
+    }
+
+    /* ---------- Scoring ---------- */
+    .progress { display: grid; gap: var(--space-1); padding-top: var(--space-5); }
+    .progress-head { color: var(--ink); }
+    .progress-count { color: var(--ink-quiet); }
+    .progress-count::before { content: "\00B7"; margin-inline: 0.6em; }
+    .score-card { display: grid; gap: var(--space-6) var(--space-7); padding-block: var(--space-6) var(--space-7); }
+    .category-name { font: 300 clamp(2.5rem, 11vw, 4.5rem) / 0.92 var(--font-display); font-variation-settings: 'SOFT' 50; letter-spacing: -0.04em; }
+    .score-hint { margin-top: var(--space-3); max-width: 22em; }
+    .score-card .slider { align-self: end; }
+    @media (min-width: 840px) {
+      .score-card { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: end; padding-block: var(--space-8) var(--space-7); }
+      .category-name { font-size: clamp(3rem, 6vw, 5.5rem); }
+    }
+
+    /* ---------- The matrix: one spot colour, labels in HTML ---------- */
+    .matrix-container { position: relative; padding: 0 0 1.75rem 1.75rem; color: var(--outline); }
+    .matrix-field { position: relative; aspect-ratio: 1; }
+    .matrix-svg { width: 100%; height: 100%; overflow: visible; }
+    .matrix-quadrant { fill: transparent; }
+    .quadrant-invest { fill: var(--spot-wash); }
+    .matrix-frame { fill: none; stroke: var(--outline); }
+    .matrix-split { stroke: var(--outline); stroke-dasharray: 3 5; }
+    .matrix-point { cursor: pointer; outline: none; transform-box: fill-box; transform-origin: center; transition: transform var(--motion-duration-short) var(--motion-easing-standard); }
+    .matrix-point:hover { transform: scale(1.15); }
+    .matrix-point-dot { fill: var(--ink); stroke: var(--ground); stroke-width: 2px; }
+    .matrix-point.is-invest .matrix-point-dot { fill: var(--spot-large); }
+    .matrix-point.is-active .matrix-point-dot, .matrix-point:focus-visible .matrix-point-dot { stroke: var(--focus); stroke-width: 3px; }
+    .matrix-label { position: absolute; font: var(--type-folio-weight) var(--type-folio-size) / 1 var(--font-label); letter-spacing: var(--type-folio-tracking); text-transform: uppercase; font-stretch: var(--type-folio-stretch); color: var(--ink-quiet); pointer-events: none; }
+    .matrix-label.q-rebalance { top: 0.6rem; left: 0.6rem; }
+    .matrix-label.q-maintain { top: 0.6rem; right: 0.6rem; }
+    .matrix-label.q-release { bottom: 0.6rem; left: 0.6rem; }
+    .matrix-label.q-invest { bottom: 0.6rem; right: 0.6rem; color: var(--spot); font-weight: 600; }
+    .matrix-tag { position: absolute; translate: -50% calc(-100% - 0.7em); font: 600 0.75rem / 1 var(--font-label); letter-spacing: 0.04em; color: var(--ink); pointer-events: none; }
+    .matrix-axis { position: absolute; font: var(--type-folio-weight) var(--type-folio-size) / 1 var(--font-label); letter-spacing: var(--type-folio-tracking); text-transform: uppercase; font-stretch: var(--type-folio-stretch); color: var(--ink-quiet); white-space: nowrap; }
+    .matrix-axis--x { right: 0; bottom: 0.25rem; }
+    .matrix-axis--y { left: 0.25rem; top: 0; writing-mode: vertical-rl; rotate: 180deg; }
+    .matrix-tooltip { position: absolute; z-index: 10; transform: translate(-50%, -100%); padding: 0.5rem 0.75rem; background: var(--raised); color: var(--ink); box-shadow: inset 0 0 0 1px var(--outline); font: 400 0.8125rem / 1.35 var(--font-label); white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity var(--motion-duration-short); }
+    .matrix-tooltip.is-visible { opacity: 1; }
+    .matrix-tooltip strong { display: block; font-weight: 600; }
+    .matrix-tooltip span { color: var(--ink-quiet); }
+
+    /* ---------- Results: a short feature ---------- */
+    .results-head { display: grid; justify-items: start; gap: var(--space-2); padding-block: var(--space-5); }
+    .results-title { font: 300 clamp(2.5rem, 6vw, 4.5rem) / 0.95 var(--font-display); font-variation-settings: 'SOFT' 50; letter-spacing: -0.035em; }
+    .results-body { display: grid; gap: var(--space-6); padding-bottom: var(--space-6); }
+    .results-fig { max-width: 36rem; }
+    .results-fig .plate { padding: var(--space-4); }
+    .focus-card { display: grid; justify-items: start; gap: var(--space-2); }
+    .focus-category { font: 300 clamp(3.25rem, 7vw, 5.25rem) / 0.88 var(--font-display); font-variation-settings: 'SOFT' 0; letter-spacing: -0.035em; color: var(--spot-large); }
+    .focus-message { max-width: 26em; font-family: var(--type-deck-family); font-size: var(--type-deck-size); font-style: italic; line-height: var(--type-deck-line); text-wrap: pretty; }
+    .quadrant-summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: var(--space-6); border-top: 1px solid var(--ink-quiet); }
+    .quadrant-block { padding: var(--space-3) var(--space-3) var(--space-4) 0; border-bottom: var(--rule-hairline) solid var(--rule); }
+    .quadrant-block:nth-child(even) { padding-left: var(--space-4); border-left: var(--rule-hairline) solid var(--rule); }
+    .quadrant-block-title { font: var(--type-folio-weight) var(--type-folio-size) / var(--type-folio-line) var(--font-label); letter-spacing: var(--type-folio-tracking); text-transform: uppercase; font-stretch: var(--type-folio-stretch); color: var(--ink-quiet); }
+    .quadrant-block--invest .quadrant-block-title { color: var(--spot); font-weight: 600; }
+    .quadrant-block-note { margin-top: var(--space-1); }
+    .quadrant-block-list { list-style: none; margin-top: var(--space-2); font: var(--type-body-sm-weight) var(--type-body-sm-size) / 1.45 var(--type-body-sm-family); }
+    .quadrant-block-list .is-empty { color: var(--ink-quiet); font-style: italic; }
+    @media (min-width: 840px) {
+      .results-body { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: var(--space-7); align-items: start; }
+      .results-fig { max-width: none; }
+    }
+    @media (min-width: 1024px) {
+      .results-body { grid-template-columns: minmax(0, 34rem) minmax(0, 1fr); column-gap: clamp(3rem, 6vw, 5.5rem); }
+      .results-side { padding-left: var(--space-6); border-left: var(--rule-hairline) solid var(--rule); }
+    }
+
+    /* ---------- The one-page plan, on paper ---------- */
+    .print-view { padding-block: var(--space-5) var(--space-6); }
+    .plan { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-5); max-width: 8.5in; margin-inline: auto; }
+    .scores-table-section { overflow-x: auto; }
+    .print-header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: var(--space-3) var(--space-5); padding-bottom: var(--space-3); border-bottom: var(--rule-double) var(--ink); }
+    .print-title { font: 400 clamp(1.75rem, 4vw, 2.5rem) / 1 var(--font-display); font-variation-settings: 'SOFT' 50; letter-spacing: -0.02em; }
+    .print-tagline { margin-top: var(--space-1); font-family: var(--type-deck-family); font-style: italic; color: var(--ink-quiet); }
+    .print-date-row { display: flex; align-items: baseline; gap: var(--space-2); }
+    .print-date-label { font: var(--type-folio-weight) var(--type-folio-size) / 1 var(--font-label); letter-spacing: var(--type-folio-tracking); text-transform: uppercase; font-stretch: var(--type-folio-stretch); color: var(--ink-quiet); }
+    .print-date-input { width: 11rem; min-height: 2.75rem; padding: 0.25rem 0.25rem 0.2rem; border: 0; border-bottom: 1px solid var(--outline); background: transparent; color: var(--ink); font: var(--type-ui-weight) var(--type-ui-size) / 1.2 var(--type-ui-family); }
+    .print-date-input:focus { outline: none; border-bottom: 2px solid var(--focus); padding-bottom: calc(0.2rem - 1px); }
+    .print-date-input::placeholder { color: var(--ink-quiet); opacity: 1; }
+    .print-date-output { display: none; }
+    .plan-top { display: grid; gap: var(--space-5); align-items: center; }
+    .plan .matrix-container { width: 100%; max-width: 20rem; }
+    .plan .focus-card { padding: var(--space-4); border: 1px solid var(--spot-large); }
+    .plan .focus-category { font-size: clamp(2.5rem, 5vw, 3.5rem); }
+    .plan .quadrant-summary { margin-top: 0; }
+    .scores-table-title { margin-bottom: var(--space-2); font: 600 var(--type-folio-size) / 1.2 var(--font-label); letter-spacing: var(--type-folio-tracking); text-transform: uppercase; font-stretch: var(--type-folio-stretch); color: var(--ink-quiet); }
+    .scores-table { width: 100%; border-collapse: collapse; font: 400 0.9375rem / 1.3 var(--font-label); font-feature-settings: 'tnum' 1; }
+    .scores-table th { padding: 0 var(--space-2) var(--space-2) 0; border-bottom: 1px solid var(--ink); text-align: left; font: 500 0.6875rem / 1.2 var(--font-label); letter-spacing: 0.08em; text-transform: uppercase; font-stretch: 80%; color: var(--ink-quiet); }
+    .scores-table td { padding: 0.45rem var(--space-2) 0.45rem 0; border-bottom: var(--rule-hairline) solid var(--rule); }
+    .scores-table th:nth-child(n+2), .scores-table td:nth-child(n+2) { text-align: center; }
+    .scores-table th:last-child, .scores-table td:last-child { padding-right: 0; text-align: right; }
+    .recommendation-cell { font: 600 0.75rem / 1.2 var(--font-label); letter-spacing: 0.1em; text-transform: uppercase; font-stretch: 88%; color: var(--ink-quiet); }
+    .recommendation-invest { color: var(--spot); }
+    .recommendation-maintain { color: var(--leaf); }
+    @media (min-width: 640px) {
+      .plan-top { grid-template-columns: minmax(0, 18rem) minmax(0, 1fr); column-gap: var(--space-6); }
+      .plan .quadrant-summary { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .plan .quadrant-block:nth-child(n+2) { padding-left: var(--space-3); border-left: var(--rule-hairline) solid var(--rule); }
+    }
+    /* Phones: the sheet runs to the screen's edges, so the table keeps its four columns. */
+    @media (max-width: 479px) {
+      .proof.plan { margin-inline: calc(-1 * var(--layout-gutter)); padding: var(--space-5) var(--space-4); }
+    }
+    @media (max-width: 419px) {
+      .scores-table th { padding-right: 0.375rem; font-size: 0.625rem; letter-spacing: 0.02em; }
+      .scores-table td { padding-right: 0.375rem; font-size: 0.875rem; }
+      .recommendation-cell { font-size: 0.6875rem; letter-spacing: 0.04em; }
+    }
+
+    /* Print: the plan alone, Day on paper, one Letter page. */
+    @page { size: letter portrait; margin: 0.5in; }
     @media print {
-      body {
-        background: white;
-        font-size: 10pt;
-      }
-
-      .site-header,
-      .site-footer,
-      .nav,
-      .results-nav,
-      .print-actions,
-      .print-date-input,
-      .skip-btn,
-      .reset-link,
-      button {
-        display: none !important;
-      }
-
-      main {
-        max-width: 6.5in;
-        padding: 0;
-        margin: 0 auto;
-      }
-
-      .print-view {
-        gap: 0.15in;
-      }
-
-      .print-header {
-        text-align: center;
-        padding-bottom: 0.1in;
-        margin-bottom: 0.1in;
-        border-bottom: 1.5pt solid black;
-      }
-
-      .print-title {
-        font-size: 16pt;
-        margin: 0 0 0.05in 0;
-      }
-
-      .print-tagline {
-        font-size: 9pt;
-        color: #444;
-        margin: 0;
-      }
-
-      .print-date-row {
-        margin: 0.1in 0;
-      }
-
-      .print-date-output {
-        display: inline !important;
-        font-size: 9pt;
-      }
-
-      .print-date-label {
-        display: none;
-      }
-
-      .matrix-container {
-        width: 2.75in;
-        max-width: 2.75in;
-        margin: 0.1in auto;
-        border: 1pt solid black !important;
-        border-radius: 0 !important;
-        padding: 0.1in !important;
-        page-break-inside: avoid;
-      }
-
-      .matrix-quadrant {
-        fill: transparent !important;
-      }
-
-      .quadrant-invest {
-        fill: rgba(0, 0, 0, 0.08) !important;
-      }
-
-      .quadrant-maintain {
-        fill: rgba(0, 0, 0, 0.03) !important;
-      }
-
-      .matrix-label {
-        font-size: 2.5px !important;
-        font-weight: 600 !important;
-        fill: #333 !important;
-      }
-
-      .matrix-point-dot {
-        fill: black !important;
-        stroke: white !important;
-      }
-
-      .matrix-point-text {
-        font-size: 2.2px !important;
-        fill: black !important;
-        font-weight: 700 !important;
-      }
-
-      .matrix-axes {
-        display: none;
-      }
-
-      .matrix-tooltip {
-        display: none !important;
-      }
-
-      .focus-card {
-        margin: 0.1in 0;
-        padding: 0.12in;
-        background: #FFFBEB !important;
-        border: 1pt solid #D4A00A;
-        border-radius: 0;
-        page-break-inside: avoid;
-      }
-
-      .focus-label {
-        font-size: 8pt;
-        margin-bottom: 0.03in;
-      }
-
-      .focus-category {
-        font-size: 12pt;
-        margin-bottom: 0.03in;
-      }
-
-      .focus-message {
-        font-size: 9pt;
-        line-height: 1.35;
-      }
-
-      .quadrant-summary {
-        display: grid !important;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.08in;
-        margin: 0.1in 0;
-        page-break-inside: avoid;
-      }
-
-      .quadrant-block {
-        padding: 0.06in;
-        border: 0.5pt solid #ccc;
-        background: #fafafa !important;
-        border-radius: 0;
-      }
-
-      .quadrant-block-title {
-        font-size: 8pt;
-        font-weight: 600;
-        margin-bottom: 0.02in;
-      }
-
-      .quadrant-block-list {
-        font-size: 8pt;
-        line-height: 1.25;
-      }
-
-      .scores-table-section {
-        margin-top: 0.1in;
-        page-break-inside: avoid;
-      }
-
-      .scores-table-title {
-        font-size: 9pt;
-        font-weight: 600;
-        margin-bottom: 0.05in;
-        text-align: center;
-      }
-
-      .scores-table {
-        font-size: 8pt;
-      }
-
-      .scores-table th,
-      .scores-table td {
-        border: 0.5pt solid black;
-        padding: 0.04in 0.06in;
-      }
-
-      .scores-table th {
-        background: #f0f0f0 !important;
-        font-weight: 600;
-        font-size: 7pt;
-      }
-
-      .scores-table td:nth-child(2),
-      .scores-table td:nth-child(3) {
-        width: 0.6in;
-      }
-
-      .scores-table td:nth-child(4) {
-        width: 0.9in;
-        text-align: center;
-      }
-
-      .recommendation-cell {
-        background: transparent !important;
-        font-weight: 600 !important;
-      }
-
-      .recommendation-invest {
-        color: black !important;
-        font-weight: 700 !important;
-      }
-
-      h1, h2, h3, h4 {
-        page-break-after: avoid;
-      }
-
-      @page {
-        margin: 0.5in;
-        size: letter portrait;
-      }
+      .bench .wrap { width: auto; }
+      body { font-size: 10pt; }
+      .print-view { padding: 0; }
+      .plan { max-width: none; gap: 0.22in; }
+      .print-header { padding-bottom: 0.08in; }
+      .print-title { font-size: 22pt; }
+      .print-tagline { font-size: 11pt; }
+      .print-date-label, .print-date-input { display: none; }
+      .print-date-output { display: inline; font: 400 10pt / 1.2 var(--font-label); }
+      .plan-top { grid-template-columns: 3.4in minmax(0, 1fr); column-gap: 0.4in; }
+      .plan .matrix-container { max-width: none; padding: 0; }
+      .matrix-axis, .matrix-tooltip { display: none; }
+      .matrix-label { font-size: 7.5pt; }
+      .matrix-tag { font-size: 8pt; }
+      .plan .focus-card { padding: 0.18in; }
+      .plan .focus-category { font-size: 32pt; }
+      .focus-message { font-size: 12pt; }
+      .plan .quadrant-summary { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .plan .quadrant-block { padding: 0.06in 0.08in 0.1in; }
+      .plan .quadrant-block:first-child { padding-left: 0; }
+      .quadrant-block-list { font-size: 10.5pt; }
+      .scores-table { font-size: 10.5pt; }
+      .scores-table th { font-size: 7.5pt; }
+      .scores-table td { padding-block: 0.06in; }
+      .recommendation-cell { font-size: 8pt; }
+      .plan-top, .plan .quadrant-summary, .scores-table-section { break-inside: avoid; }
     }
   </style>
 </head>
 <body>
-  <header class="site-header">
-    <a href="index.html" class="site-brand" aria-label="Return to home">BS.</a>
-    <div class="header-meta">
-      <span class="tool-label">Life Strategy Matrix</span>
-      <button class="reset-link" id="header-reset" type="button">Start over</button>
+  <!-- chrome:top {"dept":"workshop"} -->
+  <a class="skip-link" href="#main">Skip to content</a>
+  <svg class="art-defs" width="0" height="0" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="i-arrow" viewBox="0 0 18 10"><path d="M0 5h16.5M12.5 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.2"/></symbol>
+      <symbol id="i-menu" viewBox="0 0 22 22"><path d="M3 7h16M3 11h16M3 15h10" fill="none" stroke="currentColor" stroke-width="1.3"/></symbol>
+      <symbol id="i-close" viewBox="0 0 22 22"><path d="M5 5l12 12M17 5L5 17" fill="none" stroke="currentColor" stroke-width="1.3"/></symbol>
+      <symbol id="i-chev" viewBox="0 0 22 22"><path d="M6 9l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+    </defs>
+  </svg>
+  <header class="masthead">
+    <div class="wrap masthead-row">
+      <a class="wordmark" href="index.html"><span class="visually-hidden">Ben Siverly</span><b aria-hidden="true">Ben Siverly</b><span class="t-folio">Issue 01<span class="folio-season"> &middot; Autumn 2026</span></span></a>
+      <nav class="masthead-nav" aria-label="Departments">
+        <ol>
+          <li><a href="index.html#work"><span>01</span>Work</a></li>
+          <li><a href="index.html#method"><span>02</span>Method</a></li>
+          <li><a href="index.html#workshop" aria-current="true"><span>03</span>Workshop</a></li>
+          <li><a href="index.html#writing"><span>04</span>Writing</a></li>
+        </ol>
+      </nav>
+      <div class="masthead-actions">
+        <div class="edition-words" role="group" aria-label="Edition">
+          <button type="button" data-edition-choice="night" aria-pressed="true">Night</button><span aria-hidden="true">/</span><button type="button" data-edition-choice="day" aria-pressed="false">Day</button>
+        </div>
+        <a class="btn btn--outlined btn--sm" href="resume.html">Résumé</a>
+        <button class="btn menu-btn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="menu" data-menu-open><svg aria-hidden="true"><use href="#i-menu"/></svg>Menu</button>
+      </div>
     </div>
   </header>
+  <dialog class="menu-sheet" id="menu" aria-label="Menu">
+    <div class="sheet-handle" aria-hidden="true"></div>
+    <div class="sheet-head">
+      <span class="t-folio">In this issue</span>
+      <button class="icon-btn" type="button" aria-label="Close menu" data-menu-close><svg aria-hidden="true"><use href="#i-close"/></svg></button>
+    </div>
+    <nav aria-label="In this issue">
+      <ol class="sheet-list">
+        <li><a href="index.html#work"><span class="n">01</span><span class="name">Work</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+        <li><a href="index.html#method"><span class="n">02</span><span class="name">Method</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+        <li><a href="index.html#workshop" aria-current="true"><span class="n">03</span><span class="name">Workshop</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+        <li><a href="index.html#writing"><span class="n">04</span><span class="name">Writing</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+      </ol>
+    </nav>
+    <div class="sheet-foot">
+      <div class="sheet-edition">
+        <span class="t-folio" aria-hidden="true">Edition</span>
+        <div class="edition-words" role="group" aria-label="Edition">
+          <button type="button" data-edition-choice="night" aria-pressed="true">Night</button><span aria-hidden="true">/</span><button type="button" data-edition-choice="day" aria-pressed="false">Day</button>
+        </div>
+      </div>
+      <a class="btn btn--filled" href="resume.html">Résumé</a>
+    </div>
+  </dialog>
+  <!-- /chrome:top -->
+  <!-- chrome:art {"art":["marigold"]} -->
+  <svg class="art-defs" width="0" height="0" aria-hidden="true" focusable="false"><defs><radialGradient id="art-murk" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#4C423B"/><stop offset=".5" stop-color="#342D2A"/><stop offset="1" stop-color="#1F1B1A"/></radialGradient><pattern id="art-p-h" width="4" height="2" patternUnits="userSpaceOnUse"><path d="M0 1h4" stroke="#fff" stroke-width="0.8"/></pattern><mask id="art-m-h" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="900"><rect width="1200" height="900" fill="url(#art-p-h)"/></mask><pattern id="art-p-h3" width="4" height="3.2" patternUnits="userSpaceOnUse"><path d="M0 1.6h4" stroke="#fff" stroke-width="0.7"/></pattern><mask id="art-m-h3" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="900"><rect width="1200" height="900" fill="url(#art-p-h3)"/></mask><pattern id="art-p-v" width="2" height="4" patternUnits="userSpaceOnUse"><path d="M1 0v4" stroke="#fff" stroke-width="0.7"/></pattern><mask id="art-m-v" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="900"><rect width="1200" height="900" fill="url(#art-p-v)"/></mask><pattern id="art-p-d" width="3" height="3" patternUnits="userSpaceOnUse"><path d="M-1 1l2-2M0 3l3-3M2 4l2-2" stroke="#fff" stroke-width="0.65"/></pattern><mask id="art-m-d" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="900"><rect width="1200" height="900" fill="url(#art-p-d)"/></mask></defs>
+  <symbol id="art-marigold" viewBox="0 0 160 150"><g transform="translate(80 60) scale(0.540)" stroke="#1F1B1A" stroke-width="1.7" stroke-linejoin="round"><path d="M63 19c8 29-16 80-16 102l-14 8l-16 0c-11-20-57-53-63-82zM65 25l-16-25l-2 29zM40 31l-15-25l-2 29zM16 37l-16-25l-1 30zM-9 43l-15-24l-2 29zM-30 49l-16-25l-2 29z" fill="#727E36" stroke-width="2.4"/><path d="M45 34q7 43-5 87M23 40q9 42 12 82M0 45q12 42 29 79M-22 51q14 41 45 74" fill="none" stroke="#525C26" stroke-width="3"/><ellipse cx="6" cy="10" rx="98" ry="91" fill="#1F1B1A" opacity=".5" stroke="none"/><ellipse rx="86" ry="78" transform="translate(-6 -24)" fill="#A8341A" stroke="none"/><circle cx="-14" cy="-55" r="40" fill="#D84722" stroke="none"/><path fill="#A8341A" d="M-86-30q-25 38-24 43q-11 6 8-8q8 14 8-10q9 8 15-22q9-18-7-3zM86-46q-19-18-10-3q11 17 10 13q15 18 11 14q12 19 13 14q2-3-24-38z"/><path fill="#D84722" d="M-96 23q6 45 6 50q-7 15-2-12q11 6-1-13q3 2-3-22q-3-21 0-3z"/><path fill="#FE5F35" d="M75-60q-6-9 8 0q12 14 10 7q11 18 10 10q17 2 3 4q-6-2-31-21z"/><path fill="#FF7634" d="M14-85q-29-5-15-9q18-3 24-1q16-10 15 1q13 3 13 2q3 4-37 7zM-48-72q-34 15-31 10q2-3 13-9q2-5 19-9q5 4 11-5q12-3-12 13zM4-85q-35-1-27-7q7 1 13-4q9-3 19-3q10-4 21 0q9 4-26 14zM-83-40q-24 31-30 34q-12 4 3-6q-14 0 10-14q-2 10 9-12q13-15 8-2zM-75-51q-19 21-24 23q-6 7 2-6q-11 2 9-11q-5 5 6-6q10-10 7 0zM-25-80q-21-11-8-18q18-4 18-2q13-17 13 3q12-10 9 4q0 9-32 13zM13-84q-22-11-8-16q19-1 21 0q15-4 11 2q14 0 12 4q0 8-36 10z"/><path fill="#FF9140" d="M-43-73q-30 8-29 1q-1-10 11-9q-4-16 15-6q-2-8 10-3q11 1-7 17z"/><path fill="#A8341A" d="M97-21q0-13 4 4q-1 22 4 19q1 21 2 12q2 14 0 5q-2-5-10-40z"/><path fill="#D84722" d="M94-29q0-16 8-1q17 17 7 20q12 15 1 7q4 20 1 10q-5-3-17-36z"/><path fill="#FE5F35" d="M82-53q6 2 18 13q21 10 7 10q7 18 3 4q16 6-3-1q-10-8-25-26zM78-56q-4-13 8-4q16 8 10 9q22 4 6 7q10 13 5 9q-6 0-29-21zM75-55q-5-21 12-12q26 5 13 12q17 17 10 14q13 11 4 10q-9 4-39-24z"/><path fill="#FF7634" d="M-98 12q0 35-2 41q-7 11-2-6q-7 14 0-10q2 10-1-16q2-19 5-9zM-87-31q-12 31-21 37q-18 9-4-3q-14 9 0-10q-9 8 6-15q11-16 19-9zM5-81q-4-18 11-20q19-15 11 1q19-6 9 5q18-1 4 11q-7 9-35 3zM58-70q11-9 26 0q22 6 9 9q27 4 3 10q16 5-4 4q-14-1-34-23z"/><path fill="#FF9140" d="M-23-76q-32 6-32-4q-3-15 9-10q-4-16 11-7q3-3 17-3q14 4-5 24zM42-77q1-16 16-14q22-4 12 7q20-5 4 6q16 6 2 8q-10 6-34-7zM-56-58q-30 12-33 4q-11-15 6-9q-5-13 16-11q-6-10 11-5q14 0 0 21z"/><path fill="#A8341A" d="M-82 50q31 36 30 44q7 10-9-3q8 11-13-11q-4 9-15-18q-12-20 7-12z"/><path fill="#D84722" d="M-90 36q20 26 20 37q4 21-6 2q9 12-7-7q0 13-11-11q-8-18 4-21z"/><path fill="#FF7634" d="M-35-71q-28 20-36 12q-15-7 2-13q-11-7 10-12q-12-11 10-8q16-2 14 21zM-95-1q2 35-7 45q-5 16-8-1q-12 13-4-12q-5 8-2-15q5-21 21-17zM-92 23q8 36 2 41q-3 9-7-7q-10 12-5-11q-5 6-5-18q1-18 15-5zM73-49q-4-28 12-18q26 9 17 19q24 6 5 11q18 14 5 16q-9 5-39-28zM8-74q-16-12-6-19q14-16 12-2q14-14 12 3q10-7 10 4q0 9-28 14zM27-76q3-18 16-18q18 4 9 5q16 5 3 8q13-4 1 8q-10 8-29-3zM-91 17q14 39 7 48q-6 16-9-3q-12 17-7-14q-6 10-9-19q-1-21 18-12z"/><path fill="#FF9140" d="M-77-34q-14 31-26 31q-20-1-5-10q-12 7 0-11q-7 2 5-14q13-13 26 4zM-19-69q-34-3-28-14q3-21 15-7q7-14 18-5q6-2 13 2q10 8-18 24zM-17-72q-12-18 2-23q17-11 15 2q18-12 10 6q14-4 7 7q-4 10-34 8z"/><path fill="#A8341A" d="M92 10q20-1 18 21q-4 32-8 18q8 27-7 9q0 25-13 2q-7-13 10-50zM87 4q26-9 30 12q11 36-6 25q2 25-12 11q1 21-8 3q-13-10-4-51z"/><path fill="#FE5F35" d="M-85 35q21 23 19 33q7 16-6 2q-9 19-11-4q-6 10-10-10q-7-16 8-21zM87-23q21 3 23 18q11 18-4 15q2 22-8 2q8 11-8-1q-11-11-3-34z"/><path fill="#FF7634" d="M-93-4q7 19-1 31q-18 20-9 3q-17 15-5-5q0 16-4-5q2-15 19-24zM-10-67q-32-5-24-16q5-21 12-4q7-19 15-6q9-16 20 1q8 9-23 25zM60-49q1-22 15-17q16 5 6 8q20 12 8 15q11 8 2 10q-9 5-31-16zM-85-1q10 20 0 30q-15 20-11 2q-7 17-9-6q-4 13-5-6q2-15 25-20zM-43-49q-19 12-25 8q-9-3 0-9q-12-9 7-6q-7-2 6-5q12-2 12 12zM50-55q15-15 25-8q20 6 4 12q15 7-2 6q11 12-6 9q-13 2-21-19z"/><path fill="#FF9140" d="M-68-44q2 19-11 23q-15 9-11 0q-18 7-6-6q-7 8-3-10q7-11 31-7zM17-71q8-21 19-20q14 4 8 8q13-1 0 6q9 7-4 13q-10 8-23-7z"/><path fill="#A8341A" d="M77 25q27 3 22 21q-4 26-9 9q-2 34-19 12q3 23-11-1q-7-13 17-41zM0 62q53-1 50 17q0 26-21 18q-1 25-23 4q-3 25-24 1q-19-11 18-40z"/><path fill="#D84722" d="M-55 58q36 23 30 34q0 11-15 3q-2 13-21-8q-9 15-13-8q-11-16 19-21z"/><path fill="#FE5F35" d="M-25 54q50 26 37 40q-14 28-22 4q-14 16-26-3q-15 12-28-13q-12-19 39-28z"/><path fill="#FF7634" d="M25-65q25-12 29-6q9 9-4 9q7 3-8 9q3 8-12 5q-12 1-5-17zM-9-61q13-21 20-21q14-1 2 7q11-1-1 7q6 0-7 10q-9 9-14-3zM-27-51q12 11 0 11q-18-3-16-4q-12 1-8-5q-9 3-5-3q2-5 29 1zM-24-49q5 11-10 10q-18 1-16-5q-19-3-6-6q-15 0-3-4q7-4 35 5z"/><path fill="#FF9140" d="M-80-17q16 15 3 23q-20 12-16 4q-18 11-13-3q-8 9-6-6q2-12 32-18zM8-68q27-18 34-12q10 14-1 13q8 4-10 10q5 0-11 7q-16 4-12-18zM-10-56q11-13 20-14q16-4 5 3q13-6-2 5q9 1-4 5q-10 7-19 1zM-3-51q11-15 21-15q13-7 3 3q14 0-1 7q11-4-3 6q-11 7-20-1z"/><path fill="#A8341A" d="M30 48q50-10 48 10q3 35-20 25q-4 17-23 9q-1 18-19 6q-20-9 14-50z"/><path fill="#D84722" d="M33 40q52-9 50 14q0 25-16 17q-2 30-26 17q-3 19-23 4q-19-10 15-52z"/><path fill="#FE5F35" d="M61 18q35 7 29 24q0 28-15 13q-4 21-13 4q-6 20-22-2q-10-13 21-39z"/><path fill="#FF7634" d="M62-8q25-26 37-11q25 19 3 25q17 17-9 14q12 16-9 13q-18 0-22-41zM-44 32q17 30 5 37q-15 14-17-4q-11 8-12-13q-16 14-7-8q1-17 31-12zM-60 5q21 19 11 31q-9 17-12 4q-10 17-16-2q-15 11-10-8q-2-15 27-25zM7-54q26-1 19 7q-7 10-13 7q-9 6-17 3q-5 8-10 0q-7-4 21-17zM-37 43q34 24 23 39q-9 24-15 3q-11 28-16 4q-15 18-22-14q-8-20 30-32z"/><path fill="#FF9140" d="M40-51q35-11 38-1q5 14-6 8q9 6-11 9q2 13-21 8q-16-2 0-24zM-59-12q22 10 13 20q-15 13-13 4q-9 16-11 1q-13 12-14-4q-3-10 25-21zM-44-33q23 11 10 17q-9 11-13 2q-18 7-12-1q-15 7-19-6q-1-9 34-12zM-7-52q29 0 19 7q-12 8-16 5q-13 4-19 4q-9 4-12 0q-5-4 28-16z"/><path fill="#FE5F35" d="M4 45q42-6 42 11q4 22-15 16q5 18-12 7q0 18-23 7q-17-8 8-41zM41 17q42-8 42 12q6 33-16 23q6 20-13 4q3 23-22 8q-17-10 9-47z"/><path fill="#FF7634" d="M39 3q35-30 45-13q18 21-4 24q23 19-7 15q10 18-16 18q-21 1-18-44zM7 38q38 9 32 26q-8 24-22 10q-5 24-18 3q-5 14-15-4q-11-14 23-35zM47-13q44 8 37 22q-9 22-20 11q-3 19-18 1q-4 13-21-3q-13-12 22-31z"/><path fill="#FF9140" d="M-47-2q24 15 14 28q-17 19-18 6q-6 20-8-2q-8 14-15-7q-4-14 27-25zM-8-38q22 4 16 11q-10 11-16 5q-8 5-12 1q-5 5-8-2q-5-5 20-15zM-4-28q28-11 31-3q8 7-4 8q8 12-12 10q5 11-13 5q-13-1-2-20z"/><path fill="#FF7634" d="M-28 24q42-1 38 17q-2 21-14 11q-3 26-23 12q-1 18-17 1q-15-10 16-41z"/><path fill="#FF7634" d="M18 21q44 10 36 27q-6 20-15 7q-7 22-18 9q-11 14-29-6q-13-14 26-37z"/><path fill="#FF9140" d="M-24-20q31-1 27 11q-5 14-15 11q-1 13-11 3q-5 9-14 2q-10-7 13-27z"/><path fill="#FF7634" d="M-3 35q39 0 38 18q1 22-12 13q3 20-11 9q-4 16-25 2q-15-12 10-42z"/><path fill="#FF9140" d="M11-12q31-15 38-2q11 19-4 17q10 12-8 10q8 14-15 7q-17-2-11-32z"/><path fill="#FF7634" d="M17-2q28-15 33-3q13 16-4 17q5 10-15 8q8 10-8 6q-14-1-6-28z"/><path fill="#FF9140" d="M-10-13q37 0 33 14q-1 22-14 10q-1 22-16 7q-6 10-20 1q-12-9 17-32z"/><path fill="#FF7634" d="M-10 14q48-5 44 14q-1 23-16 13q-4 28-25 15q-2 20-20 1q-17-10 17-43z"/></g><path d="M106 19A48.5 48.5 0 1 1 34.5 76.5A48.5 48.5 0 0 0 106 19z" fill="#1F1B1A" mask="url(#art-m-d)" opacity=".4"/></symbol>
+  </svg>
+  <!-- /chrome:art -->
 
-  <a class="skip-link" href="#main">Skip to content</a>
-
-  <main id="main">
-    <div class="tool" id="tool">
-      <!-- Content rendered by JavaScript -->
+  <main id="main" class="bench">
+    <div class="wrap">
+      <div class="rh toolbar t-folio">
+        <span class="rh-pg">03</span>
+        <span class="rh-title"><a href="index.html#workshop">Workshop</a><span aria-hidden="true"> &middot; </span><span class="tool-label">Life Strategy Matrix</span></span>
+        <button class="btn btn--text toolbar-reset" id="header-reset" type="button">Start over</button>
+      </div>
+      <div class="tool" id="tool">
+        <noscript><p class="t-deck">This tool runs in your browser and needs JavaScript.</p></noscript>
+      </div>
+      <p class="tool-note t-note">Nothing you enter is saved, and nothing leaves your browser.</p>
     </div>
   </main>
 
-  <footer class="site-footer">
-    <p class="privacy-note">Nothing is saved. All data stays in your browser.</p>
+  <!-- chrome:colophon -->
+  <footer class="colophon">
+    <div class="checker" aria-hidden="true"></div>
+    <div class="wrap colophon-grid">
+      <div>
+        <h2>Ben Siverly</h2>
+        <p class="t-small t-quiet">Issue 01 &middot; Autumn 2026. Set in Fraunces, Newsreader and Instrument Sans.</p>
+      </div>
+      <div class="write">
+        <span class="t-folio">Write to me</span>
+        <button class="btn btn--outlined btn--sm" type="button" data-email="YmVuamFtaW5zaXZlcmx5QGdtYWlsLmNvbQ==" data-copy-email><span data-copy-label>Copy my email</span></button>
+        <a class="nojs-only btn btn--outlined btn--sm" href="https://www.linkedin.com/in/be-ns/" rel="noopener">Message me on LinkedIn</a>
+        <span class="copy-status t-note" aria-live="polite" aria-atomic="true"></span>
+        <p class="t-small">For agents: <a href="llms.txt">llms.txt</a></p>
+      </div>
+      <div><span class="t-folio">Elsewhere</span><ul class="t-small"><li><a href="https://www.linkedin.com/in/be-ns/" rel="noopener">LinkedIn</a></li><li><a href="https://github.com/be-ns" rel="noopener">GitHub</a></li><li><a href="Ben-Siverly-Resume-Payments.pdf">Résumé, PDF</a></li></ul></div>
+      <div><span class="t-folio">Also</span><ul class="t-small"><li><a href="index.html#work"><span class="num-o">01</span>Work</a></li><li><a href="index.html#method"><span class="num-o">02</span>Method</a></li><li><a href="index.html#workshop" aria-current="true"><span class="num-o">03</span>Workshop</a></li><li><a href="index.html#writing"><span class="num-o">04</span>Writing</a></li><li><a href="kit.html">How this issue is made</a></li></ul></div>
+    </div>
   </footer>
+  <!-- /chrome:colophon -->
 
   <script>
     (function() {
@@ -1437,6 +408,14 @@
         }),
         highlightedId: null
       };
+
+      // True when the reader moved to a new screen, so focus follows them to
+      // it: the slider on a question, the heading on the results and the plan.
+      // A link or an agent filling in the page leaves focus where it is.
+      let moveFocus = false;
+
+      const ARROW = '<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg>';
+      const BACK_ARROW = '<svg class="ico ico--back" aria-hidden="true"><use href="#i-arrow"/></svg>';
 
       // Helpers
       function isComplete() {
@@ -1529,29 +508,48 @@
         } else if (state.step === 'print') {
           renderPrint();
         }
+        // A new screen starts at its top: from the foot of the results, Print
+        // plan opens on the plan's title, not halfway down the sheet.
+        if (moveFocus) {
+          const main = document.getElementById('main');
+          if (main && main.getBoundingClientRect().top < 0) main.scrollIntoView();
+        }
+        moveFocus = false;
+      }
+
+      // Focus a screen's heading without a ring, so a screen reader starts there.
+      function focusHeading() {
+        const heading = tool.querySelector('h1');
+        if (!heading) return;
+        heading.setAttribute('tabindex', '-1');
+        heading.focus({ preventScroll: true });
       }
 
       function renderIntro() {
         const html = '' +
-          '<div class="intro" id="intro-card">' +
-            '<p class="intro-eyebrow">Life Strategy Matrix</p>' +
-            '<h1 class="intro-title">See where your life is out of balance.</h1>' +
-            '<p class="intro-lead">A quick self-assessment that maps eight areas of your life by how much they matter to you and how they’re actually going.</p>' +
-            '<div class="intro-cta">' +
-              '<button type="button" class="nav-btn nav-btn--next" id="intro-begin">Begin &rarr;</button>' +
-              '<span class="intro-cta-note">About 3 minutes &middot; Nothing is saved</span>' +
+          '<div class="intro opener" id="intro-card">' +
+            '<div class="opener-copy">' +
+              '<p class="t-kicker">About 3 minutes</p>' +
+              '<h1 class="opener-title">See where your life is out of balance.</h1>' +
+              '<p class="t-deck">A quick self-assessment that maps eight areas of your life by how much they matter to you and how they’re actually going.</p>' +
+              '<button type="button" class="btn btn--spot" id="intro-begin">Begin ' + ARROW + '</button>' +
             '</div>' +
-            '<div class="intro-example">' +
-              '<p class="intro-example-label">Example result</p>' +
-              '<div class="matrix-container" id="intro-example-matrix"></div>' +
-              '<p class="intro-example-caption">Your eight areas get plotted by importance and satisfaction. Whatever lands in the Invest corner (important to you but not going well) is where to focus next.</p>' +
+            '<figure class="opener-art" aria-hidden="true"><div class="art"><svg viewBox="0 0 160 150"><use href="#art-marigold" width="160" height="150"/></svg></div></figure>' +
+            '<div class="intro-how">' +
+              '<h2 class="t-kicker">How it works</h2>' +
+              '<ol class="intro-steps">' +
+                '<li><span class="n" aria-hidden="true">1</span><p>Rate eight areas (Health, Work, Family, and five more), first on importance, then on satisfaction. Each from 1 to 6.</p></li>' +
+                '<li><span class="n" aria-hidden="true">2</span><p>See your answers plotted on a matrix that sorts each area into Invest, Maintain, Rebalance, or Release.</p></li>' +
+                '<li><span class="n" aria-hidden="true">3</span><p>Get one clear priority and a one-page plan you can print and keep.</p></li>' +
+              '</ol>' +
             '</div>' +
-            '<ol class="intro-steps">' +
-              '<li><span class="intro-step-num">1</span><span>Rate eight areas (Health, Work, Family, and five more), first on importance, then on satisfaction. Each from 1 to 6.</span></li>' +
-              '<li><span class="intro-step-num">2</span><span>See your answers plotted on a matrix that sorts each area into Invest, Maintain, Rebalance, or Release.</span></li>' +
-              '<li><span class="intro-step-num">3</span><span>Get one clear priority and a one-page plan you can print and keep.</span></li>' +
-            '</ol>' +
-            '<p class="intro-privacy">Nothing is saved. Everything stays in your browser.</p>' +
+            '<figure class="intro-example">' +
+              '<div class="plate">' +
+                '<p class="plate-title"><span>Example result</span></p>' +
+                '<div class="matrix-container" id="intro-example-matrix"></div>' +
+              '</div>' +
+              '<figcaption class="t-caption fig-cap"><b>Fig. 1</b> Your eight areas get plotted by importance and satisfaction. Whatever lands in the Invest corner (important to you but not going well) is where to focus next.</figcaption>' +
+            '</figure>' +
           '</div>';
 
         tool.innerHTML = html;
@@ -1562,7 +560,22 @@
         beginBtn.addEventListener('click', function() {
           transitionTo('importance');
         });
-        beginBtn.focus();
+        if (moveFocus) beginBtn.focus({ preventScroll: true });
+      }
+
+      // The progress steps: one button per area, its bar and its answer.
+      function buildSteps(isImportance) {
+        return state.scores.map(function(s, i) {
+          const value = isImportance ? s.importance : s.satisfaction;
+          const done = value !== null;
+          return '<li><button type="button" class="step" data-index="' + i + '"' +
+            (i === state.categoryIndex ? ' aria-current="step"' : '') + (done ? ' data-done' : '') + '>' +
+            '<span class="step-name">' + s.label + '</span>' +
+            (done
+              ? '<span class="step-val"><span class="visually-hidden">, </span>' + value + '</span>'
+              : '<span class="visually-hidden">, not rated</span>') +
+          '</button></li>';
+        }).join('');
       }
 
       function renderScoring() {
@@ -1571,60 +584,61 @@
         const currentValue = isImportance ? category.importance : category.satisfaction;
         const displayValue = currentValue !== null ? currentValue : '–';
         const isUnset = currentValue === null;
+        const position = isUnset ? 0.5 : (currentValue - 1) / 5;
 
         const phase = isImportance ? 'Importance' : 'Satisfaction';
         const count = (state.categoryIndex + 1) + ' of ' + categories.length;
 
         const isFirstCategory = state.step === 'importance' && state.categoryIndex === 0;
         const isLastCategory = state.step === 'satisfaction' && state.categoryIndex === categories.length - 1;
-        const nextLabel = isLastCategory ? 'See results' : 'Next →';
+        const nextLabel = isLastCategory ? 'See results' : 'Next';
+
+        let ticks = '';
+        for (let v = 1; v <= 6; v++) {
+          ticks += '<span class="slider-tick' + (currentValue === v ? ' is-active' : '') + '" data-value="' + v + '" style="--i: ' + (v - 1) + '">' + v + '</span>';
+        }
 
         const html = '' +
           '<div class="progress">' +
-            '<span class="progress-phase">' + phase + '</span>' +
-            '<span class="progress-count">' + count + '</span>' +
+            '<p class="progress-head t-folio"><span class="progress-phase">' + phase + '</span><span class="progress-count">' + count + '</span></p>' +
+            '<ol class="steps" aria-label="' + phase + ', by area">' + buildSteps(isImportance) + '</ol>' +
           '</div>' +
           '<div class="score-card" id="score-card">' +
-            '<h1 class="category-name">' + category.label + '</h1>' +
-            '<p class="score-hint">' + (isImportance
-              ? 'How much does this area matter in your life right now?'
-              : 'How is this area actually going right now?') + '</p>' +
-            '<div class="slider-container">' +
-              '<div class="slider-value' + (isUnset ? ' is-unset' : '') + '" id="slider-value">' + displayValue + '</div>' +
-              '<div class="slider-value-label' + (isUnset ? ' is-hint' : '') + '" id="slider-value-label">' +
-                (isUnset ? 'Drag the dot or tap a number' : VALUE_LABELS[state.step][currentValue]) +
+            '<div class="score-question">' +
+              '<h1 class="category-name">' + category.label + '</h1>' +
+              '<p class="score-hint t-deck">' + (isImportance
+                ? 'How much does this area matter in your life right now?'
+                : 'How is this area actually going right now?') + '</p>' +
+            '</div>' +
+            '<div class="slider">' +
+              '<div class="slider-readout">' +
+                '<div class="slider-value' + (isUnset ? ' is-unset' : '') + '" id="slider-value">' + displayValue + '</div>' +
+                '<div class="slider-value-label' + (isUnset ? ' is-hint' : '') + '" id="slider-value-label">' +
+                  (isUnset ? 'Drag the slider or tap a number' : VALUE_LABELS[state.step][currentValue]) +
+                '</div>' +
               '</div>' +
-              '<div class="slider-track">' +
-                '<input type="range" class="slider-input' + (isUnset ? ' is-unset' : '') + '" id="slider-input" ' +
-                  'min="1" max="6" step="' + (isUnset ? '0.5' : '1') + '" value="' + (currentValue || 3.5) + '" ' +
-                  'aria-label="' + phase + ' rating for ' + category.label + '" ' +
-                  'aria-valuemin="1" aria-valuemax="6" aria-valuenow="' + (currentValue || 3.5) + '"' +
-                  (isUnset ? ' aria-valuetext="Not set yet"' : '') + '>' +
-              '</div>' +
-              '<div class="slider-ticks" id="slider-ticks">' +
-                '<span class="slider-tick' + (currentValue === 1 ? ' is-active' : '') + '" data-value="1">1</span>' +
-                '<span class="slider-tick' + (currentValue === 2 ? ' is-active' : '') + '" data-value="2">2</span>' +
-                '<span class="slider-tick' + (currentValue === 3 ? ' is-active' : '') + '" data-value="3">3</span>' +
-                '<span class="slider-tick' + (currentValue === 4 ? ' is-active' : '') + '" data-value="4">4</span>' +
-                '<span class="slider-tick' + (currentValue === 5 ? ' is-active' : '') + '" data-value="5">5</span>' +
-                '<span class="slider-tick' + (currentValue === 6 ? ' is-active' : '') + '" data-value="6">6</span>' +
-              '</div>' +
+              '<input type="range" class="slider-input' + (isUnset ? ' is-unset' : '') + '" id="slider-input" ' +
+                'min="1" max="6" step="' + (isUnset ? '0.5' : '1') + '" value="' + (currentValue || 3.5) + '" ' +
+                'style="--p: ' + position + '" ' +
+                'aria-label="' + phase + ' rating for ' + category.label + '" ' +
+                'aria-valuemin="1" aria-valuemax="6" aria-valuenow="' + (currentValue || 3.5) + '"' +
+                (isUnset ? ' aria-valuetext="Not set yet"' : '') + '>' +
+              '<div class="slider-ticks" id="slider-ticks" style="--n: 5" aria-hidden="true">' + ticks + '</div>' +
               '<div class="slider-scale" aria-hidden="true">' +
                 '<span>' + (isImportance ? 'Not important' : 'Struggling') + '</span>' +
                 '<span>' + (isImportance ? 'Essential' : 'Thriving') + '</span>' +
               '</div>' +
             '</div>' +
           '</div>' +
-          '<nav class="nav">' +
-            '<button type="button" class="nav-btn nav-btn--back' + (isFirstCategory ? ' is-hidden' : '') + '" id="nav-back">← Back</button>' +
-            '<div class="nav-center">' +
-              '<button type="button" class="skip-btn" id="nav-skip">Skip</button>' +
-            '</div>' +
-            '<button type="button" class="nav-btn nav-btn--next" id="nav-next"' + (isUnset ? ' disabled' : '') + '>' + nextLabel + '</button>' +
+          '<nav class="tool-nav" aria-label="Questions">' +
+            '<button type="button" class="btn btn--outlined' + (isFirstCategory ? ' is-hidden' : '') + '" id="nav-back">' + BACK_ARROW + 'Back</button>' +
+            '<button type="button" class="btn btn--text" id="nav-skip">Skip</button>' +
+            '<button type="button" class="btn btn--spot" id="nav-next"' + (isUnset ? ' disabled' : '') + '>' + nextLabel + (isLastCategory ? '' : ' ' + ARROW) + '</button>' +
           '</nav>';
 
         tool.innerHTML = html;
         attachScoringListeners();
+        if (moveFocus) document.getElementById('slider-input').focus({ preventScroll: true });
       }
 
       function attachScoringListeners() {
@@ -1652,6 +666,7 @@
           valueLabel.textContent = VALUE_LABELS[state.step][num];
           valueLabel.classList.remove('is-hint');
           slider.classList.remove('is-unset');
+          slider.style.setProperty('--p', String((num - 1) / 5));
           slider.setAttribute('aria-valuenow', num);
           slider.setAttribute('aria-valuetext', num + ', ' + VALUE_LABELS[state.step][num]);
           nextBtn.disabled = false;
@@ -1661,6 +676,13 @@
           tickEls.forEach(function(t) {
             t.classList.toggle('is-active', Number(t.dataset.value) === num);
           });
+
+          // And this area's step
+          const stepBtn = tool.querySelector('.step[data-index="' + state.categoryIndex + '"]');
+          if (stepBtn) {
+            stepBtn.setAttribute('data-done', '');
+            stepBtn.innerHTML = '<span class="step-name">' + category.label + '</span><span class="step-val"><span class="visually-hidden">, </span>' + num + '</span>';
+          }
         }
 
         slider.addEventListener('input', function() {
@@ -1673,6 +695,15 @@
             slider.value = val;
             updateValue(val);
           }
+        });
+
+        tool.querySelectorAll('.step').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            const i = Number(btn.dataset.index);
+            if (transitioning || i === state.categoryIndex) return;
+            state.categoryIndex = i;
+            transitionTo(state.step);
+          });
         });
 
         document.getElementById('nav-back').addEventListener('click', function() {
@@ -1762,6 +793,7 @@
         const results = document.querySelector('.results');
         const intro = document.getElementById('intro-card');
         const target = card || results || intro;
+        moveFocus = true;
 
         if (target && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
           target.classList.add('is-transitioning');
@@ -1769,6 +801,7 @@
           setTimeout(function() {
             transitioning = false;
             state.step = step;
+            moveFocus = true;
             render();
           }, 150);
         } else {
@@ -1787,48 +820,53 @@
         });
 
         const html = '' +
-          '<div class="progress">' +
-            '<span class="progress-phase">Your Matrix</span>' +
-          '</div>' +
           '<div class="results" id="results">' +
-            '<div class="results-header">' +
+            '<header class="results-head">' +
+              '<p class="t-kicker">Your matrix</p>' +
               '<h1 class="results-title">Where to focus</h1>' +
-              '<p class="results-subtitle">Tap any point to see details</p>' +
-            '</div>' +
-            '<div class="matrix-container" id="matrix-container"></div>' +
-            '<div class="matrix-axes">' +
-              '<span>↑ Satisfaction</span>' +
-              '<span>Importance →</span>' +
-            '</div>' +
-            '<div class="focus-card">' +
-              '<p class="focus-label">Your priority</p>' +
-              '<h2 class="focus-category">' + focus.category + '</h2>' +
-              '<p class="focus-message">' + focus.message + '</p>' +
-            '</div>' +
-            '<div class="quadrant-summary">' +
-              buildQuadrantBlock('Maintain', buckets.maintain) +
-              buildQuadrantBlock('Invest', buckets.invest) +
-              buildQuadrantBlock('Rebalance', buckets.rebalance) +
-              buildQuadrantBlock('Release', buckets.release) +
+              '<p class="results-subtitle t-note">Tap any point to see details</p>' +
+            '</header>' +
+            '<div class="results-body">' +
+              '<figure class="results-fig">' +
+                '<div class="plate"><div class="matrix-container" id="matrix-container"></div></div>' +
+                '<figcaption class="t-caption fig-cap"><b>Fig. 1</b> Each area by importance, left to right, and satisfaction, bottom to top. The dashed lines split both at 3.5.</figcaption>' +
+              '</figure>' +
+              '<div class="results-side">' +
+                '<div class="focus-card">' +
+                  '<p class="focus-label t-kicker">Your priority</p>' +
+                  '<h2 class="focus-category">' + focus.category + '</h2>' +
+                  '<p class="focus-message">' + focus.message + '</p>' +
+                '</div>' +
+                '<div class="quadrant-summary">' +
+                  buildQuadrantBlock('Maintain', buckets.maintain, true) +
+                  buildQuadrantBlock('Invest', buckets.invest, true) +
+                  buildQuadrantBlock('Rebalance', buckets.rebalance, true) +
+                  buildQuadrantBlock('Release', buckets.release, true) +
+                '</div>' +
+              '</div>' +
             '</div>' +
           '</div>' +
-          '<nav class="results-nav">' +
-            '<button type="button" class="nav-btn nav-btn--back" id="nav-back">← Edit scores</button>' +
-            '<button type="button" class="nav-btn nav-btn--next" id="nav-print">Print plan →</button>' +
+          '<nav class="tool-nav results-nav" aria-label="Results">' +
+            '<button type="button" class="btn btn--outlined" id="nav-back">' + BACK_ARROW + 'Edit scores</button>' +
+            '<button type="button" class="btn btn--spot" id="nav-print">Print plan ' + ARROW + '</button>' +
           '</nav>';
 
         tool.innerHTML = html;
         buildMatrix(document.getElementById('matrix-container'), true);
         attachResultsListeners();
+        if (moveFocus) focusHeading();
       }
 
-      function buildQuadrantBlock(title, items) {
+      // One quadrant's areas. On the results each also says what to do there.
+      function buildQuadrantBlock(title, items, withNote) {
+        const key = title.toLowerCase();
         const list = items.length ? items.map(function(i) {
           return '<li>' + i + '</li>';
         }).join('') : '<li class="is-empty">None</li>';
         return '' +
-          '<div class="quadrant-block">' +
+          '<div class="quadrant-block quadrant-block--' + key + '">' +
             '<h3 class="quadrant-block-title">' + title + '</h3>' +
+            (withNote ? '<p class="quadrant-block-note t-note">' + quadrants[key].note + '</p>' : '') +
             '<ul class="quadrant-block-list">' + list + '</ul>' +
           '</div>';
       }
@@ -1842,7 +880,18 @@
         svg.setAttribute('aria-label', 'Life strategy matrix showing your scores');
         svg.classList.add('matrix-svg');
 
-        // Quadrant backgrounds
+        function line(cls, x1, y1, x2, y2) {
+          const el = document.createElementNS(svgNS, 'line');
+          el.setAttribute('x1', x1);
+          el.setAttribute('y1', y1);
+          el.setAttribute('x2', x2);
+          el.setAttribute('y2', y2);
+          el.setAttribute('vector-effect', 'non-scaling-stroke');
+          el.classList.add(cls);
+          svg.appendChild(el);
+        }
+
+        // Quadrant backgrounds: only Invest, the corner that asks for action, is washed.
         const quads = [
           { x: 0, y: 0, w: 50, h: 50, cls: 'quadrant-rebalance' },
           { x: 50, y: 0, w: 50, h: 50, cls: 'quadrant-maintain' },
@@ -1860,64 +909,48 @@
           svg.appendChild(rect);
         });
 
-        // Border
+        // The split at 3.5 on both scales, then the frame
+        line('matrix-split', 50, 0, 50, 100);
+        line('matrix-split', 0, 50, 100, 50);
         const border = document.createElementNS(svgNS, 'rect');
         border.setAttribute('x', 0);
         border.setAttribute('y', 0);
         border.setAttribute('width', 100);
         border.setAttribute('height', 100);
-        border.setAttribute('fill', 'none');
-        border.setAttribute('stroke', 'currentColor');
-        border.setAttribute('stroke-width', '0.6');
+        border.setAttribute('vector-effect', 'non-scaling-stroke');
+        border.classList.add('matrix-frame');
         svg.appendChild(border);
 
-        // Center lines
-        const vLine = document.createElementNS(svgNS, 'line');
-        vLine.setAttribute('x1', 50);
-        vLine.setAttribute('y1', 0);
-        vLine.setAttribute('x2', 50);
-        vLine.setAttribute('y2', 100);
-        vLine.setAttribute('stroke', 'currentColor');
-        vLine.setAttribute('stroke-width', '0.4');
-        vLine.setAttribute('stroke-dasharray', '2,2');
-        svg.appendChild(vLine);
+        // Labels and initials are HTML, so they stay readable at any size.
+        const field = document.createElement('div');
+        field.className = 'matrix-field';
+        let overlay = '' +
+          '<span class="matrix-label q-rebalance">Rebalance</span>' +
+          '<span class="matrix-label q-maintain">Maintain</span>' +
+          '<span class="matrix-label q-release">Release</span>' +
+          '<span class="matrix-label q-invest">Invest</span>';
 
-        const hLine = document.createElementNS(svgNS, 'line');
-        hLine.setAttribute('x1', 0);
-        hLine.setAttribute('y1', 50);
-        hLine.setAttribute('x2', 100);
-        hLine.setAttribute('y2', 50);
-        hLine.setAttribute('stroke', 'currentColor');
-        hLine.setAttribute('stroke-width', '0.4');
-        hLine.setAttribute('stroke-dasharray', '2,2');
-        svg.appendChild(hLine);
-
-        // Labels
-        const labels = [
-          { text: 'Rebalance', x: 4, y: 6, anchor: 'start' },
-          { text: 'Maintain', x: 96, y: 6, anchor: 'end' },
-          { text: 'Release', x: 4, y: 97, anchor: 'start' },
-          { text: 'Invest', x: 96, y: 97, anchor: 'end' }
-        ];
-
-        labels.forEach(function(l) {
-          const text = document.createElementNS(svgNS, 'text');
-          text.setAttribute('x', l.x);
-          text.setAttribute('y', l.y);
-          text.setAttribute('text-anchor', l.anchor);
-          text.classList.add('matrix-label');
-          text.textContent = l.text;
-          svg.appendChild(text);
+        // Areas with the same scores sit side by side instead of on top of each other.
+        const seen = {};
+        const rated = scores.filter(function(s) { return s.importance !== null && s.satisfaction !== null; });
+        rated.forEach(function(s) {
+          const key = s.importance + ',' + s.satisfaction;
+          seen[key] = (seen[key] || 0) + 1;
         });
+        const placed = {};
 
         // Points
-        scores.forEach(function(s) {
-          if (s.importance === null || s.satisfaction === null) return;
-          const x = getPointPosition(s.importance);
+        rated.forEach(function(s) {
+          const key = s.importance + ',' + s.satisfaction;
+          const n = seen[key];
+          const k = placed[key] = (placed[key] || 0) + 1;
+          const spread = n > 1 ? Math.min(5, 12 / (n - 1)) : 0;
+          const x = getPointPosition(s.importance) + (k - 1 - (n - 1) / 2) * spread;
           const y = 100 - getPointPosition(s.satisfaction);
 
           const group = document.createElementNS(svgNS, 'g');
           group.classList.add('matrix-point');
+          if (getQuadrant(s) === 'invest') group.classList.add('is-invest');
           group.setAttribute('data-id', s.id);
           group.setAttribute('data-label', s.label);
           group.setAttribute('data-importance', s.importance);
@@ -1931,23 +964,22 @@
           const circle = document.createElementNS(svgNS, 'circle');
           circle.setAttribute('cx', x);
           circle.setAttribute('cy', y);
-          circle.setAttribute('r', '3');
+          circle.setAttribute('r', '2');
+          circle.setAttribute('vector-effect', 'non-scaling-stroke');
           circle.classList.add('matrix-point-dot');
           group.appendChild(circle);
-
-          const text = document.createElementNS(svgNS, 'text');
-          text.setAttribute('x', x);
-          text.setAttribute('y', y - 5);
-          text.setAttribute('text-anchor', 'middle');
-          text.classList.add('matrix-point-text');
-          text.textContent = getInitials(s.label);
-          group.appendChild(text);
-
           svg.appendChild(group);
+
+          overlay += '<span class="matrix-tag" aria-hidden="true" style="left: ' + x + '%; top: ' + (y - 2) + '%">' + getInitials(s.label) + '</span>';
         });
 
         container.innerHTML = '';
-        container.appendChild(svg);
+        field.appendChild(svg);
+        field.insertAdjacentHTML('beforeend', overlay);
+        container.appendChild(field);
+        container.insertAdjacentHTML('beforeend',
+          '<span class="matrix-axis matrix-axis--x">Importance →</span>' +
+          '<span class="matrix-axis matrix-axis--y">Satisfaction →</span>');
 
         if (showTooltip) {
           const tooltip = document.createElement('div');
@@ -2008,6 +1040,7 @@
 
         document.getElementById('nav-print').addEventListener('click', function() {
           state.step = 'print';
+          moveFocus = true;
           render();
         });
       }
@@ -2032,57 +1065,66 @@
             '</tr>';
         }).join('');
 
+        // The plan is printed on paper: a Day proof inside any edition.
         const html = '' +
           '<div class="print-view">' +
-            '<div class="print-header">' +
-              '<h1 class="print-title">Life Strategy Matrix</h1>' +
-              '<p class="print-tagline">Where to invest your energy</p>' +
-            '</div>' +
-            '<div class="print-date-row">' +
-              '<label class="print-date-label" for="print-date">Date:</label>' +
-              '<input type="text" class="print-date-input" id="print-date" placeholder="Today\'s date">' +
-              '<span class="print-date-output" id="print-date-output"></span>' +
-            '</div>' +
-            '<div class="matrix-container" id="matrix-container"></div>' +
-            '<div class="focus-card">' +
-              '<p class="focus-label">Your priority this month</p>' +
-              '<h2 class="focus-category">' + focus.category + '</h2>' +
-              '<p class="focus-message">' + focus.message + '</p>' +
-            '</div>' +
-            '<div class="quadrant-summary">' +
-              buildQuadrantBlock('Maintain', buckets.maintain) +
-              buildQuadrantBlock('Invest', buckets.invest) +
-              buildQuadrantBlock('Rebalance', buckets.rebalance) +
-              buildQuadrantBlock('Release', buckets.release) +
-            '</div>' +
-            '<div class="scores-table-section">' +
-              '<h3 class="scores-table-title">Your Scores</h3>' +
-              '<table class="scores-table">' +
-                '<thead>' +
-                  '<tr>' +
-                    '<th>Category</th>' +
-                    '<th>Importance</th>' +
-                    '<th>Satisfaction</th>' +
-                    '<th>Action</th>' +
-                  '</tr>' +
-                '</thead>' +
-                '<tbody>' + tableRows + '</tbody>' +
-              '</table>' +
+            '<div class="proof plan" data-edition="day">' +
+              '<div class="print-header">' +
+                '<div>' +
+                  '<h1 class="print-title">Life Strategy Matrix</h1>' +
+                  '<p class="print-tagline">Where to invest your energy</p>' +
+                '</div>' +
+                '<div class="print-date-row">' +
+                  '<label class="print-date-label" for="print-date">Date:</label>' +
+                  '<input type="text" class="print-date-input" id="print-date" placeholder="Today\'s date">' +
+                  '<span class="print-date-output" id="print-date-output"></span>' +
+                '</div>' +
+              '</div>' +
+              '<div class="plan-top">' +
+                '<div class="matrix-container" id="matrix-container"></div>' +
+                '<div class="focus-card">' +
+                  '<p class="focus-label t-kicker">Your priority this month</p>' +
+                  '<h2 class="focus-category">' + focus.category + '</h2>' +
+                  '<p class="focus-message">' + focus.message + '</p>' +
+                '</div>' +
+              '</div>' +
+              '<div class="quadrant-summary">' +
+                buildQuadrantBlock('Maintain', buckets.maintain) +
+                buildQuadrantBlock('Invest', buckets.invest) +
+                buildQuadrantBlock('Rebalance', buckets.rebalance) +
+                buildQuadrantBlock('Release', buckets.release) +
+              '</div>' +
+              '<div class="scores-table-section">' +
+                '<h3 class="scores-table-title">Your Scores</h3>' +
+                '<table class="scores-table">' +
+                  '<thead>' +
+                    '<tr>' +
+                      '<th>Category</th>' +
+                      '<th>Importance</th>' +
+                      '<th>Satisfaction</th>' +
+                      '<th>Action</th>' +
+                    '</tr>' +
+                  '</thead>' +
+                  '<tbody>' + tableRows + '</tbody>' +
+                '</table>' +
+              '</div>' +
             '</div>' +
           '</div>' +
-          '<div class="print-actions">' +
-            '<button type="button" class="nav-btn nav-btn--back" id="nav-back">← Back</button>' +
-            '<button type="button" class="print-btn" id="print-btn">Print PDF</button>' +
+          '<div class="tool-nav print-actions">' +
+            '<button type="button" class="btn btn--outlined" id="nav-back">' + BACK_ARROW + 'Back</button>' +
+            '<button type="button" class="btn btn--spot print-btn" id="print-btn">Print PDF</button>' +
           '</div>';
 
         tool.innerHTML = html;
         buildMatrix(document.getElementById('matrix-container'), false);
         attachPrintListeners();
+        if (moveFocus) focusHeading();
       }
 
       function attachPrintListeners() {
         document.getElementById('nav-back').addEventListener('click', function() {
           state.step = 'results';
+          moveFocus = true;
           render();
         });
 
@@ -2104,6 +1146,7 @@
           return { id: c.id, label: c.label, importance: null, satisfaction: null };
         });
         state.highlightedId = null;
+        moveFocus = true;
         render();
       }
 
@@ -2116,6 +1159,10 @@
 
       // Keyboard navigation
       document.addEventListener('keydown', function(e) {
+        // Keys pressed in the menu sheet (or any dialog) are the sheet's: Enter
+        // follows its links and buttons, Escape closes it and focus goes back
+        // to Menu. Neither touches the tool.
+        if (e.target && e.target.closest && e.target.closest('dialog')) return;
         if (e.key === 'Escape') {
           const tip = document.querySelector('.matrix-tooltip.is-visible');
           if (tip) tip.classList.remove('is-visible');
@@ -2248,5 +1295,136 @@
       }
     })();
   </script>
+  <!-- chrome:script -->
+  <script>
+    // Chrome: the Night and Day words, the menu sheet, the phone disclosures,
+    // the copy-email button and the masthead wordmark. Stamped by build-pages.js.
+    (function () {
+      const root = document.documentElement;
+
+      // Edition. Paper inserts turn charcoal in Day through tokens.css, not here.
+      const choices = document.querySelectorAll('[data-edition-choice]');
+      const themeColor = document.querySelector('meta[name="theme-color"]');
+      const apply = (edition) => {
+        root.dataset.edition = edition;
+        choices.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.editionChoice === edition)));
+        const ground = getComputedStyle(root).getPropertyValue('--ground').trim();
+        if (themeColor && ground) themeColor.setAttribute('content', ground);
+      };
+      apply(root.dataset.edition === 'day' ? 'day' : 'night');
+      choices.forEach((b) => b.addEventListener('click', () => {
+        apply(b.dataset.editionChoice);
+        try { localStorage.setItem('edition', b.dataset.editionChoice); } catch (err) { /* storage blocked */ }
+      }));
+
+      // Menu sheet: a native modal dialog. Escape, the close button and a tap on
+      // the scrim close it, and focus goes back to Menu. A link closes it too;
+      // when the link is to a section of this page, focus moves to that section
+      // once the sheet has closed, so the next Tab carries on from there.
+      const sheet = document.getElementById('menu');
+      const opener = document.querySelector('[data-menu-open]');
+      if (sheet && opener && typeof sheet.showModal === 'function') {
+        let target = null;
+        opener.addEventListener('click', () => { sheet.showModal(); opener.setAttribute('aria-expanded', 'true'); });
+        sheet.addEventListener('close', () => {
+          opener.setAttribute('aria-expanded', 'false');
+          const to = target;
+          target = null;
+          if (to) {
+            // Focusable for this one visit, without a ring around the section.
+            if (!to.hasAttribute('tabindex')) {
+              to.setAttribute('tabindex', '-1');
+              to.setAttribute('data-sheet-target', '');
+              to.addEventListener('blur', () => { to.removeAttribute('tabindex'); to.removeAttribute('data-sheet-target'); }, { once: true });
+            }
+            to.focus({ preventScroll: true });
+            return;
+          }
+          if (document.activeElement === document.body || sheet.contains(document.activeElement)) opener.focus({ preventScroll: true });
+        });
+        // A tap on the sheet's own padding lands on the dialog too, so test the point.
+        sheet.addEventListener('click', (e) => {
+          const r = sheet.getBoundingClientRect();
+          const outside = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+          const link = e.target.closest('a');
+          if (link && !e.defaultPrevented && (link.getAttribute('href') || '').startsWith('#')) target = document.getElementById(decodeURIComponent(link.hash.slice(1)));
+          if ((e.target === sheet && outside) || link || e.target.closest('[data-menu-close]')) sheet.close();
+        });
+      }
+
+      // Phones: each [data-fold] block closes into a list row. Its title gets a
+      // disclosure button; from 600px up the button is taken out again.
+      const phone = window.matchMedia('(max-width: 599px)');
+      const folds = [...document.querySelectorAll('[data-fold]')];
+      const setOpen = (block, open) => {
+        block.querySelector('.fold-btn').setAttribute('aria-expanded', String(open));
+        block.classList.toggle('is-closed', !open);
+        block.querySelector('[data-fold-body]').hidden = !open;
+      };
+      const fold = () => folds.forEach((block, i) => {
+        const title = block.querySelector('.fold-head h3');
+        const body = block.querySelector('[data-fold-body]');
+        if (!title || !body) return;
+        let button = title.querySelector('.fold-btn');
+        if (phone.matches && !button) {
+          if (!body.id) body.id = `fold-${i + 1}`;
+          button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'fold-btn';
+          button.setAttribute('aria-controls', body.id);
+          button.append(...title.childNodes);
+          button.insertAdjacentHTML('beforeend', '<svg class="fold-chev" aria-hidden="true"><use href="#i-chev"/></svg>');
+          button.addEventListener('click', () => setOpen(block, button.getAttribute('aria-expanded') !== 'true'));
+          title.append(button);
+          setOpen(block, false);
+        } else if (!phone.matches && button) {
+          button.querySelector('.fold-chev').remove();
+          title.append(...button.childNodes);
+          button.remove();
+          block.classList.remove('is-closed');
+          body.hidden = false;
+        }
+      });
+      fold();
+      phone.addEventListener('change', fold);
+
+      // Copy email: the address sits base64-encoded in data-email.
+      const copyButton = document.querySelector('[data-copy-email]');
+      if (copyButton) {
+        const label = copyButton.querySelector('[data-copy-label]');
+        const original = label.textContent;
+        const status = document.querySelector('.copy-status');
+        const say = (message) => { if (status) status.textContent = message; };
+        let reset = 0;
+        const copied = (email) => {
+          clearTimeout(reset);
+          label.textContent = 'Copied';
+          reset = setTimeout(() => { label.textContent = original; }, 2000);
+          say(`${email} is ready to paste.`);
+        };
+        copyButton.addEventListener('click', () => {
+          let email = '';
+          try { email = atob(copyButton.dataset.email || ''); } catch (err) { email = ''; }
+          if (!email) { say('Couldn\u2019t find the email address.'); return; }
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(email).then(() => copied(email), () => say(`Copy didn\u2019t work. The address is ${email}.`));
+            return;
+          }
+          say(`The address is ${email}.`);
+        });
+      }
+
+      // On a page with a cover, the masthead wordmark waits for the nameplate
+      // to scroll away.
+      const masthead = document.querySelector('.masthead');
+      const nameplate = document.querySelector('.nameplate');
+      if (masthead && nameplate && 'IntersectionObserver' in window) {
+        new IntersectionObserver(([entry]) => {
+          masthead.toggleAttribute('data-cover-gone', !entry.isIntersecting);
+        }, { rootMargin: '-56px 0px 0px 0px' }).observe(nameplate);
+      }
+    })();
+  </script>
+  <!-- /chrome:script -->
 </body>
 </html>

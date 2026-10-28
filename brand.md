@@ -238,7 +238,16 @@ All free (SIL Open Font License) and self-hosted. Three families.
 - **Charts:** one spot colour, thin frame, tracked-caps title, `Fig. n` caption,
   labels in HTML so they stay readable on phones, and a plain-English takeaway
   beside the legend ("26 more of every 100 started applications now get
-  submitted"). Show only real numbers.
+  submitted"). Show only real numbers. Where a chart has one region that asks
+  for action (Invest on the Life Strategy matrix), that region alone takes the
+  chart wash, Toxic Orange at 14% on Gondola and 12% on paper (`spot-wash`),
+  and its points turn orange.
+- **Tools:** a Workshop tool is a calm work surface on the plain ground: no
+  fields, fades, rims or seals while you work. It opens like a department
+  (kicker, a light headline, a deck, the one orange button, the marigold in a
+  frame, then How it works and the example as Fig. 1), and its results read
+  like a short feature: the one priority set large in orange, the chart, the
+  lists under hairlines. What it prints is shown first as a paper proof.
 - **Phones:** under 600px the Kit subsections and the Writing list close into
   M3 list rows, each title a disclosure button with one short line under it,
   so the page is a third shorter. From 600px up they are plain headings.
@@ -268,6 +277,21 @@ All free (SIL Open Font License) and self-hosted. Three families.
   pills ease to 12px corners on press. No shadows. The Kit renders every state.
 - **Colophon:** "Write to me" as an outlined pill that copies the address (the
   home page's pattern, with a live status line), and "For agents: llms.txt".
+- **Tool bar:** a running head with the department, the tool's name and a
+  text button, Start over, that appears once there is something to start over.
+- **Progress steps:** one real button per step, a bar over a tracked-caps name:
+  a hairline in Pewter not yet answered, Goody Gumdrop (olive on paper) with its
+  value once answered, a heavier orange bar for the current one. On phones the
+  bars and values stay and the names go to screen readers.
+- **Slider:** the M3 Expressive anatomy, dressed quiet: a hairline track, a
+  heavier active track in Goody Gumdrop (olive on paper), a bar handle in ink
+  with a gap either side, numbered stops below with a ruler tick over each and
+  the chosen one underlined in orange, like the edition words. Focus rings the
+  handle. Not set yet, it is all Pewter and the hint takes the figure's place.
+  It stays a native range input, so keys and screen readers work as usual.
+- **Paper proof:** whatever a tool prints, set on Day stock in either edition
+  (`data-edition="day"`, no `data-insert`, so it never flips), with grain on
+  screen and none on paper.
 
 ## Motion
 

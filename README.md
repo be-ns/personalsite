@@ -27,7 +27,8 @@ colophon, the chrome script and the engravings) are stamped into each page by
 [`site.json`](site.json). The output is committed, so a plain checkout is still exactly what
 production serves, and view-source still shows everything. To change the chrome, edit
 `site.json` or `build-pages.js` and run `npm run pages`; never edit between the markers by
-hand. CI fails when a page is stale.
+hand. CI fails when a page is stale. The chrome is frozen: a change to it also updates the
+fingerprints in `test/fixtures/chrome-freeze.json`, in the same commit, on purpose.
 
 ## The tools
 
@@ -86,10 +87,10 @@ assets/native-plants/      Static JSON datasets: plants, regions, nurseries, ZIP
 images/                    Generated Open Graph share images (1200x630)
 generate-og-images.js      Offline OG-image generator (Node + sharp)
 generate-kit-art.js        Seeded drawings for the engravings, stamped by build-pages.js
-check-browser.js           Headless-Chrome checks: overflow, first screen, menu, contrast, print, agent contract
+check-browser.js           Headless-Chrome checks: overflow, first screen, menu, tool keys, contrast, print, agent contract
 test/                      Test suite (node:test, no dependencies)
 test/page-sandbox.js       Runs a page's scripts in node:vm to read its WebMCP tools and URL parameters
-test/fixtures/             The agent contract, captured before any tool was restyled
+test/fixtures/             The agent contract, captured before any tool was restyled, and the chrome freeze
 ```
 
 `sitemap.xml`, `robots.txt`, `site.webmanifest`, and `CNAME` handle discoverability and
@@ -98,7 +99,8 @@ GitHub Pages hosting.
 ## Design
 
 The site is moving to a periodical design, set out in [`brand.md`](brand.md) and rendered
-on [`kit.html`](kit.html). Pages on it (the home page, the kit and the 404) read
+on [`kit.html`](kit.html). Pages on it (the home page, the kit, the 404 and the Life Strategy
+Matrix, the first tool) read
 `tokens.css`, compiled from `theme.json`, and the shared `site.css`, with self-hosted
 Fraunces, Newsreader and Instrument Sans, in a Night and a Day edition. The pages not yet
 moved still use the old system in `styles.css` (Inter, Zilla Slab, JetBrains Mono) or their
@@ -137,7 +139,10 @@ agent contract (each tool page's scripts run in `node:vm`, so the WebMCP tools i
 the URL parameters it reads and the storage keys it touches must match the fixture, as must
 the labels `llms.txt` quotes),
 the chrome ratchet (which pages carry the shared chrome, which are pending, which are
-exempt and why), the characters each vendored font carries, and the
+exempt and why), the chrome freeze (every page's masthead, menu, head links, colophon and
+chrome script come from the same partials, pinned by `test/fixtures/chrome-freeze.json`), the
+contrast pairs the tools' slider and progress steps need, the characters each vendored font
+carries, and the
 integrity of the native-plant datasets: every plant, ZIP code, and nursery has to reference
 vocabulary and regions that actually exist.
 

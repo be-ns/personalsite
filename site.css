@@ -119,7 +119,7 @@ a:hover { text-decoration-thickness: var(--link-underline-hover); }
 .btn--spot { background: var(--spot-fill); color: var(--on-spot-fill); }
 .btn--outlined { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 var(--button-outline-width) var(--outline); }
 .btn--inverse { background: var(--inverse); color: var(--on-inverse); }
-.btn--text { padding-inline: 0.25rem; min-height: var(--touch-target); border-radius: var(--shape-xs); color: inherit; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.45em; transition: text-decoration-color var(--motion-duration-short); }
+.btn--text { padding-inline: 0.25rem; min-height: var(--touch-target); border-radius: var(--shape-xs); background: transparent; color: inherit; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.45em; transition: text-decoration-color var(--motion-duration-short); }
 .btn--text:hover { text-decoration-color: currentColor; }
 .btn--text::after { display: none; }
 .btn--sm { min-height: 2.25rem; padding-inline: 1.1rem; }
@@ -349,6 +349,130 @@ a:hover { text-decoration-thickness: var(--link-underline-hover); }
 .colophon-note { max-width: 34em; margin-top: var(--space-3); }
 .colophon-note .t-folio { margin-bottom: var(--space-1); }
 @media (min-width: 840px) { .colophon-grid { grid-template-columns: 2fr repeat(3, 1fr); } }
+
+/* ---------- The Workshop tools ----------
+   A tool page is a calm work surface on the plain ground: the tool bar (the
+   running head, with Start over), an opener with the engraving, then the
+   controls. No fields, fades, rims or seals on the surface, and one orange
+   button a screen. The slider and the progress steps are specified in
+   theme.json (component.slider, component.steps, with their contrast pairs)
+   and rendered on kit.html. */
+.toolbar { align-items: center; min-height: 3rem; padding-block: 0; }
+/* The title runs the bar's full height, so the department link is a whole touch target. */
+.toolbar .rh-title { line-height: 3rem; }
+.toolbar .rh-title a { padding-block: 0.9rem; color: inherit; text-decoration-color: var(--rule); }
+.toolbar .rh-title a:hover { text-decoration-color: var(--spot-large); }
+.toolbar .tool-label { color: var(--ink-quiet); }
+.toolbar .btn--text { min-height: 2.25rem; padding-inline: 0.25rem; font: inherit; letter-spacing: inherit; text-transform: inherit; font-stretch: inherit; color: var(--ink); }
+.toolbar .btn--text::before { content: ""; position: absolute; inset: -6px 0; }
+/* Start over waits until there is something to start over. */
+.toolbar-reset:not(.is-visible) { visibility: hidden; }
+/* The narrowest phones keep the tool's name whole; the masthead's Menu has the department. */
+@media (max-width: 359px) { .toolbar .rh-title > a, .toolbar .rh-title > a + span { display: none; } }
+
+/* The opener: kicker, a light headline, a deck, the one orange button, and
+   the engraving in a frame. */
+.opener { display: grid; gap: var(--space-5) var(--space-7); padding-block: var(--space-6) var(--space-7); }
+.opener-copy { display: grid; justify-items: start; align-content: start; gap: var(--space-4); }
+.opener-title { font: 300 clamp(2.5rem, 6vw, 4.75rem) / 0.98 var(--font-display); font-variation-settings: 'SOFT' 50; letter-spacing: -0.035em; text-wrap: balance; }
+.opener-copy .t-deck { max-width: 30em; }
+.opener-copy .btn { margin-top: var(--space-2); }
+/* Phones and tablets frame it wide, the engraving centred in its plate; from
+   840px it is a square beside the copy. */
+.opener-art .art { aspect-ratio: 3 / 2; max-height: 18rem; border: 1px solid currentColor; background: var(--art-ground); }
+.opener-art svg { width: 100%; height: 100%; padding-block: var(--space-3); }
+@media (min-width: 600px) and (max-width: 839px) { .opener-art .art { aspect-ratio: 5 / 2; max-height: none; } }
+@media (min-width: 840px) {
+  .opener { grid-template-columns: minmax(0, 1fr) clamp(12rem, 21vw, 17rem); align-items: end; }
+  .opener-art .art { aspect-ratio: 1; max-height: none; }
+  .opener-art svg { padding-block: 0; }
+}
+
+/* Slider: a native range input with an M3 Expressive face. The page sets
+   --p, the handle's place from 0 to 1, as the value moves. */
+.slider { --p: 0.5; display: grid; gap: var(--space-1); padding-inline: 0.75rem; }
+.slider-readout { display: flex; flex-wrap: wrap; align-items: baseline; align-content: flex-end; gap: var(--space-1) var(--space-4); min-height: calc(clamp(4rem, 9vw, 6rem) * 0.82); margin-inline: -0.75rem; }
+.slider-value { min-width: 1ch; font: 300 clamp(4rem, 9vw, 6rem) / 0.82 var(--font-display); font-variation-settings: 'SOFT' 0; letter-spacing: -0.04em; font-feature-settings: 'lnum' 1; }
+.slider-value.is-unset { display: none; }
+.slider-value-label { font: var(--type-label-weight) var(--type-label-size) / 1.3 var(--font-label); letter-spacing: var(--type-label-tracking); text-transform: uppercase; font-stretch: var(--type-label-stretch); }
+.slider-value-label.is-hint { color: var(--leaf); }
+.slider input {
+  --x: calc(var(--slider-handle-width) / 2 + (100% - var(--slider-handle-width)) * var(--p));
+  --active: var(--leaf); --active-h: var(--slider-track-active); --track: var(--outline); --handle: var(--ink);
+  -webkit-appearance: none; appearance: none; display: block; width: 100%; height: var(--slider-height); margin: 0; background: transparent; cursor: pointer;
+}
+.slider input.is-unset { --active: var(--outline); --active-h: var(--slider-track); --handle: var(--outline); }
+.slider input::-webkit-slider-runnable-track {
+  height: var(--slider-handle-height); border: 0;
+  background:
+    linear-gradient(var(--active), var(--active)) left center / max(0px, calc(var(--x) - var(--slider-handle-gap))) var(--active-h) no-repeat,
+    linear-gradient(var(--track), var(--track)) right center / max(0px, calc(100% - var(--x) - var(--slider-handle-gap))) var(--slider-track) no-repeat;
+}
+.slider input::-moz-range-track {
+  height: var(--slider-handle-height); border: 0;
+  background:
+    linear-gradient(var(--active), var(--active)) left center / max(0px, calc(var(--x) - var(--slider-handle-gap))) var(--active-h) no-repeat,
+    linear-gradient(var(--track), var(--track)) right center / max(0px, calc(100% - var(--x) - var(--slider-handle-gap))) var(--slider-track) no-repeat;
+}
+.slider input::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: var(--slider-handle-width); height: var(--slider-handle-height); border: 0; border-radius: 2px; background: var(--handle); }
+.slider input::-moz-range-thumb { width: var(--slider-handle-width); height: var(--slider-handle-height); border: 0; border-radius: 2px; background: var(--handle); }
+.slider input:active { cursor: grabbing; }
+/* Focus rings the handle, not the whole row, so it reads as the control in hand. */
+.slider input:focus-visible { outline: none; }
+.slider input:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 2px var(--ground), 0 0 0 4px var(--focus); }
+.slider input:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 2px var(--ground), 0 0 0 4px var(--focus); }
+/* The stops: a ruler tick over each whole number, the chosen one underlined
+   in orange. Set --n (stops less one) on the row and --i on each tick. */
+.slider-ticks { position: relative; height: 2.75rem; }
+.slider-tick {
+  --i: 0; position: absolute; top: 0; left: calc(var(--slider-handle-width) / 2 + (100% - var(--slider-handle-width)) * var(--i) / var(--n, 5)); translate: -50% 0;
+  display: grid; justify-items: center; min-width: 2.25rem; height: 2.75rem; padding-top: 0.75rem;
+  font: 500 0.9375rem / 1 var(--font-label); font-feature-settings: 'tnum' 1; color: var(--ink-quiet); cursor: pointer;
+  text-decoration: underline 2px transparent; text-underline-offset: 0.5em;
+}
+.slider-tick::before { content: ""; position: absolute; top: 0; left: 50%; width: 1px; height: 0.4375rem; background: var(--outline); }
+.slider-tick:hover { color: var(--ink); }
+.slider-tick.is-active { color: var(--ink); font-weight: 600; text-decoration-color: var(--spot-large); }
+.slider-scale { display: flex; justify-content: space-between; gap: var(--space-3); margin-inline: -0.75rem; font: var(--type-folio-weight) var(--type-folio-size) / var(--type-folio-line) var(--font-label); letter-spacing: var(--type-folio-tracking); text-transform: uppercase; font-stretch: var(--type-folio-stretch); color: var(--ink-quiet); }
+
+/* Progress steps: real buttons, a bar over each. The page marks answered
+   steps data-done and the current one aria-current="step". */
+.steps { display: grid; grid-template-columns: repeat(var(--steps, 8), minmax(0, 1fr)); gap: 0 var(--space-2); list-style: none; }
+.step {
+  position: relative; isolation: isolate; display: flex; align-items: center; justify-content: flex-start; gap: 0.6em;
+  width: 100%; min-height: var(--steps-height); padding: calc(var(--steps-bar-current) + var(--space-2)) 0 var(--space-2); border: 0; background: none; cursor: pointer; text-align: left;
+  font: var(--type-folio-weight) var(--type-folio-size) / 1.2 var(--font-label); letter-spacing: var(--type-folio-tracking); text-transform: uppercase; font-stretch: var(--type-folio-stretch);
+  color: var(--ink-quiet);
+}
+.step::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: var(--steps-bar); background: var(--outline); }
+.step::after { content: ""; position: absolute; inset: 0 -0.25rem; z-index: -1; background: currentColor; opacity: 0; transition: opacity var(--motion-duration-short) var(--motion-easing-standard); }
+.step:hover::after { opacity: var(--state-hover); }
+.step:active::after { opacity: var(--state-pressed); }
+.step[data-done] { color: var(--ink); }
+.step[data-done]::before { background: var(--leaf); }
+.step[aria-current="step"] { color: var(--ink); }
+.step[aria-current="step"]::before { height: var(--steps-bar-current); background: var(--spot-large); }
+.step-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.25rem; }
+.step-val { flex: none; font: 400 1.0625rem / 1.25rem var(--font-display); font-variation-settings: 'SOFT' 0; letter-spacing: 0; text-transform: none; font-feature-settings: 'lnum' 1, 'tnum' 1; }
+/* Under 1024px the steps are too narrow for names: each keeps its bar and
+   value, and the name stays in the button for screen readers. */
+@media (max-width: 1023px) {
+  .step { justify-content: center; }
+  .step-name { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); }
+}
+
+/* Back, Skip and Next: under a hairline, Next to the right. */
+.tool-nav { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding-top: var(--space-4); border-top: var(--rule-hairline) solid var(--rule); }
+.tool-nav .is-hidden { visibility: hidden; }
+.ico--back { scale: -1 1; }
+
+/* The privacy line, once a page. */
+.tool-note { padding-block: var(--space-5) var(--space-7); }
+
+/* A paper proof: what a tool prints, set on Day stock inside any edition
+   (data-edition="day" in the markup, no data-insert, so it never flips). */
+.proof { position: relative; isolation: isolate; background: var(--ground); color: var(--ink); padding: clamp(1.25rem, 5vw, 3.5rem); box-shadow: inset 0 0 0 1px var(--rule); }
+.proof::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background-image: var(--texture-grain); background-size: var(--texture-grain-tile); opacity: var(--grain-opacity); mix-blend-mode: var(--grain-blend); }
 
 /* ---------- The issue ----------
    The cover and contents spread, In brief and departments 01 to 04. The home
@@ -686,9 +810,12 @@ a:hover { text-decoration-thickness: var(--link-underline-hover); }
    screen; paper is the ground, so no page or stock paints a background. The
    roles are never redefined here: filled buttons and rims read --ground as ink. */
 @media print {
-  body::after, .field-spot::after, .field-leaf::after, .insert::after, .fade { display: none; }
+  body::after, .field-spot::after, .field-leaf::after, .insert::after, .proof::after, .fade { display: none; }
   .skip-link, .masthead, .menu-sheet, .colophon { display: none; }
   html, body, [data-edition] { background: none; }
+  /* A tool prints its proof alone: no tool bar, controls or privacy line. */
+  .toolbar, .tool-nav, .tool-note { display: none; }
+  .proof { padding: 0; box-shadow: none; }
 }
 
 /* More contrast: grain and fades off, quiet ink and hairlines at full strength.
@@ -710,4 +837,12 @@ a:hover { text-decoration-thickness: var(--link-underline-hover); }
   .edition-words button[aria-pressed="true"] { text-decoration-color: Highlight; }
   .btn:focus-visible, .icon-btn:focus-visible, .chip:focus-visible, .segmented button:focus-visible, a:focus-visible, .fold-btn:focus-visible::before { outline: 2px solid Highlight; outline-offset: 2px; }
   .menu-sheet { border: 1px solid CanvasText; border-bottom: 0; }
+  /* The slider keeps its track, handle and chosen stop in system colours. */
+  .slider input { forced-color-adjust: none; --active: Highlight; --track: CanvasText; --handle: CanvasText; }
+  .slider input.is-unset { --active: CanvasText; --handle: CanvasText; }
+  .slider-tick.is-active { text-decoration-color: Highlight; }
+  .step::before { forced-color-adjust: none; background: GrayText; }
+  .step[data-done]::before { background: CanvasText; }
+  .step[aria-current="step"]::before { background: Highlight; }
+  .step:focus-visible, .slider input:focus-visible { outline: 2px solid Highlight; outline-offset: 2px; }
 }

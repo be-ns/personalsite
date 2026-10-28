@@ -155,6 +155,14 @@
     .states { width: 100%; border-collapse: collapse; font: 400 0.875rem / 1.35 var(--font-label); }
     .states th, .states td { text-align: left; padding: 0.45rem var(--space-3) 0.45rem 0; border-bottom: 1px solid var(--rule); }
     .states th { font: 600 0.6875rem / 1.2 var(--font-label); letter-spacing: 0.12em; text-transform: uppercase; font-stretch: 80%; color: var(--ink-quiet); }
+    /* 5.5 Tools: the shared parts are in site.css; these only lay out the specimens. */
+    .kit-sliders { display: grid; gap: var(--space-6); }
+    @media (min-width: 720px) { .kit-sliders { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-7); } }
+    .kit-proof { display: grid; justify-items: start; gap: var(--space-2); max-width: 30rem; }
+    .kit-proof-title { width: 100%; padding-bottom: var(--space-2); border-bottom: var(--rule-double) var(--ink); font: 400 1.5rem / 1 var(--font-display); font-variation-settings: 'SOFT' 50; letter-spacing: -0.02em; }
+    .kit-proof-figure { font: 300 3rem / 0.9 var(--font-display); font-variation-settings: 'SOFT' 0; letter-spacing: -0.035em; color: var(--spot-large); }
+    .kit-proof-wash { margin-top: var(--space-2); padding: var(--space-3); background: var(--spot-wash); font: 400 0.875rem / 1.4 var(--font-label); }
+    .kit-proof-wash span { margin-right: 0.4em; font: 600 var(--type-folio-size) / 1 var(--font-label); letter-spacing: var(--type-folio-tracking); text-transform: uppercase; font-stretch: var(--type-folio-stretch); color: var(--spot); }
 
   </style>
 </head>
@@ -615,6 +623,7 @@
                   <tr><td><code>on-leaf-fill</code></td><td><span class="sw" style="background:#1F1B1A"></span>Char on green</td><td class="hide-sm">same</td><td class="ratio">10.8</td></tr>
                   <tr><td><code>on-leaf-fill-quiet</code></td><td><span class="sw" style="background:#404026"></span>Moss on green</td><td class="hide-sm">same</td><td class="ratio">6.7</td></tr>
                   <tr><td><code>outline</code> controls</td><td><span class="sw" style="background:#A0978C"></span>#A0978C</td><td class="hide-sm"><span class="sw" style="background:#7A7168"></span>#7A7168</td><td class="ratio">4.5 &middot; 4.2</td></tr>
+                  <tr><td><code>spot-wash</code> chart</td><td><span class="sw" style="background:#503730"></span>#503730</td><td class="hide-sm"><span class="sw" style="background:#F5DED1"></span>#F5DED1</td><td class="ratio">8.9 &middot; 10.1</td></tr>
                 </tbody>
               </table>
               <p class="t-caption fig-cap"><b>Table 1</b> Every pair is checked against WCAG AA by the test suite. Night first, then Day.</p>
@@ -755,6 +764,58 @@
             </table>
           </div>
         </div>
+
+        <div class="kit-block" data-fold>
+          <header class="fold-head"><span class="t-folio"><b class="num-o">5.5</b></span><h3 class="t-title" id="kit-5-5">Tools: a calm work surface</h3><p class="t-note"><span class="fold-short">Tool bar, steps, slider and the paper proof.</span><span class="fold-long">The Workshop tools sit on the plain ground: no fields, fades or seals while you work. A tool bar, progress steps that are real buttons, a slider with a bar handle, and what prints, set on paper. One orange button a screen.</span></p></header>
+          <div class="kit-body controls" data-fold-body>
+            <div>
+              <span class="t-folio control-label">Tool bar: the running head, with Start over</span>
+              <div class="rh toolbar t-folio"><span class="rh-pg">03</span><span class="rh-title"><a href="life-strategy.html">Workshop</a><span aria-hidden="true"> &middot; </span><span class="tool-label">Life Strategy Matrix</span></span><span class="btn btn--text toolbar-reset is-visible">Start over</span></div>
+            </div>
+            <div>
+              <span class="t-folio control-label">Progress steps: answered, current, not yet</span>
+              <ol class="steps" aria-label="Importance, by area">
+                <li><button type="button" class="step" data-done data-kit-step><span class="step-name">Health</span><span class="step-val"><span class="visually-hidden">, </span>6</span></button></li>
+                <li><button type="button" class="step" data-done data-kit-step><span class="step-name">Work</span><span class="step-val"><span class="visually-hidden">, </span>5</span></button></li>
+                <li><button type="button" class="step" aria-current="step" data-kit-step><span class="step-name">Family</span><span class="visually-hidden">, not rated</span></button></li>
+                <li><button type="button" class="step" data-kit-step><span class="step-name">Spirituality</span><span class="visually-hidden">, not rated</span></button></li>
+                <li><button type="button" class="step" data-kit-step><span class="step-name">Creativity</span><span class="visually-hidden">, not rated</span></button></li>
+                <li><button type="button" class="step" data-kit-step><span class="step-name">Relationships</span><span class="visually-hidden">, not rated</span></button></li>
+                <li><button type="button" class="step" data-kit-step><span class="step-name">Financial</span><span class="visually-hidden">, not rated</span></button></li>
+                <li><button type="button" class="step" data-kit-step><span class="step-name">Rest</span><span class="visually-hidden">, not rated</span></button></li>
+              </ol>
+            </div>
+            <div class="kit-sliders">
+              <div>
+                <span class="t-folio control-label">Slider</span>
+                <div class="slider" data-kit-slider>
+                  <div class="slider-readout"><div class="slider-value" data-kit-value>4</div><div class="slider-value-label" data-kit-label>Important</div></div>
+                  <input type="range" min="1" max="6" step="1" value="4" style="--p: 0.6" aria-label="Importance rating for Health" aria-valuetext="4, Important">
+                  <div class="slider-ticks" style="--n: 5" aria-hidden="true"><span class="slider-tick" style="--i: 0">1</span><span class="slider-tick" style="--i: 1">2</span><span class="slider-tick" style="--i: 2">3</span><span class="slider-tick is-active" style="--i: 3">4</span><span class="slider-tick" style="--i: 4">5</span><span class="slider-tick" style="--i: 5">6</span></div>
+                  <div class="slider-scale" aria-hidden="true"><span>Not important</span><span>Essential</span></div>
+                </div>
+              </div>
+              <div>
+                <span class="t-folio control-label">Slider, not set yet</span>
+                <div class="slider">
+                  <div class="slider-readout"><div class="slider-value is-unset">&ndash;</div><div class="slider-value-label is-hint">Drag the slider or tap a number</div></div>
+                  <input class="is-unset" type="range" min="1" max="6" step="0.5" value="3.5" aria-label="Satisfaction rating for Health" aria-valuetext="Not set yet">
+                  <div class="slider-ticks" style="--n: 5" aria-hidden="true"><span class="slider-tick" style="--i: 0">1</span><span class="slider-tick" style="--i: 1">2</span><span class="slider-tick" style="--i: 2">3</span><span class="slider-tick" style="--i: 3">4</span><span class="slider-tick" style="--i: 4">5</span><span class="slider-tick" style="--i: 5">6</span></div>
+                  <div class="slider-scale" aria-hidden="true"><span>Struggling</span><span>Thriving</span></div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <span class="t-folio control-label">Paper proof: what a tool prints, on Day stock in either edition</span>
+              <div class="proof kit-proof" data-edition="day">
+                <p class="kit-proof-title">Life Strategy Matrix</p>
+                <p class="t-kicker">Your priority this month</p>
+                <p class="kit-proof-figure">Health</p>
+                <p class="kit-proof-wash"><span>Invest</span> The chart wash: Toxic Orange at 12% on paper, 14% on Gondola.</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   </main>
@@ -789,6 +850,23 @@
       document.querySelectorAll('[data-seg]').forEach((seg) => seg.addEventListener('click', () => {
         seg.parentElement.querySelectorAll('[data-seg]').forEach((s) => s.setAttribute('aria-pressed', String(s === seg)));
       }));
+      // The steps move the current mark; the slider moves its handle, figure and stop.
+      document.querySelectorAll('[data-kit-step]').forEach((step) => step.addEventListener('click', () => {
+        document.querySelectorAll('[data-kit-step]').forEach((s) => s.toggleAttribute('aria-current', s === step));
+        step.setAttribute('aria-current', 'step');
+      }));
+      const words = { 1: 'Not important', 2: 'Low priority', 3: 'Somewhat important', 4: 'Important', 5: 'Very important', 6: 'Essential' };
+      document.querySelectorAll('[data-kit-slider]').forEach((box) => {
+        const input = box.querySelector('input');
+        input.addEventListener('input', () => {
+          const n = Number(input.value);
+          input.style.setProperty('--p', String((n - 1) / 5));
+          input.setAttribute('aria-valuetext', `${n}, ${words[n]}`);
+          box.querySelector('[data-kit-value]').textContent = n;
+          box.querySelector('[data-kit-label]').textContent = words[n];
+          box.querySelectorAll('.slider-tick').forEach((t, i) => t.classList.toggle('is-active', i + 1 === n));
+        });
+      });
     })();
   </script>
   <!-- chrome:script -->

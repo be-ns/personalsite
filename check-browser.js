@@ -9,17 +9,22 @@
 // Chrome), and checks only deterministic results:
 //
 //   - no horizontal overflow at 320, 390, 768, 1024, 1280x720, 1366x768, 1440
-//     on every page that carries the chrome, in Night and Day
+//     on every page that carries the chrome, in Night and Day, and on the
+//     screens a tool renders after load (a question, the results, the plan)
 //   - first-screen bounding boxes: on the home page the positioning, the
 //     seal and both buttons with 24px of air at 1024 to 1440 wide, and the
 //     cover rows on phones; the kit's cover the same way; the 404's headline
-//     and way home
+//     and way home; Life Strategy's Begin, and its Next on a question
 //   - the menu sheet from the keyboard: Enter opens it, Escape closes it,
 //     focus goes back to Menu; on the issue, a sheet link leaves focus in
 //     the section it names, so the next Tab stays there
+//   - the tools' own keys: on each tool on the chrome, Enter and Escape
+//     pressed in the menu sheet leave the tool where it was (Life Strategy
+//     advances on Enter), and focus returns to Menu
 //   - forced colours: controls keep a real edge
 //   - more contrast: quiet ink and hairlines at full strength, inserts too
-//   - print page counts: the résumé and the worksheet on one page
+//   - print page counts: the résumé, the worksheet and the Life Strategy
+//     plan on one page; a tool prints its proof alone, without the chrome
 //   - the agent contract (test/fixtures/agent-contract.json): every WebMCP
 //     tool's schema and read-only output, the llms.txt example outputs, each
 //     example link showing what the tool shows for the same input, and what
@@ -108,7 +113,34 @@ const bottom = (page, selector) => page.evaluate((s) => {
   return el ? el.getBoundingClientRect().bottom : null;
 }, selector);
 
+// The screens a tool renders after load, which the overflow check visits too.
+const LS_EXAMPLE = 'life-strategy.html?health=6,2&work=5,5&family=6,5&spirituality=3,3&creativity=2,5&relationships=4,4&financial=5,2&rest=3,2';
+const SCREENS = {
+  'life-strategy.html': [
+    { name: 'a question', url: 'life-strategy.html', click: '#intro-begin', wait: '#slider-input' },
+    { name: 'the results', url: LS_EXAMPLE, wait: '.results' },
+    { name: 'the plan', url: LS_EXAMPLE, click: '#nav-print', wait: '.plan' },
+  ],
+};
+
 async function overflow(browser, base) {
+  for (const [file, screens] of Object.entries(SCREENS)) {
+    if (!chromePages().includes(file)) continue;
+    for (const screen of screens) {
+      for (const [width, height] of SIZES) {
+        for (const edition of ['night', 'day']) {
+          const { page, errors, close } = await open(browser, `${base}${screen.url}`, { width, height, edition });
+          if (screen.click) await page.click(screen.click);
+          await page.waitForSelector(screen.wait);
+          await new Promise((r) => setTimeout(r, 250));
+          const over = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+          check(over <= 0, `${file}, ${screen.name}: overflows by ${over}px at ${width}x${height} (${edition})`);
+          check(!errors.length, `${file}, ${screen.name} at ${width}x${height}: ${errors.join('; ')}`);
+          await close();
+        }
+      }
+    }
+  }
   for (const file of chromePages()) {
     const url = file === '404.html' ? `${base}some/missing/path` : `${base}${file}`;
     for (const [width, height] of SIZES) {
@@ -162,6 +194,24 @@ async function firstScreen(browser, base) {
     check(b !== null && b <= height - 24, `kit.html: the buttons end at ${b}, want 24px of air at ${width}x${height}`);
     await close();
   }
+  // Life Strategy: Begin on the first screen everywhere; on a question, the
+  // slider and Next too, from a 390x844 phone up.
+  for (const [width, height] of SIZES.concat([[375, 812]])) {
+    for (const edition of ['night', 'day']) {
+      const { page, close } = await open(browser, `${base}life-strategy.html`, { width, height, edition });
+      const begin = await bottom(page, '#intro-begin');
+      check(begin !== null && begin <= height, `life-strategy.html: Begin ends at ${begin} at ${width}x${height} (${edition})`);
+      if (width >= 390 && height >= 720) {
+        await page.click('#intro-begin');
+        await page.waitForSelector('#nav-next');
+        const next = await bottom(page, '#nav-next');
+        const slider = await bottom(page, '.slider-scale');
+        check(next !== null && next <= height, `life-strategy.html: Next ends at ${next} at ${width}x${height} (${edition})`);
+        check(slider !== null && slider <= height, `life-strategy.html: the slider ends at ${slider} at ${width}x${height} (${edition})`);
+      }
+      await close();
+    }
+  }
   for (const [width, height] of SIZES.concat([[375, 812]])) {
     const { page, close } = await open(browser, `${base}some/missing/path`, { width, height });
     const h1 = await bottom(page, 'h1');
@@ -214,6 +264,53 @@ async function menu(browser, base) {
   }
 }
 
+// The tools' own document-level keys must not fight the menu sheet. For each
+// tool on the chrome: bring it to a state, open the sheet from the keyboard,
+// press Enter (on whatever the sheet focused first) and Escape, and check the
+// tool is where it was and focus is back on Menu.
+const TOOL_KEYS = {
+  'life-strategy.html': {
+    async setup(page) {
+      await page.click('#intro-begin');
+      await page.waitForSelector('#slider-input');
+      await page.focus('#slider-input');
+      await page.keyboard.press('ArrowRight');
+    },
+    state: () => JSON.stringify({
+      heading: (document.querySelector('#tool h1') || {}).textContent,
+      progress: (document.querySelector('.progress-head') || {}).textContent,
+      value: (document.getElementById('slider-input') || {}).value,
+      next: !!document.getElementById('nav-next'),
+    }),
+  },
+};
+
+async function toolKeys(browser, base) {
+  for (const [file, tool] of Object.entries(TOOL_KEYS)) {
+    if (!chromePages().includes(file)) continue;
+    for (const [width, height] of [[390, 844], [1024, 768]]) {
+      const { page, errors, close } = await open(browser, `${base}${file}`, { width, height });
+      await tool.setup(page);
+      await new Promise((r) => setTimeout(r, 300));
+      const before = await page.evaluate(tool.state);
+      for (const key of ['Enter', 'Escape']) {
+        await page.focus('[data-menu-open]');
+        await page.keyboard.press('Enter');
+        await page.waitForFunction(() => document.getElementById('menu').open, { timeout: 2000 }).catch(() => {});
+        await page.keyboard.press(key);
+        await page.waitForFunction(() => !document.getElementById('menu').open, { timeout: 2000 }).catch(() => {});
+        await new Promise((r) => setTimeout(r, 400));
+        const after = await page.evaluate(tool.state);
+        const where = await page.evaluate(() => ({ open: document.getElementById('menu').open, back: document.activeElement === document.querySelector('[data-menu-open]') }));
+        check(after === before, `${file} at ${width}x${height}: ${key} in the menu sheet changed the tool (${before} became ${after})`);
+        check(!where.open && where.back, `${file} at ${width}x${height}: after ${key} in the sheet, the sheet is closed and focus is on Menu (${JSON.stringify(where)})`);
+      }
+      check(!errors.length, `${file}: ${errors.join('; ')}`);
+      await close();
+    }
+  }
+}
+
 async function forcedColors(browser, base) {
   const { page, close } = await open(browser, `${base}kit.html`, { width: 1280, height: 900 });
   // Puppeteer's emulateMediaFeatures has no forced-colors; the protocol does.
@@ -224,6 +321,13 @@ async function forcedColors(browser, base) {
     return [s, cs.outlineStyle !== 'none' || cs.borderBottomStyle !== 'none'];
   }));
   for (const [s, ok] of edges) check(ok, `kit.html: ${s} keeps an edge in forced colours`);
+  // The slider draws its own track and handle in system colours; each step keeps its bar.
+  const tools = await page.evaluate(() => ({
+    slider: getComputedStyle(document.querySelector('.slider input')).forcedColorAdjust,
+    bars: [...document.querySelectorAll('.steps .step')].every((b) => getComputedStyle(b, '::before').backgroundColor !== 'rgba(0, 0, 0, 0)'),
+  }));
+  check(tools.slider === 'none', `kit.html: the slider keeps its own drawing in forced colours (${tools.slider})`);
+  check(tools.bars, 'kit.html: every progress step keeps its bar in forced colours');
   await close();
 }
 
@@ -252,6 +356,31 @@ async function printCounts(browser, base) {
       const n = pages(await page.pdf({ format, printBackground: true, preferCSSPageSize: true }));
       check(n === 1, `${file} prints on ${n} ${format} pages, want 1`);
     }
+    await close();
+  }
+  // The Life Strategy plan: the llms.txt example, Print plan, one Letter page,
+  // in either edition, with the date filled in. Only the proof prints.
+  for (const edition of ['night', 'day']) {
+    const { page, close } = await open(browser, `${base}${LS_EXAMPLE}`, { edition });
+    await page.click('#nav-print');
+    await page.waitForSelector('.plan');
+    await page.type('#print-date', 'October 28, 2026');
+    const n = pages(await page.pdf({ format: 'Letter', printBackground: true, preferCSSPageSize: true }));
+    check(n === 1, `life-strategy.html: the plan prints on ${n} Letter pages (${edition}), want 1`);
+    await page.emulateMediaType('print');
+    const shown = await page.evaluate(() => {
+      const hidden = ['.masthead', '.colophon', '.toolbar', '.tool-nav', '.tool-note', '.print-date-input'].filter((s) => {
+        const el = document.querySelector(s);
+        return el && getComputedStyle(el).display !== 'none';
+      });
+      const paper = getComputedStyle(document.querySelector('.plan')).backgroundImage === 'none' && getComputedStyle(document.querySelector('.plan')).backgroundColor === 'rgba(0, 0, 0, 0)';
+      const ink = getComputedStyle(document.querySelector('.print-title')).color;
+      return { hidden, paper, ink, date: document.getElementById('print-date-output').textContent };
+    });
+    check(!shown.hidden.length, `life-strategy.html: ${shown.hidden.join(', ')} still print (${edition})`);
+    check(shown.paper, `life-strategy.html: the plan paints a background in print (${edition})`);
+    check(shown.ink === 'rgb(52, 48, 47)', `life-strategy.html: the plan prints in Day ink, Gondola, not ${shown.ink} (${edition})`);
+    check(shown.date === 'October 28, 2026', `life-strategy.html: the plan prints the date typed in (${JSON.stringify(shown.date)})`);
     await close();
   }
 }
@@ -306,7 +435,7 @@ async function agentContract(browser, base) {
   }
 }
 
-const GROUPS = { overflow, 'first-screen': firstScreen, menu, 'forced-colors': forcedColors, 'more-contrast': moreContrast, print: printCounts, 'agent-contract': agentContract };
+const GROUPS = { overflow, 'first-screen': firstScreen, menu, 'tool-keys': toolKeys, 'forced-colors': forcedColors, 'more-contrast': moreContrast, print: printCounts, 'agent-contract': agentContract };
 
 async function main(argv = process.argv.slice(2)) {
   const unknown = argv.filter((name) => !GROUPS[name]);
