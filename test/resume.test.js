@@ -16,7 +16,7 @@ const vm = require('node:vm');
 
 const { ROOT, readPage, inlineScripts } = require('./helpers');
 const { parseHtml, findAll, hasClass, textContent, loadSite } = require('../build-pages');
-const { inspect, VERSIONS: RENDERED, FACES } = require('../render-resume-pdf');
+const { inspect, fills, VERSIONS: RENDERED, FACES } = require('../render-resume-pdf');
 
 const fixture = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'resume-content.json'), 'utf8'));
 const contract = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'agent-contract.json'), 'utf8')).resume;
@@ -109,5 +109,17 @@ for (const { q, out } of RENDERED) {
     assert.deepEqual(info.fonts.filter((f) => !FACES.some((face) => face.pdf.test(f))), [], `${out} embeds no other font (a fallback means a missing glyph)`);
     assert.ok(info.embedded >= info.fonts.length, `${out} embeds every font it names`);
     assert.ok(info.tagged, `${out} is tagged`);
+  });
+
+  // The line markers (Burnt Orange) and the end mark (Toxic Orange) are drawn
+  // as backgrounds; a print that dropped them paints white in their place.
+  test(`${out}: the line markers and the end mark are printed`, () => {
+    const { palette } = JSON.parse(fs.readFileSync(path.join(ROOT, 'theme.json'), 'utf8'));
+    const inked = fills(fs.readFileSync(path.join(ROOT, out)));
+    const markers = findAll(sheet, (el) => el.tag === 'li' && hasClass(el.parent, 'bullets')).length;
+    // The version's title is Burnt Orange too, so one more than the lines.
+    assert.ok(inked[palette['burnt-orange'].$value.toUpperCase()] >= markers + 1, `${out} paints ${markers} line markers in Burnt Orange: ${JSON.stringify(inked)}`);
+    assert.equal(inked[palette['toxic-orange'].$value.toUpperCase()], 1, `${out} paints the end mark once in Toxic Orange: ${JSON.stringify(inked)}`);
+    assert.ok(!inked['#FFFFFF'], `${out} paints nothing white on white paper: ${JSON.stringify(inked)}`);
   });
 }

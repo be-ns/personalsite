@@ -26,9 +26,11 @@
 //   - more contrast: quiet ink and hairlines at full strength, inserts too
 //   - print page counts: each résumé version, the worksheet and the Life
 //     Strategy plan on one page; the résumé and a tool print their paper
-//     alone, without the chrome, in Day ink on white
+//     alone, without the chrome, in Day ink on white; the résumé's marks
+//     still print with the dialog's Background graphics box off
 //   - the résumé's ?version= and ?role= links: the title, the order of the
-//     AppFolio lines and the PDF each version offers
+//     AppFolio lines and the PDF each version offers, in the tool bar and
+//     under the sheet
 //   - the agent contract (test/fixtures/agent-contract.json): every WebMCP
 //     tool's schema and read-only output, the llms.txt example outputs, each
 //     example link showing what the tool shows for the same input and the
@@ -48,6 +50,7 @@ const path = require('path');
 const crypto = require('crypto');
 const { isDeepStrictEqual } = require('util');
 const { chromePages } = require('./build-pages');
+const { fills } = require('./render-resume-pdf');
 
 const ROOT = __dirname;
 const SIZES = [[320, 640], [390, 844], [768, 1024], [1024, 768], [1280, 720], [1366, 768], [1440, 900]];
@@ -381,13 +384,30 @@ async function printCounts(browser, base) {
   const pages = (pdf) => (Buffer.from(pdf).toString('latin1').match(/\/Type\s*\/Page[^s]/g) || []).length;
   // The résumé: each version on one Letter page from either edition, the
   // sheet alone, Day ink on white paper (render-resume-pdf.js checks the
-  // committed PDFs the same way, and their fonts and reading order).
+  // committed PDFs the same way, and their fonts and reading order). The
+  // print dialog opens with Background graphics off, and the line markers
+  // and end mark are drawn as backgrounds: printed with the box off, the
+  // page must paint the same colours as with it on, marks included.
   for (const version of ['payments', 'ai-native', 'general']) {
     for (const edition of ['night', 'day']) {
       const { page, close } = await open(browser, `${base}resume.html?version=${version}`, { edition });
-      const n = pages(await page.pdf({ printBackground: true, preferCSSPageSize: true }));
-      check(n === 1, `resume.html?version=${version} prints on ${n} pages (${edition}), want 1`);
+      const plain = Buffer.from(await page.pdf({ printBackground: false, preferCSSPageSize: true }));
+      const full = Buffer.from(await page.pdf({ printBackground: true, preferCSSPageSize: true }));
+      for (const [pdf, how] of [[plain, 'Background graphics off'], [full, 'Background graphics on']]) {
+        const n = pages(pdf);
+        check(n === 1, `resume.html?version=${version} prints on ${n} pages (${edition}, ${how}), want 1`);
+      }
+      const off = fills(plain);
+      const on = fills(full);
+      check(isDeepStrictEqual(off, on), `resume.html?version=${version}: printed with Background graphics off it paints ${JSON.stringify(off)}, with them on ${JSON.stringify(on)} (${edition}); a mark drawn as a background needs print-color-adjust: exact`);
       await page.emulateMediaType('print');
+      const marks = await page.evaluate(() => {
+        const rgb = (css) => `#${(css.match(/\d+/g) || []).slice(0, 3).map((n) => Number(n).toString(16).padStart(2, '0')).join('').toUpperCase()}`;
+        return [...document.querySelectorAll('.resume-sheet .bullets li')].map((li) => getComputedStyle(li, '::before').backgroundColor)
+          .concat(getComputedStyle(document.querySelector('.resume-end')).backgroundColor).map(rgb);
+      });
+      const missed = [...new Set(marks)].filter((c) => !off[c]);
+      check(!missed.length, `resume.html?version=${version}: the marks in ${missed.join(', ')} are missing with Background graphics off (${edition})`);
       const shown = await page.evaluate(() => {
         const hidden = ['.masthead', '.menu-sheet', '.colophon', '.toolbar', '.versions'].filter((sel) => {
           const el = document.querySelector(sel);
@@ -556,7 +576,7 @@ async function agentContract(browser, base) {
   const resume = JSON.parse(fs.readFileSync(path.join(ROOT, 'test', 'fixtures', 'resume-content.json'), 'utf8'));
   const links = [['resume.html', resume.default], ['resume.html?version=nope', resume.default], ['resume.html?role=', resume.default]];
   for (const version of Object.keys(resume.versions)) links.push([`resume.html?version=${version}`, version], [`resume.html?role=${version}`, version]);
-  links.push(['resume.html?version=general&role=ai-native', 'general'], ['resume.html?version=nope&role=ai-native', 'payments']);
+  links.push(['resume.html?version=general&role=ai-native', 'general'], ['resume.html?version=nope&role=ai-native', 'payments'], ['resume.html?version=toString', 'payments']);
   for (const [url, version] of links) {
     const { page, errors, close } = await open(browser, `${base}${url}`);
     const got = await page.evaluate(() => ({
@@ -564,8 +584,10 @@ async function agentContract(browser, base) {
       bulletOrder: [...document.querySelectorAll('#appfolioBullets [data-bullet]')].map((li) => li.dataset.bullet),
       pdf: document.getElementById('dlLink').getAttribute('href'),
     }));
+    const foot = await page.evaluate(() => document.getElementById('versionLink').getAttribute('href'));
     check(isDeepStrictEqual(got, resume.versions[version]), `${url}: shows ${JSON.stringify(got)}, want the ${version} version ${JSON.stringify(resume.versions[version])}`);
     check(isDeepStrictEqual(got.pdf, contract.resume.versions[version]), `${url}: offers ${got.pdf}, the contract says ${contract.resume.versions[version]}`);
+    check(foot === got.pdf, `${url}: the download line under the sheet offers ${foot}, the tool bar ${got.pdf}`);
     check(!errors.length, `${url}: ${errors.join('; ')}`);
     await close();
   }

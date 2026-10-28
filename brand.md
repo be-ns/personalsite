@@ -296,12 +296,17 @@ All free (SIL Open Font License) and self-hosted. Three families.
   (`data-edition="day"`, no `data-insert`, so it never flips), with grain on
   screen and none on paper.
 - **Résumé:** the same proof stock, one Letter sheet set at its printed size
-  (in inches and points, shown at 115% on wide screens), so the screen
-  breaks every line where the PDF does. The name in light Fraunces, companies
-  in Fraunces, text in Newsreader, labels and dates in Instrument Sans. Burnt
-  Orange for the version's title and the line markers; Toxic Orange once, the
-  end mark. Caps on the sheet track at 0.08em, because a PDF reader takes
-  wider gaps for spaces. The PDFs come from the page's own print CSS
+  in inches and points, shown at 115% from 1024px and 125% from 1120px
+  (where its smallest caps reach 12px), so the screen breaks every line
+  where the PDF does. Narrower screens never show it at print size: the
+  type comes up to 16px and the lines reflow. The name in light Fraunces,
+  companies in Fraunces, text in Newsreader, labels and dates in Instrument
+  Sans. Burnt Orange for the version's title and the line markers; Toxic
+  Orange once, the end mark. The marks are drawn, not typed, and print with
+  the dialog's Background graphics box off (`print-color-adjust: exact`).
+  Caps on the sheet track at 0.08em, because a PDF reader takes wider gaps
+  for spaces. The tool bar stays under the masthead where it fits on one
+  line. The PDFs come from the page's own print CSS
   (`npm run generate-resume-pdf`), one Letter page each, Day ink on white.
 
 ## Motion

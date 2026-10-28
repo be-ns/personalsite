@@ -6,9 +6,13 @@
 //
 // Serves the checkout over http so the page's own script picks the version,
 // then prints through the page's print CSS and its @page rule (Letter, the
-// sheet's margins): the same path a browser takes when someone presses Print
-// / Save as PDF, so the PDFs and a printout match. Print is always the Day
-// edition (tokens.css), on white paper: nothing paints a background.
+// sheet's margins) with Background graphics off, as a browser's print dialog
+// opens: the same path a browser takes when someone presses Print / Save as
+// PDF, so the PDFs and a printout match. Print is always the Day edition
+// (tokens.css), on white paper: no ground is painted. The line markers and
+// the end mark are drawn as backgrounds and say print-color-adjust: exact,
+// so they print either way; each version is printed with Background
+// graphics on as well, and the two must paint the same colours.
 //
 // Nothing is written unless every version passes. Each PDF must be:
 //   - exactly one Letter page (612 x 792 points)
@@ -16,6 +20,8 @@
 //     Sans, all embedded, with no other font (a fallback face means a
 //     character the subsets lack)
 //   - Day ink on white: no ground fill under the sheet
+//   - the line markers in Burnt Orange and the end mark in Toxic Orange,
+//     the same with Background graphics off or on
 //   - tagged, so its text reads in the page's order; when pdftotext
 //     (poppler) is installed, the extracted text is checked word for word
 //     against the sheet.
@@ -27,6 +33,8 @@ const http = require('http');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const zlib = require('zlib');
+const { isDeepStrictEqual } = require('util');
 const { execFileSync } = require('child_process');
 
 const ROOT = __dirname;
@@ -68,6 +76,32 @@ function inspect(pdf) {
   return { pages, boxes, fonts, embedded, tagged: /\/StructTreeRoot/.test(text) && /\/Marked\s+true/.test(text) };
 }
 
+// The colours a PDF fills with ('#RRGGBB' -> how many times the fill is
+// set), read from its Flate-compressed content streams; embedded font
+// programs and images are skipped. A mark dropped by the print dialog's
+// Background graphics box shows up here as a missing colour or as white.
+function fills(pdf) {
+  const text = pdf.toString('latin1');
+  const counts = {};
+  for (const m of text.matchAll(/\d+ \d+ obj\s*(<<(?:(?!endobj)[\s\S])*?>>)\s*stream\r?\n/g)) {
+    const dict = m[1];
+    if (!/\/FlateDecode/.test(dict) || /\/Length[123]\b|\/Subtype/.test(dict)) continue;
+    const start = m.index + m[0].length;
+    const direct = /\/Length (\d+)(?! \d+ R)/.exec(dict);
+    const end = direct ? start + Number(direct[1]) : text.indexOf('endstream', start);
+    let body;
+    try { body = zlib.inflateSync(pdf.subarray(start, end)).toString('latin1'); } catch (err) { continue; }
+    for (const [, ...rgb] of body.matchAll(/(?<![\d.])([\d.]+) ([\d.]+) ([\d.]+) rg\b/g)) {
+      const colour = `#${rgb.map((n) => Math.round(Number(n) * 255).toString(16).padStart(2, '0')).join('').toUpperCase()}`;
+      counts[colour] = (counts[colour] || 0) + 1;
+    }
+  }
+  return counts;
+}
+
+// 'rgb(182, 58, 20)' as '#B63A14'.
+const hex = (css) => `#${(css.match(/\d+/g) || []).slice(0, 3).map((n) => Number(n).toString(16).padStart(2, '0')).join('').toUpperCase()}`;
+
 const words = (s) => s.replace(/[\s ]+/g, ' ').trim().split(' ');
 
 // pdftotext, when poppler is installed; null when it is not.
@@ -103,6 +137,8 @@ async function render(browser, base, v) {
         title: document.getElementById('roleTitle').textContent,
         grounds: [document.documentElement, document.body, sheet].map(bg),
         ink: getComputedStyle(sheet).color,
+        // The marks drawn as backgrounds: the line markers and the end mark.
+        marks: [getComputedStyle(sheet.querySelector('.bullets li'), '::before').backgroundColor, getComputedStyle(sheet.querySelector('.resume-end')).backgroundColor],
         // The sheet's words as a reader sees them, in order: what the PDF's text must say.
         text: sheet.innerText,
       };
@@ -114,7 +150,13 @@ async function render(browser, base, v) {
     if (painted.length) throw new Error(`${v.out}: the page paints a ground in print (${painted.join(', ')}); the PDF should be white paper`);
     if (state.ink !== 'rgb(52, 48, 47)') throw new Error(`${v.out}: the sheet prints in ${state.ink}, not the Day ink, Gondola`);
 
-    const pdf = Buffer.from(await page.pdf({ preferCSSPageSize: true, printBackground: true, tagged: true }));
+    // Background graphics off, as the print dialog opens; then on, to compare.
+    const pdf = Buffer.from(await page.pdf({ preferCSSPageSize: true, printBackground: false, tagged: true }));
+    const full = Buffer.from(await page.pdf({ preferCSSPageSize: true, printBackground: true, tagged: true }));
+    const inked = fills(pdf);
+    const missed = state.marks.map(hex).filter((c) => !inked[c]);
+    if (missed.length) throw new Error(`${v.out}: the marks in ${missed.join(', ')} do not print with Background graphics off (fills: ${JSON.stringify(inked)})`);
+    if (!isDeepStrictEqual(inked, fills(full))) throw new Error(`${v.out}: Background graphics off paints ${JSON.stringify(inked)}, on paints ${JSON.stringify(fills(full))}; a mark is drawn as a background without print-color-adjust: exact`);
     const info = inspect(pdf);
     if (info.pages !== 1) throw new Error(`${v.out}: rendered ${info.pages} pages, expected 1`);
     if (!info.boxes.length || info.boxes.some((b) => Math.round(b[2] - b[0]) !== 612 || Math.round(b[3] - b[1]) !== 792)) throw new Error(`${v.out}: the page is ${JSON.stringify(info.boxes)}, not Letter (612 x 792)`);
@@ -178,4 +220,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { inspect, VERSIONS, FACES };
+module.exports = { inspect, fills, VERSIONS, FACES };

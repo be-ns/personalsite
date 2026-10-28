@@ -49,12 +49,19 @@
     /* The résumé on proof stock: one Letter sheet of paper (the Day roles,
        data-edition="day" in the markup, so it is paper in either edition)
        on the plain ground. The sheet is set at its printed size in inches
-       and points, so the screen shows the page the PDF prints, line for line.
-       render-resume-pdf.js prints it to the three PDFs. */
+       and points, so a wide screen shows the page the PDF prints, line for
+       line. render-resume-pdf.js prints it to the three PDFs. */
     .resume-desk { padding-bottom: var(--space-8); }
 
-    /* The tool bar: back to the site, then the PDF and the one orange button. */
+    /* The tool bar: back to the site, then the PDF and the one orange button.
+       Where it fits on one line it stays under the masthead (3.5rem and its
+       hairline), so Print and the PDF of the version on screen are always in
+       reach; section links land below both. */
     .resume-bar { flex-wrap: wrap; gap: var(--space-1) var(--space-4); padding-block: var(--space-1); white-space: normal; }
+    @media screen and (min-width: 600px) and (min-height: 600px) {
+      html { scroll-padding-top: 8.5rem; }
+      .resume-bar { position: sticky; top: calc(3.5rem + var(--rule-hairline)); z-index: 30; background: var(--ground); }
+    }
     .resume-bar .resume-back { gap: 0.5em; }
     .resume-bar .resume-back .ico { width: 1.1em; }
     .resume-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); margin-left: auto; padding-block: var(--space-2); }
@@ -99,7 +106,11 @@
     .bullets li { position: relative; padding-left: 0.17in; }
     .bullets li + li { margin-top: 0.03in; }
     /* A small square in Burnt Orange marks each line: a drawing, not a
-       character, so the PDF's text stays the words alone. */
+       character, so the PDF's text stays the words alone. The marks are
+       painted as backgrounds, which browsers leave off a printout unless
+       told otherwise (Background graphics is off by default), so they say
+       exact: Print / Save as PDF keeps them with the box unticked. */
+    .bullets li::before, .resume-end { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .bullets li::before { content: ""; position: absolute; left: 0.035in; top: 0.52em; width: 0.26em; height: 0.26em; background: var(--spot); }
 
     /* Selected work, skills and education */
@@ -116,18 +127,25 @@
     .versions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--space-1) var(--space-3); margin-top: var(--space-4); }
     .versions a { min-height: var(--touch-target); display: inline-flex; align-items: center; gap: 0.5em; font: var(--type-label-weight) var(--type-label-size) / 1 var(--font-label); letter-spacing: var(--type-label-tracking); text-transform: uppercase; font-stretch: var(--type-label-stretch); color: var(--ink); text-underline-offset: 0.45em; }
 
-    /* Wide screens: the sheet at 115%. Zoom scales the page whole, so its
-       lines still break where they print. */
-    @media screen and (min-width: 1100px) {
+    /* Wide screens: the sheet larger than print, 115% from 1024px (938px
+       wide, which fits beside a 17px scroll bar) and 125% from 1120px, where
+       the smallest caps on it reach 12px. Zoom scales the page whole, so its
+       lines still break where they print. Narrower screens reflow it. */
+    @media screen and (min-width: 1024px) {
       .resume-sheet { zoom: 1.15; }
+    }
+    @media screen and (min-width: 1120px) {
+      .resume-sheet { zoom: 1.25; }
     }
     /* Print needs the script; without it the button stays out of the way. */
     :root:not(.js) #printBtn { display: none; }
 
-    /* Phones and small tablets: the sheet runs to the screen's edges and the
-       type comes up to a reading size; the head and the dates stack. */
-    @media screen and (max-width: 879px) {
-      .resume-sheet { min-height: 0; font-size: 0.9375rem; }
+    /* Below 1024px the sheet would show at print size or smaller, so its
+       type comes up to a reading size (16px, its caps 12px) and the lines
+       reflow. On phones the sheet runs to the screen's edges and the head
+       and the dates stack. */
+    @media screen and (max-width: 1023px) {
+      .resume-sheet { min-height: 0; font-size: 1rem; }
     }
     @media screen and (max-width: 599px) {
       .resume-actions { width: 100%; margin-left: 0; padding-top: 0; }
@@ -310,7 +328,7 @@
 
       <nav class="versions" aria-label="Download the resume">
         <span class="t-folio">Download</span>
-        <a href="Ben-Siverly-Resume-Payments.pdf" download>Payments</a>
+        <a href="Ben-Siverly-Resume-Payments.pdf" id="versionLink" download>Payments</a>
       </nav>
     </div>
   </main>
@@ -357,18 +375,26 @@
         }
       };
 
+      // The download line under the sheet names the version it offers.
+      const LABELS = { 'payments': 'Payments', 'ai-native': 'AI-Native', 'general': 'General' };
+
       const titleEl = document.getElementById('roleTitle');
       const listEl = document.getElementById('appfolioBullets');
       const dlEl = document.getElementById('dlLink');
+      const versionEl = document.getElementById('versionLink');
 
       function apply(version) {
-        const v = VERSIONS[version] || VERSIONS[DEFAULT];
+        const key = Object.prototype.hasOwnProperty.call(VERSIONS, version) ? version : DEFAULT;
+        const v = VERSIONS[key];
         titleEl.textContent = v.title;
-        v.bulletOrder.forEach(function (key) {
-          const li = listEl.querySelector('[data-bullet="' + key + '"]');
+        v.bulletOrder.forEach(function (bullet) {
+          const li = listEl.querySelector('[data-bullet="' + bullet + '"]');
           if (li) listEl.appendChild(li);
         });
         dlEl.setAttribute('href', v.pdf);
+        // The PDF of the sheet on screen, at the foot too, not the default's.
+        versionEl.setAttribute('href', v.pdf);
+        versionEl.textContent = LABELS[key];
       }
 
       const params = new URLSearchParams(window.location.search);
