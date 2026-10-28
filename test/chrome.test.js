@@ -24,10 +24,8 @@ const ORIGINAL_PENDING = [
 
 // Not migrated yet. Take a page off this list in the commit that stamps it.
 const PENDING = [
-  'building-things-worth-losing.html', 'come-down.html', 'decision-assist.html', 'hot-pig-summer.html',
-  'memorial-pamphlet.html', 'memorial-preferences.html', 'milk.html',
-  'native-plant-finder.html', 'nobody-claps.html', 'orale.html', 'serotiny.html',
-  'service-of-life.html', 'the-room-love-needs-to-breathe.html', 'writings.html',
+  'decision-assist.html', 'memorial-pamphlet.html', 'memorial-preferences.html',
+  'native-plant-finder.html', 'orale.html', 'service-of-life.html',
 ];
 
 // Pages that never take the whole chrome, and the regions they do take.

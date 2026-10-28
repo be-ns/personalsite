@@ -31,6 +31,10 @@
 //   - the résumé's ?version= and ?role= links: the title, the order of the
 //     AppFolio lines and the PDF each version offers, in the tool bar and
 //     under the sheet
+//   - the Writing supplement: each title on the first screen, the poems'
+//     lines hanging where a phone wraps them, the index whole without
+//     script, and each piece printing alone in Day ink with no stanza or
+//     machine block split across pages
 //   - the agent contract (test/fixtures/agent-contract.json): every WebMCP
 //     tool's schema and read-only output, the llms.txt example outputs, each
 //     example link showing what the tool shows for the same input and the
@@ -459,6 +463,92 @@ async function printCounts(browser, base) {
   }
 }
 
+// The Writing supplement (redesign-plan.md, step 4): the index and the
+// seven pieces on the paper insert.
+//   - the title opens the first screen everywhere; on wide screens the
+//     essay's first lines and the poem's first stanza are on it too
+//   - a poem's lines hang: a line a phone wraps carries over indented, and
+//     no two lines share a row
+//   - with script off, the index still shows every piece and its words
+//   - print: the piece alone in Day ink on white, no chrome, no way-on
+//     links; a stanza and a machine block never split across pages, and
+//     Serotiny's band prints as plain type
+const WRITING = ['writings.html', 'nobody-claps.html', 'building-things-worth-losing.html', 'milk.html', 'hot-pig-summer.html', 'the-room-love-needs-to-breathe.html', 'come-down.html', 'serotiny.html'];
+const POEMS = ['milk.html', 'hot-pig-summer.html', 'the-room-love-needs-to-breathe.html', 'come-down.html'];
+
+async function writing(browser, base) {
+  for (const file of WRITING) {
+    for (const [width, height] of SIZES.concat([[375, 812]])) {
+      const { page, errors, close } = await open(browser, `${base}${file}`, { width, height });
+      const h1 = await bottom(page, 'h1');
+      check(h1 !== null && h1 <= height, `${file}: the title ends at ${h1} at ${width}x${height}`);
+      if (width >= 1024 && file !== 'writings.html' && file !== 'serotiny.html') {
+        const first = await page.evaluate(() => {
+          const el = document.querySelector('#piece-body p, #piece-body .ln');
+          return el ? el.getBoundingClientRect().top + 40 : null;
+        });
+        check(first !== null && first <= height, `${file}: the text starts at ${first}, below the first screen at ${width}x${height}`);
+      }
+      check(!errors.length, `${file} at ${width}x${height}: ${errors.join('; ')}`);
+      await close();
+    }
+  }
+  for (const file of POEMS) {
+    for (const [width, height] of [[320, 640], [390, 844], [1280, 900]]) {
+      const { page, close } = await open(browser, `${base}${file}`, { width, height });
+      const lines = await page.evaluate(() => [...document.querySelectorAll('.verse .ln')].map((ln) => {
+        const rects = [...ln.getClientRects()];
+        const range = document.createRange();
+        range.selectNodeContents(ln);
+        const rows = [...new Set([...range.getClientRects()].map((r) => Math.round(r.top)))].sort((a, b) => a - b);
+        const first = range.getClientRects()[0];
+        const last = [...range.getClientRects()].pop();
+        return { text: ln.textContent, top: rects[0].top, bottom: rects[0].bottom, rows: rows.length, start: Math.round(first.left), wrapStart: Math.round(last.left) };
+      }));
+      const overlap = lines.some((l, i) => i && l.top < lines[i - 1].bottom - 1);
+      check(!overlap, `${file}: two lines share a row at ${width}x${height}`);
+      for (const l of lines.filter((x) => x.rows > 1)) {
+        check(l.wrapStart > l.start, `${file}: "${l.text}" wraps at ${width}x${height} without a hanging indent`);
+      }
+      await close();
+    }
+  }
+  // With script off the index is the whole index.
+  {
+    const context = await browser.createBrowserContext();
+    const page = await context.newPage();
+    await page.setJavaScriptEnabled(false);
+    await page.setViewport({ width: 390, height: 844 });
+    await page.goto(`${base}writings.html`, { waitUntil: 'networkidle0' });
+    const seen = await page.evaluate(() => [...document.querySelectorAll('.entry')].map((e) => ({ title: e.querySelector('h3').textContent.trim(), shown: e.getClientRects().length > 0 && getComputedStyle(e).visibility !== 'hidden' })));
+    check(seen.length === 8 && seen.every((e) => e.shown), `writings.html without script shows ${seen.filter((e) => e.shown).length} of 8 entries`);
+    await context.close();
+  }
+  const pdfPages = (pdf) => (Buffer.from(pdf).toString('latin1').match(/\/Type\s*\/Page[^s]/g) || []).length;
+  for (const file of WRITING) {
+    for (const edition of ['night', 'day']) {
+      const { page, close } = await open(browser, `${base}${file}`, { edition });
+      const n = pdfPages(await page.pdf({ format: 'Letter', printBackground: true }));
+      check(n >= 1, `${file} prints (${edition})`);
+      await page.emulateMediaType('print');
+      const shown = await page.evaluate(() => {
+        const visible = (sel) => [...document.querySelectorAll(sel)].filter((el) => getComputedStyle(el).display !== 'none').length;
+        const hidden = ['.masthead', '.menu-sheet', '.colophon', '.piece-nav', '.chapters', '.feedback', '.lr-art', '.piece-art', '.sprig', '.index-art', '.entry-art', '.fade'].filter((sel) => visible(sel));
+        const main = document.querySelector('main');
+        const grounds = [document.documentElement, document.body, main, document.querySelector('.lr-band')].filter(Boolean).map((el) => getComputedStyle(el).backgroundColor).filter((c) => c !== 'rgba(0, 0, 0, 0)');
+        const keep = [...document.querySelectorAll('.stanza, .machine')].filter((el) => getComputedStyle(el).breakInside !== 'avoid').length;
+        return { hidden, grounds, ink: getComputedStyle(main).color, title: getComputedStyle(document.querySelector('h1')).color, keep, grain: getComputedStyle(main, '::after').display };
+      });
+      check(!shown.hidden.length, `${file}: ${shown.hidden.join(', ')} still print (${edition})`);
+      check(!shown.grounds.length, `${file}: print paints a ground, ${shown.grounds.join(', ')} (${edition})`);
+      check(shown.ink === 'rgb(52, 48, 47)' && shown.title === 'rgb(52, 48, 47)', `${file}: prints in ${shown.ink} and ${shown.title}, not the Day ink, Gondola (${edition})`);
+      check(!shown.keep, `${file}: ${shown.keep} stanzas or machine blocks may split across pages (${edition})`);
+      check(shown.grain === 'none', `${file}: the insert prints its grain (${edition})`);
+      await close();
+    }
+  }
+}
+
 // The answer an llms.txt example link puts on the screen, read the way a
 // person reads it. Comparing the link with the tool alone would pass a
 // regression both share (they render through the same code), so each example
@@ -593,7 +683,7 @@ async function agentContract(browser, base) {
   }
 }
 
-const GROUPS = { overflow, 'first-screen': firstScreen, menu, 'tool-keys': toolKeys, 'forced-colors': forcedColors, 'more-contrast': moreContrast, print: printCounts, 'agent-contract': agentContract };
+const GROUPS = { overflow, 'first-screen': firstScreen, menu, 'tool-keys': toolKeys, 'forced-colors': forcedColors, 'more-contrast': moreContrast, print: printCounts, writing, 'agent-contract': agentContract };
 
 async function main(argv = process.argv.slice(2)) {
   const unknown = argv.filter((name) => !GROUPS[name]);

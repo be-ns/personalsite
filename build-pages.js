@@ -38,9 +38,10 @@
 // have all three plus head; a page may carry head alone (orale.html).
 //
 // It also writes reading times: an element with data-read="ID" gets the
-// minutes to read the element with that id on the same page, and
-// data-read="page.html" the minutes for that page's <main>, at 230 words a
-// minute, at least 1. Hidden copy (aria-hidden, svg, script, style and the
+// minutes to read the element with that id on the same page,
+// data-read="page.html" the minutes for that page's <main> and
+// data-read="page.html#ID" for the element with that id on that page, at 230
+// words a minute, at least 1. Hidden copy (aria-hidden, svg, script, style and the
 // phone-only .fold-short lines) is not counted.
 
 const fs = require('fs');
@@ -603,11 +604,13 @@ function writeReadingTimes(page, html) {
   const minutes = (target) => {
     if (cache.has(target)) return cache.get(target);
     let node;
-    if (target.endsWith('.html')) {
-      const file = path.join(ROOT, target);
+    if (/\.html(#|$)/.test(target)) {
+      const [name, id] = target.split('#');
+      const file = path.join(ROOT, name);
       if (!fs.existsSync(file)) fail(page, `data-read="${target}": no such page`);
-      node = findAll(parseHtml(fs.readFileSync(file, 'utf8')), (el) => el.tag === 'main')[0];
-      if (!node) fail(page, `data-read="${target}": that page has no <main>`);
+      const other = parseHtml(fs.readFileSync(file, 'utf8'));
+      node = findAll(other, (el) => (id ? el.attrs.id === id : el.tag === 'main'))[0];
+      if (!node) fail(page, `data-read="${target}": that page has no ${id ? `element with id "${id}"` : '<main>'}`);
     } else {
       node = findAll(doc, (el) => el.attrs.id === target)[0];
       if (!node) fail(page, `data-read="${target}": no element with that id`);

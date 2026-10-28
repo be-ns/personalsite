@@ -251,6 +251,21 @@ All free (SIL Open Font License) and self-hosted. Three families.
   frame, then How it works and the example as Fig. 1), and its results read
   like a short feature: the one priority set large in orange, the chart, the
   lists under hairlines. What it prints is shown first as a paper proof.
+- **Writing:** the index and every piece are printed on the insert stock and
+  fade into the colophon. The index is the department: the sprig in its
+  margin, then Poetry, Prose and Short Stories as shelves, each entry one
+  link with its own first lines (a poem's keep their line breaks). An essay
+  is a feature: on wide screens a spread, the kicker, a light headline, the
+  deck, the byline and the marigold plate held on the left while the text
+  runs down the right at the measure, drop cap first. A poem is one column
+  as wide as its longest line, the title as written in Fraunces italic, the
+  marigold in the margin, each line its own block with a hanging indent so
+  a wrapped line reads as carried over. Serotiny, the long read, opens on an
+  orange band with its title in the display caps and the still life beside
+  it; its chapters are soft numerals between hairlines, with a list to jump
+  to, and the machine speaks in Instrument Sans on the sunk stock with an
+  orange rule. Every piece ends with the way on: the piece before and after
+  it in the index's order, and All writing. The words are never restyled.
 - **Phones:** under 600px the Kit subsections and the Writing list close into
   M3 list rows, each title a disclosure button with one short line under it,
   so the page is a third shorter. From 600px up they are plain headings.

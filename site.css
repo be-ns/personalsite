@@ -803,6 +803,105 @@ a:hover { text-decoration-thickness: var(--link-underline-hover); }
 
 @media print { :where(.issue) .cover::after { display: none; } }
 
+/* ---------- 04 Writing: the supplement ----------
+   writings.html and its seven pieces are printed on the other stock:
+   <main class="writing insert" data-edition="day" data-insert> is paper in
+   the Night edition and charcoal in the Day edition (tokens.css), and it
+   fades into the colophon's ground. The feature (the two essays) and the
+   poem (the four poems) are set here, with the way on to the next piece;
+   the index and the long read (Serotiny) keep their own rules in their
+   pages. The words are set, never restyled: titles keep their own case, the
+   poems' lowercase included, and verse takes no drop cap, hyphenation,
+   justification or text-wrap. Scoped with :where(.writing), like the issue. */
+:root:has(main.writing) { --page-ground: var(--sunk); }
+main.writing { overflow: clip; padding-bottom: calc(var(--space-section) + var(--fade-height, 7.5rem)); }
+:where(.writing) .rh-title a { color: inherit; text-decoration-color: var(--rule); }
+:where(.writing) .rh-title a:hover { text-decoration-color: var(--spot-large); }
+
+/* The opener: the plate, a kicker, a light headline, a deck and the byline.
+   Phones and tablets set it as one block with the plate floated beside the
+   kicker and headline, so a long title still runs the full width under it.
+   Wide screens make it a column (the feature) or put the plate in the
+   margin (the poem). */
+:where(.writing) .piece-head { display: flow-root; padding-block: var(--space-6); }
+:where(.writing) .piece-head > * + * { margin-top: var(--space-3); }
+:where(.writing) .piece-head > .piece-art:first-child + * { margin-top: 0; }
+:where(.writing) .piece-head > .t-byline { margin-top: var(--space-4); }
+:where(.writing) .piece-head > .piece-art { float: right; width: 4.5rem; margin: var(--space-3) 0 var(--space-3) var(--space-4); }
+:where(.writing) .piece-head > .piece-art:first-child { margin-top: 0.25rem; }
+:where(.writing) .piece-title { font: 300 clamp(2.75rem, 1.6rem + 4.4vw, 5.25rem) / 0.96 var(--font-display); font-variation-settings: 'SOFT' 50; letter-spacing: -0.035em; text-wrap: balance; }
+:where(.writing) .piece-deck { max-width: 28em; }
+:where(.writing) .piece-art .art { aspect-ratio: 1; border: 1px solid currentColor; background: var(--art-ground); }
+:where(.writing) .piece-art svg { width: 100%; height: 100%; }
+@media (min-width: 600px) { :where(.writing) .piece-head > .piece-art { width: 7rem; margin-left: var(--space-6); } }
+
+/* Text: Newsreader at reading size, one column at the measure, ragged right
+   and hyphenated, each paragraph after the first indented as in print. */
+:where(.writing) .prose { max-width: var(--layout-measure); font-size: clamp(1.0625rem, 0.97rem + 0.4vw, 1.1875rem); line-height: 1.62; text-align: left; hyphens: auto; -webkit-hyphens: auto; hyphenate-limit-chars: 7 3 3; -webkit-hyphenate-limit-before: 3; -webkit-hyphenate-limit-after: 3; text-wrap: pretty; orphans: 2; widows: 2; }
+:where(.writing) .prose p + p { text-indent: 1.4em; }
+
+/* The feature: on wide screens a spread, the opener and its plate held on
+   the left while the text runs down the right at the measure. */
+:where(.writing) .feature { display: grid; grid-template-columns: minmax(0, 1fr); column-gap: var(--layout-column-gap); }
+:where(.writing) .feature-body { padding-bottom: var(--space-4); }
+@media (min-width: 1024px) {
+  :where(.writing) .feature { grid-template-columns: repeat(12, minmax(0, 1fr)); align-items: start; }
+  :where(.writing) .feature > .rh { grid-column: 1 / -1; }
+  :where(.writing) .feature-head { grid-column: 1 / span 5; display: grid; justify-items: start; align-content: start; gap: var(--space-3); position: sticky; top: 3.5rem; padding-block: var(--space-7); }
+  :where(.writing) .feature-head > * { margin-top: 0; }
+  :where(.writing) .feature-head > .t-byline { margin-top: var(--space-1); }
+  :where(.writing) .feature-head > .piece-art { order: 1; float: none; width: min(100%, 14rem); margin: var(--space-5) 0 0; }
+  :where(.writing) .feature-body { grid-column: 7 / -1; padding: var(--space-7) 0 var(--space-4) var(--layout-column-gap); border-left: var(--rule-hairline) solid var(--rule); }
+}
+
+/* The poem: one column as wide as its longest line, centred on the page,
+   with the marigold beside the title (in the margin on wide screens). Each
+   line is its own block with a hanging indent, so a line a phone has to wrap
+   reads as one line carried over, never as a new one. The <br> between
+   lines is for readers that take no CSS. */
+:where(.writing) .poem { display: grid; grid-template-columns: minmax(0, max-content); justify-content: center; padding-bottom: var(--space-4); }
+:where(.writing) .poem .piece-head { position: relative; padding-block: var(--space-7); }
+:where(.writing) .poem .piece-art svg { height: auto; }
+:where(.writing) .poem .piece-title { contain: inline-size; font-style: italic; }
+@media (min-width: 1024px) {
+  :where(.writing) .poem .piece-head > .piece-art { position: absolute; float: none; top: var(--space-7); right: calc(100% + var(--space-8)); width: 10rem; margin: 0; }
+}
+:where(.writing) .verse { font: var(--text-weight) clamp(1.125rem, 1.02rem + 0.45vw, 1.3125rem) / 1.6 var(--font-text); letter-spacing: 0.002em; text-align: left; hyphens: manual; text-wrap: wrap; }
+:where(.writing) .stanza + .stanza { margin-top: 1.6em; }
+:where(.writing) .stanza br { display: none; }
+:where(.writing) .ln { display: block; padding-left: 1.5em; text-indent: -1.5em; }
+:where(.writing) .piece-end { display: flex; align-items: center; gap: var(--space-2); margin-top: var(--space-6); }
+:where(.writing) .piece-end .end-mark { margin: 0; }
+
+/* More writing: the piece before and after this one in the index, and the
+   way back to it. */
+:where(.writing) .piece-nav { display: grid; margin-top: var(--space-8); border-top: var(--rule-double) var(--rule); }
+:where(.writing) .piece-nav a { position: relative; isolation: isolate; display: grid; align-content: start; gap: var(--space-2); min-height: var(--touch-target); padding-block: var(--space-4); border-bottom: var(--rule-hairline) solid var(--rule); color: inherit; text-decoration: none; }
+:where(.writing) .piece-nav a::after { content: ""; position: absolute; inset: 0 calc(-1 * var(--space-2)); z-index: -1; background: currentColor; opacity: 0; transition: opacity var(--motion-duration-short); }
+:where(.writing) .piece-nav a:hover::after { opacity: var(--state-hover); }
+:where(.writing) .piece-nav a:active::after { opacity: var(--state-pressed); }
+:where(.writing) .piece-nav .t-folio { display: inline-flex; align-items: center; gap: 0.5em; }
+:where(.writing) .piece-nav .t-folio .ico { color: var(--spot); }
+:where(.writing) .pn-title { font: 400 clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem) / 1.15 var(--font-display); font-variation-settings: 'SOFT' 50; letter-spacing: -0.015em; text-wrap: balance; }
+:where(.writing) .piece-nav a:hover .pn-title { text-decoration: underline; text-decoration-color: var(--spot-large); text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
+@media (min-width: 720px) {
+  :where(.writing) .piece-nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  :where(.writing) .piece-nav a { padding-inline: var(--space-4); border-bottom: 0; }
+  :where(.writing) .piece-nav a::after { inset: 0; }
+  :where(.writing) .piece-nav .pn--prev { grid-column: 1; padding-left: 0; }
+  :where(.writing) .piece-nav .pn--index { grid-column: 2; justify-items: center; text-align: center; border-inline: var(--rule-hairline) solid var(--rule); }
+  :where(.writing) .piece-nav .pn--next { grid-column: 3; justify-items: end; text-align: right; padding-right: 0; }
+}
+:where(.writing) .rights { margin-top: var(--space-6); }
+
+@media print {
+  main.writing { padding-bottom: 0; }
+  :where(.writing) .piece-nav, :where(.writing) .piece-art { display: none; }
+  :where(.writing) .feature-head { position: static; }
+  :where(.writing) .feature-body { border-left: 0; }
+  :where(.writing) .stanza { break-inside: avoid; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }
