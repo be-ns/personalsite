@@ -180,7 +180,8 @@ All free (SIL Open Font License) and self-hosted. Three families.
   in print.
 - **Fades.** The grainy fade of an old print, used sparingly: about 120px where
   the charcoal briefing runs into the orange Work opener, and where the paper
-  Writing insert runs into the charcoal Kit. A CSS gradient with a second
+  Writing insert runs into what follows it: the charcoal Kit on `kit.html`, the
+  colophon's sunk ground on the home page. A CSS gradient with a second
   pass of grain across its middle, which dithers the ramp. The paper fade
   passes through warm sepia, never neutral grey, like a faded print's edge.
   No large SVG blurs.
@@ -210,7 +211,9 @@ All free (SIL Open Font License) and self-hosted. Three families.
 
 - **Grid:** 12 columns from 840px up, 1.25rem gaps. One column with 16px gutters
   on phones.
-- **Departments:** 01 Work · 02 Method · 03 Workshop · 04 Writing · 05 Kit. Each
+- **Departments:** 01 Work · 02 Method · 03 Workshop · 04 Writing, the four
+  the home page carries. `kit.html` sets the same four as specimens and adds
+  05 Kit, a supplement the colophon links as "How this issue is made". Each
   opens with a large soft numeral, its reading time, a light headline and a
   ruled intro, and each sits on its own ground.
 - **Running heads** on every department: department number, title, and

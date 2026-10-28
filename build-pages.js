@@ -28,7 +28,8 @@
 //   colophon  colophon  "standard" (default), "home" or "supplement". Home
 //                       and supplement carry the consulting line when
 //                       site.json turns consulting on. Home also carries
-//                       site.json's home note and Outside work line.
+//                       site.json's home note, Outside work line and
+//                       contact line.
 //   art       art       drawing names, e.g. ["marigold"].
 //
 // The press refuses unknown regions and keys, a region in the wrong place,
@@ -280,7 +281,9 @@ function topRegion(ctx) {
     '</svg>',
     '<header class="masthead">',
     '  <div class="wrap masthead-row">',
-    `    <a class="wordmark" href="${home}"><b>${esc(site.name)}</b><span class="t-folio">${issue}<span class="folio-season"> &middot; ${esc(site.issue.season)}</span></span></a>`,
+    // The name is always in the link's accessible name, even while the
+    // visible wordmark waits for a cover to scroll away (site.css).
+    `    <a class="wordmark" href="${home}"><span class="visually-hidden">${esc(site.name)}</span><b aria-hidden="true">${esc(site.name)}</b><span class="t-folio">${issue}<span class="folio-season"> &middot; ${esc(site.issue.season)}</span></span></a>`,
     '    <nav class="masthead-nav" aria-label="Departments">',
     '      <ol>',
     ...nav.map((l) => `  ${l}`),
@@ -329,7 +332,14 @@ function colophon(ctx) {
   const also = site.departments.map((d) => `<li><a href="${deptHref(ctx, d)}"${current(ctx, d)}><span class="num-o">${esc(d.num)}</span>${esc(d.name)}</a></li>`);
   also.push(`<li><a href="${root}kit.html"${page === 'kit.html' ? ' aria-current="page"' : ''}>How this issue is made</a></li>`);
   const home = variant === 'home';
-  if (home && !(site.home && site.home.note && site.home.outside)) throw new Error(`${page}: the home colophon needs site.json home.note and home.outside`);
+  if (home) {
+    const h = site.home || {};
+    const strings = (list) => Array.isArray(list) && list.length && list.every((s) => typeof s === 'string' && s.trim());
+    const items = Array.isArray(h.outside) && h.outside.length && h.outside.every((i) => (typeof i === 'string' && i.trim()) || (i && typeof i.text === 'string' && typeof i.href === 'string'));
+    if (!strings(h.note) || !items || typeof h.contact !== 'string') throw new Error(`${page}: the home colophon needs site.json home.note (paragraphs), home.outside (items) and home.contact`);
+  }
+  // The Outside work line: one sentence per item, an item with an href a link.
+  const outside = () => site.home.outside.map((i) => (typeof i === 'string' ? esc(i) : `<a href="${root}${esc(i.href)}">${esc(i.text)}</a>`)).join('. ') + '.';
   const lines = [
     '<footer class="colophon">',
     '  <div class="checker" aria-hidden="true"></div>',
@@ -338,12 +348,13 @@ function colophon(ctx) {
     `      <h2>${esc(site.name)}</h2>`,
     `      <p class="t-small t-quiet">Issue ${esc(site.issue.number)} &middot; ${esc(site.issue.season)}. Set in Fraunces, Newsreader and Instrument Sans.</p>`,
   ];
-  // The home colophon carries what the old home page said about Ben outside
-  // the work, under the ids its Elsewhere and Contact sections had.
+  // The home colophon carries the old home page's intro and what it said
+  // about Ben outside the work, under the ids its Elsewhere and Contact
+  // sections had.
   if (home) {
     lines.push(
-      `      <p class="t-small colophon-note">${esc(site.home.note)}</p>`,
-      `      <p class="t-small colophon-note"><span class="t-folio" id="elsewhere-heading">Outside work</span>${esc(site.home.outside)}</p>`,
+      ...site.home.note.map((p) => `      <p class="t-small colophon-note">${esc(p)}</p>`),
+      `      <p class="t-small colophon-note"><span class="t-folio" id="elsewhere-heading">Outside work</span>${outside()}</p>`,
     );
   }
   // The consulting line: the home page and the consulting supplement only,
@@ -353,6 +364,7 @@ function colophon(ctx) {
     '    </div>',
     '    <div class="write">',
     `      <span class="t-folio"${home ? ' id="contact-heading"' : ''}>Write to me</span>`,
+    ...(home ? [`      <p class="t-small">${esc(site.home.contact)}</p>`] : []),
     `      <button class="btn btn--outlined btn--sm" type="button" data-email="${esc(site.contact.email)}" data-copy-email><span data-copy-label>Copy my email</span></button>`,
     `      <a class="nojs-only btn btn--outlined btn--sm" href="${esc(site.contact.linkedin)}" rel="noopener">Message me on LinkedIn</a>`,
     '      <span class="copy-status t-note" aria-live="polite" aria-atomic="true"></span>',
@@ -389,21 +401,38 @@ const CHROME_SCRIPT = `<script>
       try { localStorage.setItem('edition', b.dataset.editionChoice); } catch (err) { /* storage blocked */ }
     }));
 
-    // Menu sheet: a native modal dialog. Escape closes it; so does a link, the
-    // close button or a tap on the scrim. Focus goes back to Menu.
+    // Menu sheet: a native modal dialog. Escape, the close button and a tap on
+    // the scrim close it, and focus goes back to Menu. A link closes it too;
+    // when the link is to a section of this page, focus moves to that section
+    // once the sheet has closed, so the next Tab carries on from there.
     const sheet = document.getElementById('menu');
     const opener = document.querySelector('[data-menu-open]');
     if (sheet && opener && typeof sheet.showModal === 'function') {
+      let target = null;
       opener.addEventListener('click', () => { sheet.showModal(); opener.setAttribute('aria-expanded', 'true'); });
       sheet.addEventListener('close', () => {
         opener.setAttribute('aria-expanded', 'false');
+        const to = target;
+        target = null;
+        if (to) {
+          // Focusable for this one visit, without a ring around the section.
+          if (!to.hasAttribute('tabindex')) {
+            to.setAttribute('tabindex', '-1');
+            to.setAttribute('data-sheet-target', '');
+            to.addEventListener('blur', () => { to.removeAttribute('tabindex'); to.removeAttribute('data-sheet-target'); }, { once: true });
+          }
+          to.focus({ preventScroll: true });
+          return;
+        }
         if (document.activeElement === document.body || sheet.contains(document.activeElement)) opener.focus({ preventScroll: true });
       });
       // A tap on the sheet's own padding lands on the dialog too, so test the point.
       sheet.addEventListener('click', (e) => {
         const r = sheet.getBoundingClientRect();
         const outside = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
-        if ((e.target === sheet && outside) || e.target.closest('a, [data-menu-close]')) sheet.close();
+        const link = e.target.closest('a');
+        if (link && !e.defaultPrevented && (link.getAttribute('href') || '').startsWith('#')) target = document.getElementById(decodeURIComponent(link.hash.slice(1)));
+        if ((e.target === sheet && outside) || link || e.target.closest('[data-menu-close]')) sheet.close();
       });
     }
 

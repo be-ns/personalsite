@@ -15,7 +15,8 @@
 //     cover rows on phones; the kit's cover the same way; the 404's headline
 //     and way home
 //   - the menu sheet from the keyboard: Enter opens it, Escape closes it,
-//     focus goes back to Menu
+//     focus goes back to Menu; on the issue, a sheet link leaves focus in
+//     the section it names, so the next Tab stays there
 //   - forced colours: controls keep a real edge
 //   - more contrast: quiet ink and hairlines at full strength, inserts too
 //   - print page counts: the résumé and the worksheet on one page
@@ -185,6 +186,24 @@ async function menu(browser, base) {
     await page.waitForFunction(() => !document.getElementById('menu').open && document.querySelector('[data-menu-open]').getAttribute('aria-expanded') === 'false', { timeout: 2000 }).catch(() => {});
     const closed = await page.evaluate(() => ({ open: document.getElementById('menu').open, expanded: document.querySelector('[data-menu-open]').getAttribute('aria-expanded'), back: document.activeElement === document.querySelector('[data-menu-open]') }));
     check(!closed.open && closed.expanded === 'false' && closed.back, `${file}: Escape closes the sheet and focus returns to Menu (${JSON.stringify(closed)})`);
+    // On a page that carries the departments (the issue), following a sheet
+    // link from the keyboard leaves focus in that section, so the next Tab
+    // reaches the section's first control, not the cover.
+    const inPage = await page.evaluate(() => [...document.querySelectorAll('#menu .sheet-list a')].map((a) => a.getAttribute('href')).filter((h) => h.startsWith('#')));
+    if (inPage.length) {
+      const href = inPage.includes('#workshop') ? '#workshop' : inPage[inPage.length - 1];
+      await page.focus('[data-menu-open]');
+      await page.keyboard.press('Enter');
+      for (let i = 0; i < 12 && !(await page.evaluate((h) => document.activeElement.matches(`#menu a[href="${h}"]`), href)); i++) await page.keyboard.press('Tab');
+      await page.keyboard.press('Enter');
+      await page.waitForFunction(() => !document.getElementById('menu').open && document.querySelector('[data-menu-open]').getAttribute('aria-expanded') === 'false', { timeout: 2000 }).catch(() => {});
+      await new Promise((r) => setTimeout(r, 100));
+      const landed = await page.evaluate((h) => ({ hash: location.hash, inside: document.querySelector(h).contains(document.activeElement) }), href);
+      check(landed.hash === href && landed.inside, `${file}: a sheet link to ${href} closes the sheet and leaves focus in that section (${JSON.stringify(landed)})`);
+      await page.keyboard.press('Tab');
+      const next = await page.evaluate((h) => ({ inside: document.querySelector(h).contains(document.activeElement), active: document.activeElement.textContent.trim().slice(0, 40) }), href);
+      check(next.inside, `${file}: after the sheet link to ${href}, Tab lands inside that section, not on ${JSON.stringify(next.active)}`);
+    }
     // A department link closes the sheet too (navigation held back, since on
     // most pages it leaves for the home page).
     await page.evaluate(() => document.addEventListener('click', (e) => { if (e.target.closest('#menu a')) e.preventDefault(); }, true));

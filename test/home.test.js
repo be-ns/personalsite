@@ -73,11 +73,64 @@ test('JSON-LD keeps Person #ben, with no employer, and the nodes beside it', () 
   }
 });
 
-test('every page that points at #ben finds it on the home page', () => {
-  for (const page of fs.readdirSync(ROOT).filter((f) => f.endsWith('.html'))) {
-    if (!readPage(page).includes('https://bensiverly.com/#ben') || page === 'index.html') continue;
-    assert.ok(graph('index.html').some((n) => n['@id'] === 'https://bensiverly.com/#ben'), `${page} points at a Person that exists`);
+// Every "@id" value anywhere in a structured-data block, with its path.
+function idRefs(value, at = '', out = []) {
+  if (Array.isArray(value)) value.forEach((v, i) => idRefs(v, `${at}[${i}]`, out));
+  else if (value && typeof value === 'object') {
+    for (const [k, v] of Object.entries(value)) {
+      if (k === '@id' && typeof v === 'string') out.push({ id: v, at: at || '(root)' });
+      else idRefs(v, `${at}.${k}`, out);
+    }
   }
+  return out;
+}
+
+test('every home-page @id another page points at is a node on the home page', () => {
+  const home = new Set(graph('index.html').map((n) => n['@id']).filter(Boolean));
+  const refs = [];
+  for (const page of fs.readdirSync(ROOT).filter((f) => f.endsWith('.html') && f !== 'index.html')) {
+    for (const ref of idRefs(graph(page))) {
+      if (ref.id.startsWith('https://bensiverly.com/#')) refs.push({ page, ...ref });
+    }
+  }
+  assert.ok(refs.length, 'some page points at a node on the home page');
+  for (const { page, id, at } of refs) assert.ok(home.has(id), `${page} ${at} points at ${id}, which index.html does not define`);
+});
+
+test('each tool page names Person #ben as its author', () => {
+  const tools = graph('index.html').find((n) => n['@id'] === 'https://bensiverly.com/#tools').itemListElement;
+  assert.equal(tools.length, 6);
+  for (const item of tools) {
+    const page = item.url.replace('https://bensiverly.com/', '');
+    const apps = graph(page).filter((n) => n['@type'] === 'WebApplication');
+    assert.equal(apps.length, 1, `${page} describes itself as one WebApplication`);
+    assert.equal(apps[0].author && apps[0].author['@id'], 'https://bensiverly.com/#ben', `${page}'s author is https://bensiverly.com/#ben`);
+  }
+});
+
+test('the old home page\'s own words are still on it', () => {
+  // The intro, the subhead, Phase 03's close and the Contact line moved into
+  // the editor's note, the Method department and the home colophon.
+  for (const line of [
+    'Think like a scientist. Grow things that last.',
+    'I thrive in the unglamorous middle: the customer calls, the half-clean data, the code that has to actually run, the half-dug-up yard.',
+    'That’s where the real work happens, long before the demo.',
+    'As a recovering data scientist, I still revel in the data, hunting for what customers want but can’t name yet.',
+    'an apparel company back when, and a string of side projects I cared about enough to finish.',
+    'The software isn’t improvising how to help. It’s working inside a real model of the customer’s world.',
+    'I’m always happy to talk about product, tools, or gardening.',
+    'Proud future ancestor of the Choctaw Nation of Oklahoma.',
+  ]) assert.ok(body.includes(line), `index.html says: ${line}`);
+  const writing = findAll(doc, (el) => el.tag === 'a' && el.attrs.href === 'writings.html' && flat(el) === 'Writing poetry and prose');
+  assert.equal(writing.length, 1, 'Writing poetry and prose links to writings.html, as it did');
+});
+
+test('what a screen reader hears: labels apart from their text, arrows as words', () => {
+  const heard = textContent(findAll(doc, (el) => el.tag === 'main')[0], (e) => e.tag === 'script' || e.tag === 'style' || e.tag === 'svg' || e.attrs['aria-hidden'] === 'true').replace(/\s+/g, ' ');
+  assert.doesNotMatch(heard, /→/, 'every arrow glyph is aria-hidden, with words beside it');
+  assert.match(heard, /44% to 70%/, 'the seal reads 44% to 70%');
+  for (const src of findAll(doc, (el) => hasClass(el, 'src'))) assert.match(flat(src), /^Source \S/, `"${flat(src).slice(0, 24)}" keeps a space after its label`);
+  for (const cap of findAll(doc, (el) => hasClass(el, 'fig-cap'))) assert.match(flat(cap), /^Fig\. \d+ \S/, 'a figure caption keeps a space after its number');
 });
 
 test('AppFolio is in the past tense, with the résumé\'s dates', () => {

@@ -71,7 +71,7 @@
   </svg>
   <header class="masthead">
     <div class="wrap masthead-row">
-      <a class="wordmark" href="/"><b>Ben Siverly</b><span class="t-folio">Issue 01<span class="folio-season"> &middot; Autumn 2026</span></span></a>
+      <a class="wordmark" href="/"><span class="visually-hidden">Ben Siverly</span><b aria-hidden="true">Ben Siverly</b><span class="t-folio">Issue 01<span class="folio-season"> &middot; Autumn 2026</span></span></a>
       <nav class="masthead-nav" aria-label="Departments">
         <ol>
           <li><a href="/#work"><span>01</span>Work</a></li>
@@ -191,21 +191,38 @@
         try { localStorage.setItem('edition', b.dataset.editionChoice); } catch (err) { /* storage blocked */ }
       }));
 
-      // Menu sheet: a native modal dialog. Escape closes it; so does a link, the
-      // close button or a tap on the scrim. Focus goes back to Menu.
+      // Menu sheet: a native modal dialog. Escape, the close button and a tap on
+      // the scrim close it, and focus goes back to Menu. A link closes it too;
+      // when the link is to a section of this page, focus moves to that section
+      // once the sheet has closed, so the next Tab carries on from there.
       const sheet = document.getElementById('menu');
       const opener = document.querySelector('[data-menu-open]');
       if (sheet && opener && typeof sheet.showModal === 'function') {
+        let target = null;
         opener.addEventListener('click', () => { sheet.showModal(); opener.setAttribute('aria-expanded', 'true'); });
         sheet.addEventListener('close', () => {
           opener.setAttribute('aria-expanded', 'false');
+          const to = target;
+          target = null;
+          if (to) {
+            // Focusable for this one visit, without a ring around the section.
+            if (!to.hasAttribute('tabindex')) {
+              to.setAttribute('tabindex', '-1');
+              to.setAttribute('data-sheet-target', '');
+              to.addEventListener('blur', () => { to.removeAttribute('tabindex'); to.removeAttribute('data-sheet-target'); }, { once: true });
+            }
+            to.focus({ preventScroll: true });
+            return;
+          }
           if (document.activeElement === document.body || sheet.contains(document.activeElement)) opener.focus({ preventScroll: true });
         });
         // A tap on the sheet's own padding lands on the dialog too, so test the point.
         sheet.addEventListener('click', (e) => {
           const r = sheet.getBoundingClientRect();
           const outside = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
-          if ((e.target === sheet && outside) || e.target.closest('a, [data-menu-close]')) sheet.close();
+          const link = e.target.closest('a');
+          if (link && !e.defaultPrevented && (link.getAttribute('href') || '').startsWith('#')) target = document.getElementById(decodeURIComponent(link.hash.slice(1)));
+          if ((e.target === sheet && outside) || link || e.target.closest('[data-menu-close]')) sheet.close();
         });
       }
 

@@ -67,8 +67,8 @@ index.html                 Home, set as the issue: cover, contents, In brief, de
 llms.txt                   Agent-readable guide to the tools
 theme.json                 Theme source of truth: color, type, space, texture, motion, components
 tokens.css                 Generated from theme.json by build-tokens.js (npm run tokens)
-site.css                   The shared periodical styles (hand-written, reads tokens.css)
-site.json                  Facts the shared chrome carries: issue, departments, résumé PDF, contact
+site.css                   The shared periodical styles, the issue's cover and departments among them
+site.json                  Facts the shared chrome carries: issue, departments, résumé PDF, contact, home colophon
 build-pages.js             Stamps the shared chrome into each page between markers (npm run pages)
 kit.html                   Design kit: every token rendered, Night and Day editions (noindex)
 brand.md                   Brand brief: the reasoning behind the theme

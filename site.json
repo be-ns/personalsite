@@ -23,9 +23,20 @@
     "github": "https://github.com/be-ns"
   },
   "home": {
-    "$description": "Two lines only the home colophon carries, where the old home page's intro and Elsewhere list now live. The ids keep the old #elsewhere-heading and #contact-heading links landing.",
-    "note": "I care about shipping things that actually work, staying close to my family, and building a few things that might outlast me. Proud future ancestor of the Choctaw Nation of Oklahoma. Probably the most optimistic person you’ll meet.",
-    "outside": "Native gardening in the Bay Area. Longevity science and preventive health. Liturgical practice and spiritual formation. Raising kids who are kind and grounded. Writing poetry and prose."
+    "$description": "What only the home colophon carries: the old home page's intro, its Elsewhere list and its Contact line, which live here now. note is one paragraph per entry; outside is the Outside work line, one item per entry, an item with an href becoming a link. The ids keep the old #elsewhere-heading and #contact-heading links landing.",
+    "note": [
+      "I thrive in the unglamorous middle: the customer calls, the half-clean data, the code that has to actually run, the half-dug-up yard. That’s where the real work happens, long before the demo.",
+      "As a recovering data scientist, I still revel in the data, hunting for what customers want but can’t name yet. I’ve built my own things for years: an apparel company back when, and a string of side projects I cared about enough to finish.",
+      "I care about shipping things that actually work, staying close to my family, and building a few things that might outlast me. Proud future ancestor of the Choctaw Nation of Oklahoma. Probably the most optimistic person you’ll meet."
+    ],
+    "outside": [
+      "Native gardening in the Bay Area",
+      "Longevity science and preventive health",
+      "Liturgical practice and spiritual formation",
+      "Raising kids who are kind and grounded",
+      { "text": "Writing poetry and prose", "href": "writings.html" }
+    ],
+    "contact": "I’m always happy to talk about product, tools, or gardening."
   },
   "consulting": {
     "$description": "Off until the consulting pages exist. On, the home and supplement colophons carry a line to consulting.html.",
