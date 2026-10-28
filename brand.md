@@ -1,9 +1,9 @@
 # Ben Siverly - brand
 
-Draft 3, October 2026. Direction C: Monocle density. The reasoning behind the
-theme. The values live in [`theme.json`](theme.json), compile to `tokens.css`
-(`npm run tokens`), and render on [`kit.html`](kit.html), which is set as an
-issue of a magazine. Copy rules live in [`my-voice.md`](my-voice.md).
+Draft 3.1, October 2026. Direction C: Monocle density, finished. The reasoning
+behind the theme. The values live in [`theme.json`](theme.json), compile to
+`tokens.css` (`npm run tokens`), and render on [`kit.html`](kit.html), which is
+set as an issue of a magazine. Copy rules live in [`my-voice.md`](my-voice.md).
 
 ## The idea
 
@@ -23,20 +23,27 @@ composition:
 
 - A solid issue-colour ground. Autumn and Winter are Toxic Orange; Spring and
   Summer are Goody Gumdrop. The season comes from the date.
-- The nameplate in Fraunces 700 caps, sized to the cover so it spans it exactly.
+- The nameplate in the Fraunces display cut (optical size 144, weight 800:
+  sharp wedge serifs, high contrast), caps, drawn as one SVG path so it spans
+  the cover edge to edge at every width, the way the Works in Progress wordmark
+  does.
 - An issue line between two rules: `Autumn 2026 - Product, data and AI - Issue 01`
   (the separators are drawn rules, never typed dashes).
 - A framed illustration that takes most of the cover.
 - Cover lines tight to the frame: up the left edge, down the right, along the
   bottom, separated by short drawn rules, a hairline running to a `+` crosshair
-  at each end. On phones they run above and below the frame instead. They are
-  headlines, not navigation; the contents page beside or below the cover holds
-  the links.
+  at each end. On wide covers they are headlines, not navigation; the contents
+  page beside the cover holds the links.
+- On phones the cover is the whole first screen: a one-sentence standfirst
+  under the issue line, the frame, then the cover lines as tappable rows
+  (numeral, headline, arrow) and the Cover story button.
 - One seal: a Goody Gumdrop scallop with a Toxic Orange rim (the nudibranch)
-  carrying the one number that matters, 44% to 70%.
+  carrying the one number that matters, 44% to 70%. Its label never drops
+  under 12px on a desktop cover.
 
 On wide screens the cover and the contents page open as a spread, so the first
-screen holds the positioning, the proof and both buttons.
+screen holds the positioning, the proof and both buttons, with at least 24px of
+air above the fold at 1280x900.
 
 ## Reader
 
@@ -50,9 +57,10 @@ proof on the first screen, not a claim.
 | PM | AppFolio rental applications: submissions 44% → 70%, vacancies filled 3.4 days faster. |
 | AI | AI features at AppFolio. Agent-ready tools (llms.txt, WebMCP). AbiertoClaw. Brava's AI pipeline. |
 
-**Second reader: fractional clients.** A line in the colophon, never the cover or
-the contents. A hiring manager who meets pricing on the front page reads "one
-foot out the door."
+**Second reader: fractional clients.** Later, a line in the colophon, never the
+cover or the contents. A hiring manager who meets pricing on the front page
+reads "one foot out the door." There is no fractional page yet, so nothing
+links to one.
 
 ## Feel
 
@@ -65,16 +73,21 @@ atmosphere, not a costume.
 
 ## References: what we take
 
-**Works in Progress (print).** The framed cover with cover lines and crosshair
-terminals. Feature openers on a bold colour band with decorative caps, checkered
-rules and a running line of text around the border. Interiors: two justified
-columns, running heads with page numbers, charts in one spot colour with a thin
+**Works in Progress (print).** The framed cover and its wordmark, with cover
+lines and crosshair terminals. Feature openers on a bold colour band with
+decorative caps, checkered rules and a running line of text around the border.
+Interiors: two columns, running heads, charts in one spot colour with a thin
 frame and numbered italic captions, stippled engravings framing the text.
 
-**Monocle.** Numbered departments. A contents page with page numbers and dot
-leaders. A briefing strip: five short items, one number each, with sources. Small
-framed images. Condensed tracked labels. Plantin and a plain sans, which here are
-Newsreader and Instrument Sans.
+**Monocle.** Numbered departments. A contents page with dot leaders. A briefing
+strip: five short items, one number each, with sources. Small framed images.
+Condensed tracked labels. Plantin and a plain sans, which here are Newsreader
+and Instrument Sans.
+
+**What we leave behind:** page numbers. A web page has none, so any we printed
+would be invented. The contents and kickers give reading time instead, counted
+from the words on the page (230 a minute), and running heads carry the
+department number.
 
 **Material 3.** Anatomy and behaviour of buttons, chips, segmented buttons, text
 fields, the bottom sheet, state layers and motion.
@@ -85,10 +98,12 @@ variants, nothing shouting. We take the manners.
 ## Editions
 
 - **Night** (default). Gondola `#34302F`, Ben's own swatch, is the page. Never black.
-- **Day.** Paper ground. A one-tap toggle in the masthead, remembered. Always used
-  for print and the résumé PDF.
+- **Day.** Paper ground. Quiet "Night / Day" words in the masthead (in the menu
+  sheet on phones), remembered. Always used for print and the résumé PDF.
 - **Inserts.** The Writing department is printed on the other stock: paper inside
-  the Night edition, charcoal inside the Day edition.
+  the Night edition, charcoal inside the Day edition. Paper is set in the
+  markup, so the insert is right with no script; the script only turns it
+  charcoal in Day.
 - Night stays the default even when the device asks for light mode.
 
 ## Color
@@ -107,7 +122,7 @@ Orange touches green at least once (the rim on the Workshop field, the seal).
 | Raised | Higher Gondola | `#48423F` | Menu sheet | |
 | Ink | Newsprint | `#EFE8DC` | Body text | 10.7 on ground |
 | Quiet ink | Ash | `#B8AFA3` | Captions, folios, notes | 6.0 on ground |
-| Spot | Ember | `#FF8460` | Small orange text: page numbers, note markers | 5.4 on ground |
+| Spot | Ember | `#FF8460` | Small orange text: department numbers, units, note markers | 5.4 on ground |
 | Spot, large | Toxic Orange | `#FE5F35` | Orange type 24px and up, chart ink, numerals | 4.3 on ground |
 | Leaf | Goody Gumdrop | `#CAD576` | Kickers, pull quotes | 8.3 on ground |
 | Fields | Toxic Orange, Goody Gumdrop | | The cover, the Work band, the Workshop field, selected states, the one orange button | |
@@ -136,12 +151,12 @@ All free (SIL Open Font License) and self-hosted. Three families.
 
 | Job | Family | Settings |
 | --- | --- | --- |
-| Nameplate | **Fraunces** | 700, SOFT 0, caps, sized to the cover |
+| Nameplate, wordmark | **Fraunces** display cut | 800, optical size 144, one static instance (17 KB), caps |
 | Feature openers | Fraunces | 640, SOFT 100, caps: soft decorative display on a colour band |
 | Headlines | Fraunces | 360, SOFT 50, tight tracking: light, so they don't fight the nameplate |
 | Figures, numerals | Fraunces | 300, SOFT 0 for figures, SOFT 100 for department numbers |
 | Pull quotes | Fraunces italic | 380, SOFT 100, in Goody Gumdrop (Burnt Orange on paper) |
-| Text | **Newsreader** | 17px body, set in two justified, hyphenated columns on wide screens |
+| Text | **Newsreader** | 17px body, two ragged-right columns on wide screens, hyphenated, `text-wrap: pretty` |
 | Labels, folios, buttons | **Instrument Sans** | Width axis kept: kickers at 85%, folios at 80%, buttons at 88%, tracked caps |
 
 - Optical size is pinned to keep files small: Fraunces at 72, Newsreader at 16.
@@ -151,24 +166,36 @@ All free (SIL Open Font License) and self-hosted. Three families.
 
 ## Texture: grain, fades, art
 
-- **Grain.** One SVG tile of light and dark specks (two thresholds on separate
-  noise channels), so it shows on charcoal and on paper. Measured on screen:
-  about 5.5 luma levels of variation on Gondola, 6 on paper, 10 on the orange
-  fields. Fields carry an extra layer. Never animated; off in print.
-- **Fades.** Sun-bleached patches on the colour fields (a pale bloom at one
-  corner, a burn at the opposite edge), and a warm orange glow where a story
-  starts under its band. No invisible charcoal-to-charcoal gradients.
+- **Grain.** Fine film grain: one SVG tile of soft light and dark specks on
+  separate noise channels, so it shows on charcoal and on paper. Many faint
+  specks, not a few bright ones; bright ones read as white dust at 1x. Measured
+  on screen (standard deviation of luma): about 4.5 levels on Gondola, with
+  under 0.2% of pixels more than 20 levels off; 9 on paper; 8 on the orange
+  and green fields. Orange fields carry an extra layer; Goody Gumdrop a lighter
+  one, under the type, so small text on green stays clean. Never animated; off
+  in print.
+- **Fades.** The grainy fade of an old print, used sparingly: about 120px where
+  the charcoal briefing runs into the orange Work opener, and where the paper
+  Writing insert runs into the charcoal Kit. A CSS gradient with a second,
+  stronger pass of grain across its middle, which dithers the ramp. No large
+  SVG blurs.
+- **Light leaks.** One faint orange leak behind the contents page and one faint
+  green leak in the Kit: cheap radial gradients under the grain.
+- **Sun-fades.** A pale bloom at one corner of each colour field, a burn at the
+  far edge of the orange ones, and a warm glow where a story starts under its
+  band.
 - **Edges.** Where a field meets the page, a ruffled edge with an orange rim:
   the nudibranch. Checkered rules and a running line of text frame the Work band.
 - **Photos.** One treatment as an SVG filter in the page: colour at 70%, blacks
   lifted to `#4A413B`, highlights held at `#E8DCC8`, grain. Photos are small and
   framed (the editor's portrait), never the cover.
-- **Illustration.** Engraved and stippled line art drawn as inline SVG from a
-  seeded generator: a still life of marigolds and hanging amaranth in a stoneware
-  jar (the cover; from Ben's palette photo), a street of apartment buildings with
-  one orange-lit window (the Work feature; rental applications), a tall tower for
-  the margin, a hanging amaranth sprig for the Writing margin, and a single
-  marigold. Line work inks in Newsprint on charcoal and Char on paper. The mood
+- **Illustration.** Engraved and stippled line art drawn as inline SVG by a
+  seeded generator (`generate-kit-art.js`, `npm run generate-art`): a still
+  life of marigolds and hanging amaranth in a stoneware jar (the cover; from
+  Ben's palette photo), a street of apartment buildings with one orange-lit
+  window (the Work feature; rental applications), and a single marigold. Crops
+  of the still life do the small jobs, like the tall strip in the Writing
+  margin. Line work inks in Newsprint on charcoal and Char on paper. The mood
   images (the cow painting, the nudibranch) aren't ours to publish.
 
 ## Layout grammar
@@ -176,19 +203,28 @@ All free (SIL Open Font License) and self-hosted. Three families.
 - **Grid:** 12 columns from 840px up, 1.25rem gaps. One column with 16px gutters
   on phones.
 - **Departments:** 01 Work · 02 Method · 03 Workshop · 04 Writing · 05 Kit. Each
-  opens with a large soft numeral, its page range, a light headline and a ruled
-  intro, and each sits on its own ground.
-- **Running heads** on every department: page number, title, and
+  opens with a large soft numeral, its reading time, a light headline and a
+  ruled intro, and each sits on its own ground.
+- **Running heads** on every department: department number, title, and
   "Ben Siverly · Issue 01 · season" on the other side, alternating sides like
-  left and right pages. On phones, page number and title only.
+  left and right pages. On phones, number and title only.
+- **Running borders** set whole phrases, justified so a line always ends on a
+  word; never a phrase clipped at the edge.
 - **Story:** kicker → decorative caps on the band → deck → byline. Inside: two
-  justified columns with a drop cap (`initial-letter`), a ruled margin column
-  with the big figure, numbered source notes and an engraving, then the chart,
-  then shorter briefs, then the street engraving along the bottom.
+  ragged-right columns with a drop cap (`initial-letter`), a ruled margin column
+  with the big figure, an "At a glance" strip (company, role, what shipped,
+  change failures) and numbered source notes, then the chart, then shorter
+  briefs, then the street engraving along the bottom.
+- **Briefs:** a large Fraunces figure with a small unit in Ember, a tracked-caps
+  label, one line, one source. Every fact matches the home page or the résumé.
 - **Notes:** circled numerals in the text link to notes in the margin; on phones
   the notes sit after the text, always visible.
 - **Charts:** one spot colour, thin frame, tracked-caps title, `Fig. n` caption,
-  labels in HTML so they stay readable on phones. Show only real numbers.
+  labels in HTML so they stay readable on phones, and a plain-English takeaway
+  beside the legend ("26 more of every 100 started applications now get
+  submitted"). Show only real numbers.
+- **Phones:** under 600px the Kit subsections and the Writing list close into
+  M3 list rows (`<details>`), so the page is a third shorter.
 - **End marks:** a small orange square closes a piece.
 
 ## Components: Material 3, dressed quiet
@@ -199,15 +235,22 @@ All free (SIL Open Font License) and self-hosted. Three families.
 - **Labels:** Instrument Sans 12px, 600, 88% width, tracked 0.14em, uppercase.
   48px targets.
 - **Chips and segmented buttons:** full pills; selected is solid Goody Gumdrop
-  with a Char label and a small dot, no checkmark.
+  with a Char label and a small dot, no checkmark. The edition switch is not a
+  segmented button: it is two quiet folio-caps words, "Night / Day", with an
+  orange rule under the active one (still buttons, with `aria-pressed`).
 - **Text field:** M3 filled field: a quiet container, small caps label, a 1px
   rule that turns into a 2px orange rule on focus, supporting text below.
-- **Menu:** an M3 bottom sheet on phones and tablets; the departments sit in the
-  masthead on wide screens.
+- **Menu:** an M3 bottom sheet on phones and tablets, opened by a button labelled
+  "Menu": large Fraunces department names with orange numerals and arrows, the
+  edition words, and a full-width Résumé pill. The departments sit in the
+  masthead on wide screens. On phones the masthead holds the issue folio (the
+  wordmark once the cover scrolls away), Résumé and Menu.
 - **Teasers, not cards:** an engraving crop, kicker, title, one line, a text
   button. No boxes, hairlines between columns.
-- **States:** hover 8%, focus and press 10%, a 2px focus ring (Char on fields),
-  pills ease to 12px corners on press. No shadows.
+- **States:** hover 8%, focus 10%, press 12%, a 2px focus ring (Char on fields),
+  pills ease to 12px corners on press. No shadows. The Kit renders every state.
+- **Colophon:** "Write to me" as an outlined pill that copies the address (the
+  home page's pattern, with a live status line), and "For agents: llms.txt".
 
 ## Motion
 

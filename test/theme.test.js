@@ -68,3 +68,9 @@ test('kit.html copy has no em dashes (my-voice.md)', () => {
   const kit = fs.readFileSync(path.join(ROOT, 'kit.html'), 'utf8');
   assert.doesNotMatch(kit, /—|&mdash;|&#8212;|&#x2014;/i);
 });
+
+test('kit.html art is in sync with generate-kit-art.js (run `npm run generate-art`)', () => {
+  const { symbols, inline, KIT } = require('../generate-kit-art');
+  const kit = fs.readFileSync(KIT, 'utf8');
+  assert.equal(inline(kit, symbols().svg), kit);
+});

@@ -73,6 +73,7 @@ resume.html                One-page resume with downloadable PDFs
 assets/native-plants/      Static JSON datasets: plants, regions, nurseries, ZIP index
 images/                    Generated Open Graph share images (1200x630)
 generate-og-images.js      Offline OG-image generator (Node + sharp)
+generate-kit-art.js        Seeded generator for kit.html's engravings (npm run generate-art)
 test/                      Test suite (node:test, no dependencies)
 ```
 

@@ -43,7 +43,7 @@
       "ink-quiet": { "$type": "color", "$value": "{palette.ash}", "$description": "Captions, bylines, folios." },
       "outline": { "$type": "color", "$value": "{palette.pewter}", "$description": "Boundaries of controls (3:1 minimum)." },
       "rule": { "$type": "color", "$value": "rgb(239 232 220 / 0.2)", "$description": "Decorative hairlines. Never the only cue for a control." },
-      "spot": { "$type": "color", "$value": "{palette.ember}", "$description": "Small orange text: folio numbers, links, note markers." },
+      "spot": { "$type": "color", "$value": "{palette.ember}", "$description": "Small orange text: department numbers, links, units, note markers." },
       "spot-large": { "$type": "color", "$value": "{palette.toxic-orange}", "$description": "Orange type 24px and up, chart ink." },
       "spot-fill": { "$type": "color", "$value": "{palette.toxic-orange}", "$description": "The cover, the Work band, the one orange button." },
       "on-spot-fill": { "$type": "color", "$value": "{palette.char}" },
@@ -58,9 +58,10 @@
       "art-ink": { "$type": "color", "$value": "{palette.newsprint}", "$description": "Engraving line work on the page ground." },
       "art-ground": { "$type": "color", "$value": "{palette.deep-gondola}", "$description": "The murky ground inside the cover frame." },
       "text-weight": { "$type": "fontWeight", "$value": 370, "$description": "Light text on dark reads heavier, so body text drops a touch." },
-      "grain-opacity": { "$type": "number", "$value": 0.18 },
+      "grain-opacity": { "$type": "number", "$value": 0.24 },
       "grain-blend": { "$value": "normal" },
-      "field-grain-opacity": { "$type": "number", "$value": 0.36, "$description": "Grain on orange and green fields, where it shows most." },
+      "field-grain-opacity": { "$type": "number", "$value": 0.4, "$description": "Grain on orange fields, where it shows most." },
+      "leaf-grain-opacity": { "$type": "number", "$value": 0.22, "$description": "Grain on Goody Gumdrop. Lighter, so the dark specks stay out from under small text." },
       "vignette": { "$value": "radial-gradient(120% 95% at 50% 35%, transparent 55%, rgb(31 27 26 / 0.28) 100%)", "$description": "Cover only. Never over body text." }
     },
     "day": {
@@ -90,17 +91,18 @@
       "text-weight": { "$type": "fontWeight", "$value": 400 },
       "grain-opacity": { "$type": "number", "$value": 0.18 },
       "grain-blend": { "$value": "multiply" },
-      "field-grain-opacity": { "$type": "number", "$value": 0.32 },
+      "field-grain-opacity": { "$type": "number", "$value": 0.36 },
+      "leaf-grain-opacity": { "$type": "number", "$value": 0.2 },
       "vignette": { "$value": "radial-gradient(120% 95% at 50% 35%, transparent 60%, rgb(31 27 26 / 0.16) 100%)" }
     }
   },
 
   "contrast": {
-    "$description": "Every text/background pair kit.html uses, checked against WCAG AA by the test suite: 4.5 for text, 3 for large text (24px and up), control boundaries and chart ink.",
+    "$description": "Every text/background pair kit.html uses, checked against WCAG AA by the test suite: 4.5 for text, 3 for large text (24px and up), control boundaries and chart ink. spot on raised is the 24px department numerals in the menu sheet.",
     "night": [
       ["ink", "ground", 4.5], ["ink", "sunk", 4.5], ["ink", "surface", 4.5], ["ink", "raised", 4.5],
       ["ink-quiet", "ground", 4.5], ["ink-quiet", "sunk", 4.5], ["ink-quiet", "surface", 4.5], ["ink-quiet", "raised", 4.5],
-      ["spot", "ground", 4.5], ["spot", "sunk", 4.5], ["spot", "surface", 4.5],
+      ["spot", "ground", 4.5], ["spot", "sunk", 4.5], ["spot", "surface", 4.5], ["spot", "raised", 3],
       ["spot-large", "ground", 3], ["spot-large", "sunk", 3],
       ["leaf", "ground", 4.5], ["leaf", "sunk", 4.5], ["leaf", "surface", 4.5],
       ["on-spot-fill", "spot-fill", 4.5], ["on-leaf-fill", "leaf-fill", 4.5], ["on-leaf-fill-quiet", "leaf-fill", 4.5],
@@ -113,7 +115,7 @@
     "day": [
       ["ink", "ground", 4.5], ["ink", "sunk", 4.5], ["ink", "surface", 4.5], ["ink", "raised", 4.5],
       ["ink-quiet", "ground", 4.5], ["ink-quiet", "sunk", 4.5], ["ink-quiet", "surface", 4.5], ["ink-quiet", "raised", 4.5],
-      ["spot", "ground", 4.5], ["spot", "sunk", 4.5], ["spot", "surface", 4.5],
+      ["spot", "ground", 4.5], ["spot", "sunk", 4.5], ["spot", "surface", 4.5], ["spot", "raised", 3],
       ["spot-large", "ground", 3], ["spot-large", "sunk", 3],
       ["leaf", "ground", 4.5], ["leaf", "sunk", 4.5], ["leaf", "surface", 4.5],
       ["on-spot-fill", "spot-fill", 4.5], ["on-leaf-fill", "leaf-fill", 4.5], ["on-leaf-fill-quiet", "leaf-fill", 4.5],
@@ -126,14 +128,16 @@
   },
 
   "font": {
-    "$description": "Free (SIL OFL), self-hosted, Latin subset. Fraunces is pinned at optical size 72 and keeps its SOFT axis; Newsreader at 16; Instrument Sans keeps its width axis so labels can run condensed, Monocle style.",
+    "$description": "Free (SIL OFL), self-hosted, Latin subset. Fraunces is pinned at optical size 72 and keeps its SOFT axis; Newsreader at 16; Instrument Sans keeps its width axis so labels can run condensed, Monocle style. The display cut is one static Fraunces instance at optical size 144, weight 800, SOFT 0: sharp wedge serifs and high contrast for the nameplate and wordmark, 17 KB.",
     "display": { "$type": "fontFamily", "$value": "'Fraunces', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif" },
+    "display-cut": { "$type": "fontFamily", "$value": "'Fraunces Display', 'Fraunces', 'Iowan Old Style', Georgia, serif" },
     "text": { "$type": "fontFamily", "$value": "'Newsreader', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif" },
     "label": { "$type": "fontFamily", "$value": "'Instrument Sans', 'Helvetica Neue', Arial, sans-serif" },
     "faces": {
       "$value": [
         { "family": "Fraunces", "file": "assets/fonts/fraunces-roman.woff2", "weight": "300 700", "style": "normal" },
         { "family": "Fraunces", "file": "assets/fonts/fraunces-italic.woff2", "weight": "300 700", "style": "italic" },
+        { "family": "Fraunces Display", "file": "assets/fonts/fraunces-display.woff2", "weight": "800", "style": "normal" },
         { "family": "Newsreader", "file": "assets/fonts/newsreader-roman.woff2", "weight": "300 700", "style": "normal" },
         { "family": "Newsreader", "file": "assets/fonts/newsreader-italic.woff2", "weight": "300 700", "style": "italic" },
         { "family": "Instrument Sans", "file": "assets/fonts/instrument-sans.woff2", "weight": "400 700", "style": "normal", "stretch": "75% 100%" }
@@ -143,7 +147,7 @@
 
   "type": {
     "$description": "Roles, not sizes. Each expands to --type-<role>-family/size/weight/line/tracking/case/style/stretch/axes/features. Weight and width carry the hierarchy as much as size: crisp heavy caps on the cover, light soft headlines inside, condensed tracked labels.",
-    "nameplate": { "$type": "typography", "$value": { "fontFamily": "{font.display}", "fontSize": "clamp(2.5rem, 14.4cqi, 9rem)", "fontWeight": 700, "lineHeight": 0.86, "letterSpacing": "-0.025em", "textTransform": "uppercase", "fontVariationSettings": "'SOFT' 0" }, "$description": "Sized to its container so it spans the cover exactly." },
+    "nameplate": { "$type": "typography", "$value": { "fontFamily": "{font.display-cut}", "fontSize": "clamp(2.5rem, 14.6cqi, 9rem)", "fontWeight": 800, "lineHeight": 0.86, "letterSpacing": "-0.02em", "textTransform": "uppercase" }, "$description": "The display cut, caps. On the cover it is drawn as one SVG path from fraunces-display.woff2, so it spans the cover edge to edge at every width; this role sets the wordmark, the specimen and the fallback." },
     "display": { "$type": "typography", "$value": { "fontFamily": "{font.display}", "fontSize": "clamp(2.125rem, 6.2vw, 5.25rem)", "fontWeight": 640, "lineHeight": 0.94, "letterSpacing": "-0.012em", "textTransform": "uppercase", "fontVariationSettings": "'SOFT' 100" }, "$description": "Feature openers. Soft, decorative caps on a colour band." },
     "headline": { "$type": "typography", "$value": { "fontFamily": "{font.display}", "fontSize": "clamp(1.75rem, 3.4vw, 2.75rem)", "fontWeight": 360, "lineHeight": 1.04, "letterSpacing": "-0.022em", "fontVariationSettings": "'SOFT' 50" } },
     "title": { "$type": "typography", "$value": { "fontFamily": "{font.display}", "fontSize": "clamp(1.1875rem, 1.7vw, 1.375rem)", "fontWeight": 480, "lineHeight": 1.16, "letterSpacing": "-0.01em", "fontVariationSettings": "'SOFT' 30" } },
@@ -151,7 +155,7 @@
     "numeral": { "$type": "typography", "$value": { "fontFamily": "{font.display}", "fontSize": "clamp(2.5rem, 5vw, 4rem)", "fontWeight": 300, "lineHeight": 0.85, "letterSpacing": "-0.04em", "fontVariationSettings": "'SOFT' 100" }, "$description": "Department numbers." },
     "pullquote": { "$type": "typography", "$value": { "fontFamily": "{font.display}", "fontSize": "clamp(1.625rem, 3vw, 2.5rem)", "fontWeight": 380, "lineHeight": 1.12, "letterSpacing": "-0.015em", "fontStyle": "italic", "fontVariationSettings": "'SOFT' 100" } },
     "deck": { "$type": "typography", "$value": { "fontFamily": "{font.text}", "fontSize": "clamp(1.125rem, 1.6vw, 1.3125rem)", "fontWeight": "var(--text-weight)", "lineHeight": 1.38, "letterSpacing": "0", "fontStyle": "italic" } },
-    "body": { "$type": "typography", "$value": { "fontFamily": "{font.text}", "fontSize": "1.0625rem", "fontWeight": "var(--text-weight)", "lineHeight": 1.52, "letterSpacing": "0.003em" }, "$description": "17px. Set in two justified columns on wide screens." },
+    "body": { "$type": "typography", "$value": { "fontFamily": "{font.text}", "fontSize": "1.0625rem", "fontWeight": "var(--text-weight)", "lineHeight": 1.52, "letterSpacing": "0.003em" }, "$description": "17px. Two ragged-right columns on wide screens." },
     "body-sm": { "$type": "typography", "$value": { "fontFamily": "{font.text}", "fontSize": "0.9375rem", "fontWeight": "var(--text-weight)", "lineHeight": 1.48, "letterSpacing": "0.004em" }, "$description": "15px. Briefs, contents lines, teasers." },
     "sidenote": { "$type": "typography", "$value": { "fontFamily": "{font.text}", "fontSize": "0.875rem", "fontWeight": "var(--text-weight)", "lineHeight": 1.42, "letterSpacing": "0.005em" } },
     "caption": { "$type": "typography", "$value": { "fontFamily": "{font.text}", "fontSize": "0.875rem", "fontWeight": "var(--text-weight)", "lineHeight": 1.38, "letterSpacing": "0.005em", "fontStyle": "italic" } },
@@ -185,7 +189,7 @@
     "gutter": { "$type": "dimension", "$value": "clamp(1rem, 3.2vw, 2rem)", "$description": "16px on phones." },
     "columns": { "$type": "number", "$value": 12 },
     "column-gap": { "$type": "dimension", "$value": "1.25rem" },
-    "text-columns-gap": { "$type": "dimension", "$value": "1.75rem", "$description": "Between justified text columns." },
+    "text-columns-gap": { "$type": "dimension", "$value": "1.75rem", "$description": "Between the two text columns." },
     "bp-medium": { "$type": "dimension", "$value": "600px" },
     "bp-expanded": { "$type": "dimension", "$value": "840px" },
     "bp-large": { "$type": "dimension", "$value": "1200px" }
@@ -214,7 +218,7 @@
     "$description": "Material 3 state layers: a wash of the label color over the container.",
     "hover": { "$type": "number", "$value": 0.08 },
     "focus": { "$type": "number", "$value": 0.10 },
-    "pressed": { "$type": "number", "$value": 0.10 },
+    "pressed": { "$type": "number", "$value": 0.12 },
     "dragged": { "$type": "number", "$value": 0.16 },
     "disabled-container": { "$type": "number", "$value": 0.12 },
     "disabled-content": { "$type": "number", "$value": 0.38 }
@@ -236,9 +240,9 @@
   },
 
   "texture": {
-    "$description": "Grain is an inline SVG tile of light and dark specks (both, so it shows on charcoal and on paper). Opacity and blend come from the edition. The photo treatment is an SVG filter in the page that reads the same values.",
+    "$description": "Grain is an inline SVG tile of fine film grain: soft light and dark specks on separate noise channels, so it shows on charcoal and on paper. Low gain and a low threshold give many faint specks instead of a few bright ones (bright ones read as dust at 1x). The light channel is softer than the dark one. Opacity and blend come from the edition. The photo treatment is an SVG filter in the page that reads the same values.",
     "grain": {
-      "$value": { "baseFrequency": 0.9, "octaves": 2, "tile": 160, "gain": 5, "threshold": 0.1, "light": "#F6EFE3", "dark": "#1A1615" }
+      "$value": { "baseFrequency": 1.2, "octaves": 3, "tile": 160, "gain": 2.4, "threshold": 0.02, "lightGain": 1.6, "lightThreshold": 0.02, "light": "#F6EFE3", "dark": "#1A1615" }
     },
     "photo": {
       "$value": { "shadows": "#4A413B", "highlights": "#E8DCC8", "saturation": 0.7, "grain": 0.16 },

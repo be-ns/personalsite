@@ -17,6 +17,14 @@
 }
 
 @font-face {
+  font-family: 'Fraunces Display';
+  src: url('assets/fonts/fraunces-display.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'Newsreader';
   src: url('assets/fonts/newsreader-roman.woff2') format('woff2');
   font-weight: 300 700;
@@ -63,6 +71,7 @@
   --palette-flint: #7A7168;
   --palette-umber: #655D55;
   --font-display: 'Fraunces', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-display-cut: 'Fraunces Display', 'Fraunces', 'Iowan Old Style', Georgia, serif;
   --font-text: 'Newsreader', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
   --font-label: 'Instrument Sans', 'Helvetica Neue', Arial, sans-serif;
   --space-1: 0.25rem;
@@ -100,7 +109,7 @@
   --rule-check: 8px;
   --state-hover: 0.08;
   --state-focus: 0.1;
-  --state-pressed: 0.1;
+  --state-pressed: 0.12;
   --state-dragged: 0.16;
   --state-disabled-container: 0.12;
   --state-disabled-content: 0.38;
@@ -130,15 +139,15 @@
   --link-underline-hover: 2px;
   --link-underline-offset: 0.22em;
   --touch-target: 48px;
-  --type-nameplate-family: var(--font-display);
-  --type-nameplate-size: clamp(2.5rem, 14.4cqi, 9rem);
-  --type-nameplate-weight: 700;
+  --type-nameplate-family: var(--font-display-cut);
+  --type-nameplate-size: clamp(2.5rem, 14.6cqi, 9rem);
+  --type-nameplate-weight: 800;
   --type-nameplate-line: 0.86;
-  --type-nameplate-tracking: -0.025em;
+  --type-nameplate-tracking: -0.02em;
   --type-nameplate-case: uppercase;
   --type-nameplate-style: normal;
   --type-nameplate-stretch: normal;
-  --type-nameplate-axes: 'SOFT' 0;
+  --type-nameplate-axes: normal;
   --type-nameplate-features: normal;
   --type-display-family: var(--font-display);
   --type-display-size: clamp(2.125rem, 6.2vw, 5.25rem);
@@ -300,7 +309,7 @@
   --type-ui-stretch: normal;
   --type-ui-axes: normal;
   --type-ui-features: normal;
-  --texture-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='7' stitchTiles='stitch' result='n'/%3E%3CfeColorMatrix in='n' type='matrix' values='0 0 0 0 0.965 0 0 0 0 0.937 0 0 0 0 0.890 5 0 0 0 -3.000' result='l'/%3E%3CfeColorMatrix in='n' type='matrix' values='0 0 0 0 0.102 0 0 0 0 0.086 0 0 0 0 0.082 0 -5 0 0 2.000' result='d'/%3E%3CfeMerge%3E%3CfeMergeNode in='d'/%3E%3CfeMergeNode in='l'/%3E%3C/feMerge%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23g)'/%3E%3C/svg%3E");
+  --texture-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3' seed='7' stitchTiles='stitch' result='n'/%3E%3CfeColorMatrix in='n' type='matrix' values='0 0 0 0 0.965 0 0 0 0 0.937 0 0 0 0 0.890 1.6 0 0 0 -0.832' result='l'/%3E%3CfeColorMatrix in='n' type='matrix' values='0 0 0 0 0.102 0 0 0 0 0.086 0 0 0 0 0.082 0 -2.4 0 0 1.152' result='d'/%3E%3CfeMerge%3E%3CfeMergeNode in='d'/%3E%3CfeMergeNode in='l'/%3E%3C/feMerge%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23g)'/%3E%3C/svg%3E");
   --texture-grain-tile: 160px;
   --texture-photo-shadows: #4A413B;
   --texture-photo-highlights: #E8DCC8;
@@ -334,9 +343,10 @@
   --art-ink: var(--palette-newsprint);
   --art-ground: var(--palette-deep-gondola);
   --text-weight: 370;
-  --grain-opacity: 0.18;
+  --grain-opacity: 0.24;
   --grain-blend: normal;
-  --field-grain-opacity: 0.36;
+  --field-grain-opacity: 0.4;
+  --leaf-grain-opacity: 0.22;
   --vignette: radial-gradient(120% 95% at 50% 35%, transparent 55%, rgb(31 27 26 / 0.28) 100%);
   --type-deck-weight: var(--text-weight);
   --type-body-weight: var(--text-weight);
@@ -372,7 +382,8 @@
   --text-weight: 400;
   --grain-opacity: 0.18;
   --grain-blend: multiply;
-  --field-grain-opacity: 0.32;
+  --field-grain-opacity: 0.36;
+  --leaf-grain-opacity: 0.2;
   --vignette: radial-gradient(120% 95% at 50% 35%, transparent 60%, rgb(31 27 26 / 0.16) 100%);
   --type-deck-weight: var(--text-weight);
   --type-body-weight: var(--text-weight);
@@ -410,7 +421,8 @@
     --text-weight: 400;
     --grain-opacity: 0.18;
     --grain-blend: multiply;
-    --field-grain-opacity: 0.32;
+    --field-grain-opacity: 0.36;
+    --leaf-grain-opacity: 0.2;
     --vignette: radial-gradient(120% 95% at 50% 35%, transparent 60%, rgb(31 27 26 / 0.16) 100%);
     --type-deck-weight: var(--text-weight);
     --type-body-weight: var(--text-weight);
