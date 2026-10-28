@@ -12,6 +12,7 @@
   <script>
     // Apply a saved edition before first paint. Night is the default on every device.
     (function () {
+      document.documentElement.classList.add('js');
       try {
         const saved = localStorage.getItem('edition');
         if (saved === 'day' || saved === 'night') document.documentElement.dataset.edition = saved;
@@ -86,10 +87,12 @@
     .masthead { position: sticky; top: 0; z-index: 40; background: var(--ground); border-bottom: var(--rule-hairline) solid var(--rule); }
     .masthead-row { display: flex; align-items: center; gap: var(--space-2); min-height: 3.5rem; }
     .wordmark { display: inline-flex; align-items: center; gap: var(--space-3); min-width: 0; min-height: var(--touch-target); margin-right: auto; color: var(--ink); text-decoration: none; }
-    .wordmark b { display: inline-block; max-width: 12rem; overflow: hidden; white-space: nowrap; font: var(--type-nameplate-weight) 1.1875rem / 1 var(--type-nameplate-family); letter-spacing: 0; text-transform: uppercase; transition: opacity var(--motion-duration-medium) var(--motion-easing-standard), max-width var(--motion-duration-medium) var(--motion-easing-standard); }
+    .wordmark b { display: inline-block; max-width: 12rem; overflow: hidden; white-space: nowrap; font: var(--type-nameplate-weight) 1.1875rem / 1 var(--type-nameplate-family); letter-spacing: 0; word-spacing: 0.12em; text-transform: uppercase; transition: opacity var(--motion-duration-medium) var(--motion-easing-standard), max-width var(--motion-duration-medium) var(--motion-easing-standard); }
     .wordmark .t-folio { white-space: nowrap; }
-    .masthead[data-cover-in-view] .wordmark { gap: 0; }
-    .masthead[data-cover-in-view] .wordmark b { opacity: 0; max-width: 0; visibility: hidden; }
+    /* The wordmark appears once the cover's nameplate has scrolled away (the
+       script sets data-cover-gone); until then, and without the script, the folio. */
+    .masthead:not([data-cover-gone]) .wordmark { gap: 0; }
+    .masthead:not([data-cover-gone]) .wordmark b { opacity: 0; max-width: 0; visibility: hidden; }
     .masthead-nav { display: none; }
     .masthead-nav ol { display: flex; list-style: none; }
     .masthead-nav a { display: inline-flex; align-items: center; gap: 0.4em; min-height: var(--touch-target); padding-inline: 0.7rem; color: var(--ink); text-decoration: none; font: var(--type-label-weight) var(--type-label-size) / 1 var(--font-label); letter-spacing: var(--type-label-tracking); text-transform: uppercase; font-stretch: var(--type-label-stretch); }
@@ -98,9 +101,14 @@
     .masthead-actions { display: flex; align-items: center; gap: var(--space-2); }
     .masthead .edition-words { display: none; margin-right: var(--space-2); }
     .btn.menu-btn { gap: 0.5rem; padding-inline: 0.65rem 0.75rem; background: transparent; color: var(--ink); }
-    .menu-btn svg { width: 1.25rem; height: 1.25rem; }
+    .menu-btn svg { flex: none; width: 1.25rem; height: 1.25rem; }
     /* Phones: the issue folio while the cover is in view, the wordmark after. */
-    @media (max-width: 599px) { .masthead:not([data-cover-in-view]) .wordmark .t-folio { display: none; } }
+    @media (max-width: 599px) { .masthead[data-cover-gone] .wordmark .t-folio { display: none; } }
+    /* Narrow phones, or a larger default text size (em queries follow it). */
+    @media (max-width: 22.4375em) { .folio-season { display: none; } .wordmark b { font-size: 0.9rem; } }
+    /* Without the script, the controls that need it stay out of the way. */
+    :root:not(.js) .menu-btn, :root:not(.js) .edition-words, :root:not(.js) [data-copy-email] { display: none !important; }
+    :root.js .nojs-only { display: none; }
     @media (min-width: 600px) { .masthead .edition-words { display: inline-flex; } }
     @media (min-width: 1100px) { .masthead-nav { display: block; } .menu-btn { display: none !important; } }
 
@@ -218,8 +226,11 @@
         radial-gradient(70% 55% at 70% 105%, rgb(60 20 8 / 0.24), transparent 72%);
     }
     .field-leaf::before { background: radial-gradient(55% 45% at 86% 6%, rgb(255 250 225 / 0.4), transparent 70%); }
-    .field-spot::after, .field-leaf::after { content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none; background-image: var(--texture-grain); background-size: var(--texture-grain-tile); opacity: var(--field-grain-opacity); }
-    .field-leaf::after { z-index: -1; opacity: var(--leaf-grain-opacity); }
+    /* Grain under the type: z-index -1 inside each field's own stacking context. */
+    .field-spot::after, .field-leaf::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background-image: var(--texture-grain); background-size: var(--texture-grain-tile); opacity: var(--field-grain-opacity); }
+    .field-leaf::after { opacity: var(--leaf-grain-opacity); }
+    /* Small orange panels take the light mottle only; the dark burn would read as a stain. */
+    .tex.field-spot::before, .on-field::before { background: radial-gradient(60% 55% at 14% 8%, rgb(255 238 214 / 0.3), transparent 70%); }
 
     /* Grainy fades: a CSS gradient with a second, stronger pass of grain across
        its middle, which dithers the ramp the way grain does on an old print. */
@@ -234,11 +245,12 @@
     .opening { padding-block: var(--space-4) var(--space-section); background: radial-gradient(42rem 34rem at 96% 16%, var(--leak-orange), transparent 70%) no-repeat; }
     .opening-grid { display: grid; gap: var(--space-6); }
 
-    .cover { position: relative; isolation: isolate; container-type: inline-size; display: flex; flex-direction: column; background: var(--cover-ground, var(--spot-fill)); color: var(--on-spot-fill); --focus: var(--on-spot-fill); overflow: hidden; }
-    :root[data-issue-season="Spring"] .cover, :root[data-issue-season="Summer"] .cover { --cover-ground: var(--leaf-fill); }
+    .cover { position: relative; isolation: isolate; container-type: inline-size; display: flex; flex-direction: column; background: var(--spot-fill); color: var(--on-spot-fill); --focus: var(--on-spot-fill); overflow: clip; }
     .cover::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-      background: radial-gradient(60% 34% at 18% 6%, rgb(255 236 210 / 0.36), transparent 72%), radial-gradient(50% 40% at 96% 60%, rgb(255 236 210 / 0.14), transparent 70%), radial-gradient(80% 40% at 50% 104%, rgb(70 22 8 / 0.26), transparent 72%), var(--vignette); }
-    .cover::after { content: ""; position: absolute; inset: 0; z-index: 5; pointer-events: none; background-image: var(--texture-grain); background-size: var(--texture-grain-tile); opacity: var(--field-grain-opacity); }
+      background: radial-gradient(60% 34% at 18% 6%, rgb(255 236 210 / 0.36), transparent 72%), radial-gradient(50% 40% at 96% 60%, rgb(255 236 210 / 0.14), transparent 70%), linear-gradient(to top, rgb(255 236 210 / 0.12), transparent 13%), var(--vignette); }
+    /* Grain sits under the type (z-index -1 in the cover's own stacking context);
+       the engraving gets its own pass so the art still reads as a print. */
+    .cover::after, .cover-art::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background-image: var(--texture-grain); background-size: var(--texture-grain-tile); opacity: var(--field-grain-opacity); }
     .cover-in { flex: 1; display: flex; flex-direction: column; padding: 3.4cqi 4cqi 3.2cqi; --rail: max(12.5px, 2.15cqi); --g: calc(var(--rail) * 0.5 + 2.2cqi); }
 
     /* The nameplate is one SVG path drawn from the display cut (Fraunces 144, 800),
@@ -247,9 +259,11 @@
     .nameplate svg { width: 100%; height: auto; fill: currentColor; overflow: visible; }
     .issue-line { display: flex; align-items: center; justify-content: center; gap: 0.75em; margin-top: 2.4cqi; padding-block: 1.2cqi; border-block: 1px solid currentColor; font: 400 var(--rail) / 1.2 var(--font-text); white-space: nowrap; }
     .issue-line .dash, .rail .dash { flex: none; inline-size: 2em; block-size: 1px; background: currentColor; }
+    @media (max-width: 399px) { .issue-line { gap: 0.55em; } .issue-line .dash { inline-size: 1em; } }
 
     .cover-frame { position: relative; flex: 1; min-height: 16rem; margin: calc(var(--g) + var(--rail) + 1.6cqi) 0 calc(var(--g) + var(--rail) + 1.2cqi); }
-    .cover-art { position: absolute; inset: 0; overflow: hidden; background: var(--art-ground); box-shadow: 0 0 0 1.5px var(--on-spot-fill); }
+    .cover-art { position: absolute; inset: 0; isolation: isolate; overflow: hidden; background: var(--art-ground); box-shadow: 0 0 0 1.5px var(--on-spot-fill); }
+    .cover-art::after { z-index: 1; }
     .cover-art svg { width: 100%; height: 100%; }
     .rail { position: absolute; display: flex; align-items: center; gap: 0.7em; padding-inline: 1.15em; font: 400 var(--rail) / 1 var(--font-text); white-space: nowrap; }
     .rail .run { flex: 1 1 0; min-inline-size: 1em; block-size: 1px; background: currentColor; }
@@ -260,7 +274,7 @@
     .cover-frame .xh--tr { left: 100%; top: calc(-1 * var(--g)); }
     .cover-frame .xh--bl { left: 0; top: calc(100% + var(--g)); }
     .cover-frame .xh--br { left: 100%; top: calc(100% + var(--g)); }
-    @container (min-width: 520px) {
+    @media (min-width: 520px) {
       .cover-frame { margin: 4.2cqi 6.6cqi calc(var(--g) + var(--rail) + 3cqi); }
       .rail--top { display: none; }
       .rail .rail-wide { display: block; }
@@ -273,20 +287,25 @@
       .cover-frame .xh--bl { left: calc(-1 * var(--g)); }
       .cover-frame .xh--br { left: calc(100% + var(--g)); }
     }
+    /* The narrowest desktop covers (short windows): tighter rails so the bottom one ends clear of its crosshair. */
+    @container (max-width: 519px) { .rail { gap: 0.5em; padding-inline: 1em; } .rail .dash { inline-size: 1.5em; } }
 
-    .seal { position: absolute; right: 3cqi; bottom: 3cqi; z-index: 6; width: max(6.5rem, 25cqi); aspect-ratio: 1; display: grid; place-items: center; text-align: center; color: var(--on-leaf-fill); transform: rotate(-9deg); }
+    /* The seal is its own container, so the figures and label scale with it and
+       always sit inside the dashed ring: 12px label minimum, 8rem seal minimum. */
+    .seal { position: absolute; right: 3cqi; bottom: 3cqi; z-index: 6; width: max(8rem, 25cqi); aspect-ratio: 1; container-type: inline-size; display: grid; place-items: center; text-align: center; color: var(--on-leaf-fill); transform: rotate(-9deg); }
     .seal::before, .seal::after { content: ""; position: absolute; clip-path: url(#scallop); z-index: -1; }
     .seal::before { inset: -5%; background: var(--spot-fill); }
     .seal::after { inset: 0; background: var(--leaf-fill); }
-    .seal-in { display: grid; place-items: center; align-content: center; gap: 0.15em; width: 74%; aspect-ratio: 1; border-radius: 50%; border: 1px dashed currentColor; }
-    .seal b { font: 600 max(1.125rem, 4.6cqi) / 0.9 var(--font-display); font-variation-settings: 'SOFT' 100; letter-spacing: -0.03em; white-space: nowrap; }
-    .seal b i { font-style: normal; font-size: 0.6em; vertical-align: 0.28em; }
-    .seal small { max-width: 9em; font: 600 max(0.6875rem, 2.06cqi) / 1.12 var(--font-label); letter-spacing: 0.06em; text-transform: uppercase; font-stretch: 82%; }
+    .seal-in { display: grid; place-items: center; align-content: center; gap: 0.12em; width: 84%; aspect-ratio: 1; border-radius: 50%; border: 1px dashed currentColor; }
+    .seal b { font: 600 calc(18.5cqi - 3px) / 0.9 var(--font-display); font-variation-settings: 'SOFT' 100; letter-spacing: -0.03em; white-space: nowrap; }
+    .seal b i { font-style: normal; font-size: 0.58em; vertical-align: 0.3em; }
+    .seal b .ar { font-size: 0.62em; vertical-align: 0.12em; margin-inline: 0.04em; }
+    .seal small { font: 600 max(0.75rem, 7.6cqi) / 1.1 var(--font-label); letter-spacing: 0.04em; text-transform: uppercase; font-stretch: 82%; }
 
-    .cover-credit { font: italic 400 max(12px, 1.9cqi) / 1.3 var(--font-text); }
+    .cover-credit { font: 500 max(13px, 2.05cqi) / 1.3 var(--font-text); text-wrap: balance; }
 
     /* Phones: a standfirst under the issue line, and the cover lines as tappable
-       rows under the frame, ending on the Cover story button. */
+       rows under the frame. They stand in for the contents list, which phones skip. */
     .cover-standfirst { margin-top: 0.85rem; font: italic 400 1.0625rem / 1.34 var(--font-text); text-wrap: pretty; }
     .cover-lines { list-style: none; margin-top: 0.85rem; border-bottom: 1px solid rgb(31 27 26 / 0.34); }
     .cover-lines a { position: relative; isolation: isolate; display: grid; grid-template-columns: 2.1rem minmax(0, 1fr) auto; align-items: center; gap: var(--space-2); min-height: var(--touch-target); border-top: 1px solid rgb(31 27 26 / 0.34); color: inherit; text-decoration: none; }
@@ -296,8 +315,7 @@
     .cover-lines .n { font: 400 1.0625rem / 1 var(--font-display); font-variation-settings: 'SOFT' 0; font-feature-settings: 'lnum' 1; }
     .cover-lines .t { font: 480 1.1875rem / 1.15 var(--font-display); font-variation-settings: 'SOFT' 30; letter-spacing: -0.01em; }
     .cover-lines .ico { width: 1.25rem; height: 0.8rem; }
-    .cover-cta { display: flex; justify-content: flex-end; margin-top: 0.85rem; }
-    @container (min-width: 520px) { .cover-standfirst, .cover-lines, .cover-cta { display: none; } }
+    @media (min-width: 520px) { .cover-standfirst, .cover-lines { display: none; } }
 
     .contents-page { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
     .contents-title { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); }
@@ -330,17 +348,31 @@
       .cover { margin-inline: calc(-1 * var(--layout-gutter)); min-height: calc(100svh - 3.6rem); }
       .opening { padding-top: 0; }
     }
+    /* Phones: the cover carries the standfirst and the cover lines, so the
+       contents page keeps only the editor's note, in other words, and the buttons. */
+    .ed-phone { display: none; }
+    @media (max-width: 519px) {
+      .ed-wide { display: none; }
+      .ed-phone { display: inline; }
+      .contents-page > .rh, .contents-title, .lead-story, .contents-page > nav { display: none; }
+    }
+    /* Short or narrow desktop windows: the spread still fits the first screen,
+       buttons included, by dropping the lead story and then the contents notes. */
+    @media (min-width: 1024px) and (max-height: 869px), (min-width: 1024px) and (max-width: 1199px) and (max-height: 959px) { .lead-story { display: none; } }
+    @media (min-width: 1024px) and (max-height: 759px), (min-width: 1024px) and (max-width: 1199px) and (max-height: 819px) { .toc .desc { display: none; } }
 
     /* ---------- Briefing ---------- */
     .briefing { background: var(--sunk); padding-block: var(--space-5) var(--space-7); }
     .briefing-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); padding-bottom: var(--space-3); border-bottom: var(--rule-double) var(--rule); }
     .briefing-head h2 { font: 300 clamp(2rem, 4vw, 3rem) / 1 var(--font-display); font-variation-settings: 'SOFT' 100; letter-spacing: -0.03em; }
-    /* A figure and its unit, a tracked-caps label, one line, one source. */
+    /* A figure and its unit, a tracked-caps label and one source. */
     .briefs { display: grid; list-style: none; }
     .brief { display: grid; align-content: start; gap: var(--space-2); padding-block: var(--space-4) var(--space-5); border-bottom: var(--rule-hairline) solid var(--rule); }
     .brief .fig { display: flex; align-items: baseline; font-family: var(--type-figure-family); font-weight: var(--type-figure-weight); font-size: clamp(2.75rem, 4.4vw, 3.75rem); line-height: 0.95; letter-spacing: -0.04em; font-variation-settings: var(--type-figure-axes); white-space: nowrap; }
     .brief .fig .ico { width: 0.5em; height: 0.3em; margin-inline: 0.06em; align-self: center; color: var(--ink-quiet); }
-    .brief .fig small { margin-left: 0.1em; font-size: 0.42em; font-weight: 420; letter-spacing: -0.01em; color: var(--spot); }
+    .brief .fig small { margin-left: 0.06em; font-size: 0.42em; font-weight: 420; letter-spacing: -0.01em; color: var(--spot); }
+    .brief .fig small.w { margin-left: 0.24em; letter-spacing: 0; }
+    .brief .fig small.plus { margin-left: 0.04em; font-size: 0.6em; font-weight: 300; align-self: center; }
     .brief h3 { margin-top: var(--space-1); color: var(--ink); }
     .brief .src { margin-top: var(--space-1); }
     .src b { margin-right: 0.5em; font: 600 0.6875rem / 1 var(--font-label); letter-spacing: 0.14em; text-transform: uppercase; font-stretch: 85%; color: var(--spot); }
@@ -353,13 +385,26 @@
 
     /* ---------- Department heads ---------- */
     .dept { position: relative; }
-    .dept-head { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: 1fr auto; gap: var(--space-1) var(--space-4); align-items: end; margin-block: var(--space-5) var(--space-6); }
+    .dept-head { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3) var(--space-4); align-items: end; margin-block: var(--space-5) var(--space-6); }
+    .dept-id { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: 1fr auto; gap: var(--space-1) var(--space-4); align-items: end; }
     .dept-num { grid-row: span 2; font-family: var(--type-numeral-family); font-size: var(--type-numeral-size); font-weight: var(--type-numeral-weight); line-height: var(--type-numeral-line); letter-spacing: var(--type-numeral-tracking); font-variation-settings: var(--type-numeral-axes); color: var(--spot-large); }
     .dept-head h2 { font-family: var(--type-headline-family); font-size: var(--type-headline-size); font-weight: var(--type-headline-weight); line-height: var(--type-headline-line); letter-spacing: var(--type-headline-tracking); font-variation-settings: var(--type-headline-axes); }
-    .dept-head .dept-intro { grid-column: 1 / -1; max-width: 36em; margin-top: var(--space-3); color: var(--ink-quiet); }
+    .dept-head .dept-intro { max-width: 36em; color: var(--ink-quiet); }
     @media (min-width: 840px) {
-      .dept-head { grid-template-columns: auto minmax(0, 1fr) minmax(0, 24rem); }
-      .dept-head .dept-intro { grid-column: 3; grid-row: 1 / span 2; align-self: end; margin: 0; padding-left: var(--space-4); border-left: var(--rule-hairline) solid var(--rule); }
+      .dept-head { grid-template-columns: minmax(0, 1fr) minmax(0, 24rem); }
+      .dept-head .dept-intro { grid-column: -2; padding-left: var(--space-4); border-left: var(--rule-hairline) solid var(--rule); }
+    }
+    /* From 1024px the heads sit on the 12-column grid: the intro takes the last
+       three columns, on the same line as the Work margin and the Writing list. */
+    @media (min-width: 1024px) {
+      .dept-head, .dept.workshop .dept-head { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--layout-column-gap); }
+      .dept-head .dept-id { grid-column: 1 / span 9; }
+      .dept-head .dept-intro { grid-column: 10 / span 3; padding-left: var(--layout-column-gap); }
+      .dept.workshop .dept-id { grid-column: 1 / span 8; }
+      .dept.workshop .dept-head .dept-intro { grid-column: 10 / span 3; }
+      .dept.workshop .workshop-art { grid-column: 9; justify-self: end; width: min(100%, 5.5rem); }
+      .writing-grid .dept-head .dept-id { grid-column: 1 / span 8; }
+      .writing-grid .dept-head .dept-intro { grid-column: 9 / span 3; }
     }
 
     /* ---------- 01 Work: the opener band ---------- */
@@ -379,6 +424,9 @@
        four-per-em spaces in a nowrap span, which justification leaves alone. */
     .ticker { position: absolute; left: 0; right: 0; height: 1.6rem; overflow: hidden; padding-inline: 0.75rem; font: 600 0.6875rem / 1.6rem var(--font-label); letter-spacing: 0.18em; text-transform: uppercase; font-stretch: 80%; text-align: justify; text-align-last: justify; white-space: normal; }
     .ticker--top { top: 0; } .ticker--bottom { bottom: 0; }
+    /* On a phone only a phrase or two fit, and justifying them opens wide gaps:
+       centre them at their natural spacing instead. */
+    @media (max-width: 599px) { .ticker { text-align: center; text-align-last: center; } }
     .ticker span { white-space: nowrap; }
     .band-grid { display: grid; gap: var(--space-4); }
     .band-num { font: 300 clamp(5rem, 14vw, 11rem) / 0.78 var(--font-display); font-variation-settings: 'SOFT' 100; letter-spacing: -0.06em; }
@@ -390,18 +438,20 @@
     @media (min-width: 1024px) {
       .band-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--layout-column-gap); align-items: end; }
       .band-num { grid-column: 1 / span 2; align-self: start; }
-      .band-main { grid-column: 3 / span 7; }
-      .band-aside { display: block; grid-column: 10 / span 3; }
+      .band-main { grid-column: 3 / span 8; }
+      .band-aside { display: block; grid-column: 11 / span 2; }
     }
     .band-aside figure { color: var(--on-spot-fill); }
     .band-aside .art { aspect-ratio: 1; border: 1px solid currentColor; background: var(--art-ground); }
     .band-aside .art svg { width: 100%; height: 100%; }
-    .band-aside figcaption { margin-top: var(--space-2); font: italic 400 0.875rem / 1.35 var(--font-text); }
+    .band-aside figcaption { margin-top: var(--space-2); font: italic 460 0.9375rem / 1.35 var(--font-text); }
     .dept--work > .rim { --rim-fill: var(--ground); }
 
     /* Story interior */
-    .story { padding-block: var(--space-6) var(--space-section); background: radial-gradient(70% 30rem at 20% 0, rgb(254 95 53 / 0.11), transparent 72%); }
-    .story-text, .excerpt-body, .earlier p, .phase p { text-align: left; hyphens: auto; -webkit-hyphens: auto; text-wrap: pretty; }
+    .story { padding-block: var(--space-6) var(--space-section); }
+    .story-text, .excerpt-body, .earlier p, .phase p { text-align: left; hyphens: auto; -webkit-hyphens: auto; hyphenate-limit-chars: 7 3 3; -webkit-hyphenate-limit-before: 3; -webkit-hyphenate-limit-after: 3; text-wrap: pretty; }
+    /* A comfortable measure on tablets: one column is capped, two start at 720px. */
+    @media (max-width: 839px) { .story-text p, .excerpt-body p { max-width: 31em; } .earlier p, .phase p { max-width: 30em; } }
     .story-grid { display: grid; gap: var(--space-6); margin-top: var(--space-5); }
     .story-text p + p { margin-top: 0.75em; }
     .story-text p { text-wrap: pretty; }
@@ -417,11 +467,6 @@
     .notes li::before { content: counter(note); display: grid; place-items: center; width: 1.375rem; height: 1.375rem; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--spot-large); color: var(--spot); font: 600 0.6875rem / 1 var(--font-label); }
     .notes li:target { background: color-mix(in srgb, var(--spot-fill) 14%, transparent); }
 
-    .figure-big { padding-block: var(--space-4); border-block: var(--rule-hairline) solid var(--rule); }
-    .figure-big .num { display: flex; align-items: baseline; gap: 0.12em; font-family: var(--type-figure-family); font-size: clamp(3rem, 4.4vw, 4.25rem); font-weight: var(--type-figure-weight); line-height: var(--type-figure-line); letter-spacing: var(--type-figure-tracking); font-variation-settings: var(--type-figure-axes); white-space: nowrap; }
-    .figure-big .num .ico { width: 0.5em; height: 0.3em; color: var(--ink-quiet); align-self: center; }
-    .figure-big .num i { font-style: normal; color: var(--spot-large); }
-    .figure-big .t-kicker { display: block; margin-top: var(--space-3); }
 
     .margin-col { display: grid; gap: var(--space-5); align-content: start; }
     .glance dl { display: grid; margin-top: var(--space-2); border-top: 1px solid var(--ink-quiet); }
@@ -438,8 +483,8 @@
     .waffle .w-f { fill: var(--spot-large); }
     .waffle .w-h { fill: var(--spot-large); }
     .waffle .w-e { fill: none; stroke: var(--spot-large); stroke-width: 1; opacity: 0.55; }
-    .waffle h4 { display: flex; align-items: baseline; gap: var(--space-2); margin-top: var(--space-3); font: 500 0.875rem / 1.2 var(--font-label); letter-spacing: 0.04em; color: var(--ink-quiet); }
-    .waffle h4 b { font: 300 2.25rem / 1 var(--font-display); letter-spacing: -0.03em; color: var(--ink); font-variation-settings: 'SOFT' 0; }
+    .waffle-label { display: flex; align-items: baseline; gap: var(--space-2); margin-top: var(--space-3); font: 500 0.875rem / 1.2 var(--font-label); letter-spacing: 0.04em; color: var(--ink-quiet); }
+    .waffle-label b { font: 300 2.25rem / 1 var(--font-display); letter-spacing: -0.03em; color: var(--ink); font-variation-settings: 'SOFT' 0; }
     .plate-foot { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-3) var(--space-6); margin-top: var(--space-4); }
     .legend { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); font: 500 0.8125rem / 1.3 var(--font-label); color: var(--ink-quiet); list-style: none; }
     .takeaway { max-width: 19rem; font: italic var(--text-weight) 1.0625rem / 1.3 var(--font-text); text-wrap: pretty; }
@@ -456,8 +501,11 @@
     .frieze { color: var(--art-ink); opacity: 0.88; margin-top: var(--space-2); }
     .frieze svg { width: 100%; height: clamp(8.5rem, 22vw, 17.5rem); }
 
-    @media (min-width: 840px) {
+    @media (min-width: 720px) {
       .story-text { columns: 2; column-gap: var(--layout-text-columns-gap); column-rule: 1px solid var(--rule); }
+      .story-text p { max-width: none; }
+    }
+    @media (min-width: 840px) {
       .earlier { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .earlier article { padding: var(--space-4) var(--space-5) var(--space-4) 0; border-bottom: 0; }
       .earlier article + article { padding-left: var(--space-5); border-left: var(--rule-hairline) solid var(--rule); }
@@ -480,7 +528,7 @@
     .phases { display: grid; gap: var(--space-5); list-style: none; }
     .phase h3 { margin-block: var(--space-2) var(--space-3); }
     .phase p { text-wrap: pretty; }
-    .method-close { margin-top: var(--space-6); max-width: 36em; font-family: var(--type-deck-family); font-size: var(--type-deck-size); font-style: italic; line-height: var(--type-deck-line); }
+    .method-close { margin-top: var(--space-6); max-width: 36em; text-wrap: balance; font-family: var(--type-deck-family); font-size: var(--type-deck-size); font-style: italic; line-height: var(--type-deck-line); }
     @media (min-width: 840px) {
       .phases { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; }
       .phase { padding-right: var(--space-5); }
@@ -494,10 +542,11 @@
     .workshop .dept-num { color: var(--on-leaf-fill); }
     .workshop .dept-head .dept-intro { color: var(--on-leaf-fill); }
     .tools { display: grid; list-style: none; border-top: 1px solid var(--on-leaf-fill); }
-    .tool { display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); gap: 0 var(--space-3); align-content: start; padding-block: var(--space-4); border-bottom: 1px solid var(--rule); }
+    .tool { display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); grid-template-rows: auto 1fr auto; gap: 0 var(--space-3); padding-block: var(--space-4); border-bottom: 1px solid var(--rule); }
     .tool .n { grid-row: span 3; font: 300 2rem / 0.9 var(--font-display); font-variation-settings: 'SOFT' 100; letter-spacing: -0.04em; }
     .tool p { color: var(--on-leaf-fill-quiet); margin-block: var(--space-1) var(--space-2); }
-    .tool .btn--text { justify-self: start; }
+    .tool .btn { justify-self: start; align-self: end; }
+    .tool .btn--text, .excerpt > .btn--text, .teaser .btn--text { margin-left: -0.25rem; }
     .tool--agents { background: var(--inverse); color: var(--on-inverse); padding-inline: var(--space-4); --focus: var(--leaf-fill); }
     .tool--agents p { color: var(--on-inverse); }
     .tool .t-kicker { color: var(--on-leaf-fill-quiet); }
@@ -512,8 +561,9 @@
     }
     .workshop-art { display: none; }
     @media (min-width: 840px) {
-      .workshop .dept-head { grid-template-columns: auto minmax(0, 1fr) minmax(0, 20rem) 8rem; }
-      .workshop-art { display: block; grid-column: 4; grid-row: 1 / span 2; color: var(--on-leaf-fill); }
+      .workshop .dept-head { grid-template-columns: minmax(0, 1fr) minmax(0, 20rem) 5.5rem; }
+      .workshop .dept-head .dept-intro { grid-column: 2; grid-row: 1; }
+      .workshop-art { display: block; grid-column: 3; grid-row: 1; align-self: end; color: var(--on-leaf-fill); }
       .workshop-art .art { aspect-ratio: 1; border: 1px solid currentColor; background: var(--art-ground); }
       .workshop-art svg { width: 100%; height: 100%; }
     }
@@ -522,8 +572,9 @@
     .insert { position: relative; background: var(--ground); color: var(--ink); padding-block: var(--space-5) calc(var(--space-section) + var(--fade-height, 7.5rem)); overflow: hidden; }
     .insert::after { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: var(--texture-grain); background-size: var(--texture-grain-tile); opacity: var(--grain-opacity); mix-blend-mode: var(--grain-blend); }
     /* The paper insert fades into the charcoal Kit (and the reverse in Day). */
-    .insert > .fade { bottom: 0; background: linear-gradient(to bottom, transparent 0%, color-mix(in srgb, var(--page-ground) 24%, transparent) 30%, color-mix(in srgb, var(--page-ground) 56%, transparent) 56%, color-mix(in srgb, var(--page-ground) 84%, transparent) 80%, var(--page-ground) 100%); }
-    .sprig { display: none; position: absolute; top: 3.25rem; width: 5.5rem; aspect-ratio: 96 / 380; pointer-events: none; }
+    .insert > .fade { bottom: 0; background: linear-gradient(to bottom, transparent 0%, color-mix(in srgb, #A0785A 22%, transparent) 26%, color-mix(in srgb, #6B4E3D 58%, transparent) 54%, color-mix(in srgb, var(--page-ground) 86%, #4A3A30) 80%, var(--page-ground) 100%); }
+    .insert > .fade::after { opacity: 0.5; }
+    .sprig { display: none; aspect-ratio: 96 / 380; pointer-events: none; }
     .sprig svg { width: 100%; height: 100%; }
     .writing-grid { display: grid; gap: var(--space-6); position: relative; }
     .excerpt .t-headline { margin-block: var(--space-2) var(--space-1); }
@@ -531,63 +582,61 @@
     .excerpt-body { orphans: 1; widows: 2; }
     .excerpt-body p + p { text-indent: 1.25em; }
     .excerpt-quote { margin-block: var(--space-5); padding-block: var(--space-4); border-block: var(--rule-hairline) solid var(--rule); font: var(--type-pullquote-style) var(--type-pullquote-weight) clamp(1.5rem, 2.6vw, 2.125rem) / 1.14 var(--font-display); font-variation-settings: 'SOFT' 100; color: var(--spot-large); text-wrap: balance; }
-    .pieces-col > summary { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); padding-bottom: var(--space-2); list-style: none; }
-    .pieces-col > summary::-webkit-details-marker { display: none; }
-    .pieces-col > summary .t-folio { display: none; }
+    .pieces-col > .fold-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); padding-bottom: var(--space-2); }
+    .pieces-col > .fold-head .t-folio { display: none; }
     .pieces { list-style: none; border-top: var(--rule-double) var(--rule); }
     .pieces a { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-1) var(--space-3); padding-block: var(--space-3); min-height: var(--touch-target); border-bottom: var(--rule-hairline) solid var(--rule); color: inherit; text-decoration: none; }
     .pieces .t-title { font-size: 1.1875rem; }
     .pieces a:hover .t-title { text-decoration: underline; text-decoration-color: var(--spot-large); text-decoration-thickness: 1px; }
     .pieces .t-folio { align-self: baseline; }
     .pieces .t-note { grid-column: 1 / -1; font-style: italic; }
-    @media (min-width: 840px) {
+    @media (min-width: 720px) {
       .excerpt-body { columns: 2; column-gap: var(--layout-text-columns-gap); column-fill: balance; }
+      .excerpt-body p { max-width: none; }
     }
     @media (min-width: 1024px) {
       .writing-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--layout-column-gap); }
-      .writing-grid .dept-head { grid-column: 2 / -1; }
+      .writing-grid .dept-head { grid-column: 2 / -1; grid-row: 1; grid-template-columns: subgrid; }
       .excerpt { grid-column: 2 / span 7; }
       .pieces-col { grid-column: 10 / span 3; }
-      .sprig { display: block; left: max(var(--layout-gutter), calc((100% - var(--layout-page)) / 2)); }
+      .sprig { display: block; grid-column: 1; grid-row: 1 / span 2; align-self: start; width: 100%; margin-top: var(--space-5); }
     }
 
     /* ---------- 05 Kit: specimens ---------- */
     .kit { padding-block: var(--space-5) var(--space-section); background: radial-gradient(44rem 36rem at 2% 30rem, var(--leak-green), transparent 70%) no-repeat; }
-    /* Each subsection is a <details>: open, with its summary as the header, from
-       600px up; on phones it closes into an M3 list row. */
+    /* Each subsection is a header and a body. From 600px up the header is a plain
+       header. On phones the script wraps each title in a disclosure button, and
+       the subsection closes into an M3 list row with one short line under it. */
     .kit-block { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-5); padding-block: var(--space-6); border-top: var(--rule-hairline) solid var(--rule); }
-    .kit-block::details-content { min-width: 0; }
-    .kit-block > summary { display: grid; gap: var(--space-2); align-content: start; list-style: none; }
-    .kit-block > summary .t-note { display: block; }
+    .fold-head { display: grid; gap: var(--space-2); align-content: start; }
     .kit-block h3.t-title { font-size: clamp(1.375rem, 2.2vw, 1.75rem); }
-    [data-fold] > summary::-webkit-details-marker { display: none; }
-    .fold-chev { display: none; }
-    @media (min-width: 600px) { [data-fold] > summary { cursor: default; } }
+    .fold-short { display: none; }
+    [data-fold-body][hidden] { display: none !important; }
     @media (min-width: 1024px) {
       .kit-block { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--layout-column-gap); }
-      .kit-block > summary { grid-column: 1 / span 3; align-self: start; position: sticky; top: 5rem; }
-      .kit-block::details-content { grid-column: 4 / -1; min-width: 0; }
+      .kit-block > .fold-head { grid-column: 1 / span 3; align-self: start; position: sticky; top: 5rem; }
+      .kit-block > .kit-body { grid-column: 4 / -1; }
     }
-    /* Browsers that cannot place the details content in the grid stack it under the header. */
-    @supports not selector(::details-content) {
-      @media (min-width: 1024px) { .kit-block { display: block; } .kit-block > summary { position: static; margin-bottom: var(--space-5); } }
-    }
+    .fold-btn { display: inline; padding: 0; border: 0; background: none; color: inherit; font: inherit; letter-spacing: inherit; text-align: inherit; text-transform: inherit; font-stretch: inherit; cursor: pointer; }
+    .fold-btn::before, .fold-btn::after { content: ""; position: absolute; inset: 0 calc(-1 * var(--layout-gutter)); }
+    .fold-btn::after { z-index: -1; background: currentColor; opacity: 0; transition: opacity var(--motion-duration-short); }
+    .fold-btn:hover::after { opacity: var(--state-hover); }
+    .fold-btn:active::after { opacity: var(--state-pressed); }
+    .fold-btn:focus-visible { outline: none; }
+    .fold-btn:focus-visible::before { outline: var(--focus-ring-width) solid var(--focus); outline-offset: calc(-1 * var(--focus-ring-width)); }
+    .fold-btn .fold-chev { display: block; position: absolute; right: 0; top: 50%; width: 1.5rem; height: 1.5rem; margin-top: -0.75rem; color: var(--ink-quiet); transition: rotate var(--motion-duration-medium) var(--motion-easing-standard); }
+    .fold-btn[aria-expanded="true"] .fold-chev { rotate: 180deg; }
     @media (max-width: 599px) {
       .kit-block { gap: 0; padding-block: 0; }
       .kit-block:last-of-type { border-bottom: var(--rule-hairline) solid var(--rule); }
-      [data-fold] > summary { position: relative; isolation: isolate; display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--space-3); row-gap: 0.2rem; align-items: center; min-height: 4.5rem; padding-block: var(--space-4); cursor: pointer; }
-      [data-fold] > summary > :not(.fold-chev) { grid-column: 1; }
-      [data-fold] > summary::before { content: ""; position: absolute; inset: 0 calc(-1 * var(--layout-gutter)); z-index: -1; background: currentColor; opacity: 0; transition: opacity var(--motion-duration-short); }
-      [data-fold] > summary:hover::before { opacity: var(--state-hover); }
-      [data-fold] > summary:active::before { opacity: var(--state-pressed); }
-      [data-fold] > summary:focus-visible { outline-offset: -2px; }
-      .fold-chev { display: block; grid-column: 2; grid-row: 1 / span 3; width: 1.5rem; height: 1.5rem; color: var(--ink-quiet); transition: rotate var(--motion-duration-medium) var(--motion-easing-standard); }
-      [data-fold][open] > summary .fold-chev { rotate: 180deg; }
-      .kit-block:not([open]) > summary .t-note { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
-      .kit-block[open]::details-content { padding-bottom: var(--space-6); }
-      .pieces-col > summary { min-height: 3.5rem; padding-block: var(--space-2); }
-      .pieces-col > summary .t-folio { display: block; }
-      .pieces-col > summary .fold-chev { grid-row: 1 / span 2; }
+      [data-fold] > .fold-head { position: relative; isolation: isolate; display: grid; row-gap: 0.2rem; align-content: center; min-height: 4.5rem; padding-block: var(--space-4); padding-right: 2.5rem; }
+      [data-fold].is-closed .fold-long { display: none; }
+      [data-fold].is-closed .fold-short { display: inline; }
+      .kit-block > .kit-body { padding-bottom: var(--space-6); }
+      .pieces-col > .fold-head { min-height: 3.5rem; padding-block: var(--space-2); }
+      .pieces-col > .fold-head .t-folio { display: block; }
+      .pieces-col { border-block: var(--rule-hairline) solid var(--rule); }
+      .pieces-col:not(.is-closed) { border-bottom: 0; }
     }
     .kit-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-5); min-width: 0; }
 
@@ -615,7 +664,7 @@
     @media (min-width: 840px) { .palette-pair { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: var(--space-6); align-items: start; } }
 
     .specimens { display: grid; gap: 0; border-top: 1px solid var(--rule); }
-    .spec { padding: var(--space-4) var(--space-4) var(--space-4) 0; border-bottom: 1px solid var(--rule); display: grid; gap: var(--space-2); align-content: space-between; min-width: 0; }
+    .spec { container-type: inline-size; padding: var(--space-4) var(--space-4) var(--space-4) 0; border-bottom: 1px solid var(--rule); display: grid; gap: var(--space-2); align-content: space-between; min-width: 0; }
     .spec .t-folio b { color: var(--spot); font-weight: 600; }
     .spec p { overflow-wrap: anywhere; }
     @media (min-width: 720px) {
@@ -623,7 +672,7 @@
       .spec { padding-left: var(--space-4); border-left: 1px solid var(--rule); }
       .spec:nth-child(3n + 1) { padding-left: 0; border-left: 0; }
     }
-    .s-nameplate { font: var(--type-nameplate-weight) 2.75rem / 0.9 var(--type-nameplate-family); letter-spacing: var(--type-nameplate-tracking); text-transform: uppercase; }
+    .s-nameplate { font: var(--type-nameplate-weight) min(2.75rem, 15cqi) / 0.9 var(--type-nameplate-family); letter-spacing: var(--type-nameplate-tracking); word-spacing: 0.12em; text-transform: uppercase; white-space: nowrap; }
     .s-display { font: 640 1.75rem / 0.95 var(--font-display); font-variation-settings: 'SOFT' 100; text-transform: uppercase; }
     .s-headline { font: 360 2rem / 1.04 var(--font-display); font-variation-settings: 'SOFT' 50; letter-spacing: -0.022em; }
     .s-figure { font: 300 3.5rem / 0.9 var(--font-display); font-variation-settings: 'SOFT' 0; letter-spacing: -0.035em; }
@@ -647,6 +696,7 @@
     .prints figcaption { margin-top: var(--space-2); }
     .ornaments { display: grid; gap: var(--space-4); list-style: none; }
     .ornaments li { display: grid; grid-template-columns: 9rem minmax(0, 1fr); gap: var(--space-4); align-items: center; padding-bottom: var(--space-4); border-bottom: 1px solid var(--rule); }
+    @media (max-width: 479px) { .ornaments li { grid-template-columns: minmax(0, 1fr); gap: var(--space-2); } }
     .orn-rim { position: relative; height: 2.5rem; background: var(--spot-fill); }
     .orn-rim .rim { --rim-fill: var(--ground); }
     .orn-cross { position: relative; height: 1px; background: var(--ink-quiet); margin-inline: 7px; color: var(--ink-quiet); }
@@ -667,9 +717,9 @@
     .teaser .art svg { width: 100%; height: 100%; }
     .teaser h4 { font: 480 1.25rem / 1.15 var(--font-display); font-variation-settings: 'SOFT' 30; }
     @media (min-width: 720px) {
-      .teasers { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; }
-      .teaser { padding-inline: var(--space-4); border-left: 1px solid var(--rule); }
-      .teaser:first-child { padding-left: 0; border-left: 0; }
+      .teasers { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 var(--space-6); }
+      .teaser { position: relative; }
+      .teaser + .teaser::before { content: ""; position: absolute; top: 0; bottom: 0; left: calc(-0.5 * var(--space-6)); border-left: 1px solid var(--rule); }
     }
     /* M3 states, rendered: the same buttons held in each state. */
     .btn.is-hover::after { opacity: var(--state-hover); }
@@ -677,16 +727,19 @@
     .btn.is-focus { outline: var(--focus-ring-width) solid var(--focus); outline-offset: var(--focus-ring-offset); }
     .btn.is-pressed { border-radius: var(--button-shape-pressed); }
     .btn.is-pressed::after { opacity: var(--state-pressed); }
+    /* One row per state, so the grid fits a phone column without scrolling. */
     .state-grid { border-collapse: collapse; }
-    .state-grid th { padding: 0 var(--space-4) var(--space-3) 0; text-align: left; font: 600 0.6875rem / 1.2 var(--font-label); letter-spacing: 0.12em; text-transform: uppercase; font-stretch: 80%; color: var(--ink-quiet); white-space: nowrap; }
+    .state-grid th { padding: 0 var(--space-4) var(--space-3) 0; text-align: left; vertical-align: middle; font: 600 0.6875rem / 1.2 var(--font-label); letter-spacing: 0.12em; text-transform: uppercase; font-stretch: 80%; color: var(--ink-quiet); white-space: nowrap; }
     .state-grid td { padding: 0 var(--space-4) var(--space-3) 0; }
+    .state-grid thead th { padding-bottom: var(--space-3); }
     .state-grid .btn { min-width: 8.5rem; cursor: default; }
+    @media (max-width: 599px) { .state-grid th, .state-grid td { padding-right: var(--space-3); } .state-grid tbody th { white-space: normal; } .state-grid .btn { min-width: 0; padding-inline: 0.9rem; } }
     .states { width: 100%; border-collapse: collapse; font: 400 0.875rem / 1.35 var(--font-label); }
     .states th, .states td { text-align: left; padding: 0.45rem var(--space-3) 0.45rem 0; border-bottom: 1px solid var(--rule); }
     .states th { font: 600 0.6875rem / 1.2 var(--font-label); letter-spacing: 0.12em; text-transform: uppercase; font-stretch: 80%; color: var(--ink-quiet); }
 
     /* ---------- Menu sheet (M3 bottom sheet) ---------- */
-    .sheet { position: fixed; inset: auto 0 0 0; width: 100%; max-width: 100%; max-height: 85svh; margin: 0; border: 0; padding: var(--space-2) var(--layout-gutter) var(--space-6); border-radius: var(--shape-xl) var(--shape-xl) 0 0; background: var(--raised); color: var(--ink); }
+    .sheet { position: fixed; inset: auto 0 0 0; width: 100%; max-width: 40rem; max-height: 85svh; margin: 0 auto; border: 0; padding: var(--space-2) var(--layout-gutter) var(--space-6); border-radius: var(--shape-xl) var(--shape-xl) 0 0; background: var(--raised); color: var(--ink); }
     .sheet::backdrop { background: var(--scrim); }
     .sheet-handle { width: 2rem; height: 4px; margin: var(--space-2) auto var(--space-3); border-radius: 2px; background: var(--outline); }
     .sheet-head { display: flex; align-items: center; justify-content: space-between; }
@@ -702,12 +755,14 @@
     .sheet-edition { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
     .sheet-edition .edition-words { margin-right: -0.45rem; }
     .sheet .btn--filled { width: 100%; }
+    /* From 600px the masthead carries the edition switch, so the sheet does not repeat it. */
+    @media (min-width: 600px) { .sheet-edition { display: none; } }
 
     /* ---------- Colophon ---------- */
     .colophon { background: var(--sunk); padding-block: 0 var(--space-7); }
     .colophon .checker { --check-a: var(--spot-fill); --check-b: var(--sunk); }
     .colophon-grid { display: grid; gap: var(--space-5); padding-top: var(--space-6); }
-    .colophon h2 { font: var(--type-nameplate-weight) 1.5rem / 1 var(--type-nameplate-family); letter-spacing: var(--type-nameplate-tracking); text-transform: uppercase; }
+    .colophon h2 { font: var(--type-nameplate-weight) 1.5rem / 1 var(--type-nameplate-family); letter-spacing: var(--type-nameplate-tracking); word-spacing: 0.12em; text-transform: uppercase; }
     .colophon ul { list-style: none; display: grid; gap: var(--space-1); margin-top: var(--space-2); }
     .colophon li a { display: inline-flex; align-items: center; min-height: 2.25rem; }
     .colophon-grid .t-folio { display: block; }
@@ -715,8 +770,11 @@
     .write .btn { margin-top: var(--space-3); }
     .write .copy-status { margin-top: var(--space-2); }
     .write p { margin-top: var(--space-3); }
-    .copy-status { min-height: 1.4em; }
-    .copy-status:empty { display: none; }
+    /* The pill keeps its width when the label reads Copied, and the status line
+       keeps its height when empty, so nothing below it moves. */
+    [data-copy-email] { min-inline-size: 9.25rem; }
+    .copy-status { display: block; min-height: 2.8em; }
+    .colophon h2 + p { margin-top: var(--space-2); }
     @media (min-width: 840px) { .colophon-grid { grid-template-columns: 2fr repeat(3, 1fr); } }
 
     @media (prefers-reduced-motion: reduce) {
@@ -751,8 +809,8 @@
       <symbol id="i-menu" viewBox="0 0 22 22"><path d="M3 7h16M3 11h16M3 15h10" fill="none" stroke="currentColor" stroke-width="1.3"/></symbol>
       <symbol id="i-close" viewBox="0 0 22 22"><path d="M5 5l12 12M17 5L5 17" fill="none" stroke="currentColor" stroke-width="1.3"/></symbol>
       <symbol id="i-chev" viewBox="0 0 22 22"><path d="M6 9l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
-      <!-- The nameplate: "BEN SIVERLY" in the display cut (assets/fonts/fraunces-display.woff2, Fraunces at optical size 144, weight 800), outlined with fontTools using the font's kerning and -0.02em tracking (--type-nameplate-tracking). viewBox: 64 -1427 12094 1454. -->
-      <path id="np-path" d="M1345 -333Q1345 -185 1217.5 -92.5Q1090 0 840 0H75Q69 0 66.5 -2.5Q64 -5 64 -8Q64 -14 79 -17L141 -28Q164 -32 174.5 -43Q185 -54 185 -77V-1343Q185 -1355 176.5 -1361.5Q168 -1368 141 -1372L79 -1383Q64 -1386 64 -1392Q64 -1395 66.5 -1397.5Q69 -1400 75 -1400H612Q822 -1400 967.5 -1348Q1113 -1296 1189 -1204.5Q1265 -1113 1265 -995Q1265 -892 1206 -816.5Q1147 -741 1039.5 -700Q932 -659 785 -659L847 -666Q992 -666 1104.5 -623.5Q1217 -581 1281 -506Q1345 -431 1345 -333ZM695 -646H539V-668H698Q774 -668 824.5 -700Q875 -732 899.5 -798.5Q924 -865 924 -969Q924 -1093 880.5 -1184.5Q837 -1276 764.5 -1326.5Q692 -1377 605 -1377H567V-66Q567 -42 582.5 -32.5Q598 -23 626 -23H732Q804 -23 856 -62Q908 -101 936 -172Q964 -243 964 -342Q964 -485 895.5 -565.5Q827 -646 695 -646ZM1867 -751H2064Q2157 -751 2202.5 -792Q2248 -833 2267 -946Q2269 -954 2271.5 -955.5Q2274 -957 2277 -957Q2285 -958 2288 -946L2404 -561Q2406 -555 2405 -551Q2404 -547 2401 -545Q2398 -544 2394.5 -544Q2391 -544 2386 -549Q2330 -621 2286.5 -660Q2243 -699 2197.5 -713.5Q2152 -728 2093 -728H1867ZM1414 -1392Q1414 -1395 1416.5 -1397.5Q1419 -1400 1425 -1400H2339Q2364 -1400 2384.5 -1406Q2405 -1412 2419 -1417.5Q2433 -1423 2436 -1423Q2439 -1423 2441 -1419Q2443 -1415 2446 -1400L2542 -997Q2544 -989 2542.5 -985.5Q2541 -982 2538 -981Q2535 -980 2532.5 -981Q2530 -982 2525 -988Q2438 -1110 2370.5 -1186Q2303 -1262 2247.5 -1304Q2192 -1346 2142 -1361.5Q2092 -1377 2038 -1377H1926V-71Q1926 -47 1939 -35Q1952 -23 1976 -23H2053Q2115 -23 2184 -61.5Q2253 -100 2340.5 -204.5Q2428 -309 2546 -508Q2551 -514 2553.5 -516Q2556 -518 2559 -516Q2562 -516 2563.5 -512Q2565 -508 2563 -499L2448 0Q2445 14 2443 18.5Q2441 23 2439 23Q2434 23 2420 17.5Q2406 12 2385 6Q2364 0 2338 0H1425Q1419 0 1416.5 -2.5Q1414 -5 1414 -8Q1414 -14 1429 -17L1491 -28Q1513 -31 1524 -38Q1535 -45 1535 -57V-1343Q1535 -1355 1524 -1362Q1513 -1369 1491 -1372L1429 -1383Q1414 -1386 1414 -1392ZM2977 -8Q2977 -5 2974.5 -2.5Q2972 0 2967 0H2583Q2579 0 2576.5 -2.5Q2574 -5 2574 -8Q2574 -13 2585 -17L2615 -26Q2675 -44 2717.5 -88Q2760 -132 2760 -211V-1160Q2760 -1173 2759 -1178.5Q2758 -1184 2749 -1198L2654 -1367Q2649 -1376 2643 -1384Q2637 -1392 2637 -1396Q2637 -1398 2639 -1399Q2641 -1400 2647 -1400H3074Q3080 -1400 3084 -1396.5Q3088 -1393 3093 -1384L3720 -213L3702 -170V-1189Q3702 -1268 3659.5 -1312.5Q3617 -1357 3557 -1374L3519 -1383Q3507 -1387 3507 -1392Q3507 -1395 3509.5 -1397.5Q3512 -1400 3517 -1400H3901Q3906 -1400 3908.5 -1397.5Q3911 -1395 3911 -1392Q3911 -1387 3899 -1383L3869 -1374Q3809 -1357 3766.5 -1312.5Q3724 -1268 3724 -1189V-223Q3724 -210 3728 -200Q3732 -190 3736 -182L3811 -54Q3824 -31 3828 -21.5Q3832 -12 3832 -7Q3832 -5 3829.5 -2.5Q3827 0 3819 0H3419Q3404 0 3404 -16Q3404 -22 3401.5 -32.5Q3399 -43 3395 -50L2728 -1253H2783V-210Q2783 -132 2826 -88Q2869 -44 2927 -26L2965 -17Q2977 -13 2977 -8ZM4753 20Q4668 20 4612 -5.5Q4556 -31 4524.5 -57Q4493 -83 4481 -83Q4472 -83 4451 -66.5Q4430 -50 4406 -28Q4382 -6 4360 10.5Q4338 27 4326 27Q4320 27 4311 20.5Q4302 14 4300 5L4232 -475Q4231 -483 4232 -487Q4233 -491 4236 -492Q4238 -494 4242 -491.5Q4246 -489 4249 -484Q4353 -287 4436.5 -183Q4520 -79 4589.5 -41Q4659 -3 4721 -3Q4819 -3 4877.5 -54Q4936 -105 4936 -212Q4936 -283 4909 -338Q4882 -393 4819 -437Q4756 -481 4648 -517Q4484 -573 4384.5 -643.5Q4285 -714 4240.5 -801.5Q4196 -889 4196 -997Q4196 -1122 4261 -1217.5Q4326 -1313 4442.5 -1366.5Q4559 -1420 4713 -1420Q4786 -1420 4836 -1403.5Q4886 -1387 4917 -1370Q4948 -1353 4964 -1353Q4982 -1353 5017 -1371.5Q5052 -1390 5086.5 -1408.5Q5121 -1427 5137 -1427Q5142 -1427 5147.5 -1423Q5153 -1419 5155 -1410L5266 -947Q5268 -939 5266.5 -935.5Q5265 -932 5262 -930Q5259 -929 5255.5 -931.5Q5252 -934 5249 -938Q5135 -1125 5047 -1224Q4959 -1323 4884.5 -1360Q4810 -1397 4738 -1397Q4651 -1397 4595.5 -1337Q4540 -1277 4540 -1175Q4540 -1103 4565 -1046Q4590 -989 4648.5 -944Q4707 -899 4808 -864Q4980 -804 5080.5 -735.5Q5181 -667 5223.5 -584.5Q5266 -502 5266 -399Q5266 -282 5205 -187Q5144 -92 5029.5 -36Q4915 20 4753 20ZM5851 -57Q5851 -45 5862.5 -38Q5874 -31 5895 -28L5957 -17Q5972 -14 5972 -8Q5972 -4 5969.5 -2Q5967 0 5961 0H5350Q5344 0 5341.5 -2Q5339 -4 5339 -8Q5339 -14 5354 -17L5416 -28Q5438 -31 5449 -38Q5460 -45 5460 -57V-1343Q5460 -1355 5449 -1362Q5438 -1369 5416 -1372L5354 -1383Q5339 -1385 5339 -1392Q5339 -1395 5341.5 -1397.5Q5344 -1400 5350 -1400H5961Q5967 -1400 5969.5 -1397.5Q5972 -1395 5972 -1392Q5972 -1385 5957 -1383L5895 -1372Q5874 -1369 5862.5 -1362Q5851 -1355 5851 -1343ZM6930 -1392Q6930 -1395 6932 -1397.5Q6934 -1400 6939 -1400H7279Q7283 -1400 7285.5 -1397.5Q7288 -1395 7288 -1392Q7288 -1389 7285 -1387Q7282 -1385 7277 -1383L7252 -1374Q7208 -1356 7167 -1309.5Q7126 -1263 7104 -1184L6821 -184Q6815 -158 6813.5 -136.5Q6812 -115 6812 -91V-12Q6812 -6 6810 -3Q6808 0 6802 0H6449Q6443 0 6440 -3Q6437 -6 6437 -12V-91Q6437 -104 6431.5 -125Q6426 -146 6419 -170L6063 -1325Q6056 -1345 6049.5 -1355Q6043 -1365 6032 -1369L5999 -1381Q5984 -1388 5984 -1392Q5984 -1395 5987 -1397.5Q5990 -1400 5995 -1400H6558Q6563 -1400 6566 -1397.5Q6569 -1395 6569 -1392Q6569 -1389 6565.5 -1387.5Q6562 -1386 6554 -1383L6508 -1373Q6481 -1365 6475.5 -1351.5Q6470 -1338 6479 -1310L6812 -196L6781 -124L7080 -1181Q7098 -1245 7075.5 -1298.5Q7053 -1352 6969 -1376L6941 -1383Q6934 -1385 6932 -1387Q6930 -1389 6930 -1392ZM7730 -751H7927Q8020 -751 8065.5 -792Q8111 -833 8130 -946Q8132 -954 8134.5 -955.5Q8137 -957 8140 -957Q8148 -958 8151 -946L8267 -561Q8269 -555 8268 -551Q8267 -547 8264 -545Q8261 -544 8257.5 -544Q8254 -544 8249 -549Q8193 -621 8149.5 -660Q8106 -699 8060.5 -713.5Q8015 -728 7956 -728H7730ZM7277 -1392Q7277 -1395 7279.5 -1397.5Q7282 -1400 7288 -1400H8202Q8227 -1400 8247.5 -1406Q8268 -1412 8282 -1417.5Q8296 -1423 8299 -1423Q8302 -1423 8304 -1419Q8306 -1415 8309 -1400L8405 -997Q8407 -989 8405.5 -985.5Q8404 -982 8401 -981Q8398 -980 8395.5 -981Q8393 -982 8388 -988Q8301 -1110 8233.5 -1186Q8166 -1262 8110.5 -1304Q8055 -1346 8005 -1361.5Q7955 -1377 7901 -1377H7789V-71Q7789 -47 7802 -35Q7815 -23 7839 -23H7916Q7978 -23 8047 -61.5Q8116 -100 8203.5 -204.5Q8291 -309 8409 -508Q8414 -514 8416.5 -516Q8419 -518 8422 -516Q8425 -516 8426.5 -512Q8428 -508 8426 -499L8311 0Q8308 14 8306 18.5Q8304 23 8302 23Q8297 23 8283 17.5Q8269 12 8248 6Q8227 0 8201 0H7288Q7282 0 7279.5 -2.5Q7277 -5 7277 -8Q7277 -14 7292 -17L7354 -28Q7376 -31 7387 -38Q7398 -45 7398 -57V-1343Q7398 -1355 7387 -1362Q7376 -1369 7354 -1372L7292 -1383Q7277 -1386 7277 -1392ZM9778 -901Q9778 -801 9732 -720.5Q9686 -640 9601 -586Q9516 -532 9397 -511Q9374 -507 9349.5 -504Q9325 -501 9300 -500Q9275 -499 9248 -499Q9159 -499 9102 -509.5Q9045 -520 9005 -539.5Q8965 -559 8929 -586L8941 -605Q8972 -580 9002 -564Q9032 -548 9066 -541Q9100 -534 9143 -534Q9252 -534 9318.5 -614Q9385 -694 9385 -876Q9385 -1021 9339 -1134.5Q9293 -1248 9217 -1312.5Q9141 -1377 9051 -1377H8997V-77Q8997 -54 9007.5 -43Q9018 -32 9041 -28L9103 -17Q9112 -16 9115 -14Q9118 -12 9118 -8Q9118 0 9107 0H8496Q8490 0 8487.5 -2.5Q8485 -5 8485 -8Q8485 -14 8500 -17L8562 -28Q8585 -32 8595.5 -43Q8606 -54 8606 -77V-1343Q8606 -1355 8595 -1362Q8584 -1369 8562 -1372L8500 -1383Q8485 -1386 8485 -1392Q8485 -1395 8487.5 -1397.5Q8490 -1400 8496 -1400H9049Q9273 -1400 9437 -1338.5Q9601 -1277 9689.5 -1165.5Q9778 -1054 9778 -901ZM9124 -521 9486 -561 9769 -74Q9784 -49 9800 -36.5Q9816 -24 9839 -17Q9848 -14 9851 -13Q9854 -12 9854 -8Q9854 -5 9851.5 -2.5Q9849 0 9843 0H9296Q9285 0 9285 -8Q9285 -12 9288.5 -12.5Q9292 -13 9300 -17L9328 -27Q9355 -37 9364.5 -50.5Q9374 -64 9354 -99ZM10492 -1383 10430 -1372Q10409 -1369 10397.5 -1362Q10386 -1355 10386 -1343V-66Q10386 -42 10399 -32.5Q10412 -23 10436 -23H10526Q10575 -23 10626 -45Q10677 -67 10732 -124.5Q10787 -182 10846 -290L10965 -508Q10968 -514 10971 -516Q10974 -518 10977 -516Q10982 -516 10983 -512Q10984 -508 10982 -499L10886 0Q10883 15 10881 19Q10879 23 10876 23Q10871 23 10857 17.5Q10843 12 10822 6Q10801 0 10775 0H9885Q9879 0 9876.5 -2.5Q9874 -5 9874 -8Q9874 -14 9889 -17L9951 -28Q9973 -31 9984 -38Q9995 -45 9995 -57V-1343Q9995 -1355 9984 -1362Q9973 -1369 9951 -1372L9889 -1383Q9874 -1386 9874 -1392Q9874 -1395 9876.5 -1397.5Q9879 -1400 9885 -1400H10496Q10502 -1400 10504.5 -1397.5Q10507 -1395 10507 -1392Q10507 -1386 10492 -1383ZM11729 -493 11351 -449 11001 -1342Q10994 -1359 10982 -1367Q10970 -1375 10953 -1378L10926 -1383Q10918 -1385 10914.5 -1387Q10911 -1389 10911 -1392Q10911 -1395 10914 -1397.5Q10917 -1400 10923 -1400H11499Q11505 -1400 11508 -1398Q11511 -1396 11511 -1393Q11511 -1386 11495 -1383L11434 -1373Q11410 -1369 11407 -1363.5Q11404 -1358 11408 -1348L11726 -522L11708 -503L11946 -1184Q11967 -1242 11939.5 -1298Q11912 -1354 11836 -1376L11812 -1383Q11805 -1385 11802.5 -1387Q11800 -1389 11800 -1392Q11800 -1395 11802.5 -1397.5Q11805 -1400 11810 -1400H12148Q12153 -1400 12155.5 -1398Q12158 -1396 12158 -1393Q12158 -1389 12155 -1386.5Q12152 -1384 12146 -1383L12126 -1375Q12095 -1364 12066.5 -1339Q12038 -1314 12013.5 -1275.5Q11989 -1237 11970 -1183ZM11342 -499 11733 -510V-57Q11733 -45 11744.5 -38Q11756 -31 11777 -28L11839 -17Q11855 -14 11855 -8Q11855 -5 11852 -2.5Q11849 0 11843 0H11232Q11226 0 11223.5 -2.5Q11221 -5 11221 -8Q11221 -14 11236 -17L11298 -28Q11320 -31 11331 -38Q11342 -45 11342 -57Z"/>
+      <!-- The nameplate: "BEN SIVERLY" in the display cut (assets/fonts/fraunces-display.woff2, Fraunces at optical size 144, weight 800), outlined with fontTools using the font's kerning and -0.02em tracking (--type-nameplate-tracking), with the word space opened by 0.09em so the two words read apart in this fat face. viewBox: 64 -1427 12274 1454. -->
+      <path id="np-path" d="M1345 -333Q1345 -185 1217.5 -92.5Q1090 0 840 0H75Q69 0 66.5 -2.5Q64 -5 64 -8Q64 -14 79 -17L141 -28Q164 -32 174.5 -43Q185 -54 185 -77V-1343Q185 -1355 176.5 -1361.5Q168 -1368 141 -1372L79 -1383Q64 -1386 64 -1392Q64 -1395 66.5 -1397.5Q69 -1400 75 -1400H612Q822 -1400 967.5 -1348Q1113 -1296 1189 -1204.5Q1265 -1113 1265 -995Q1265 -892 1206 -816.5Q1147 -741 1039.5 -700Q932 -659 785 -659L847 -666Q992 -666 1104.5 -623.5Q1217 -581 1281 -506Q1345 -431 1345 -333ZM695 -646H539V-668H698Q774 -668 824.5 -700Q875 -732 899.5 -798.5Q924 -865 924 -969Q924 -1093 880.5 -1184.5Q837 -1276 764.5 -1326.5Q692 -1377 605 -1377H567V-66Q567 -42 582.5 -32.5Q598 -23 626 -23H732Q804 -23 856 -62Q908 -101 936 -172Q964 -243 964 -342Q964 -485 895.5 -565.5Q827 -646 695 -646ZM1867 -751H2064Q2157 -751 2202.5 -792Q2248 -833 2267 -946Q2269 -954 2271.5 -955.5Q2274 -957 2277 -957Q2285 -958 2288 -946L2404 -561Q2406 -555 2405 -551Q2404 -547 2401 -545Q2398 -544 2394.5 -544Q2391 -544 2386 -549Q2330 -621 2286.5 -660Q2243 -699 2197.5 -713.5Q2152 -728 2093 -728H1867ZM1414 -1392Q1414 -1395 1416.5 -1397.5Q1419 -1400 1425 -1400H2339Q2364 -1400 2384.5 -1406Q2405 -1412 2419 -1417.5Q2433 -1423 2436 -1423Q2439 -1423 2441 -1419Q2443 -1415 2446 -1400L2542 -997Q2544 -989 2542.5 -985.5Q2541 -982 2538 -981Q2535 -980 2532.5 -981Q2530 -982 2525 -988Q2438 -1110 2370.5 -1186Q2303 -1262 2247.5 -1304Q2192 -1346 2142 -1361.5Q2092 -1377 2038 -1377H1926V-71Q1926 -47 1939 -35Q1952 -23 1976 -23H2053Q2115 -23 2184 -61.5Q2253 -100 2340.5 -204.5Q2428 -309 2546 -508Q2551 -514 2553.5 -516Q2556 -518 2559 -516Q2562 -516 2563.5 -512Q2565 -508 2563 -499L2448 0Q2445 14 2443 18.5Q2441 23 2439 23Q2434 23 2420 17.5Q2406 12 2385 6Q2364 0 2338 0H1425Q1419 0 1416.5 -2.5Q1414 -5 1414 -8Q1414 -14 1429 -17L1491 -28Q1513 -31 1524 -38Q1535 -45 1535 -57V-1343Q1535 -1355 1524 -1362Q1513 -1369 1491 -1372L1429 -1383Q1414 -1386 1414 -1392ZM2977 -8Q2977 -5 2974.5 -2.5Q2972 0 2967 0H2583Q2579 0 2576.5 -2.5Q2574 -5 2574 -8Q2574 -13 2585 -17L2615 -26Q2675 -44 2717.5 -88Q2760 -132 2760 -211V-1160Q2760 -1173 2759 -1178.5Q2758 -1184 2749 -1198L2654 -1367Q2649 -1376 2643 -1384Q2637 -1392 2637 -1396Q2637 -1398 2639 -1399Q2641 -1400 2647 -1400H3074Q3080 -1400 3084 -1396.5Q3088 -1393 3093 -1384L3720 -213L3702 -170V-1189Q3702 -1268 3659.5 -1312.5Q3617 -1357 3557 -1374L3519 -1383Q3507 -1387 3507 -1392Q3507 -1395 3509.5 -1397.5Q3512 -1400 3517 -1400H3901Q3906 -1400 3908.5 -1397.5Q3911 -1395 3911 -1392Q3911 -1387 3899 -1383L3869 -1374Q3809 -1357 3766.5 -1312.5Q3724 -1268 3724 -1189V-223Q3724 -210 3728 -200Q3732 -190 3736 -182L3811 -54Q3824 -31 3828 -21.5Q3832 -12 3832 -7Q3832 -5 3829.5 -2.5Q3827 0 3819 0H3419Q3404 0 3404 -16Q3404 -22 3401.5 -32.5Q3399 -43 3395 -50L2728 -1253H2783V-210Q2783 -132 2826 -88Q2869 -44 2927 -26L2965 -17Q2977 -13 2977 -8ZM4933 20Q4848 20 4792-5.5Q4736-31 4704.5-57Q4673-83 4661-83Q4652-83 4631-66.5Q4610-50 4586-28Q4562-6 4540 10.5Q4518 27 4506 27Q4500 27 4491 20.5Q4482 14 4480 5L4412-475Q4411-483 4412-487Q4413-491 4416-492Q4418-494 4422-491.5Q4426-489 4429-484Q4533-287 4616.5-183Q4700-79 4769.5-41Q4839-3 4901-3Q4999-3 5057.5-54Q5116-105 5116-212Q5116-283 5089-338Q5062-393 4999-437Q4936-481 4828-517Q4664-573 4564.5-643.5Q4465-714 4420.5-801.5Q4376-889 4376-997Q4376-1122 4441-1217.5Q4506-1313 4622.5-1366.5Q4739-1420 4893-1420Q4966-1420 5016-1403.5Q5066-1387 5097-1370Q5128-1353 5144-1353Q5162-1353 5197-1371.5Q5232-1390 5266.5-1408.5Q5301-1427 5317-1427Q5322-1427 5327.5-1423Q5333-1419 5335-1410L5446-947Q5448-939 5446.5-935.5Q5445-932 5442-930Q5439-929 5435.5-931.5Q5432-934 5429-938Q5315-1125 5227-1224Q5139-1323 5064.5-1360Q4990-1397 4918-1397Q4831-1397 4775.5-1337Q4720-1277 4720-1175Q4720-1103 4745-1046Q4770-989 4828.5-944Q4887-899 4988-864Q5160-804 5260.5-735.5Q5361-667 5403.5-584.5Q5446-502 5446-399Q5446-282 5385-187Q5324-92 5209.5-36Q5095 20 4933 20ZM6031-57Q6031-45 6042.5-38Q6054-31 6075-28L6137-17Q6152-14 6152-8Q6152-4 6149.5-2Q6147 0 6141 0H5530Q5524 0 5521.5-2Q5519-4 5519-8Q5519-14 5534-17L5596-28Q5618-31 5629-38Q5640-45 5640-57V-1343Q5640-1355 5629-1362Q5618-1369 5596-1372L5534-1383Q5519-1385 5519-1392Q5519-1395 5521.5-1397.5Q5524-1400 5530-1400H6141Q6147-1400 6149.5-1397.5Q6152-1395 6152-1392Q6152-1385 6137-1383L6075-1372Q6054-1369 6042.5-1362Q6031-1355 6031-1343ZM7110-1392Q7110-1395 7112-1397.5Q7114-1400 7119-1400H7459Q7463-1400 7465.5-1397.5Q7468-1395 7468-1392Q7468-1389 7465-1387Q7462-1385 7457-1383L7432-1374Q7388-1356 7347-1309.5Q7306-1263 7284-1184L7001-184Q6995-158 6993.5-136.5Q6992-115 6992-91V-12Q6992-6 6990-3Q6988 0 6982 0H6629Q6623 0 6620-3Q6617-6 6617-12V-91Q6617-104 6611.5-125Q6606-146 6599-170L6243-1325Q6236-1345 6229.5-1355Q6223-1365 6212-1369L6179-1381Q6164-1388 6164-1392Q6164-1395 6167-1397.5Q6170-1400 6175-1400H6738Q6743-1400 6746-1397.5Q6749-1395 6749-1392Q6749-1389 6745.5-1387.5Q6742-1386 6734-1383L6688-1373Q6661-1365 6655.5-1351.5Q6650-1338 6659-1310L6992-196L6961-124L7260-1181Q7278-1245 7255.5-1298.5Q7233-1352 7149-1376L7121-1383Q7114-1385 7112-1387Q7110-1389 7110-1392ZM7910-751H8107Q8200-751 8245.5-792Q8291-833 8310-946Q8312-954 8314.5-955.5Q8317-957 8320-957Q8328-958 8331-946L8447-561Q8449-555 8448-551Q8447-547 8444-545Q8441-544 8437.5-544Q8434-544 8429-549Q8373-621 8329.5-660Q8286-699 8240.5-713.5Q8195-728 8136-728H7910ZM7457-1392Q7457-1395 7459.5-1397.5Q7462-1400 7468-1400H8382Q8407-1400 8427.5-1406Q8448-1412 8462-1417.5Q8476-1423 8479-1423Q8482-1423 8484-1419Q8486-1415 8489-1400L8585-997Q8587-989 8585.5-985.5Q8584-982 8581-981Q8578-980 8575.5-981Q8573-982 8568-988Q8481-1110 8413.5-1186Q8346-1262 8290.5-1304Q8235-1346 8185-1361.5Q8135-1377 8081-1377H7969V-71Q7969-47 7982-35Q7995-23 8019-23H8096Q8158-23 8227-61.5Q8296-100 8383.5-204.5Q8471-309 8589-508Q8594-514 8596.5-516Q8599-518 8602-516Q8605-516 8606.5-512Q8608-508 8606-499L8491 0Q8488 14 8486 18.5Q8484 23 8482 23Q8477 23 8463 17.5Q8449 12 8428 6Q8407 0 8381 0H7468Q7462 0 7459.5-2.5Q7457-5 7457-8Q7457-14 7472-17L7534-28Q7556-31 7567-38Q7578-45 7578-57V-1343Q7578-1355 7567-1362Q7556-1369 7534-1372L7472-1383Q7457-1386 7457-1392ZM9958-901Q9958-801 9912-720.5Q9866-640 9781-586Q9696-532 9577-511Q9554-507 9529.5-504Q9505-501 9480-500Q9455-499 9428-499Q9339-499 9282-509.5Q9225-520 9185-539.5Q9145-559 9109-586L9121-605Q9152-580 9182-564Q9212-548 9246-541Q9280-534 9323-534Q9432-534 9498.5-614Q9565-694 9565-876Q9565-1021 9519-1134.5Q9473-1248 9397-1312.5Q9321-1377 9231-1377H9177V-77Q9177-54 9187.5-43Q9198-32 9221-28L9283-17Q9292-16 9295-14Q9298-12 9298-8Q9298 0 9287 0H8676Q8670 0 8667.5-2.5Q8665-5 8665-8Q8665-14 8680-17L8742-28Q8765-32 8775.5-43Q8786-54 8786-77V-1343Q8786-1355 8775-1362Q8764-1369 8742-1372L8680-1383Q8665-1386 8665-1392Q8665-1395 8667.5-1397.5Q8670-1400 8676-1400H9229Q9453-1400 9617-1338.5Q9781-1277 9869.5-1165.5Q9958-1054 9958-901ZM9304-521 9666-561 9949-74Q9964-49 9980-36.5Q9996-24 10019-17Q10028-14 10031-13Q10034-12 10034-8Q10034-5 10031.5-2.5Q10029 0 10023 0H9476Q9465 0 9465-8Q9465-12 9468.5-12.5Q9472-13 9480-17L9508-27Q9535-37 9544.5-50.5Q9554-64 9534-99ZM10672-1383 10610-1372Q10589-1369 10577.5-1362Q10566-1355 10566-1343V-66Q10566-42 10579-32.5Q10592-23 10616-23H10706Q10755-23 10806-45Q10857-67 10912-124.5Q10967-182 11026-290L11145-508Q11148-514 11151-516Q11154-518 11157-516Q11162-516 11163-512Q11164-508 11162-499L11066 0Q11063 15 11061 19Q11059 23 11056 23Q11051 23 11037 17.5Q11023 12 11002 6Q10981 0 10955 0H10065Q10059 0 10056.5-2.5Q10054-5 10054-8Q10054-14 10069-17L10131-28Q10153-31 10164-38Q10175-45 10175-57V-1343Q10175-1355 10164-1362Q10153-1369 10131-1372L10069-1383Q10054-1386 10054-1392Q10054-1395 10056.5-1397.5Q10059-1400 10065-1400H10676Q10682-1400 10684.5-1397.5Q10687-1395 10687-1392Q10687-1386 10672-1383ZM11909-493 11531-449 11181-1342Q11174-1359 11162-1367Q11150-1375 11133-1378L11106-1383Q11098-1385 11094.5-1387Q11091-1389 11091-1392Q11091-1395 11094-1397.5Q11097-1400 11103-1400H11679Q11685-1400 11688-1398Q11691-1396 11691-1393Q11691-1386 11675-1383L11614-1373Q11590-1369 11587-1363.5Q11584-1358 11588-1348L11906-522L11888-503L12126-1184Q12147-1242 12119.5-1298Q12092-1354 12016-1376L11992-1383Q11985-1385 11982.5-1387Q11980-1389 11980-1392Q11980-1395 11982.5-1397.5Q11985-1400 11990-1400H12328Q12333-1400 12335.5-1398Q12338-1396 12338-1393Q12338-1389 12335-1386.5Q12332-1384 12326-1383L12306-1375Q12275-1364 12246.5-1339Q12218-1314 12193.5-1275.5Q12169-1237 12150-1183ZM11522-499 11913-510V-57Q11913-45 11924.5-38Q11936-31 11957-28L12019-17Q12035-14 12035-8Q12035-5 12032-2.5Q12029 0 12023 0H11412Q11406 0 11403.5-2.5Q11401-5 11401-8Q11401-14 11416-17L11478-28Q11500-31 11511-38Q11522-45 11522-57Z"/>
     </defs>
   </svg>
   <!-- art:start: generated by generate-kit-art.js, do not edit by hand -->
@@ -765,7 +823,7 @@
 
   <header class="masthead">
     <div class="wrap masthead-row">
-      <a class="wordmark" href="index.html"><b>Ben Siverly</b><span class="t-folio">Issue 01 &middot; <span data-season>Autumn</span> 2026</span></a>
+      <a class="wordmark" href="index.html"><b>Ben Siverly</b><span class="t-folio">Issue 01<span class="folio-season"> &middot; Autumn 2026</span></span></a>
       <nav class="masthead-nav" aria-label="Departments">
         <ol>
           <li><a href="#work"><span>01</span>Work</a></li>
@@ -817,8 +875,8 @@
       <div class="opening-grid">
         <div class="cover">
           <div class="cover-in">
-            <h1 class="nameplate"><span class="visually-hidden">Ben Siverly</span><svg viewBox="64 -1427 12094 1454" aria-hidden="true" focusable="false"><use href="#np-path"/></svg></h1>
-            <p class="issue-line"><span><span data-season>Autumn</span> 2026</span><span class="dash"></span><span>Product, data and AI</span><span class="dash"></span><span>Issue 01</span></p>
+            <h1 class="nameplate"><span class="visually-hidden">Ben Siverly</span><svg viewBox="64 -1427 12274 1454" aria-hidden="true" focusable="false"><use href="#np-path"/></svg></h1>
+            <p class="issue-line"><span>Autumn 2026</span><span class="dash"></span><span>Product, data and AI</span><span class="dash"></span><span>Issue 01</span></p>
             <p class="cover-standfirst">Product manager at AppFolio, on rental applications and payments. A data scientist at Oracle and Lively before that.</p>
 
             <div class="cover-frame">
@@ -830,7 +888,7 @@
               <p class="rail rail--right"><span>Native Plant Finder</span><span class="dash"></span><span>Free tools your agent can run</span><span class="run"></span></p>
               <p class="rail rail--bottom"><span class="rail-wide">Product manager at AppFolio</span><span class="dash rail-wide"></span><span class="rail-wide">Data scientist at Oracle and Lively</span><span class="run"></span></p>
               <span class="xh xh--tl" aria-hidden="true"></span><span class="xh xh--tr" aria-hidden="true"></span><span class="xh xh--bl" aria-hidden="true"></span><span class="xh xh--br" aria-hidden="true"></span>
-              <p class="seal"><span class="seal-in"><b>44<i>%</i>&#8594;70<i>%</i></b><small>Rental applications submitted</small></span></p>
+              <p class="seal"><span class="seal-in"><b>44<i>%</i><span class="ar">&#8594;</span>70<i>%</i></b><small>Applications<br>submitted</small></span></p>
             </div>
 
             <p class="cover-credit">Cover: marigolds and hanging amaranth, engraved for this issue.</p>
@@ -840,14 +898,14 @@
                 <li><a href="#method"><span class="n">02</span><span class="t">Start with the job</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
                 <li><a href="#workshop"><span class="n">03</span><span class="t">Free tools your agent can run</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
                 <li><a href="#writing"><span class="n">04</span><span class="t">Nobody Claps</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+                <li><a href="#kit"><span class="n">05</span><span class="t">How this issue is made</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
               </ol>
             </nav>
-            <div class="cover-cta"><a class="btn btn--inverse" href="#work">Cover story <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
           </div>
         </div>
 
         <div class="contents-page" id="contents">
-          <div class="rh rh--verso t-folio"><span class="rh-title">Contents</span><span class="rh-pub">Ben Siverly &middot; Issue 01 &middot; <span data-season>Autumn</span> 2026</span></div>
+          <div class="rh rh--verso t-folio"><span class="rh-title">Contents</span><span class="rh-pub">Ben Siverly &middot; Issue 01 &middot; Autumn 2026</span></div>
 
           <div class="contents-title"><h2 class="t-headline">In this issue</h2><span class="t-folio">Minutes to read</span></div>
 
@@ -855,7 +913,7 @@
             <img class="framed print" src="images/ben.jpg" srcset="images/ben.jpg 560w, images/ben@2x.jpg 1120w" sizes="84px" width="560" height="700" alt="Ben Siverly, smiling, in front of a wooden fence hung with string lights">
             <div>
               <span class="t-kicker">From the editor</span>
-              <p class="t-deck">Product manager at AppFolio, on rental applications and payments. A data scientist at Oracle and Lively before that. I build free tools that AI agents can run.</p>
+              <p class="t-deck"><span class="ed-wide">Product manager at AppFolio, on rental applications and payments. A data scientist at Oracle and Lively before that. </span><span class="ed-phone">I thrive in the unglamorous middle: the customer calls, the half-clean data, the code that has to actually run. </span>I build free tools that AI agents can run.</p>
               <p class="t-byline">Ben Siverly</p>
             </div>
           </div>
@@ -865,7 +923,7 @@
             <span>
               <span class="t-kicker">Cover story &middot; <span data-read="work">2</span> min read</span>
               <h3 class="t-title">The application nobody could finish</h3>
-              <span class="t-small t-quiet">Submissions went from 44% to 70%. Vacancies filled 3.4 days faster.</span>
+              <span class="t-small t-quiet">Why applicants gave up on the old form, and what got them to finish.</span>
             </span>
           </a>
 
@@ -874,7 +932,7 @@
               <li><a href="#work"><span class="n">01</span><span><span class="row"><span class="name">Work</span><span class="lead"></span><span class="rt"><span data-read="work">2</span> min</span></span><span class="desc t-small">Rental applications at AppFolio. Brava, Lively, Oracle.</span></span></a></li>
               <li><a href="#method"><span class="n">02</span><span><span class="row"><span class="name">Method</span><span class="lead"></span><span class="rt"><span data-read="method">1</span> min</span></span><span class="desc t-small">Start with the job. Map the world. Write it down first.</span></span></a></li>
               <li><a href="#workshop"><span class="n">03</span><span><span class="row"><span class="name">Workshop</span><span class="lead"></span><span class="rt"><span data-read="workshop">1</span> min</span></span><span class="desc t-small">Six free tools and a Hermes plugin. Your agent can run them too.</span></span></a></li>
-              <li><a href="#writing"><span class="n">04</span><span><span class="row"><span class="name">Writing</span><span class="lead"></span><span class="rt"><span data-read="writing">1</span> min</span></span><span class="desc t-small">Nobody Claps, four poems and a story in draft.</span></span></a></li>
+              <li><a href="#writing"><span class="n">04</span><span><span class="row"><span class="name">Writing</span><span class="lead"></span><span class="rt"><span data-read="writing">1</span> min</span></span><span class="desc t-small">Two essays, four poems and a story in draft.</span></span></a></li>
               <li><a href="#kit"><span class="n">05</span><span><span class="row"><span class="name">Kit</span><span class="lead"></span><span class="rt"><span data-read="kit">3</span> min</span></span><span class="desc t-small">The colour, type, texture and controls this issue is made of.</span></span></a></li>
             </ol>
           </nav>
@@ -898,31 +956,26 @@
           <li class="brief">
             <p class="fig">44<svg class="ico" viewBox="0 0 18 10" aria-hidden="true"><use href="#i-arrow"/></svg><span class="visually-hidden"> to </span>70<small>%</small></p>
             <h3 class="t-folio">Applications submitted</h3>
-            <p class="t-small">Accounts so applicants can finish later, and reporting so property managers can see what&rsquo;s happening with their applications.</p>
             <p class="t-note src"><b>Source</b>AppFolio. Started rental applications that were submitted, old form against the rebuilt flow.</p>
           </li>
           <li class="brief">
-            <p class="fig">3.4<small>days</small></p>
+            <p class="fig">3.4<small class="w">days</small></p>
             <h3 class="t-folio">Faster to fill a vacancy</h3>
-            <p class="t-small">Measured against properties still on offline workflows.</p>
-            <p class="t-note src"><b>Source</b>AppFolio. Properties on the rebuilt rental application.</p>
+            <p class="t-note src"><b>Source</b>AppFolio. Properties on the rebuilt application, against those still on offline workflows.</p>
           </li>
           <li class="brief">
-            <p class="fig">0<small>failures</small></p>
+            <p class="fig">0<small class="w">failures</small></p>
             <h3 class="t-folio">Change failures in the rollout</h3>
-            <p class="t-small">The rebuilt rental application went out with a zero change-failure rate.</p>
-            <p class="t-note src"><b>Source</b>AppFolio, the rental application rollout. A change failure is a deploy that needed a fix or a rollback.</p>
+            <p class="t-note src"><b>Source</b>AppFolio. Every deploy in the rental application rollout.</p>
           </li>
           <li class="brief">
-            <p class="fig">$50<small>M+</small></p>
+            <p class="fig">$50M<small class="plus">+</small></p>
             <h3 class="t-folio">Assets moved onto Lively</h3>
-            <p class="t-small">APIs and migration flows that moved over $50 million in assets from major financial institutions onto Lively&rsquo;s platform.</p>
-            <p class="t-note src"><b>Source</b>Lively, Nov 2019 to Dec 2022.</p>
+            <p class="t-note src"><b>Source</b>Lively, Nov 2019 to Dec 2022. From major financial institutions, through APIs and migration flows I built.</p>
           </li>
           <li class="brief">
-            <p class="fig">6<small>tools</small></p>
+            <p class="fig">6<small class="w">tools</small></p>
             <h3 class="t-folio">Free tools an agent can run</h3>
-            <p class="t-small">No accounts. Each takes URL parameters and registers WebMCP tools.</p>
             <p class="t-note src"><b>Source</b><a href="llms.txt">llms.txt</a>, which lists every tool and how to run it.</p>
           </li>
         </ol>
@@ -959,7 +1012,7 @@
 
       <div class="story">
         <div class="wrap">
-          <div class="rh rh--verso t-folio"><span class="rh-pg">01</span><span class="rh-title">The application nobody could finish</span><span class="rh-pub">Ben Siverly &middot; Issue 01 &middot; <span data-season>Autumn</span> 2026</span></div>
+          <div class="rh rh--verso t-folio"><span class="rh-pg">01</span><span class="rh-title">The application nobody could finish</span><span class="rh-pub">Ben Siverly &middot; Issue 01 &middot; Autumn 2026</span></div>
           <div class="story-grid">
             <div class="story-text">
               <p class="dropcap">The old rental application was stuck. Applicants couldn&rsquo;t save the form or come back to it. Property managers had no way to see what was working, and every applicant was anonymous.</p>
@@ -969,17 +1022,12 @@
             </div>
 
             <aside class="margin-col" aria-label="Figures and notes">
-              <div class="figure-big">
-                <p class="num">44<svg class="ico" viewBox="0 0 18 10" aria-hidden="true"><use href="#i-arrow"/></svg>70<i>%</i></p>
-                <span class="t-kicker">Rental applications submitted, of those started</span>
-              </div>
               <div class="glance">
                 <p class="t-kicker">At a glance</p>
                 <dl>
                   <div><dt class="t-folio">Company</dt><dd>AppFolio</dd></div>
                   <div><dt class="t-folio">Role</dt><dd>Product manager, rental applications and payments</dd></div>
-                  <div><dt class="t-folio">Shipped</dt><dd>A rebuilt rental application, accounts so applicants can finish later, and reporting for property managers</dd></div>
-                  <div><dt class="t-folio">Change failures</dt><dd>None. A zero change-failure rate across the rollout</dd></div>
+                  <div><dt class="t-folio">Shipped</dt><dd>Rebuilt application, applicant accounts, manager reporting</dd></div>
                 </dl>
               </div>
               <ol class="notes">
@@ -991,14 +1039,14 @@
 
             <figure class="story-fig">
               <div class="plate">
-                <p class="plate-title"><span>Of every 100 applications started</span><span>Fig. 1</span></p>
+                <p class="plate-title">Of every 100 applications started</p>
                 <div class="waffles">
                   <div class="waffle">
                     <svg viewBox="0 0 98 98" role="img" aria-label="Old form: 44 of 100 started applications submitted">
                       <path class="w-f" d="M0 90h8v8h-8zM10 90h8v8h-8zM20 90h8v8h-8zM30 90h8v8h-8zM40 90h8v8h-8zM50 90h8v8h-8zM60 90h8v8h-8zM70 90h8v8h-8zM80 90h8v8h-8zM90 90h8v8h-8zM0 80h8v8h-8zM10 80h8v8h-8zM20 80h8v8h-8zM30 80h8v8h-8zM40 80h8v8h-8zM50 80h8v8h-8zM60 80h8v8h-8zM70 80h8v8h-8zM80 80h8v8h-8zM90 80h8v8h-8zM0 70h8v8h-8zM10 70h8v8h-8zM20 70h8v8h-8zM30 70h8v8h-8zM40 70h8v8h-8zM50 70h8v8h-8zM60 70h8v8h-8zM70 70h8v8h-8zM80 70h8v8h-8zM90 70h8v8h-8zM0 60h8v8h-8zM10 60h8v8h-8zM20 60h8v8h-8zM30 60h8v8h-8zM40 60h8v8h-8zM50 60h8v8h-8zM60 60h8v8h-8zM70 60h8v8h-8zM80 60h8v8h-8zM90 60h8v8h-8zM0 50h8v8h-8zM10 50h8v8h-8zM20 50h8v8h-8zM30 50h8v8h-8z"/>
                       <path class="w-e" d="M40.5 50.5h7v7h-7zM50.5 50.5h7v7h-7zM60.5 50.5h7v7h-7zM70.5 50.5h7v7h-7zM80.5 50.5h7v7h-7zM90.5 50.5h7v7h-7zM0.5 40.5h7v7h-7zM10.5 40.5h7v7h-7zM20.5 40.5h7v7h-7zM30.5 40.5h7v7h-7zM40.5 40.5h7v7h-7zM50.5 40.5h7v7h-7zM60.5 40.5h7v7h-7zM70.5 40.5h7v7h-7zM80.5 40.5h7v7h-7zM90.5 40.5h7v7h-7zM0.5 30.5h7v7h-7zM10.5 30.5h7v7h-7zM20.5 30.5h7v7h-7zM30.5 30.5h7v7h-7zM40.5 30.5h7v7h-7zM50.5 30.5h7v7h-7zM60.5 30.5h7v7h-7zM70.5 30.5h7v7h-7zM80.5 30.5h7v7h-7zM90.5 30.5h7v7h-7zM0.5 20.5h7v7h-7zM10.5 20.5h7v7h-7zM20.5 20.5h7v7h-7zM30.5 20.5h7v7h-7zM40.5 20.5h7v7h-7zM50.5 20.5h7v7h-7zM60.5 20.5h7v7h-7zM70.5 20.5h7v7h-7zM80.5 20.5h7v7h-7zM90.5 20.5h7v7h-7zM0.5 10.5h7v7h-7zM10.5 10.5h7v7h-7zM20.5 10.5h7v7h-7zM30.5 10.5h7v7h-7zM40.5 10.5h7v7h-7zM50.5 10.5h7v7h-7zM60.5 10.5h7v7h-7zM70.5 10.5h7v7h-7zM80.5 10.5h7v7h-7zM90.5 10.5h7v7h-7zM0.5 0.5h7v7h-7zM10.5 0.5h7v7h-7zM20.5 0.5h7v7h-7zM30.5 0.5h7v7h-7zM40.5 0.5h7v7h-7zM50.5 0.5h7v7h-7zM60.5 0.5h7v7h-7zM70.5 0.5h7v7h-7zM80.5 0.5h7v7h-7zM90.5 0.5h7v7h-7z"/>
                     </svg>
-                    <h4><b>44</b> Old form</h4>
+                    <p class="waffle-label"><b>44</b> Old form</p>
                   </div>
                   <div class="waffle">
                     <svg viewBox="0 0 98 98" role="img" aria-label="Rebuilt flow: 70 of 100 started applications submitted, 26 more than before">
@@ -1006,7 +1054,7 @@
                       <path class="w-h" mask="url(#art-m-d)" d="M40 50h8v8h-8zM50 50h8v8h-8zM60 50h8v8h-8zM70 50h8v8h-8zM80 50h8v8h-8zM90 50h8v8h-8zM0 40h8v8h-8zM10 40h8v8h-8zM20 40h8v8h-8zM30 40h8v8h-8zM40 40h8v8h-8zM50 40h8v8h-8zM60 40h8v8h-8zM70 40h8v8h-8zM80 40h8v8h-8zM90 40h8v8h-8zM0 30h8v8h-8zM10 30h8v8h-8zM20 30h8v8h-8zM30 30h8v8h-8zM40 30h8v8h-8zM50 30h8v8h-8zM60 30h8v8h-8zM70 30h8v8h-8zM80 30h8v8h-8zM90 30h8v8h-8z"/>
                       <path class="w-e" d="M0.5 20.5h7v7h-7zM10.5 20.5h7v7h-7zM20.5 20.5h7v7h-7zM30.5 20.5h7v7h-7zM40.5 20.5h7v7h-7zM50.5 20.5h7v7h-7zM60.5 20.5h7v7h-7zM70.5 20.5h7v7h-7zM80.5 20.5h7v7h-7zM90.5 20.5h7v7h-7zM0.5 10.5h7v7h-7zM10.5 10.5h7v7h-7zM20.5 10.5h7v7h-7zM30.5 10.5h7v7h-7zM40.5 10.5h7v7h-7zM50.5 10.5h7v7h-7zM60.5 10.5h7v7h-7zM70.5 10.5h7v7h-7zM80.5 10.5h7v7h-7zM90.5 10.5h7v7h-7zM0.5 0.5h7v7h-7zM10.5 0.5h7v7h-7zM20.5 0.5h7v7h-7zM30.5 0.5h7v7h-7zM40.5 0.5h7v7h-7zM50.5 0.5h7v7h-7zM60.5 0.5h7v7h-7zM70.5 0.5h7v7h-7zM80.5 0.5h7v7h-7zM90.5 0.5h7v7h-7z"/>
                     </svg>
-                    <h4><b>70</b> Rebuilt flow</h4>
+                    <p class="waffle-label"><b>70</b> Rebuilt flow</p>
                   </div>
                 </div>
                 <div class="plate-foot">
@@ -1048,11 +1096,13 @@
     <!-- 02 Method -->
     <section class="dept method" id="method" aria-labelledby="method-heading">
       <div class="wrap">
-        <div class="rh rh--recto t-folio"><span class="rh-pg">02</span><span class="rh-title">Method</span><span class="rh-pub">Ben Siverly &middot; Issue 01 &middot; <span data-season>Autumn</span> 2026</span></div>
+        <div class="rh rh--recto t-folio"><span class="rh-pg">02</span><span class="rh-title">Method</span><span class="rh-pub">Ben Siverly &middot; Issue 01 &middot; Autumn 2026</span></div>
         <header class="dept-head">
-          <span class="dept-num" aria-hidden="true">02</span>
-          <span class="t-kicker"><span data-read="method">1</span> min read</span>
-          <h2 id="method-heading">Method</h2>
+          <div class="dept-id">
+            <span class="dept-num" aria-hidden="true">02</span>
+            <span class="t-kicker"><span data-read="method">1</span> min read</span>
+            <h2 id="method-heading">Method</h2>
+          </div>
           <p class="dept-intro t-small">Three steps for building products that fit how people actually think.</p>
         </header>
 
@@ -1087,22 +1137,24 @@
     <section class="dept workshop field-leaf" id="workshop" aria-labelledby="workshop-heading">
       <span class="rim rim--top" aria-hidden="true"></span>
       <div class="wrap">
-        <div class="rh rh--verso t-folio"><span class="rh-pg">03</span><span class="rh-title">Workshop</span><span class="rh-pub">Ben Siverly &middot; Issue 01 &middot; <span data-season>Autumn</span> 2026</span></div>
+        <div class="rh rh--verso t-folio"><span class="rh-pg">03</span><span class="rh-title">Workshop</span><span class="rh-pub">Ben Siverly &middot; Issue 01 &middot; Autumn 2026</span></div>
         <header class="dept-head">
-          <span class="dept-num" aria-hidden="true">03</span>
-          <span class="t-kicker"><span data-read="workshop">1</span> min read</span>
-          <h2 id="workshop-heading">Workshop</h2>
+          <div class="dept-id">
+            <span class="dept-num" aria-hidden="true">03</span>
+            <span class="t-kicker"><span data-read="workshop">1</span> min read</span>
+            <h2 id="workshop-heading">Workshop</h2>
+          </div>
           <p class="dept-intro t-small">Free tools. No accounts. Your AI agent can run them too: each one takes URL parameters and registers WebMCP tools.</p>
           <figure class="workshop-art" aria-hidden="true"><div class="art"><svg viewBox="0 0 160 150"><use href="#art-marigold" width="160" height="150"/></svg></div></figure>
         </header>
         <ol class="tools">
-          <li class="tool"><span class="n">01</span><h3 class="t-title">Native Plant Finder</h3><p class="t-small">Find native plants for your garden based on your location and sun conditions. Support local pollinators while reducing water and maintenance.</p><a class="btn btn--text" href="native-plant-finder.html">Open <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
-          <li class="tool"><span class="n">02</span><h3 class="t-title">Life Strategy Matrix</h3><p class="t-small">Pick one area of your life, score it, and see where to invest next. Then print the matrix as a one-page guide.</p><a class="btn btn--text" href="life-strategy.html">Open <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
-          <li class="tool"><span class="n">03</span><h3 class="t-title">Decision Assist</h3><p class="t-small">Weigh your options with clarity. Score choices against what matters most.</p><a class="btn btn--text" href="decision-assist.html">Open <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
-          <li class="tool"><span class="n">04</span><h3 class="t-title">Memorial Pamphlet Creator</h3><p class="t-small">Create a simple, dignified pamphlet for a memorial service.</p><a class="btn btn--text" href="memorial-pamphlet.html">Open <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
-          <li class="tool"><span class="n">05</span><h3 class="t-title">Service of Life Builder</h3><p class="t-small">Build a liturgy for a memorial or celebration of life.</p><a class="btn btn--text" href="service-of-life.html">Open <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
-          <li class="tool"><span class="n">06</span><h3 class="t-title">Memorial Preferences Worksheet</h3><p class="t-small">A one-page form to print and fill out by hand. Record service wishes on paper, no screen required.</p><a class="btn btn--text" href="memorial-preferences.html">Open <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
-          <li class="tool"><span class="n">07</span><h3 class="t-title">AbiertoClaw</h3><p class="t-small">A plugin for the Hermes agent that keeps it on today&rsquo;s best free model, smoke-tested daily with a real tool call, with a local model as the fallback.</p><a class="btn btn--text" href="https://github.com/be-ns/AbiertoClaw" rel="noopener">GitHub <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+          <li class="tool"><span class="n">01</span><h3 class="t-title">Native Plant Finder</h3><p class="t-small">Find native plants for your garden based on your location and sun conditions. Support local pollinators while reducing water and maintenance.</p><a class="btn btn--text" href="native-plant-finder.html">Open<span class="visually-hidden"> Native Plant Finder</span> <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+          <li class="tool"><span class="n">02</span><h3 class="t-title">Life Strategy Matrix</h3><p class="t-small">Pick one area of your life, score it, and see where to invest next. Then print the matrix as a one-page guide.</p><a class="btn btn--text" href="life-strategy.html">Open<span class="visually-hidden"> Life Strategy Matrix</span> <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+          <li class="tool"><span class="n">03</span><h3 class="t-title">Decision Assist</h3><p class="t-small">Weigh your options with clarity. Score choices against what matters most.</p><a class="btn btn--text" href="decision-assist.html">Open<span class="visually-hidden"> Decision Assist</span> <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+          <li class="tool"><span class="n">04</span><h3 class="t-title">Memorial Pamphlet Creator</h3><p class="t-small">Create a simple, dignified pamphlet for a memorial service.</p><a class="btn btn--text" href="memorial-pamphlet.html">Open<span class="visually-hidden"> Memorial Pamphlet Creator</span> <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+          <li class="tool"><span class="n">05</span><h3 class="t-title">Service of Life Builder</h3><p class="t-small">Build a liturgy for a memorial or celebration of life.</p><a class="btn btn--text" href="service-of-life.html">Open<span class="visually-hidden"> Service of Life Builder</span> <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+          <li class="tool"><span class="n">06</span><h3 class="t-title">Memorial Preferences Worksheet</h3><p class="t-small">A one-page form to print and fill out by hand. Record service wishes on paper, no screen required.</p><a class="btn btn--text" href="memorial-preferences.html">Open<span class="visually-hidden"> Memorial Preferences Worksheet</span> <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+          <li class="tool"><span class="n">07</span><h3 class="t-title">AbiertoClaw</h3><p class="t-small">A plugin for the Hermes agent that keeps it on today&rsquo;s best free model, smoke-tested daily with a real tool call, with a local model as the fallback.</p><a class="btn btn--text" href="https://github.com/be-ns/AbiertoClaw" rel="noopener"><span class="visually-hidden">AbiertoClaw on </span>GitHub <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
           <li class="tool tool--agents"><span class="n" aria-hidden="true">+</span><span class="t-kicker">For AI agents</span><p class="t-small">How to run every tool here: prefilled links, WebMCP, or the data directly.</p><a class="btn btn--filled btn--sm" href="llms.txt" style="background: var(--leaf-fill); color: var(--on-leaf-fill)">Read llms.txt</a></li>
         </ol>
       </div>
@@ -1111,18 +1163,20 @@
 
     <!-- 04 Writing: a paper insert (flips to charcoal in the Day edition) -->
     <section class="dept insert" id="writing" data-edition="day" data-insert aria-labelledby="writing-heading">
-      <div class="sprig framed" aria-hidden="true"><svg viewBox="148 392 96 380" preserveAspectRatio="xMidYMid slice"><use href="#art-still-life" width="600" height="760"/></svg></div>
       <div class="wrap">
-        <div class="rh rh--recto t-folio"><span class="rh-pg">04</span><span class="rh-title">Writing</span><span class="rh-pub">Ben Siverly &middot; Issue 01 &middot; <span data-season>Autumn</span> 2026</span></div>
+        <div class="rh rh--recto t-folio"><span class="rh-pg">04</span><span class="rh-title">Writing</span><span class="rh-pub">Ben Siverly &middot; Issue 01 &middot; Autumn 2026</span></div>
         <div class="writing-grid">
+          <div class="sprig framed" aria-hidden="true"><svg viewBox="148 392 96 380" preserveAspectRatio="xMidYMid slice"><use href="#art-still-life" width="600" height="760"/></svg></div>
           <header class="dept-head">
-            <span class="dept-num" aria-hidden="true">04</span>
-            <span class="t-kicker"><span data-read="writing">1</span> min read</span>
-            <h2 id="writing-heading">Writing</h2>
+            <div class="dept-id">
+              <span class="dept-num" aria-hidden="true">04</span>
+              <span class="t-kicker"><span data-read="writing">1</span> min read</span>
+              <h2 id="writing-heading">Writing</h2>
+            </div>
             <p class="dept-intro t-small">Words I&rsquo;ve put together about life, memory, and paying attention. Some poetry, some prose, some longer stories.</p>
           </header>
           <article class="excerpt">
-            <span class="t-kicker">Prose &middot; June 2026</span>
+            <span class="t-kicker">Essay &middot; June 2026</span>
             <h3 class="t-headline">Nobody Claps</h3>
             <div class="excerpt-body">
               <p class="dropcap">My daughter has my dark circles. The same ones I studied in mirrors as a boy and wished away. On her face I feel only tenderness, and something in me settles: what I carried alone, she won&rsquo;t.</p>
@@ -1131,9 +1185,9 @@
             <p class="excerpt-quote">The two most durable things I&rsquo;ll ever make are asleep down the hall.</p>
             <a class="btn btn--text" href="nobody-claps.html">Read the essay <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
           </article>
-          <details class="pieces-col" open data-fold>
-            <summary><span class="t-kicker">Also in Writing</span><span class="t-folio">Six more pieces</span><svg class="fold-chev" aria-hidden="true"><use href="#i-chev"/></svg></summary>
-            <ol class="pieces">
+          <div class="pieces-col" data-fold>
+            <header class="fold-head"><h3 class="t-kicker">Also in Writing</h3><span class="t-folio">Six more pieces</span></header>
+            <ol class="pieces" data-fold-body>
               <li><a href="building-things-worth-losing.html"><span class="t-title">On Building Things Worth Losing</span><span class="t-folio">Essay</span><span class="t-note">I&rsquo;ve stopped trying to build things that last and started trying to build things worth losing.</span></a></li>
               <li><a href="milk.html"><span class="t-title">milk</span><span class="t-folio">Poem, 2026</span><span class="t-note">The deal is three hours. She sleeps. I take the kids.</span></a></li>
               <li><a href="hot-pig-summer.html"><span class="t-title">hot pig summer</span><span class="t-folio">Poem, 2026</span><span class="t-note">Straw goes up fast.</span></a></li>
@@ -1141,7 +1195,7 @@
               <li><a href="come-down.html"><span class="t-title">come down</span><span class="t-folio">Poem, 2025</span><span class="t-note">I was high for years. High-performer. High-potential.</span></a></li>
               <li><a href="serotiny.html"><span class="t-title">Serotiny</span><span class="t-folio">Story, draft</span><span class="t-note">A father loads a dying phone with everything he knows, for a daughter who is leaving.</span></a></li>
             </ol>
-          </details>
+          </div>
         </div>
       </div>
       <div class="fade" aria-hidden="true"></div>
@@ -1150,24 +1204,26 @@
     <!-- 05 Kit -->
     <section class="dept kit" id="kit" aria-labelledby="kit-heading">
       <div class="wrap">
-        <div class="rh rh--verso t-folio"><span class="rh-pg">05</span><span class="rh-title">Kit</span><span class="rh-pub">Ben Siverly &middot; Issue 01 &middot; <span data-season>Autumn</span> 2026</span></div>
+        <div class="rh rh--verso t-folio"><span class="rh-pg">05</span><span class="rh-title">Kit</span><span class="rh-pub">Ben Siverly &middot; Issue 01 &middot; Autumn 2026</span></div>
         <header class="dept-head">
-          <span class="dept-num" aria-hidden="true">05</span>
-          <span class="t-kicker"><span data-read="kit">3</span> min read</span>
-          <h2 id="kit-heading">Kit</h2>
-          <p class="dept-intro t-small">How this issue is made. Every value comes from theme.json, compiled to tokens.css. Switch the edition at the top to see both.</p>
+          <div class="dept-id">
+            <span class="dept-num" aria-hidden="true">05</span>
+            <span class="t-kicker"><span data-read="kit">3</span> min read</span>
+            <h2 id="kit-heading">Kit</h2>
+          </div>
+          <p class="dept-intro t-small">How this issue is made. Every value comes from theme.json, compiled to tokens.css. Switch the edition in the masthead or the menu to see both.</p>
         </header>
 
-        <details class="kit-block" open data-fold>
-          <summary><span class="t-folio"><b class="num-o">5.1</b></span><h3 class="t-title">Colour, from Ben&rsquo;s card</h3><span class="t-note">Orange, acid green and a dash of black. The bands are sized to each colour&rsquo;s share of a page: Gondola is the ground, orange and green are fields.</span><svg class="fold-chev" aria-hidden="true"><use href="#i-chev"/></svg></summary>
-          <div class="kit-body palette-pair">
+        <div class="kit-block" data-fold>
+          <header class="fold-head"><span class="t-folio"><b class="num-o">5.1</b></span><h3 class="t-title" id="kit-5-1">Colour, from Ben&rsquo;s card</h3><p class="t-note"><span class="fold-short">Orange, acid green and a dash of black.</span><span class="fold-long">Orange, acid green and a dash of black. The bands are sized to each colour&rsquo;s share of a page: Gondola is the ground, orange and green are fields.</span></p></header>
+          <div class="kit-body palette-pair" data-fold-body>
             <div class="card-palette">
               <svg viewBox="0 0 600 760" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#art-still-life" width="600" height="760"/></svg>
               <div class="card-bands">
                 <div class="swatch-band sb-orange"><small>Fields, the cover, charts</small><span>Toxic Orange #FE5F35</span></div>
                 <div class="swatch-band sb-green"><small>Fields, pull quotes, selected</small><span>Goody Gumdrop #CAD576</span></div>
                 <div class="swatch-band sb-gondola"><small>The Night page</small><span>Gondola #34302F</span></div>
-                <div class="swatch-band sb-paper"><small>Ink, the Day page</small><span>Newsprint #EFE8DC</span></div>
+                <div class="swatch-band sb-paper"><small>The Night ink</small><span>Newsprint #EFE8DC</span></div>
               </div>
             </div>
             <div class="table-scroll">
@@ -1182,30 +1238,30 @@
                   <tr><td><code>leaf</code></td><td><span class="sw" style="background:#CAD576"></span>#CAD576</td><td class="hide-sm"><span class="sw" style="background:#5C6B1E"></span>#5C6B1E</td><td class="ratio">8.3 &middot; 5.1</td></tr>
                   <tr><td><code>on-spot-fill</code></td><td><span class="sw" style="background:#1F1B1A"></span>Char on orange</td><td class="hide-sm">same</td><td class="ratio">5.6</td></tr>
                   <tr><td><code>on-leaf-fill</code></td><td><span class="sw" style="background:#1F1B1A"></span>Char on green</td><td class="hide-sm">same</td><td class="ratio">10.8</td></tr>
-                  <tr><td><code>on-leaf-fill-quiet</code></td><td><span class="sw" style="background:#4A4A2E"></span>Moss on green</td><td class="hide-sm">same</td><td class="ratio">5.8</td></tr>
+                  <tr><td><code>on-leaf-fill-quiet</code></td><td><span class="sw" style="background:#404026"></span>Moss on green</td><td class="hide-sm">same</td><td class="ratio">6.7</td></tr>
                   <tr><td><code>outline</code> controls</td><td><span class="sw" style="background:#A0978C"></span>#A0978C</td><td class="hide-sm"><span class="sw" style="background:#7A7168"></span>#7A7168</td><td class="ratio">4.5 &middot; 4.2</td></tr>
                 </tbody>
               </table>
               <p class="t-caption fig-cap"><b>Table 1</b>Every pair is checked against WCAG AA by the test suite. Night first, then Day.</p>
             </div>
           </div>
-        </details>
+        </div>
 
-        <details class="kit-block" open data-fold>
-          <summary><span class="t-folio"><b class="num-o">5.2</b></span><h3 class="t-title">Two serifs and a condensed sans</h3><span class="t-note">Fraunces for display, Newsreader for reading, Instrument Sans for anything you press or scan. Weight and width carry the hierarchy, not size alone.</span><svg class="fold-chev" aria-hidden="true"><use href="#i-chev"/></svg></summary>
-          <div class="kit-body">
+        <div class="kit-block" data-fold>
+          <header class="fold-head"><span class="t-folio"><b class="num-o">5.2</b></span><h3 class="t-title" id="kit-5-2">Two serifs and a condensed sans</h3><p class="t-note"><span class="fold-short">Fraunces, Newsreader and Instrument Sans.</span><span class="fold-long">Fraunces for display, Newsreader for reading, Instrument Sans for anything you press or scan. Weight and width carry the hierarchy, not size alone.</span></p></header>
+          <div class="kit-body" data-fold-body>
             <div class="specimens">
-              <div class="spec"><p class="s-nameplate">Ben Siverly</p><span class="t-folio"><b>Nameplate</b> &middot; Fraunces 800 &middot; Optical size 144</span></div>
-              <div class="spec"><p class="s-display">The application nobody could finish</p><span class="t-folio"><b>Display</b> &middot; Fraunces 640 caps &middot; Soft 100</span></div>
-              <div class="spec"><p class="s-headline">Map the world first</p><span class="t-folio"><b>Headline</b> &middot; Fraunces 360 &middot; Soft 50</span></div>
-              <div class="spec"><p class="s-figure">3.4<i>d</i></p><span class="t-folio"><b>Figure</b> &middot; Fraunces 300 &middot; Soft 0</span></div>
-              <div class="spec"><p class="s-pull">Nobody claps. That&rsquo;s how I know it&rsquo;s working.</p><span class="t-folio"><b>Pull quote</b> &middot; Fraunces italic &middot; Soft 100</span></div>
-              <div class="spec"><p class="t-title">Native Plant Finder</p><span class="t-folio"><b>Title</b> &middot; Fraunces 480 &middot; Soft 30</span></div>
-              <div class="spec"><p class="t-deck">Submissions went from 44% to 70%. Here is what changed.</p><span class="t-folio"><b>Deck</b> &middot; Newsreader italic</span></div>
-              <div class="spec"><p>I thrive in the unglamorous middle: the customer calls, the half-clean data, the code that has to actually run.</p><span class="t-folio"><b>Body</b> &middot; Newsreader 17px &middot; 2 columns</span></div>
-              <div class="spec"><p class="t-note">Properties on the new flow, compared with offline workflows.</p><span class="t-folio"><b>Sidenote</b> &middot; Newsreader 14px</span></div>
-              <div class="spec"><p class="t-kicker">01 &middot; Work &middot; AppFolio</p><span class="t-folio"><b>Kicker</b> &middot; Instrument Sans 85% width</span></div>
-              <div class="spec"><p class="t-folio" style="color: var(--ink)">05 &middot; Ben Siverly &middot; Issue 01</p><span class="t-folio"><b>Folio</b> &middot; Instrument Sans 80% width</span></div>
+              <div class="spec"><p class="s-nameplate">Ben Siverly</p><span class="t-folio"><b>Nameplate</b> &middot; Fraunces&nbsp;800 &middot; Optical&nbsp;size&nbsp;144</span></div>
+              <div class="spec"><p class="s-display">The application nobody could finish</p><span class="t-folio"><b>Display</b> &middot; Fraunces&nbsp;640&nbsp;caps &middot; Soft&nbsp;100</span></div>
+              <div class="spec"><p class="s-headline">Map the world first</p><span class="t-folio"><b>Headline</b> &middot; Fraunces&nbsp;360 &middot; Soft&nbsp;50</span></div>
+              <div class="spec"><p class="s-figure">3.4<i>d</i></p><span class="t-folio"><b>Figure</b> &middot; Fraunces&nbsp;300 &middot; Soft&nbsp;0</span></div>
+              <div class="spec"><p class="s-pull">Nobody claps. That&rsquo;s how I know it&rsquo;s working.</p><span class="t-folio"><b>Pull quote</b> &middot; Fraunces&nbsp;italic &middot; Soft&nbsp;100</span></div>
+              <div class="spec"><p class="t-title">Native Plant Finder</p><span class="t-folio"><b>Title</b> &middot; Fraunces&nbsp;480 &middot; Soft&nbsp;30</span></div>
+              <div class="spec"><p class="t-deck">Applicants could not save their place. Here is what changed.</p><span class="t-folio"><b>Deck</b> &middot; Newsreader italic</span></div>
+              <div class="spec"><p>I care about shipping things that actually work, staying close to my family, and building a few things that might outlast me.</p><span class="t-folio"><b>Body</b> &middot; Newsreader&nbsp;17px &middot; 2&nbsp;columns</span></div>
+              <div class="spec"><p class="t-note">Properties on the new flow, compared with offline workflows.</p><span class="t-folio"><b>Sidenote</b> &middot; Newsreader&nbsp;14px</span></div>
+              <div class="spec"><p class="t-kicker">01 &middot; Work &middot; AppFolio</p><span class="t-folio"><b>Kicker</b> &middot; Instrument&nbsp;Sans &middot; 85%&nbsp;width</span></div>
+              <div class="spec"><p class="t-folio" style="color: var(--ink)">05 &middot; Ben Siverly &middot; Issue 01</p><span class="t-folio"><b>Folio</b> &middot; Instrument&nbsp;Sans &middot; 80%&nbsp;width</span></div>
               <div class="spec"><p class="t-byline">By Ben Siverly &middot; <span data-read="work">2</span> min read</p><span class="t-folio"><b>Byline</b> &middot; Instrument Sans</span></div>
               <div class="spec spec--wide">
                 <div class="dial" role="img" aria-label="The word Grow in Fraunces at five settings, from light and sharp to heavy and soft">
@@ -1219,11 +1275,11 @@
               </div>
             </div>
           </div>
-        </details>
+        </div>
 
-        <details class="kit-block" open data-fold>
-          <summary><span class="t-folio"><b class="num-o">5.3</b></span><h3 class="t-title">Grain, fades and ornament</h3><span class="t-note">One tile of fine film grain, light and dark, strongest on the orange fields. Fades are grainy, dithered ramps where one ground meets another, used twice. One ornament per page.</span><svg class="fold-chev" aria-hidden="true"><use href="#i-chev"/></svg></summary>
-          <div class="kit-body">
+        <div class="kit-block" data-fold>
+          <header class="fold-head"><span class="t-folio"><b class="num-o">5.3</b></span><h3 class="t-title" id="kit-5-3">Grain, fades and ornament</h3><p class="t-note"><span class="fold-short">Film grain, grainy fades, one ornament a page.</span><span class="fold-long">One tile of fine film grain, light and dark, strongest on the orange fields. Fades are grainy, dithered ramps where one ground meets another, used twice. One ornament per page.</span></p></header>
+          <div class="kit-body" data-fold-body>
             <div class="textures">
               <div class="tex field-spot">Grain on Toxic Orange</div>
               <div class="tex field-leaf">Grain on Goody Gumdrop</div>
@@ -1246,13 +1302,13 @@
               <li><span class="t-folio">End marks</span><p class="t-small">A square of orange closes a piece.<span class="end-mark"></span> <span class="dots-end" style="display: inline-block; margin: 0 0 0.3em 1rem; vertical-align: middle"></span></p></li>
             </ul>
           </div>
-        </details>
+        </div>
 
-        <details class="kit-block" open data-fold>
-          <summary><span class="t-folio"><b class="num-o">5.4</b></span><h3 class="t-title">Controls: Material 3, dressed quiet</h3><span class="t-note">Familiar anatomy and states. Pills, condensed tracked caps, no shadows. One orange button per page; on a colour field, buttons turn Char.</span><svg class="fold-chev" aria-hidden="true"><use href="#i-chev"/></svg></summary>
-          <div class="kit-body controls">
+        <div class="kit-block" data-fold>
+          <header class="fold-head"><span class="t-folio"><b class="num-o">5.4</b></span><h3 class="t-title" id="kit-5-4">Controls: Material&nbsp;3, dressed quiet</h3><p class="t-note"><span class="fold-short">Material 3 anatomy and states, in pills.</span><span class="fold-long">Familiar anatomy and states. Pills, condensed tracked caps, no shadows. One orange button per page; on a colour field, buttons turn Char.</span></p></header>
+          <div class="kit-body controls" data-fold-body>
             <div>
-              <span class="t-folio control-label">Buttons: filled, outlined, text, spot</span>
+              <span class="t-folio control-label">Buttons: filled, outlined, text, disabled</span>
               <div class="control-row">
                 <a class="btn btn--filled" href="#work">Read the cover story</a>
                 <a class="btn btn--outlined" href="resume.html">Résumé</a>
@@ -1293,35 +1349,24 @@
             <div>
               <span class="t-folio control-label">Teasers, not cards</span>
               <ul class="teasers">
-                <li class="teaser"><div class="art"><svg viewBox="140 120 320 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="background: var(--palette-deep-gondola)"><use href="#art-still-life" width="600" height="760"/></svg></div><span class="t-kicker">03 &middot; Workshop</span><h4>Native Plant Finder</h4><p class="t-small t-quiet">Native plants for your location and sun. Fewer lawns, more pollinators.</p><a class="btn btn--text" href="native-plant-finder.html">Open <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
-                <li class="teaser"><div class="art"><svg viewBox="420 30 380 285" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#art-street" width="1200" height="280"/></svg></div><span class="t-kicker">01 &middot; Work</span><h4>The application nobody could finish</h4><p class="t-small t-quiet">Submissions went from 44% to 70%.</p><a class="btn btn--text" href="#work">Read <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
-                <li class="teaser"><div class="art"><svg viewBox="120 470 360 270" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="background: var(--palette-deep-gondola)"><use href="#art-still-life" width="600" height="760"/></svg></div><span class="t-kicker">04 &middot; Writing</span><h4>Nobody Claps</h4><p class="t-small t-quiet">The table, the bath, errands with a kid on my hip.</p><a class="btn btn--text" href="nobody-claps.html">Read <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+                <li class="teaser"><div class="art"><svg viewBox="140 120 320 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="background: var(--palette-deep-gondola)"><use href="#art-still-life" width="600" height="760"/></svg></div><span class="t-kicker">03 &middot; Workshop</span><h4>Native Plant Finder</h4><p class="t-small t-quiet">Native plants for your location and sun. Fewer lawns, more pollinators.</p><a class="btn btn--text" href="native-plant-finder.html">Open<span class="visually-hidden"> Native Plant Finder</span> <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+                <li class="teaser"><div class="art"><svg viewBox="420 30 380 285" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#art-street" width="1200" height="280"/></svg></div><span class="t-kicker">01 &middot; Work</span><h4>The application nobody could finish</h4><p class="t-small t-quiet">A rental application people could finally finish.</p><a class="btn btn--text" href="#work">Read<span class="visually-hidden"> The application nobody could finish</span> <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+                <li class="teaser"><div class="art"><svg viewBox="120 470 360 270" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="background: var(--palette-deep-gondola)"><use href="#art-still-life" width="600" height="760"/></svg></div><span class="t-kicker">04 &middot; Writing</span><h4>Nobody Claps</h4><p class="t-small t-quiet">The table, the bath, errands with a kid on my hip.</p><a class="btn btn--text" href="nobody-claps.html">Read<span class="visually-hidden"> Nobody Claps</span> <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
               </ul>
             </div>
             <div>
               <span class="t-folio control-label">States, rendered</span>
-              <div class="table-scroll">
-                <table class="state-grid">
-                  <caption class="visually-hidden">The primary and secondary buttons in each Material 3 state</caption>
-                  <thead><tr><th scope="col">Enabled</th><th scope="col">Hover 8%</th><th scope="col">Focus 10%</th><th scope="col">Pressed 12%</th><th scope="col">Disabled</th></tr></thead>
-                  <tbody>
-                    <tr>
-                      <td><span class="btn btn--filled">Primary</span></td>
-                      <td><span class="btn btn--filled is-hover">Primary</span></td>
-                      <td><span class="btn btn--filled is-focus">Primary</span></td>
-                      <td><span class="btn btn--filled is-pressed">Primary</span></td>
-                      <td><button class="btn btn--filled" type="button" disabled>Primary</button></td>
-                    </tr>
-                    <tr>
-                      <td><span class="btn btn--outlined">Secondary</span></td>
-                      <td><span class="btn btn--outlined is-hover">Secondary</span></td>
-                      <td><span class="btn btn--outlined is-focus">Secondary</span></td>
-                      <td><span class="btn btn--outlined is-pressed">Secondary</span></td>
-                      <td><button class="btn btn--outlined" type="button" disabled>Secondary</button></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+              <table class="state-grid">
+                <caption class="visually-hidden">The primary and secondary buttons in each Material 3 state</caption>
+                <thead><tr><th scope="col">State</th><th scope="col">Primary</th><th scope="col">Secondary</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row">Enabled</th><td><span class="btn btn--filled">Primary</span></td><td><span class="btn btn--outlined">Secondary</span></td></tr>
+                  <tr><th scope="row">Hover 8%</th><td><span class="btn btn--filled is-hover">Primary</span></td><td><span class="btn btn--outlined is-hover">Secondary</span></td></tr>
+                  <tr><th scope="row">Focus 10%</th><td><span class="btn btn--filled is-focus">Primary</span></td><td><span class="btn btn--outlined is-focus">Secondary</span></td></tr>
+                  <tr><th scope="row">Pressed 12%</th><td><span class="btn btn--filled is-pressed">Primary</span></td><td><span class="btn btn--outlined is-pressed">Secondary</span></td></tr>
+                  <tr><th scope="row">Disabled</th><td><button class="btn btn--filled" type="button" disabled>Primary</button></td><td><button class="btn btn--outlined" type="button" disabled>Secondary</button></td></tr>
+                </tbody>
+              </table>
             </div>
             <table class="states">
               <caption class="visually-hidden">Material 3 state layers</caption>
@@ -1334,7 +1379,7 @@
               </tbody>
             </table>
           </div>
-        </details>
+        </div>
       </div>
     </section>
   </main>
@@ -1344,22 +1389,22 @@
     <div class="wrap colophon-grid">
       <div>
         <h2>Ben Siverly</h2>
-        <p class="t-small t-quiet">Issue 01 &middot; <span data-season>Autumn</span> 2026. Product manager at AppFolio. Set in Fraunces, Newsreader and Instrument Sans.</p>
+        <p class="t-small t-quiet">Issue 01 &middot; Autumn 2026. Product manager at AppFolio. Set in Fraunces, Newsreader and Instrument Sans.</p>
       </div>
       <div class="write">
         <span class="t-folio">Write to me</span>
         <button class="btn btn--outlined btn--sm" type="button" data-email="YmVuamFtaW5zaXZlcmx5QGdtYWlsLmNvbQ==" data-copy-email><span data-copy-label>Copy my email</span></button>
+        <a class="nojs-only btn btn--outlined btn--sm" href="https://www.linkedin.com/in/be-ns/" rel="noopener">Message me on LinkedIn</a>
         <span class="copy-status t-note" aria-live="polite" aria-atomic="true"></span>
         <p class="t-small">For agents: <a href="llms.txt">llms.txt</a></p>
       </div>
       <div><span class="t-folio">Elsewhere</span><ul class="t-small"><li><a href="https://www.linkedin.com/in/be-ns/" rel="noopener">LinkedIn</a></li><li><a href="https://github.com/be-ns" rel="noopener">GitHub</a></li><li><a href="Ben-Siverly-Resume.pdf">Résumé, PDF</a></li></ul></div>
-      <div><span class="t-folio">Also</span><ul class="t-small"><li><a href="index.html#tools-heading">The tools</a></li><li><a href="brand.md">Brand brief</a></li><li><a href="index.html">Current home page</a></li></ul></div>
+      <div><span class="t-folio">Also</span><ul class="t-small"><li><a href="index.html#tools-heading">The tools</a></li><li><a href="index.html">Current home page</a></li></ul></div>
     </div>
   </footer>
 
   <script>
-    // Edition (Night is the default), the paper insert that flips, the season,
-    // reading times, the menu sheet, the phone disclosures, the copy-email
+    // Edition (Night is the default), the paper insert that flips, reading times, the menu sheet, the phone disclosures, the copy-email
     // button and the demo chips.
     (function () {
       const root = document.documentElement;
@@ -1379,10 +1424,6 @@
         try { localStorage.setItem('edition', b.dataset.editionChoice); } catch (err) { /* storage blocked */ }
       }));
 
-      const season = ['Winter', 'Winter', 'Spring', 'Spring', 'Spring', 'Summer', 'Summer', 'Summer', 'Autumn', 'Autumn', 'Autumn', 'Winter'][new Date().getMonth()];
-      root.dataset.issueSeason = season;
-      document.querySelectorAll('[data-season]').forEach((el) => { el.textContent = season; });
-
       // Reading time per department: words on the page at 230 a minute. The
       // markup carries the same numbers, so this only matters after an edit.
       const minutes = {};
@@ -1392,7 +1433,7 @@
           const section = document.getElementById(id);
           if (!section) return;
           const copy = section.cloneNode(true);
-          copy.querySelectorAll('[aria-hidden="true"], svg, script, style').forEach((n) => n.remove());
+          copy.querySelectorAll('[aria-hidden="true"], svg, script, style, .fold-short').forEach((n) => n.remove());
           const words = copy.textContent.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
           minutes[id] = Math.max(1, Math.round(words / 230));
         }
@@ -1400,27 +1441,53 @@
       });
 
       // Phones: the Kit subsections and the Writing list close into list rows.
-      // From 600px up they stay open and their summaries are plain headers.
+      // Each title gets a disclosure button that shows or hides its body. From
+      // 600px up the button is taken out again and the headers are plain headings.
       const phone = window.matchMedia('(max-width: 599px)');
-      const folds = document.querySelectorAll('[data-fold]');
-      const fold = () => folds.forEach((d) => {
-        d.open = !phone.matches;
-        d.querySelector('summary').tabIndex = phone.matches ? 0 : -1;
+      const folds = [...document.querySelectorAll('[data-fold]')];
+      const setOpen = (block, open) => {
+        block.querySelector('.fold-btn').setAttribute('aria-expanded', String(open));
+        block.classList.toggle('is-closed', !open);
+        block.querySelector('[data-fold-body]').hidden = !open;
+      };
+      const fold = () => folds.forEach((block, i) => {
+        const title = block.querySelector('.fold-head h3');
+        const body = block.querySelector('[data-fold-body]');
+        let button = title.querySelector('.fold-btn');
+        if (phone.matches && !button) {
+          if (!body.id) body.id = `fold-${i + 1}`;
+          button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'fold-btn';
+          button.setAttribute('aria-controls', body.id);
+          button.append(...title.childNodes);
+          button.insertAdjacentHTML('beforeend', '<svg class="fold-chev" aria-hidden="true"><use href="#i-chev"/></svg>');
+          button.addEventListener('click', () => setOpen(block, button.getAttribute('aria-expanded') !== 'true'));
+          title.append(button);
+          setOpen(block, false);
+        } else if (!phone.matches && button) {
+          button.querySelector('.fold-chev').remove();
+          title.append(...button.childNodes);
+          button.remove();
+          block.classList.remove('is-closed');
+          body.hidden = false;
+        }
       });
       fold();
       phone.addEventListener('change', fold);
-      folds.forEach((d) => d.querySelector('summary').addEventListener('click', (e) => { if (!phone.matches) e.preventDefault(); }));
 
       // Copy email: the address sits base64-encoded in data-email, as on the home page.
       const copyButton = document.querySelector('[data-copy-email]');
       if (copyButton) {
         const label = copyButton.querySelector('[data-copy-label]');
+        const original = label.textContent;
         const status = document.querySelector('.copy-status');
         const say = (message) => { if (status) status.textContent = message; };
+        let reset = 0;
         const copied = (email) => {
-          const original = label.textContent;
+          clearTimeout(reset);
           label.textContent = 'Copied';
-          setTimeout(() => { label.textContent = original; }, 2000);
+          reset = setTimeout(() => { label.textContent = original; }, 2000);
           say(`${email} is ready to paste.`);
         };
         copyButton.addEventListener('click', () => {
@@ -1440,8 +1507,12 @@
       if (sheet && opener && typeof sheet.showModal === 'function') {
         opener.addEventListener('click', () => { sheet.showModal(); opener.setAttribute('aria-expanded', 'true'); });
         sheet.addEventListener('close', () => opener.setAttribute('aria-expanded', 'false'));
+        // Close on a link, the close button, or a tap on the scrim outside the sheet.
+        // A tap on the sheet's own padding lands on the dialog too, so test the point.
         sheet.addEventListener('click', (e) => {
-          if (e.target === sheet || e.target.closest('a, [data-menu-close]')) sheet.close();
+          const r = sheet.getBoundingClientRect();
+          const outside = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+          if ((e.target === sheet && outside) || e.target.closest('a, [data-menu-close]')) sheet.close();
         });
       }
 
@@ -1449,7 +1520,7 @@
       const nameplate = document.querySelector('.nameplate');
       if (masthead && nameplate && 'IntersectionObserver' in window) {
         new IntersectionObserver(([entry]) => {
-          masthead.toggleAttribute('data-cover-in-view', entry.isIntersecting);
+          masthead.toggleAttribute('data-cover-gone', !entry.isIntersecting);
         }, { rootMargin: '-56px 0px 0px 0px' }).observe(nameplate);
       }
 

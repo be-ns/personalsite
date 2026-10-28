@@ -13,7 +13,7 @@
     "ember": { "$type": "color", "$value": "#FF8460", "$description": "Toxic Orange lifted so it reads as small text on Gondola and its raised surface." },
     "burnt-orange": { "$type": "color", "$value": "#B63A14", "$description": "Orange as text on paper." },
     "goody-gumdrop": { "$type": "color", "$value": "#CAD576", "$description": "Fields, pull quotes, kickers, selected states." },
-    "moss": { "$type": "color", "$value": "#4A4A2E", "$description": "Quiet ink on a Goody Gumdrop field." },
+    "moss": { "$type": "color", "$value": "#404026", "$description": "Quiet ink on a Goody Gumdrop field." },
     "olive": { "$type": "color", "$value": "#5C6B1E", "$description": "Green as text on paper." },
     "char": { "$type": "color", "$value": "#1F1B1A", "$description": "The darkest ink. All type on orange and green fields." },
     "deep-gondola": { "$type": "color", "$value": "#2A2625", "$description": "Wells, the colophon, the cover art's night ground." },

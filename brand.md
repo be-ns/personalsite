@@ -21,8 +21,9 @@ already know (Material 3).
 **Ben Siverly.** No separate publication name. The cover is a Works in Progress
 composition:
 
-- A solid issue-colour ground. Autumn and Winter are Toxic Orange; Spring and
-  Summer are Goody Gumdrop. The season comes from the date.
+- A solid issue-colour ground. Autumn and Winter issues are Toxic Orange;
+  Spring and Summer issues are Goody Gumdrop. The season and year are the
+  issue's own, set in the markup, never read from the visitor's clock.
 - The nameplate in the Fraunces display cut (optical size 144, weight 800:
   sharp wedge serifs, high contrast), caps, drawn as one SVG path so it spans
   the cover edge to edge at every width, the way the Works in Progress wordmark
@@ -34,12 +35,15 @@ composition:
   bottom, separated by short drawn rules, a hairline running to a `+` crosshair
   at each end. On wide covers they are headlines, not navigation; the contents
   page beside the cover holds the links.
-- On phones the cover is the whole first screen: a one-sentence standfirst
-  under the issue line, the frame, then the cover lines as tappable rows
-  (numeral, headline, arrow) and the Cover story button.
+- On phones (under 520px, chosen by viewport width, never by the cover's own
+  size) the cover is the whole first screen: a standfirst under the issue line,
+  the frame, then the cover lines as tappable rows (numeral, headline, arrow),
+  one per department. They stand in for the contents list, which phones skip;
+  the editor's note that follows says something the standfirst does not.
+- Grain sits under the type on every field and on the cover, never over it.
 - One seal: a Goody Gumdrop scallop with a Toxic Orange rim (the nudibranch)
   carrying the one number that matters, 44% to 70%. Its label never drops
-  under 12px on a desktop cover.
+  under 12px, and the figures and label always sit inside the dashed ring.
 
 On wide screens the cover and the contents page open as a spread, so the first
 screen holds the positioning, the proof and both buttons, with at least 24px of
@@ -127,7 +131,7 @@ Orange touches green at least once (the rim on the Workshop field, the seal).
 | Leaf | Goody Gumdrop | `#CAD576` | Kickers, pull quotes | 8.3 on ground |
 | Fields | Toxic Orange, Goody Gumdrop | | The cover, the Work band, the Workshop field, selected states, the one orange button | |
 | Ink on fields | Char | `#1F1B1A` | All type on orange and green | 5.6 on orange, 10.8 on green |
-| Quiet ink on green | Moss | `#4A4A2E` | Descriptions on the Workshop field | 5.8 |
+| Quiet ink on green | Moss | `#404026` | Descriptions on the Workshop field | 6.7 |
 | Outline | Pewter | `#A0978C` | Control boundaries | 4.5 on ground |
 
 ### Day
@@ -172,18 +176,19 @@ All free (SIL Open Font License) and self-hosted. Three families.
   on screen (standard deviation of luma): about 4.5 levels on Gondola, with
   under 0.2% of pixels more than 20 levels off; 9 on paper; 8 on the orange
   and green fields. Orange fields carry an extra layer; Goody Gumdrop a lighter
-  one, under the type, so small text on green stays clean. Never animated; off
+  one. Both sit under the type, so small text on a field stays clean. Never animated; off
   in print.
 - **Fades.** The grainy fade of an old print, used sparingly: about 120px where
   the charcoal briefing runs into the orange Work opener, and where the paper
-  Writing insert runs into the charcoal Kit. A CSS gradient with a second,
-  stronger pass of grain across its middle, which dithers the ramp. No large
-  SVG blurs.
+  Writing insert runs into the charcoal Kit. A CSS gradient with a second
+  pass of grain across its middle, which dithers the ramp. The paper fade
+  passes through warm sepia, never neutral grey, like a faded print's edge.
+  No large SVG blurs.
 - **Light leaks.** One faint orange leak behind the contents page and one faint
   green leak in the Kit: cheap radial gradients under the grain.
-- **Sun-fades.** A pale bloom at one corner of each colour field, a burn at the
-  far edge of the orange ones, and a warm glow where a story starts under its
-  band.
+- **Sun-fades.** A pale bloom at one corner of each colour field and a burn at
+  the far edge of the large orange ones. Never a burn under small type: the
+  cover's foot is lifted, not burned, so the credit keeps its contrast.
 - **Edges.** Where a field meets the page, a ruffled edge with an orange rim:
   the nudibranch. Checkered rules and a running line of text frame the Work band.
 - **Photos.** One treatment as an SVG filter in the page: colour at 70%, blacks
@@ -212,14 +217,19 @@ All free (SIL Open Font License) and self-hosted. Three families.
   "Ben Siverly · Issue 01 · season" on the other side, alternating sides like
   left and right pages. On phones, number and title only.
 - **Running borders** set whole phrases, justified so a line always ends on a
-  word; never a phrase clipped at the edge.
+  word; never a phrase clipped at the edge. On phones, where only a phrase or
+  two fit, they are centred at their natural spacing instead.
 - **Story:** kicker → decorative caps on the band → deck → byline. Inside: two
   ragged-right columns with a drop cap (`initial-letter`), a ruled margin column
-  with the big figure, an "At a glance" strip (company, role, what shipped,
-  change failures) and numbered source notes, then the chart, then shorter
+  with a terse "At a glance" strip (company, role, what shipped) and numbered
+  source notes, then the chart, then shorter
   briefs, then the street engraving along the bottom.
-- **Briefs:** a large Fraunces figure with a small unit in Ember, a tracked-caps
-  label, one line, one source. Every fact matches the home page or the résumé.
+- **Briefs:** a large Fraunces figure with a small unit in Ember (word units
+  set off by a thin space), a tracked-caps label and one source. No body line
+  that restates the story. Every fact matches the home page or the résumé.
+- **Say it once.** A sentence appears once on the page. The cover, contents,
+  briefs and story each add something; the headline figure is not repeated in
+  a margin.
 - **Notes:** circled numerals in the text link to notes in the margin; on phones
   the notes sit after the text, always visible.
 - **Charts:** one spot colour, thin frame, tracked-caps title, `Fig. n` caption,
@@ -227,7 +237,8 @@ All free (SIL Open Font License) and self-hosted. Three families.
   beside the legend ("26 more of every 100 started applications now get
   submitted"). Show only real numbers.
 - **Phones:** under 600px the Kit subsections and the Writing list close into
-  M3 list rows (`<details>`), so the page is a third shorter.
+  M3 list rows, each title a disclosure button with one short line under it,
+  so the page is a third shorter. From 600px up they are plain headings.
 - **End marks:** a small orange square closes a piece.
 
 ## Components: Material 3, dressed quiet
@@ -260,6 +271,7 @@ All free (SIL Open Font License) and self-hosted. Three families.
 - Things arrive once and sit still. The masthead wordmark fades in only after the
   cover nameplate scrolls away.
 - "Dynamic" lives in the content: the season in the issue line, the issue colour.
+  Both change with each issue, not with the reader's clock.
 - `prefers-reduced-motion`: no movement.
 
 ## Accessibility floor
