@@ -203,6 +203,85 @@ test('writings.html lists every piece in its three groups, with the words it had
   assert.doesNotMatch(authored, /<script(?! type="application\/ld\+json")/, 'the index needs no script of its own');
 });
 
+// Every word in <main>, around the piece's own body as well as in it. The
+// tests above hold each body, title, kicker, date and deck; this one holds
+// the rest, so no sentence can be added anywhere on the page (in the feature
+// column, after a poem, by the feedback box, in an index entry) without a
+// test failing. Each text node in <main> outside #piece-body is listed in
+// order and must be one of the strings below: the fixture's own words, the
+// neighbours' titles, the reading times the press writes, and the labels the
+// new template set around them. FRAME is that whole list of new labels.
+const SITE = press.loadSite();
+const PUB = `${SITE.name} · Issue ${SITE.issue.number} · ${SITE.issue.season}`;
+const FRAME = {
+  rights: '© 2026 Ben Siverly',
+  byline: 'By Ben Siverly',
+  indexKicker: 'Two essays, four poems and a story in draft',
+  prev: 'Previous', next: 'Next', dept: '04 Writing', all: 'All writing',
+  chapters: 'Chapters', min: 'min', minRead: 'min read',
+};
+function leaves(node, skip, out = []) {
+  for (const c of node.children || []) {
+    if (c.type === 'text') {
+      const t = press.decodeEntities(c.value).replace(/\s+/g, ' ').trim();
+      if (t) out.push(t);
+    } else if (c.type === 'element' && c.tag !== 'script' && c.tag !== 'style' && !skip(c)) {
+      leaves(c, skip, out);
+    }
+  }
+  return out;
+}
+const minutes = (page) => String(press.readingMinutes(byId(page, 'piece-body')));
+const runningHead = (title) => ['04', 'Writing', '·', title, PUB];
+function wayOn(page) {
+  const i = ORDER.findIndex((o) => o.href === page);
+  return [
+    ...(i > 0 ? [FRAME.prev, ORDER[i - 1].title] : []),
+    FRAME.dept, FRAME.all,
+    ...(ORDER[i + 1] ? [FRAME.next, ORDER[i + 1].title] : []),
+  ];
+}
+function frameOf(page) {
+  const was = fixture.pieces[page];
+  const byline = (when) => [`${FRAME.byline} ·`, when, '·', minutes(page), FRAME.minRead];
+  if (page === LONG_READ) {
+    return [
+      was.eyebrow, was.h1, was.meta['og:description'], ...byline(date(was.date)),
+      ...runningHead(was.h1),
+      FRAME.chapters, ...was.blocks.filter((b) => b.chapter).map((b) => b.chapter),
+      FRAME.chapters,
+      was.feedback.note.replace(NOTE.from, NOTE.to), was.feedback.label.replace(LINK.from, LINK.to),
+      ...wayOn(page), FRAME.rights,
+    ];
+  }
+  if (POEMS.includes(page)) {
+    return [...runningHead(was.h1), was.eyebrow, was.h1, FRAME.byline, was.date, ...wayOn(page), FRAME.rights];
+  }
+  return [...runningHead(was.h1), was.eyebrow, was.h1, was.meta['og:description'], ...byline(was.date), ...wayOn(page), FRAME.rights];
+}
+
+for (const page of PIECES) {
+  test(`${page}: no words around the piece but its own and the template's labels`, () => {
+    const main = one(page, (el) => el.tag === 'main', '<main>');
+    assert.deepEqual(leaves(main, (el) => el.attrs.id === 'piece-body'), frameOf(page));
+  });
+}
+
+test('writings.html: no words on the index but its entries and the template\'s labels', () => {
+  const was = fixture.index;
+  const want = ['04', 'Writing', PUB, '04', FRAME.indexKicker, was.h1, was.intro];
+  for (const g of was.groups) {
+    want.push(g.name);
+    for (const item of g.items) {
+      want.push(item.title, date(item.date));
+      if (item.href && !item.lines) want.push('·', minutes(item.href), FRAME.min);
+      want.push(...(item.lines || [item.excerpt]));
+    }
+  }
+  want.push(FRAME.rights);
+  assert.deepEqual(leaves(one(INDEX, (el) => el.tag === 'main', '<main>'), () => false), want);
+});
+
 test('each piece links back to the index and to its neighbours, in the index\'s order', () => {
   assert.deepEqual(ORDER.map((o) => o.href).sort(), PIECES.slice().sort(), 'the index orders every piece');
   ORDER.forEach(({ href }, i) => {

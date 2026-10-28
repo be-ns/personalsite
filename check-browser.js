@@ -33,8 +33,10 @@
 //     under the sheet
 //   - the Writing supplement: each title on the first screen, the poems'
 //     lines hanging where a phone wraps them, the index whole without
-//     script, and each piece printing alone in Day ink with no stanza or
-//     machine block split across pages
+//     script, Serotiny's way back to its chapters on phones and tablets, and
+//     each piece printing alone in Day ink with no stanza or machine block
+//     split across pages, on the sheets it needs and no more, its end mark
+//     and chapter rules still there with Background graphics off
 //   - the agent contract (test/fixtures/agent-contract.json): every WebMCP
 //     tool's schema and read-only output, the llms.txt example outputs, each
 //     example link showing what the tool shows for the same input and the
@@ -54,7 +56,7 @@ const path = require('path');
 const crypto = require('crypto');
 const { isDeepStrictEqual } = require('util');
 const { chromePages } = require('./build-pages');
-const { fills } = require('./render-resume-pdf');
+const { fills, extractText } = require('./render-resume-pdf');
 
 const ROOT = __dirname;
 const SIZES = [[320, 640], [390, 844], [768, 1024], [1024, 768], [1280, 720], [1366, 768], [1440, 900]];
@@ -470,9 +472,9 @@ async function printCounts(browser, base) {
 //   - a poem's lines hang: a line a phone wraps carries over indented, and
 //     no two lines share a row
 //   - with script off, the index still shows every piece and its words
-//   - print: the piece alone in Day ink on white, no chrome, no way-on
-//     links; a stanza and a machine block never split across pages, and
-//     Serotiny's band prints as plain type
+//   - Serotiny: after a jump to a chapter, the way back to the list is on
+//     screen (the sticky list from 1024px, a Chapters link below)
+//   - print: see the comment above the print loop
 const WRITING = ['writings.html', 'nobody-claps.html', 'building-things-worth-losing.html', 'milk.html', 'hot-pig-summer.html', 'the-room-love-needs-to-breathe.html', 'come-down.html', 'serotiny.html'];
 const POEMS = ['milk.html', 'hot-pig-summer.html', 'the-room-love-needs-to-breathe.html', 'come-down.html'];
 
@@ -524,26 +526,110 @@ async function writing(browser, base) {
     check(seen.length === 8 && seen.every((e) => e.shown), `writings.html without script shows ${seen.filter((e) => e.shown).length} of 8 entries`);
     await context.close();
   }
+  // Serotiny on phones and tablets: the list of chapters sits once, above
+  // chapter 1, and a Chapters link waits at the foot of the screen once it
+  // has scrolled away. Wide screens keep the list itself in view instead.
+  for (const [width, height] of [[320, 640], [390, 844], [768, 1024], [1024, 768], [1280, 720]]) {
+    const { page, close } = await open(browser, `${base}serotiny.html`, { width, height });
+    const state = () => page.evaluate(() => {
+      const link = document.querySelector('.to-chapters');
+      const r = link.getBoundingClientRect();
+      const cs = getComputedStyle(link);
+      const list = document.getElementById('chapters').getBoundingClientRect();
+      return { shown: cs.display !== 'none' && cs.visibility === 'visible' && r.top >= 0 && r.bottom <= innerHeight, listTop: Math.round(list.top), listBottom: Math.round(list.bottom) };
+    });
+    const settle = () => page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(r, 300)))));
+    await page.click('#chapters a[href="#chapter-6"]');
+    await settle();
+    const after = await state();
+    if (width < 1024) {
+      check(after.shown, `serotiny.html at ${width}x${height}: after a jump to chapter 6 there is no Chapters link on screen`);
+      await page.click('.to-chapters');
+      await settle();
+      const back = await state();
+      check(back.listTop >= 0 && back.listTop < height, `serotiny.html at ${width}x${height}: the Chapters link leaves the list at ${back.listTop}px, not on screen`);
+    } else {
+      check(after.listTop >= 0 && after.listBottom <= height, `serotiny.html at ${width}x${height}: after a jump the list of chapters is at ${after.listTop} to ${after.listBottom}px, off screen`);
+      check(!after.shown, `serotiny.html at ${width}x${height}: the Chapters link shows beside the sticky list`);
+    }
+    await close();
+  }
+  // At the top of the story the list is on screen, so the link waits.
+  {
+    const { page, close } = await open(browser, `${base}serotiny.html`, { width: 390, height: 844 });
+    const shown = await page.evaluate(() => getComputedStyle(document.querySelector('.to-chapters')).visibility === 'visible');
+    check(!shown, 'serotiny.html at 390x844: the Chapters link shows before the list has scrolled away');
+    await close();
+  }
+
+  // Print, from the dialog's defaults: Letter, its default margins, and
+  // Background graphics off. The piece alone, in Day ink on white, no chrome,
+  // no way-on links; a stanza and a machine block never split; Serotiny's
+  // band prints as plain type. The marks (the end mark, the chapter rules)
+  // print with Background graphics off: the page paints the same colours
+  // with the box off as with it on. A short piece takes the sheets SHEETS
+  // allows, and no sheet holds only the end matter (the year, the ©).
+  const DIALOG = { top: '0.4in', right: '0.4in', bottom: '0.4in', left: '0.4in' };
+  const SHEETS = { 'writings.html': 2, 'nobody-claps.html': 1, 'building-things-worth-losing.html': 2, 'milk.html': 2, 'hot-pig-summer.html': 2, 'the-room-love-needs-to-breathe.html': 2, 'come-down.html': 1, 'serotiny.html': 13 };
   const pdfPages = (pdf) => (Buffer.from(pdf).toString('latin1').match(/\/Type\s*\/Page[^s]/g) || []).length;
+  // Words as pdftotext gives them: a word Chrome hyphenated at a line end is joined again.
+  const words = (s) => s.replace(/[\u00ad\u2010]\s*/g, '').replace(/[\s\u00a0]+/g, ' ').trim();
   for (const file of WRITING) {
     for (const edition of ['night', 'day']) {
       const { page, close } = await open(browser, `${base}${file}`, { edition });
-      const n = pdfPages(await page.pdf({ format: 'Letter', printBackground: true }));
-      check(n >= 1, `${file} prints (${edition})`);
+      const plain = Buffer.from(await page.pdf({ format: 'Letter', margin: DIALOG, printBackground: false }));
+      const full = Buffer.from(await page.pdf({ format: 'Letter', margin: DIALOG, printBackground: true }));
+      const n = pdfPages(plain);
+      check(n === pdfPages(full), `${file}: prints on ${n} pages with Background graphics off, ${pdfPages(full)} with them on (${edition})`);
+      check(n >= 1 && n <= SHEETS[file], `${file} prints on ${n} Letter pages, want ${SHEETS[file]} at most (${edition})`);
+      const off = fills(plain);
+      const on = fills(full);
+      check(isDeepStrictEqual(off, on), `${file}: printed with Background graphics off it paints ${JSON.stringify(off)}, with them on ${JSON.stringify(on)} (${edition}); a mark drawn as a background is lost`);
       await page.emulateMediaType('print');
       const shown = await page.evaluate(() => {
         const visible = (sel) => [...document.querySelectorAll(sel)].filter((el) => getComputedStyle(el).display !== 'none').length;
-        const hidden = ['.masthead', '.menu-sheet', '.colophon', '.piece-nav', '.chapters', '.feedback', '.lr-art', '.piece-art', '.sprig', '.index-art', '.entry-art', '.fade'].filter((sel) => visible(sel));
+        const hidden = ['.masthead', '.menu-sheet', '.colophon', '.piece-nav', '.chapters', '.to-chapters', '.feedback', '.lr-art', '.piece-art', '.sprig', '.index-art', '.entry-art', '.fade'].filter((sel) => visible(sel));
         const main = document.querySelector('main');
-        const grounds = [document.documentElement, document.body, main, document.querySelector('.lr-band')].filter(Boolean).map((el) => getComputedStyle(el).backgroundColor).filter((c) => c !== 'rgba(0, 0, 0, 0)');
+        const grounds = [document.documentElement, document.body, main, document.querySelector('.lr-band'), ...document.querySelectorAll('.machine')].filter(Boolean).map((el) => getComputedStyle(el).backgroundColor).filter((c) => c !== 'rgba(0, 0, 0, 0)');
         const keep = [...document.querySelectorAll('.stanza, .machine')].filter((el) => getComputedStyle(el).breakInside !== 'avoid').length;
-        return { hidden, grounds, ink: getComputedStyle(main).color, title: getComputedStyle(document.querySelector('h1')).color, keep, grain: getComputedStyle(main, '::after').display };
+        // A mark survives Background graphics off when it is drawn as a
+        // border (or asks for exact colour); a background alone is dropped.
+        const drawn = (cs) => (parseFloat(cs.borderTopWidth) > 0 && cs.borderTopStyle !== 'none') || cs.printColorAdjust === 'exact';
+        const marks = [...document.querySelectorAll('.end-mark')].map((el) => getComputedStyle(el))
+          .concat([...document.querySelectorAll('.chapter')].flatMap((el) => [getComputedStyle(el, '::before'), getComputedStyle(el, '::after')]));
+        const end = document.querySelector('.piece-end');
+        const body = document.getElementById('piece-body');
+        const blocks = body ? body.querySelectorAll('p, .ln') : document.querySelectorAll('.entry-excerpt');
+        return {
+          hidden, grounds, keep,
+          ink: getComputedStyle(main).color,
+          title: getComputedStyle(document.querySelector('h1')).color,
+          grain: getComputedStyle(main, '::after').display,
+          marks: marks.length,
+          lost: marks.filter((cs) => !drawn(cs)).length,
+          endKept: !end || getComputedStyle(end).breakBefore === 'avoid',
+          last: blocks.length ? blocks[blocks.length - 1].textContent : '',
+        };
       });
       check(!shown.hidden.length, `${file}: ${shown.hidden.join(', ')} still print (${edition})`);
       check(!shown.grounds.length, `${file}: print paints a ground, ${shown.grounds.join(', ')} (${edition})`);
       check(shown.ink === 'rgb(52, 48, 47)' && shown.title === 'rgb(52, 48, 47)', `${file}: prints in ${shown.ink} and ${shown.title}, not the Day ink, Gondola (${edition})`);
       check(!shown.keep, `${file}: ${shown.keep} stanzas or machine blocks may split across pages (${edition})`);
       check(shown.grain === 'none', `${file}: the insert prints its grain (${edition})`);
+      check(shown.endKept, `${file}: the year and end mark may print on a page of their own (${edition})`);
+      if (file !== 'writings.html') check(shown.marks > 0 && !shown.lost, `${file}: ${shown.lost} of ${shown.marks} marks (end mark, chapter rules) are drawn as backgrounds and drop out with Background graphics off (${edition})`);
+      // The last sheet carries the piece, not only its year and the ©:
+      // without the © the page count is the same, and (with pdftotext) the
+      // last page holds the end of the last line.
+      await page.addStyleTag({ content: '@media print { .rights { display: none !important; } }' });
+      const bare = pdfPages(await page.pdf({ format: 'Letter', margin: DIALOG, printBackground: false }));
+      check(bare === n, `${file}: the © prints alone on page ${n} (${edition})`);
+      const text = extractText(plain);
+      if (text !== null) {
+        const sheets = text.split('\f').filter((t) => t.trim());
+        const tail = words(shown.last).split(' ').slice(-3).join(' ');
+        check(words(sheets[sheets.length - 1] || '').includes(tail), `${file}: the last printed page does not end the piece ("${tail}") (${edition})`);
+      }
       await close();
     }
   }

@@ -100,23 +100,19 @@
     .chapters ol { display: flex; flex-wrap: wrap; margin-top: var(--space-2); list-style: none; border-top: var(--rule-hairline) solid var(--rule); }
     .chapters a { display: grid; place-items: center; min-width: var(--touch-target); min-height: var(--touch-target); font: 300 1.5rem / 1 var(--font-display); font-variation-settings: 'SOFT' 100; font-feature-settings: 'lnum' 1; letter-spacing: -0.02em; color: var(--spot-large); text-decoration: none; }
     .chapters a:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
+    /* Under 1024px the list sits once, above chapter 1. So a Chapters link
+       waits at the foot of the screen once the list has scrolled away, and
+       takes you back to it; it comes to rest after the last paragraph. Wide
+       screens keep the list itself in view. Without script it is always there. */
+    .to-chapters { position: sticky; bottom: var(--space-4); z-index: 2; justify-self: end; gap: 0.5em; margin-top: var(--space-6); background: var(--ground); transition: opacity var(--motion-duration-short), visibility var(--motion-duration-short); }
+    .to-chapters .ico { rotate: -90deg; }
+    .js .to-chapters:not(.is-shown) { opacity: 0; visibility: hidden; }
 
-    .lr-text .chapter { display: flex; align-items: center; gap: var(--space-4); margin: 2.25em 0 1em; font: 300 clamp(2.25rem, 1.8rem + 2vw, 3.25rem) / 1 var(--font-display); font-variation-settings: 'SOFT' 100; font-feature-settings: 'lnum' 1; letter-spacing: -0.03em; color: var(--spot-large); }
-    .lr-text .chapter::before, .lr-text .chapter::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
-    .lr-text .chapter:first-child { margin-top: 0; }
     /* The opening paragraph runs two lines on a wide screen, so its drop cap does too. */
     .lr-text .dropcap::first-letter { font-size: 2.6em; }
     @supports (initial-letter: 2) or (-webkit-initial-letter: 2) {
       .lr-text .dropcap::first-letter { font-size: 1em; -webkit-initial-letter: 2; initial-letter: 2; }
     }
-
-    /* The machine's voice: Instrument Sans, a little narrow, on the sunk
-       stock with an orange rule, so it reads apart from the prose at any
-       width without shrinking below 15px. */
-    .machine { margin: 1.5em 0; padding: var(--space-3) var(--space-4); border-left: 2px solid var(--spot); background: var(--sunk); font: 400 0.9375rem / 1.5 var(--font-label); font-stretch: 94%; letter-spacing: 0.01em; hyphens: manual; text-wrap: wrap; }
-    .lr-text .machine p { text-indent: 0; }
-    .lr-text .machine p + p { margin-top: var(--space-2); }
-    .machine .prompt { font-weight: 600; }
 
     .feedback { display: grid; justify-items: start; gap: var(--space-4); max-width: var(--layout-measure); margin-top: var(--space-8); padding: var(--space-5) var(--space-5) var(--space-6); border-top: var(--rule-double) var(--rule); background: var(--sunk); font-size: clamp(1.0625rem, 0.97rem + 0.4vw, 1.1875rem); }
     .feedback p { max-width: 28em; font: italic var(--text-weight) var(--type-deck-size) / 1.4 var(--font-text); text-wrap: pretty; }
@@ -127,13 +123,12 @@
       .chapters { grid-column: 1 / span 2; grid-row: 2 / span 2; position: sticky; top: 4.5rem; margin-top: 0.4rem; }
       .chapters ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .lr-text, .feedback { grid-column: 4 / span 7; }
+      .to-chapters { display: none; }
     }
 
     @media print {
       .lr-band { padding-block: 0 var(--space-5); background: none; color: var(--ink); }
-      .lr-band::before, .lr-band::after, .lr-band > .rim, .lr-art, .chapters, .feedback { display: none; }
-      .lr-text .chapter { break-after: avoid; }
-      .machine { break-inside: avoid; }
+      .lr-band::before, .lr-band::after, .lr-band > .rim, .lr-art, .chapters, .to-chapters, .feedback { display: none; }
     }
   </style>
 </head>
@@ -215,7 +210,7 @@
       </header>
       <div class="wrap lr-grid">
         <div class="rh rh--verso t-folio"><span class="rh-pg">04</span><span class="rh-title"><a href="writings.html">Writing</a><span aria-hidden="true"> &middot; </span>Serotiny</span><span class="rh-pub">Ben Siverly &middot; Issue 01 &middot; Autumn 2026</span></div>
-        <nav class="chapters" aria-label="Chapters">
+        <nav class="chapters" id="chapters" aria-label="Chapters">
           <span class="t-folio">Chapters</span>
           <ol><li><a href="#chapter-1" aria-label="Chapter 1">1</a></li><li><a href="#chapter-2" aria-label="Chapter 2">2</a></li><li><a href="#chapter-3" aria-label="Chapter 3">3</a></li><li><a href="#chapter-4" aria-label="Chapter 4">4</a></li><li><a href="#chapter-5" aria-label="Chapter 5">5</a></li><li><a href="#chapter-6" aria-label="Chapter 6">6</a></li><li><a href="#chapter-7" aria-label="Chapter 7">7</a></li><li><a href="#chapter-8" aria-label="Chapter 8">8</a></li><li><a href="#chapter-9" aria-label="Chapter 9">9</a></li><li><a href="#chapter-10" aria-label="Chapter 10">10</a></li><li><a href="#chapter-11" aria-label="Chapter 11">11</a></li></ol>
         </nav>
@@ -343,6 +338,7 @@
           <p>He puts it back in his pocket, out of habit, and starts up the hill toward the house, and the machine in the ground beneath it. A fire out of red dirt, kept in a box, in the rain. The only one of its kind for a thousand miles, and the only man for a thousand miles who would know to call it a fire, keeping it now for no one at all.</p>
           <p>He cannot say, standing on the hill with his daughter gone down the water, whether he has just watched a seed go into the ground or a fire get set. Down the coast the green is coming up thick over the black, standing on three hundred years of ash that will not come again. He will not live long enough to learn which one his daughter is.<span class="end-mark" aria-hidden="true"></span></p>
         </div>
+        <a class="btn btn--outlined btn--sm to-chapters" href="#chapters"><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg>Chapters</a>
         <aside class="feedback" aria-label="Feedback on this draft">
           <p>This is a draft. If a line snagged, or something rang false, or it just landed - I'd like to hear it.</p>
           <a class="btn btn--spot" href="mailto:benjaminsiverly@gmail.com?subject=Feedback%20on%20Serotiny%20(draft)">Send feedback</a>
@@ -356,6 +352,19 @@
     <p class="rights t-note wrap">&copy; 2026 Ben Siverly</p>
     <div class="fade" aria-hidden="true"></div>
   </main>
+
+  <script>
+    // The Chapters link shows once the list of chapters has scrolled away above.
+    (function () {
+      const list = document.getElementById('chapters');
+      const link = document.querySelector('.to-chapters');
+      if (!list || !link) return;
+      if (!('IntersectionObserver' in window)) { link.classList.add('is-shown'); return; }
+      new IntersectionObserver(([entry]) => {
+        link.classList.toggle('is-shown', !entry.isIntersecting && entry.boundingClientRect.top < 0);
+      }).observe(list);
+    })();
+  </script>
 
   <!-- chrome:colophon -->
   <footer class="colophon">

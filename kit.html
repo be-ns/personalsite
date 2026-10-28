@@ -163,6 +163,18 @@
     .kit-proof-figure { font: 300 3rem / 0.9 var(--font-display); font-variation-settings: 'SOFT' 0; letter-spacing: -0.035em; color: var(--spot-large); }
     .kit-proof-wash { margin-top: var(--space-2); padding: var(--space-3); background: var(--spot-wash); font: 400 0.875rem / 1.4 var(--font-label); }
     .kit-proof-wash span { margin-right: 0.4em; font: 600 var(--type-folio-size) / 1 var(--font-label); letter-spacing: var(--type-folio-tracking); text-transform: uppercase; font-stretch: var(--type-folio-stretch); color: var(--spot); }
+    /* 5.6 Writing: the shared parts are in site.css; these only lay out the specimens. */
+    .kit-writing { display: grid; gap: var(--space-6); padding: var(--space-5) var(--space-4) var(--space-6); }
+    .kit-writing .control-label { color: var(--ink-quiet); }
+    .kit-feature { display: grid; justify-items: start; gap: var(--space-3); }
+    .kit-feature .piece-title { font-size: clamp(2.5rem, 1.9rem + 2.4vw, 3.75rem); }
+    .kit-feature .prose { margin-top: var(--space-2); }
+    .kit-verse { max-width: 17em; }
+    .kit-long-read .chapter { margin-top: 0; }
+    @media (min-width: 720px) {
+      .kit-writing { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-7); padding: var(--space-6) var(--space-6) var(--space-7); }
+      .kit-feature { grid-column: 1 / -1; }
+    }
 
   </style>
 </head>
@@ -316,7 +328,7 @@
               <li><a href="#method"><span class="n">02</span><span><span class="row"><span class="name">Method</span><span class="lead"></span><span class="rt"><span data-read="method">1</span> min</span></span><span class="desc t-small">Start with the job. Map the world. Write it down first.</span></span></a></li>
               <li><a href="#workshop"><span class="n">03</span><span><span class="row"><span class="name">Workshop</span><span class="lead"></span><span class="rt"><span data-read="workshop">1</span> min</span></span><span class="desc t-small">Six free tools and a Hermes plugin. Your agent can run them too.</span></span></a></li>
               <li><a href="#writing"><span class="n">04</span><span><span class="row"><span class="name">Writing</span><span class="lead"></span><span class="rt"><span data-read="writing">1</span> min</span></span><span class="desc t-small">Two essays, four poems and a story in draft.</span></span></a></li>
-              <li><a href="#kit"><span class="n">05</span><span><span class="row"><span class="name">Kit</span><span class="lead"></span><span class="rt"><span data-read="kit">3</span> min</span></span><span class="desc t-small">The colour, type, texture and controls this issue is made of.</span></span></a></li>
+              <li><a href="#kit"><span class="n">05</span><span><span class="row"><span class="name">Kit</span><span class="lead"></span><span class="rt"><span data-read="kit">4</span> min</span></span><span class="desc t-small">The colour, type, texture and controls this issue is made of.</span></span></a></li>
             </ol>
           </nav>
 
@@ -591,7 +603,7 @@
         <header class="dept-head">
           <div class="dept-id">
             <span class="dept-num" aria-hidden="true">05</span>
-            <span class="t-kicker"><span data-read="kit">3</span> min read</span>
+            <span class="t-kicker"><span data-read="kit">4</span> min read</span>
             <h2 id="kit-heading">Kit</h2>
           </div>
           <p class="dept-intro t-small">How this issue is made. Every value comes from theme.json, compiled to tokens.css. Switch the edition in the masthead or the menu to see both.</p>
@@ -812,6 +824,37 @@
                 <p class="t-kicker">Your priority this month</p>
                 <p class="kit-proof-figure">Health</p>
                 <p class="kit-proof-wash"><span>Invest</span> The chart wash: Toxic Orange at 12% on paper, 14% on Gondola.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kit-block" data-fold>
+          <header class="fold-head"><span class="t-folio"><b class="num-o">5.6</b></span><h3 class="t-title" id="kit-5-6">Writing: the other stock</h3><p class="t-note"><span class="fold-short">The feature, the poem, the long read.</span><span class="fold-long">The Writing pages are printed on the insert stock: paper in Night, charcoal in Day. An essay opens like a feature, a poem keeps every line its own, and the long read numbers its chapters and gives the machine its own voice. The words are set, never restyled.</span></p></header>
+          <div class="kit-body" data-fold-body>
+            <div class="insert writing kit-writing" data-edition="day" data-insert>
+              <div class="kit-feature">
+                <span class="t-folio control-label">Feature: kicker, headline, deck, byline, drop cap</span>
+                <p class="t-kicker piece-form">Prose</p>
+                <p class="piece-title">Nobody Claps</p>
+                <p class="t-deck piece-deck">On raising children without passing on fear, caring for a father in decline, and the unglamorous work nobody claps for.</p>
+                <p class="t-byline">By Ben Siverly &middot; June 2026 &middot; 1 min read</p>
+                <div class="prose"><p class="dropcap">My daughter has my dark circles. The same ones I studied in mirrors as a boy and wished away. On her face I feel only tenderness, and something in me settles: what I carried alone, she won't.</p></div>
+              </div>
+              <div>
+                <span class="t-folio control-label">Poem: a wrapped line hangs, the year and end mark close it</span>
+                <div class="verse kit-verse">
+                  <p class="stanza"><span class="ln">I am a person who wants to put my hands around things</span><br><span class="ln">and call it care.</span></p>
+                </div>
+                <p class="piece-end t-folio"><span>2025</span><span class="end-mark" aria-hidden="true"></span></p>
+              </div>
+              <div class="prose kit-long-read">
+                <span class="t-folio control-label">Long read: a chapter, and the machine&rsquo;s voice</span>
+                <p class="chapter">5</p>
+                <div class="machine">
+                  <p class="prompt">&gt; how do you cut a coho so it doesnt rip</p>
+                  <p class="response">Find the spine with your thumb first, and let the knife follow your thumb. Head to tail in one stroke if you can, the edge riding just over the bone. But I can only tell you where the bones are. I can't put it in your hands. For that you need the women on the point, and a few more ruined fish of your own.</p>
+                </div>
               </div>
             </div>
           </div>

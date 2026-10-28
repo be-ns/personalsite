@@ -263,13 +263,19 @@ All free (SIL Open Font License) and self-hosted. Three families.
   a wrapped line reads as carried over. Serotiny, the long read, opens on an
   orange band with its title in the display caps and the still life beside
   it; its chapters are soft numerals between hairlines, with a list to jump
-  to, and the machine speaks in Instrument Sans on the sunk stock with an
-  orange rule. Every piece ends with the way on: the piece before and after
-  it in the index's order, and All writing. The words are never restyled.
+  to (held beside the text from 1024px; below that a Chapters link waits at
+  the foot of the screen once the list has scrolled away), and the machine
+  speaks in Instrument Sans on the sunk stock with an orange rule. Every
+  piece ends with the way on: the piece before and after it in the index's
+  order, and All writing. The words are never restyled. On paper a piece
+  prints alone at 12pt, so a short one takes one sheet, and a poem's year
+  stays with its last stanza. Kit 5.6 shows the feature, the poem and the
+  long read.
 - **Phones:** under 600px the Kit subsections and the Writing list close into
   M3 list rows, each title a disclosure button with one short line under it,
   so the page is a third shorter. From 600px up they are plain headings.
-- **End marks:** a small orange square closes a piece.
+- **End marks:** a small orange square closes a piece. It is drawn as a
+  border, so it prints with the dialog's Background graphics box off.
 
 ## Components: Material 3, dressed quiet
 

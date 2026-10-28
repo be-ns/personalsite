@@ -181,7 +181,10 @@ a:hover { text-decoration-thickness: var(--link-underline-hover); }
 
 .xh { position: absolute; width: 13px; height: 13px; translate: -50% -50%; background: linear-gradient(currentColor, currentColor) center / 1px 100% no-repeat, linear-gradient(currentColor, currentColor) center / 100% 1px no-repeat; pointer-events: none; }
 
-.end-mark { display: inline-block; width: 0.55em; height: 0.55em; margin-left: 0.3em; background: var(--spot-large); vertical-align: 0.05em; }
+/* The end mark is drawn as a border, not a background, so it still prints
+   with the print dialog's Background graphics box off (its default) and
+   keeps an edge in forced colours. */
+.end-mark { display: inline-block; width: 0; height: 0; margin-left: 0.3em; border: 0.275em solid var(--spot-large); vertical-align: 0.05em; }
 .dots-end { display: block; width: 4.5rem; margin-top: var(--space-5); border-top: 3px dotted var(--ink-quiet); }
 
 /* Nudibranch rim: a ruffled edge where a colour field meets the page. */
@@ -808,11 +811,13 @@ a:hover { text-decoration-thickness: var(--link-underline-hover); }
    <main class="writing insert" data-edition="day" data-insert> is paper in
    the Night edition and charcoal in the Day edition (tokens.css), and it
    fades into the colophon's ground. The feature (the two essays) and the
-   poem (the four poems) are set here, with the way on to the next piece;
-   the index and the long read (Serotiny) keep their own rules in their
-   pages. The words are set, never restyled: titles keep their own case, the
-   poems' lowercase included, and verse takes no drop cap, hyphenation,
-   justification or text-wrap. Scoped with :where(.writing), like the issue. */
+   poem (the four poems) are set here, with the way on to the next piece,
+   and so are the long read's chapter numerals and the machine's voice,
+   which the kit shows too; the index and the rest of the long read
+   (Serotiny) keep their own rules in their pages. The words are set, never
+   restyled: titles keep their own case, the poems' lowercase included, and
+   verse takes no drop cap, hyphenation, justification or text-wrap. Scoped
+   with :where(.writing), like the issue. */
 :root:has(main.writing) { --page-ground: var(--sunk); }
 main.writing { overflow: clip; padding-bottom: calc(var(--space-section) + var(--fade-height, 7.5rem)); }
 :where(.writing) .rh-title a { color: inherit; text-decoration-color: var(--rule); }
@@ -873,6 +878,17 @@ main.writing { overflow: clip; padding-bottom: calc(var(--space-section) + var(-
 :where(.writing) .piece-end { display: flex; align-items: center; gap: var(--space-2); margin-top: var(--space-6); }
 :where(.writing) .piece-end .end-mark { margin: 0; }
 
+/* The long read's chapters: soft numerals between hairlines (borders, so
+   they print without background graphics). The machine's voice: Instrument
+   Sans, a little narrow, on the sunk stock with an orange rule, so it reads
+   apart from the prose at any width without shrinking below 15px. */
+:where(.writing) .chapter { display: flex; align-items: center; gap: var(--space-4); margin: 2.25em 0 1em; font: 300 clamp(2.25rem, 1.8rem + 2vw, 3.25rem) / 1 var(--font-display); font-variation-settings: 'SOFT' 100; font-feature-settings: 'lnum' 1; letter-spacing: -0.03em; color: var(--spot-large); }
+:where(.writing) .chapter::before, :where(.writing) .chapter::after { content: ""; flex: 1; border-top: var(--rule-hairline) solid var(--rule); }
+:where(.writing) .chapter:first-child { margin-top: 0; }
+:where(.writing) .machine { margin: 1.5em 0; padding: var(--space-3) var(--space-4); border-left: 2px solid var(--spot); background: var(--sunk); font: 400 0.9375rem / 1.5 var(--font-label); font-stretch: 94%; letter-spacing: 0.01em; hyphens: manual; text-wrap: wrap; }
+:where(.writing) .machine p + p { margin-top: var(--space-2); text-indent: 0; }
+:where(.writing) .machine .prompt { font-weight: 600; }
+
 /* More writing: the piece before and after this one in the index, and the
    way back to it. */
 :where(.writing) .piece-nav { display: grid; margin-top: var(--space-8); border-top: var(--rule-double) var(--rule); }
@@ -894,12 +910,28 @@ main.writing { overflow: clip; padding-bottom: calc(var(--space-section) + var(-
 }
 :where(.writing) .rights { margin-top: var(--space-6); }
 
+/* Print: the piece alone, in Day ink on white, at a printed size (12pt
+   text), so a short piece takes one sheet and no sheet holds only the end
+   matter. The year and end mark stay with the last stanza: the verse box
+   steps aside (display: contents) so the stanzas and the year are siblings,
+   since Chrome honours break-before: avoid only between siblings. The
+   machine prints on the paper itself, its orange rule kept. */
 @media print {
   main.writing { padding-bottom: 0; }
   :where(.writing) .piece-nav, :where(.writing) .piece-art { display: none; }
+  :where(.writing) .feature { display: block; }
   :where(.writing) .feature-head { position: static; }
   :where(.writing) .feature-body { border-left: 0; }
+  :where(.writing) .piece-head, :where(.writing) .poem .piece-head { padding-block: var(--space-4) var(--space-5); }
+  :where(.writing) .piece-title { font-size: 36pt; }
+  :where(.writing) .prose { font-size: 12pt; line-height: 1.5; }
+  :where(.writing) .poem { display: block; width: fit-content; max-width: 100%; margin-inline: auto; }
+  :where(.writing) .verse { display: contents; font-size: 12.5pt; line-height: 1.5; }
   :where(.writing) .stanza { break-inside: avoid; }
+  :where(.writing) .piece-end { break-before: avoid; margin-top: var(--space-5); }
+  :where(.writing) .rights { margin-top: var(--space-4); }
+  :where(.writing) .chapter { break-after: avoid; }
+  :where(.writing) .machine { break-inside: avoid; background: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

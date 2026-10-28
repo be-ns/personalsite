@@ -106,7 +106,7 @@ const words = (s) => s.replace(/[\s ]+/g, ' ').trim().split(' ');
 
 // pdftotext, when poppler is installed; null when it is not.
 function extractText(pdf) {
-  const file = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'resume-pdf-')), 'resume.pdf');
+  const file = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'site-pdf-')), 'page.pdf');
   fs.writeFileSync(file, pdf);
   try {
     return execFileSync('pdftotext', ['-enc', 'UTF-8', file, '-'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
@@ -220,4 +220,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { inspect, fills, VERSIONS, FACES };
+module.exports = { inspect, fills, extractText, VERSIONS, FACES };
