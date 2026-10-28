@@ -343,6 +343,8 @@ a:hover { text-decoration-thickness: var(--link-underline-hover); }
 [data-copy-email] { min-inline-size: 9.25rem; }
 .copy-status { display: block; min-height: 2.8em; }
 .colophon h2 + p { margin-top: var(--space-2); }
+.colophon-note { max-width: 34em; margin-top: var(--space-3); }
+.colophon-note .t-folio { margin-bottom: var(--space-1); }
 @media (min-width: 840px) { .colophon-grid { grid-template-columns: 2fr repeat(3, 1fr); } }
 
 @media (prefers-reduced-motion: reduce) {

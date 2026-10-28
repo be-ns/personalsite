@@ -10,8 +10,10 @@
 //
 //   - no horizontal overflow at 320, 390, 768, 1024, 1280x720, 1366x768, 1440
 //     on every page that carries the chrome, in Night and Day
-//   - first-screen bounding boxes: the cover rows on phones, the buttons on
-//     desktop, the 404's headline and way home
+//   - first-screen bounding boxes: on the home page the positioning, the
+//     seal and both buttons with 24px of air at 1024 to 1440 wide, and the
+//     cover rows on phones; the kit's cover the same way; the 404's headline
+//     and way home
 //   - the menu sheet from the keyboard: Enter opens it, Escape closes it,
 //     focus goes back to Menu
 //   - forced colours: controls keep a real edge
@@ -121,6 +123,30 @@ async function overflow(browser, base) {
 }
 
 async function firstScreen(browser, base) {
+  // The home page, which a hiring manager opens first: on desktop the
+  // positioning (the editor's note), the 44% to 70% seal and both buttons end
+  // at least 24px above the fold, in both editions; on phones the cover, its
+  // four rows included, is the whole first screen.
+  for (const [width, height] of [[1280, 900], [1366, 768], [1440, 900], [1280, 720], [1024, 768]]) {
+    for (const edition of ['night', 'day']) {
+      const { page, close } = await open(browser, `${base}index.html`, { width, height, edition });
+      for (const [what, selector] of [['the positioning', '.editor .t-deck'], ['the 44% to 70% seal', '.seal'], ['the buttons', '.cta-row']]) {
+        const b = await bottom(page, selector);
+        check(b !== null && b <= height - 24, `index.html: ${what} ends at ${b}, want 24px of air at ${width}x${height} (${edition})`);
+      }
+      await close();
+    }
+  }
+  for (const [width, height] of [[390, 844], [375, 812], [320, 640]]) {
+    const { page, close } = await open(browser, `${base}index.html`, { width, height });
+    // The smallest phones get the standfirst and the seal; the rows run on.
+    const parts = width > 320 ? [['the last cover row', '.cover-lines li:last-child']] : [['the standfirst', '.cover-standfirst'], ['the seal', '.seal']];
+    for (const [what, selector] of parts) {
+      const b = await bottom(page, selector);
+      check(b !== null && b <= height, `index.html: ${what} ends at ${b} on a ${width}x${height} phone`);
+    }
+    await close();
+  }
   // The kit's cover: on phones the five cover rows fit the first screen; on
   // desktop the buttons sit at least 24px above the fold at 1280x900.
   for (const [width, height] of [[390, 844], [375, 812]]) {

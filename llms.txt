@@ -1,6 +1,6 @@
 # Ben Siverly
 
-> Personal site of Ben Siverly, a product manager (AppFolio, rental applications and payments) and builder. It hosts free browser tools that need no account and send nothing to a server. An AI agent can use each tool three ways: send its person a prefilled link (URL parameters), call it in the browser over WebMCP, or read its data directly.
+> Personal site of Ben Siverly, a product manager and builder: rental applications and payments at AppFolio from 2023 to 2026, data science at Oracle and Lively before that. It hosts free browser tools that need no account and send nothing to a server. An AI agent can use each tool three ways: send its person a prefilled link (URL parameters), call it in the browser over WebMCP, or read its data directly.
 
 How to use the tools:
 
@@ -145,7 +145,7 @@ WebMCP tools:
 
 ## About
 
-- [Home](https://bensiverly.com/): intro, work history, tools, and how he works.
+- [Home](https://bensiverly.com/): set as an issue of a magazine. The cover and contents, In brief (five numbers, each with its source), then 01 Work (rental applications and payments at AppFolio, 2023 to 2026; Brava, Lively, Oracle), 02 Method (how he works), 03 Workshop (the tools above) and 04 Writing.
 - [Résumé](https://bensiverly.com/resume.html): one page, with PDF downloads.
 - [Writings](https://bensiverly.com/writings.html): poetry and prose. Written content is © Ben Siverly, all rights reserved, and is not covered by the code's MIT license.
 

@@ -63,7 +63,7 @@ Nothing is hidden from people: there is no invisible text aimed at models.
 ## Repository layout
 
 ```
-index.html                 Home: intro, work, tools, contact
+index.html                 Home, set as the issue: cover, contents, In brief, departments 01-04, colophon
 llms.txt                   Agent-readable guide to the tools
 theme.json                 Theme source of truth: color, type, space, texture, motion, components
 tokens.css                 Generated from theme.json by build-tokens.js (npm run tokens)
@@ -97,11 +97,14 @@ GitHub Pages hosting.
 
 ## Design
 
-A set of CSS custom properties in `styles.css` defines the color, type scale, spacing, and
-motion for the home page; each tool page carries its own scoped copy so it stays portable.
-Type is Inter for UI, Zilla Slab for display, and JetBrains Mono for accents. Animations and
-the page loader respect `prefers-reduced-motion`, and the pages use semantic landmarks, a
-skip link, visible focus states, and live regions for async feedback.
+The site is moving to a periodical design, set out in [`brand.md`](brand.md) and rendered
+on [`kit.html`](kit.html). Pages on it (the home page, the kit and the 404) read
+`tokens.css`, compiled from `theme.json`, and the shared `site.css`, with self-hosted
+Fraunces, Newsreader and Instrument Sans, in a Night and a Day edition. The pages not yet
+moved still use the old system in `styles.css` (Inter, Zilla Slab, JetBrains Mono) or their
+own scoped copy; [`redesign-plan.md`](redesign-plan.md) lists the order. Motion respects
+`prefers-reduced-motion`, and the pages use semantic landmarks, a skip link, visible focus
+states, and live regions for async feedback.
 
 ## Working on the site
 

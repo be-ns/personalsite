@@ -24,7 +24,7 @@ const ORIGINAL_PENDING = [
 // Not migrated yet. Take a page off this list in the commit that stamps it.
 const PENDING = [
   'building-things-worth-losing.html', 'come-down.html', 'decision-assist.html', 'hot-pig-summer.html',
-  'index.html', 'life-strategy.html', 'memorial-pamphlet.html', 'memorial-preferences.html', 'milk.html',
+  'life-strategy.html', 'memorial-pamphlet.html', 'memorial-preferences.html', 'milk.html',
   'native-plant-finder.html', 'nobody-claps.html', 'orale.html', 'resume.html', 'serotiny.html',
   'service-of-life.html', 'the-room-love-needs-to-breathe.html', 'writings.html',
 ];

@@ -22,6 +22,11 @@
     "linkedin": "https://www.linkedin.com/in/be-ns/",
     "github": "https://github.com/be-ns"
   },
+  "home": {
+    "$description": "Two lines only the home colophon carries, where the old home page's intro and Elsewhere list now live. The ids keep the old #elsewhere-heading and #contact-heading links landing.",
+    "note": "I care about shipping things that actually work, staying close to my family, and building a few things that might outlast me. Proud future ancestor of the Choctaw Nation of Oklahoma. Probably the most optimistic person you’ll meet.",
+    "outside": "Native gardening in the Bay Area. Longevity science and preventive health. Liturgical practice and spiritual formation. Raising kids who are kind and grounded. Writing poetry and prose."
+  },
   "consulting": {
     "$description": "Off until the consulting pages exist. On, the home and supplement colophons carry a line to consulting.html.",
     "enabled": false,

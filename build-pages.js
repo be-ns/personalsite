@@ -27,7 +27,8 @@
 //                       Marks that department's links aria-current.
 //   colophon  colophon  "standard" (default), "home" or "supplement". Home
 //                       and supplement carry the consulting line when
-//                       site.json turns consulting on.
+//                       site.json turns consulting on. Home also carries
+//                       site.json's home note and Outside work line.
 //   art       art       drawing names, e.g. ["marigold"].
 //
 // The press refuses unknown regions and keys, a region in the wrong place,
@@ -327,6 +328,8 @@ function colophon(ctx) {
   }
   const also = site.departments.map((d) => `<li><a href="${deptHref(ctx, d)}"${current(ctx, d)}><span class="num-o">${esc(d.num)}</span>${esc(d.name)}</a></li>`);
   also.push(`<li><a href="${root}kit.html"${page === 'kit.html' ? ' aria-current="page"' : ''}>How this issue is made</a></li>`);
+  const home = variant === 'home';
+  if (home && !(site.home && site.home.note && site.home.outside)) throw new Error(`${page}: the home colophon needs site.json home.note and home.outside`);
   const lines = [
     '<footer class="colophon">',
     '  <div class="checker" aria-hidden="true"></div>',
@@ -335,13 +338,21 @@ function colophon(ctx) {
     `      <h2>${esc(site.name)}</h2>`,
     `      <p class="t-small t-quiet">Issue ${esc(site.issue.number)} &middot; ${esc(site.issue.season)}. Set in Fraunces, Newsreader and Instrument Sans.</p>`,
   ];
+  // The home colophon carries what the old home page said about Ben outside
+  // the work, under the ids its Elsewhere and Contact sections had.
+  if (home) {
+    lines.push(
+      `      <p class="t-small colophon-note">${esc(site.home.note)}</p>`,
+      `      <p class="t-small colophon-note"><span class="t-folio" id="elsewhere-heading">Outside work</span>${esc(site.home.outside)}</p>`,
+    );
+  }
   // The consulting line: the home page and the consulting supplement only,
   // never the résumé, the tools or the writing.
   if (consulting) lines.push(`      <p class="t-small">Consulting: <a href="${root}${esc(site.consulting.page)}">strategy and operations for small companies</a>.</p>`);
   lines.push(
     '    </div>',
     '    <div class="write">',
-    '      <span class="t-folio">Write to me</span>',
+    `      <span class="t-folio"${home ? ' id="contact-heading"' : ''}>Write to me</span>`,
     `      <button class="btn btn--outlined btn--sm" type="button" data-email="${esc(site.contact.email)}" data-copy-email><span data-copy-label>Copy my email</span></button>`,
     `      <a class="nojs-only btn btn--outlined btn--sm" href="${esc(site.contact.linkedin)}" rel="noopener">Message me on LinkedIn</a>`,
     '      <span class="copy-status t-note" aria-live="polite" aria-atomic="true"></span>',

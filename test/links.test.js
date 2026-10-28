@@ -8,11 +8,11 @@ const path = require('node:path');
 const { ROOT, htmlPages, readPage } = require('./helpers');
 const { parseHtml, findAll } = require('../build-pages');
 
-// Department sections that index.html gains when it becomes the issue (step 1
-// of redesign-plan.md). The chrome on kit.html and 404.html already links to
-// them. Remove an entry once index.html carries that id; the last test below
-// fails until you do.
-const FORWARD = { 'index.html': ['work', 'method', 'workshop', 'writing'] };
+// Fragments a page may link to before the target page carries the id: a
+// page that gains a section in a later step of redesign-plan.md. Remove an
+// entry once the target carries that id; the last test below fails until you
+// do. Empty since index.html became the issue (step 1).
+const FORWARD = {};
 
 // Every internal URL in the static markup (scripts aside): href, src and srcset.
 function urls(html) {
