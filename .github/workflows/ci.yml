@@ -106,4 +106,4 @@ jobs:
       - name: Install dev dependencies
         run: npm ci
       - name: Run check-browser.js
-        run: node check-browser.js overflow first-screen menu forced-colors more-contrast print
+        run: node check-browser.js overflow first-screen menu tool-keys forced-colors more-contrast print
