@@ -179,6 +179,12 @@ function build(theme = loadTheme()) {
     `/* ${def[0].toUpperCase() + def.slice(1)} edition: the default on every device. */\n` +
       block(`:root, [data-edition="${def}"]`, editionLines(theme, def, deps)),
     ...other.map((name) => block(`[data-edition="${name}"]`, editionLines(theme, name, deps))),
+    // Inserts are printed on the other stock: paper in the markup
+    // (data-edition="day" data-insert), so they are right before any script
+    // runs, and charcoal when the reader picks Day. Screen only; print is Day.
+    // :root[data-edition="day"] [data-insert] (0,3,0) beats [data-edition="day"].
+    '/* Inserts: paper inside Night, charcoal inside Day. On screen only. */\n' +
+      `@media screen {\n${block(`:root[data-edition="day"] [data-insert]`, editionLines(theme, def, deps)).replace(/^/gm, '  ').trimEnd()}\n}\n`,
     '/* Print is always the Day edition. */\n' +
       `@media print {\n${block(':root, [data-edition]', editionLines(theme, 'day', deps)).replace(/^/gm, '  ').trimEnd()}\n}\n`,
   ].join('\n');

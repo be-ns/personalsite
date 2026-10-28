@@ -16,9 +16,12 @@
     "validate": "htmlhint \"*.html\"",
     "links": "lychee --no-progress --offline \"*.html\"",
     "generate-og": "node generate-og-images.js",
-    "generate-art": "node generate-kit-art.js",
+    "generate-art": "node build-pages.js",
     "generate-resume-pdf": "node render-resume-pdf.js",
-    "tokens": "node build-tokens.js"
+    "tokens": "node build-tokens.js",
+    "pages": "node build-pages.js",
+    "check": "node build-tokens.js --check && node build-pages.js --check",
+    "check-browser": "node check-browser.js"
   },
   "devDependencies": {
     "htmlhint": "^1.1.4",

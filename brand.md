@@ -106,8 +106,8 @@ variants, nothing shouting. We take the manners.
   sheet on phones), remembered. Always used for print and the résumé PDF.
 - **Inserts.** The Writing department is printed on the other stock: paper inside
   the Night edition, charcoal inside the Day edition. Paper is set in the
-  markup, so the insert is right with no script; the script only turns it
-  charcoal in Day.
+  markup, and tokens.css turns it charcoal in Day (on screen; print is always
+  Day), so the insert is right before any script runs and never flashes.
 - Night stays the default even when the device asks for light mode.
 
 ## Color

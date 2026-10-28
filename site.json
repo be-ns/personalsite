@@ -1,0 +1,30 @@
+{
+  "$description": "Facts the shared chrome carries on every page. build-pages.js stamps them into the masthead, the menu sheet and the colophon; edit here, then run `npm run pages`. The season is the issue's own, set here and never read from the visitor's clock.",
+  "name": "Ben Siverly",
+  "issue": {
+    "number": "01",
+    "season": "Autumn 2026"
+  },
+  "departments": [
+    { "id": "work", "num": "01", "name": "Work" },
+    { "id": "method", "num": "02", "name": "Method" },
+    { "id": "workshop", "num": "03", "name": "Workshop" },
+    { "id": "writing", "num": "04", "name": "Writing" }
+  ],
+  "resume": {
+    "$description": "The public résumé: the page and the one PDF it offers by default.",
+    "page": "resume.html",
+    "pdf": "Ben-Siverly-Resume-Payments.pdf"
+  },
+  "contact": {
+    "$description": "The address stays base64-encoded in the markup, as on the home page, and is decoded only when someone presses Copy.",
+    "email": "YmVuamFtaW5zaXZlcmx5QGdtYWlsLmNvbQ==",
+    "linkedin": "https://www.linkedin.com/in/be-ns/",
+    "github": "https://github.com/be-ns"
+  },
+  "consulting": {
+    "$description": "Off until the consulting pages exist. On, the home and supplement colophons carry a line to consulting.html.",
+    "enabled": false,
+    "page": "consulting.html"
+  }
+}

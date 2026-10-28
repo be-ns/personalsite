@@ -392,6 +392,46 @@
   --type-caption-weight: var(--text-weight);
 }
 
+/* Inserts: paper inside Night, charcoal inside Day. On screen only. */
+@media screen {
+  :root[data-edition="day"] [data-insert] {
+    color-scheme: dark;
+    --ground: var(--palette-gondola);
+    --sunk: var(--palette-deep-gondola);
+    --surface: var(--palette-high-gondola);
+    --raised: var(--palette-higher-gondola);
+    --ink: var(--palette-newsprint);
+    --ink-quiet: var(--palette-ash);
+    --outline: var(--palette-pewter);
+    --rule: rgb(239 232 220 / 0.2);
+    --spot: var(--palette-ember);
+    --spot-large: var(--palette-toxic-orange);
+    --spot-fill: var(--palette-toxic-orange);
+    --on-spot-fill: var(--palette-char);
+    --leaf: var(--palette-goody-gumdrop);
+    --leaf-fill: var(--palette-goody-gumdrop);
+    --on-leaf-fill: var(--palette-char);
+    --on-leaf-fill-quiet: var(--palette-moss);
+    --inverse: var(--palette-char);
+    --on-inverse: var(--palette-newsprint);
+    --focus: var(--palette-toxic-orange);
+    --scrim: rgb(20 18 17 / 0.64);
+    --art-ink: var(--palette-newsprint);
+    --art-ground: var(--palette-deep-gondola);
+    --text-weight: 370;
+    --grain-opacity: 0.24;
+    --grain-blend: normal;
+    --field-grain-opacity: 0.4;
+    --leaf-grain-opacity: 0.22;
+    --vignette: radial-gradient(120% 95% at 50% 35%, transparent 55%, rgb(31 27 26 / 0.28) 100%);
+    --type-deck-weight: var(--text-weight);
+    --type-body-weight: var(--text-weight);
+    --type-body-sm-weight: var(--text-weight);
+    --type-sidenote-weight: var(--text-weight);
+    --type-caption-weight: var(--text-weight);
+  }
+}
+
 /* Print is always the Day edition. */
 @media print {
   :root, [data-edition] {

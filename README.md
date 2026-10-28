@@ -12,7 +12,7 @@ bundler, and no build step: clone the repo, open `index.html`, and you are runni
 what production runs.
 
 I keep it this way on purpose. Plain files outlive any toolchain, pages are interactive the
-moment they load, and the source stays readable — what you read is what runs. The tools work
+moment they load, and the source stays readable: what you read is what runs. The tools work
 entirely in the browser: no accounts, no servers, no tracking. Inputs can arrive in the URL,
 saved state lives in `localStorage`, and PDFs are generated client-side with [jsPDF](https://github.com/parallax/jsPDF),
 loaded only on the pages that need it.
@@ -20,6 +20,14 @@ loaded only on the pages that need it.
 The single dev dependency that touches pixels, [sharp](https://sharp.pixelplumbing.com/),
 powers an offline script that renders the Open Graph share images. It never ships to the
 browser.
+
+One asterisk. The parts every page shares (the head links, the masthead and menu, the
+colophon, the chrome script and the engravings) are stamped into each page by
+[`build-pages.js`](build-pages.js), between `<!-- chrome:NAME -->` markers, from
+[`site.json`](site.json). The output is committed, so a plain checkout is still exactly what
+production serves, and view-source still shows everything. To change the chrome, edit
+`site.json` or `build-pages.js` and run `npm run pages`; never edit between the markers by
+hand. CI fails when a page is stale.
 
 ## The tools
 
@@ -31,7 +39,7 @@ Each tool is one self-contained HTML file.
 | [Native Plant Finder](https://bensiverly.com/native-plant-finder.html) | Find California native plants for your ZIP code and sun conditions, with local nursery suggestions. |
 | [Memorial Pamphlet Creator](https://bensiverly.com/memorial-pamphlet.html) | Lay out a simple, dignified memorial-service pamphlet and export a printable PDF. |
 | [Service of Life Builder](https://bensiverly.com/service-of-life.html) | Assemble an order of service for a memorial or celebration of life. |
-| [Memorial Preferences Worksheet](https://bensiverly.com/memorial-preferences.html) | A one-page form to print and fill out by hand — record service wishes on paper, no screen required. |
+| [Memorial Preferences Worksheet](https://bensiverly.com/memorial-preferences.html) | A one-page form to print and fill out by hand: record service wishes on paper, no screen required. |
 | [Decision Assist](https://bensiverly.com/decision-assist.html) | A weighted-criteria decision matrix: score your options against what matters most. |
 | [Writings](https://bensiverly.com/writings.html) | Poetry and prose. |
 
@@ -59,9 +67,13 @@ index.html                 Home: intro, work, tools, contact
 llms.txt                   Agent-readable guide to the tools
 theme.json                 Theme source of truth: color, type, space, texture, motion, components
 tokens.css                 Generated from theme.json by build-tokens.js (npm run tokens)
+site.css                   The shared periodical styles (hand-written, reads tokens.css)
+site.json                  Facts the shared chrome carries: issue, departments, résumé PDF, contact
+build-pages.js             Stamps the shared chrome into each page between markers (npm run pages)
 kit.html                   Design kit: every token rendered, Night and Day editions (noindex)
 brand.md                   Brand brief: the reasoning behind the theme
-styles.css                 Design system for the home page (custom properties + components)
+redesign-plan.md           How the redesign reaches every page, in order
+styles.css                 The old design system, for pages not yet redesigned
 life-strategy.html         Self-contained tools, each one file
 native-plant-finder.html   (HTML + scoped CSS + JS)
 memorial-pamphlet.html
@@ -73,8 +85,10 @@ resume.html                One-page resume with downloadable PDFs
 assets/native-plants/      Static JSON datasets: plants, regions, nurseries, ZIP index
 images/                    Generated Open Graph share images (1200x630)
 generate-og-images.js      Offline OG-image generator (Node + sharp)
-generate-kit-art.js        Seeded generator for kit.html's engravings (npm run generate-art)
+generate-kit-art.js        Seeded drawings for the engravings, stamped by build-pages.js
+check-browser.js           Headless-Chrome checks: overflow, first screen, menu, print, WebMCP
 test/                      Test suite (node:test, no dependencies)
+test/fixtures/             The agent contract, captured before any tool was restyled
 ```
 
 `sitemap.xml`, `robots.txt`, `site.webmanifest`, and `CNAME` handle discoverability and
@@ -102,13 +116,21 @@ The checks that CI runs:
 
 ```bash
 npm test            # test suite (node:test, zero dependencies)
+npm run check       # tokens.css and the stamped chrome are current
 npm run validate    # HTML lint (htmlhint)
 npm run links       # offline link check (lychee)
 ```
 
+After editing `theme.json`, run `npm run tokens`; after editing `site.json`, `build-pages.js`
+or a drawing, run `npm run pages`. `npm run check-browser` (after `npm install`) opens every
+redesigned page in headless Chrome; CI runs it as an advisory job.
+
 The test suite covers page invariants (titles, descriptions, canonical URLs, heading
-structure), internal link resolution, sitemap coverage, inline-script syntax, and the
-integrity of the native-plant datasets — every plant, ZIP code, and nursery has to reference
+structure), internal links and `#fragments`, sitemap coverage, inline-script syntax, the
+agent contract (every WebMCP tool, URL parameter, storage key and label `llms.txt` quotes),
+the chrome ratchet (which pages carry the shared chrome, which are pending, which are
+exempt and why), the characters each vendored font carries, and the
+integrity of the native-plant datasets: every plant, ZIP code, and nursery has to reference
 vocabulary and regions that actually exist.
 
 To regenerate the Open Graph images:
@@ -126,6 +148,6 @@ suite, htmlhint, and a lychee link check on every push and pull request.
 
 ## License
 
-Source code is released under the [MIT License](LICENSE). Written content — essays, poetry,
-prose, and the contents of `writings.html` — is © Ben Siverly, all rights reserved, and is
+Source code is released under the [MIT License](LICENSE). Written content (essays, poetry,
+prose, and the contents of `writings.html`) is © Ben Siverly, all rights reserved, and is
 not covered by the MIT grant.

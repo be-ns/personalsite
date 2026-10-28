@@ -1,0 +1,377 @@
+/* site.css: the parts of the periodical every page shares. Hand-written,
+   reads tokens.css only. Anything two or more pages use lives here; a rule
+   one page uses stays in that page's own <style>, which loads after this
+   file and so wins ties. The chrome markup these rules dress (masthead, menu
+   sheet, colophon) is stamped into each page by build-pages.js. */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-size-adjust: 100%; scroll-padding-top: 4.5rem; }
+body {
+  background: var(--ground); color: var(--ink);
+  font: var(--type-body-style) var(--type-body-weight) var(--type-body-size) / var(--type-body-line) var(--type-body-family);
+  letter-spacing: var(--type-body-tracking);
+  overflow-x: clip;
+}
+img, svg { display: block; max-width: 100%; }
+img { height: auto; }
+button { font: inherit; color: inherit; }
+
+/* Film grain over the whole page. Light and dark specks, so it shows on charcoal. */
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: 90; pointer-events: none;
+  background-image: var(--texture-grain); background-size: var(--texture-grain-tile);
+  opacity: var(--grain-opacity); mix-blend-mode: var(--grain-blend);
+}
+
+::selection { background: var(--spot-fill); color: var(--on-spot-fill); }
+:focus-visible { outline: var(--focus-ring-width) solid var(--focus); outline-offset: var(--focus-ring-offset); }
+
+a { color: inherit; text-decoration-line: underline; text-decoration-color: var(--spot-large); text-decoration-thickness: var(--link-underline); text-underline-offset: var(--link-underline-offset); }
+a:hover { text-decoration-thickness: var(--link-underline-hover); }
+
+.skip-link { position: absolute; left: var(--space-2); top: -4rem; z-index: 100; padding: var(--space-3) var(--space-4); background: var(--spot-fill); color: var(--on-spot-fill); font: var(--type-label-weight) var(--type-label-size) / 1 var(--type-label-family); letter-spacing: var(--type-label-tracking); text-transform: uppercase; text-decoration: none; }
+.skip-link:focus { top: var(--space-2); }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.art-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.art-spot { fill: var(--spot-fill); }
+
+.wrap { width: min(100% - 2 * var(--layout-gutter), var(--layout-page)); margin-inline: auto; }
+
+/* The page's own ground, which inserts printed on the other stock fade into;
+   and two faint light leaks, cheap radial gradients under the grain. */
+:root { --page-ground: var(--ground); --leak-orange: rgb(254 95 53 / 0.12); --leak-green: rgb(202 213 118 / 0.1); }
+:root[data-edition="day"] { --leak-orange: rgb(254 95 53 / 0.1); --leak-green: rgb(150 170 50 / 0.13); }
+
+/* ---------- Type roles ---------- */
+.t-kicker, .t-folio, .t-label, .t-byline { font-family: var(--font-label); font-style: normal; }
+.t-kicker { font-size: var(--type-kicker-size); font-weight: var(--type-kicker-weight); line-height: var(--type-kicker-line); letter-spacing: var(--type-kicker-tracking); text-transform: uppercase; font-stretch: var(--type-kicker-stretch); color: var(--leaf); }
+.t-folio { font-size: var(--type-folio-size); font-weight: var(--type-folio-weight); line-height: var(--type-folio-line); letter-spacing: var(--type-folio-tracking); text-transform: uppercase; font-stretch: var(--type-folio-stretch); font-feature-settings: var(--type-folio-features); color: var(--ink-quiet); }
+.t-byline { font-size: var(--type-byline-size); font-weight: var(--type-byline-weight); line-height: var(--type-byline-line); letter-spacing: var(--type-byline-tracking); color: var(--ink-quiet); }
+.t-headline { font-family: var(--type-headline-family); font-size: var(--type-headline-size); font-weight: var(--type-headline-weight); line-height: var(--type-headline-line); letter-spacing: var(--type-headline-tracking); font-variation-settings: var(--type-headline-axes); text-wrap: balance; }
+.t-title { font-family: var(--type-title-family); font-size: var(--type-title-size); font-weight: var(--type-title-weight); line-height: var(--type-title-line); letter-spacing: var(--type-title-tracking); font-variation-settings: var(--type-title-axes); text-wrap: balance; }
+.t-deck { font-family: var(--type-deck-family); font-size: var(--type-deck-size); font-weight: var(--type-deck-weight); line-height: var(--type-deck-line); font-style: var(--type-deck-style); text-wrap: pretty; }
+.t-small { font-family: var(--type-body-sm-family); font-size: var(--type-body-sm-size); line-height: var(--type-body-sm-line); letter-spacing: var(--type-body-sm-tracking); text-wrap: pretty; }
+.t-note { font-family: var(--type-sidenote-family); font-size: var(--type-sidenote-size); line-height: var(--type-sidenote-line); color: var(--ink-quiet); text-wrap: pretty; }
+.t-caption { font-family: var(--type-caption-family); font-size: var(--type-caption-size); line-height: var(--type-caption-line); font-style: italic; color: var(--ink-quiet); text-wrap: pretty; }
+.t-quiet { color: var(--ink-quiet); }
+.num-o { color: var(--spot); }
+
+/* Icons */
+.ico { width: 1.15em; height: 0.75em; flex: none; overflow: visible; }
+
+/* ---------- Masthead bar (persistent navigation) ----------
+   The wordmark takes the free space (margin-right: auto), so the controls
+   always sit hard right, whether or not the department nav is showing. */
+.masthead { position: sticky; top: 0; z-index: 40; background: var(--ground); border-bottom: var(--rule-hairline) solid var(--rule); }
+.masthead-row { display: flex; align-items: center; gap: var(--space-2); min-height: 3.5rem; }
+.wordmark { display: inline-flex; align-items: center; gap: var(--space-3); min-width: 0; min-height: var(--touch-target); margin-right: auto; color: var(--ink); text-decoration: none; }
+.wordmark b { display: inline-block; max-width: 12rem; overflow: hidden; white-space: nowrap; font: var(--type-nameplate-weight) 1.1875rem / 1 var(--type-nameplate-family); letter-spacing: 0; word-spacing: 0.12em; text-transform: uppercase; transition: opacity var(--motion-duration-medium) var(--motion-easing-standard), max-width var(--motion-duration-medium) var(--motion-easing-standard); }
+.wordmark .t-folio { white-space: nowrap; }
+/* On a page with a cover, the wordmark appears once the nameplate has scrolled
+   away (the script sets data-cover-gone); until then, and without the script,
+   the folio. Pages without a cover show the wordmark from the start. */
+:root:has(.nameplate) .masthead:not([data-cover-gone]) .wordmark { gap: 0; }
+:root:has(.nameplate) .masthead:not([data-cover-gone]) .wordmark b { opacity: 0; max-width: 0; visibility: hidden; }
+.masthead-nav { display: none; }
+.masthead-nav ol { display: flex; list-style: none; }
+.masthead-nav a { display: inline-flex; align-items: center; gap: 0.4em; min-height: var(--touch-target); padding-inline: 0.7rem; color: var(--ink); text-decoration: none; font: var(--type-label-weight) var(--type-label-size) / 1 var(--font-label); letter-spacing: var(--type-label-tracking); text-transform: uppercase; font-stretch: var(--type-label-stretch); }
+.masthead-nav a span { color: var(--spot); font-feature-settings: 'tnum' 1; }
+.masthead-nav a:hover, .masthead-nav a[aria-current] { text-decoration: underline; text-decoration-color: var(--spot-large); }
+.masthead-actions { display: flex; align-items: center; gap: var(--space-2); }
+.masthead .edition-words { display: none; margin-right: var(--space-2); }
+.btn.menu-btn { gap: 0.5rem; padding-inline: 0.65rem 0.75rem; background: transparent; color: var(--ink); }
+.menu-btn svg { flex: none; width: 1.25rem; height: 1.25rem; }
+/* Phones: the issue folio while the cover is in view, the wordmark after. */
+@media (max-width: 599px) { .masthead[data-cover-gone] .wordmark .t-folio, :root:not(:has(.nameplate)) .wordmark .t-folio { display: none; } }
+/* Narrow phones, or a larger default text size (em queries follow it). */
+@media (max-width: 22.4375em) { .folio-season { display: none; } .wordmark b { font-size: 0.9rem; } }
+/* Without the script, the controls that need it stay out of the way. */
+:root:not(.js) .menu-btn, :root:not(.js) .edition-words, :root:not(.js) [data-copy-email] { display: none !important; }
+:root.js .nojs-only { display: none; }
+@media (min-width: 600px) { .masthead .edition-words { display: inline-flex; } }
+@media (min-width: 1100px) { .masthead-nav { display: block; } .menu-btn { display: none !important; } }
+
+/* Edition switch: quiet folio caps, an orange rule under the edition you are reading. */
+.edition-words { display: inline-flex; align-items: center; font: var(--type-folio-weight) var(--type-folio-size) / 1 var(--type-folio-family); letter-spacing: var(--type-folio-tracking); text-transform: uppercase; font-stretch: var(--type-folio-stretch); color: var(--ink-quiet); }
+.edition-words button { min-height: var(--touch-target); padding-inline: 0.45rem; border: 0; background: none; color: var(--ink-quiet); cursor: pointer; letter-spacing: inherit; text-transform: inherit; font-stretch: inherit; text-decoration: underline 2px transparent; text-underline-offset: 0.6em; transition: color var(--motion-duration-short), text-decoration-color var(--motion-duration-short); }
+.edition-words button:hover { color: var(--ink); text-decoration-color: var(--rule); }
+.edition-words button[aria-pressed="true"] { color: var(--ink); text-decoration-color: var(--spot-large); }
+
+/* ---------- Material 3 controls, dressed quiet ---------- */
+.btn {
+  position: relative; isolation: isolate; overflow: hidden;
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--button-gap);
+  min-height: var(--button-height); padding-inline: var(--button-padding-x);
+  border: 0; border-radius: var(--button-shape);
+  font: var(--type-label-weight) var(--type-label-size) / var(--type-label-line) var(--type-label-family);
+  font-stretch: var(--type-label-stretch); letter-spacing: var(--type-label-tracking); text-transform: uppercase; text-decoration: none;
+  cursor: pointer; white-space: nowrap;
+  transition: border-radius var(--motion-duration-short) var(--motion-easing-standard);
+}
+.btn::after { content: ""; position: absolute; inset: 0; z-index: -1; background: currentColor; opacity: 0; transition: opacity var(--motion-duration-short) var(--motion-easing-standard); }
+.btn:hover::after { opacity: var(--state-hover); }
+.btn:focus-visible::after { opacity: var(--state-focus); }
+.btn:active { border-radius: var(--button-shape-pressed); }
+.btn:active::after { opacity: var(--state-pressed); }
+.btn:disabled { cursor: not-allowed; color: color-mix(in srgb, var(--ink) calc(var(--state-disabled-content) * 100%), transparent); background: color-mix(in srgb, var(--ink) calc(var(--state-disabled-container) * 100%), transparent); box-shadow: none; }
+.btn:disabled::after { display: none; }
+.btn--filled { background: var(--ink); color: var(--ground); }
+.btn--spot { background: var(--spot-fill); color: var(--on-spot-fill); }
+.btn--outlined { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 var(--button-outline-width) var(--outline); }
+.btn--inverse { background: var(--inverse); color: var(--on-inverse); }
+.btn--text { padding-inline: 0.25rem; min-height: var(--touch-target); border-radius: var(--shape-xs); color: inherit; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.45em; transition: text-decoration-color var(--motion-duration-short); }
+.btn--text:hover { text-decoration-color: currentColor; }
+.btn--text::after { display: none; }
+.btn--sm { min-height: 2.25rem; padding-inline: 1.1rem; }
+.btn--sm::before { content: ""; position: absolute; inset: -6px 0; }
+
+.icon-btn { position: relative; display: inline-grid; place-items: center; width: var(--touch-target); height: var(--touch-target); border: 0; border-radius: var(--shape-full); background: transparent; color: var(--ink); cursor: pointer; }
+.icon-btn::after { content: ""; position: absolute; inset: 4px; border-radius: inherit; background: currentColor; opacity: 0; }
+.icon-btn:hover::after { opacity: var(--state-hover); }
+.icon-btn svg { width: 1.375rem; height: 1.375rem; }
+
+/* M3 segmented button: one pill, the selected segment filled Goody Gumdrop. */
+.segmented { display: inline-flex; padding: 0; border-radius: var(--segmented-shape); box-shadow: inset 0 0 0 var(--button-outline-width) var(--outline); }
+.segmented button {
+  position: relative; isolation: isolate; display: inline-flex; align-items: center; gap: 0.45em;
+  min-height: var(--segmented-height); padding-inline: 0.85rem; border: 0; border-radius: var(--segmented-shape); background: transparent; color: var(--ink); cursor: pointer;
+  font: var(--type-label-weight) 0.6875rem / 1 var(--font-label); letter-spacing: var(--type-label-tracking); text-transform: uppercase; font-stretch: var(--type-label-stretch);
+}
+.segmented button::before { content: ""; position: absolute; inset: -6px 0; }
+.segmented button::after { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: currentColor; opacity: 0; transition: opacity var(--motion-duration-short) var(--motion-easing-standard); }
+.segmented button:hover::after { opacity: var(--state-hover); }
+.segmented button[aria-pressed="true"] { background: var(--leaf-fill); color: var(--on-leaf-fill); }
+.segmented button[aria-pressed="true"] .pip { opacity: 1; }
+.segmented .pip { width: 0.4rem; height: 0.4rem; border-radius: 50%; background: currentColor; opacity: 0; }
+.segmented button:focus-visible { outline-offset: 1px; }
+
+.chip {
+  position: relative; isolation: isolate; overflow: hidden; display: inline-flex; align-items: center; gap: 0.5em;
+  min-height: var(--chip-height); padding-inline: var(--chip-padding-x); border: 0; border-radius: var(--chip-shape);
+  background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--outline); cursor: pointer;
+  font: 500 0.8125rem / 1 var(--font-label); letter-spacing: 0.04em; font-stretch: 92%;
+}
+.chip::before { content: ""; position: absolute; inset: -6px 0; }
+.chip::after { content: ""; position: absolute; inset: 0; z-index: -1; background: currentColor; opacity: 0; transition: opacity var(--motion-duration-short) var(--motion-easing-standard); }
+.chip:hover::after { opacity: var(--state-hover); }
+.chip[aria-pressed="true"] { background: var(--leaf-fill); color: var(--on-leaf-fill); box-shadow: none; }
+
+/* M3 filled text field: container, label, active indicator, supporting text. */
+.field { display: grid; gap: var(--space-1); max-width: 24rem; }
+.field-box { position: relative; display: grid; background: var(--surface); border-radius: var(--field-shape) var(--field-shape) 0 0; box-shadow: inset 0 -1px 0 var(--outline); transition: box-shadow var(--motion-duration-short); }
+.field-box:focus-within { box-shadow: inset 0 -2px 0 var(--focus); }
+.field label { padding: 0.6rem 1rem 0; font: 600 0.6875rem / 1.2 var(--font-label); letter-spacing: 0.12em; text-transform: uppercase; font-stretch: 85%; color: var(--ink-quiet); }
+.field-box:focus-within label { color: var(--spot); }
+.field input { min-height: 2.5rem; padding: 0.25rem 1rem 0.6rem; border: 0; background: transparent; color: var(--ink); font: var(--type-ui-weight) var(--type-ui-size) / var(--type-ui-line) var(--type-ui-family); }
+.field input:focus { outline: none; }
+.field small { padding-inline: 1rem; font: 400 0.8125rem / 1.4 var(--font-label); color: var(--ink-quiet); }
+
+/* ---------- Running heads, rules, ornaments ---------- */
+.rh { display: flex; align-items: baseline; gap: var(--space-3); padding-block: var(--space-2); border-bottom: var(--rule-hairline) solid var(--rule); white-space: nowrap; }
+.rh > * { flex: none; }
+.rh .rh-pg { color: var(--spot); font-weight: 600; }
+.rh .rh-title { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; color: var(--ink); }
+.rh .rh-pub { display: none; }
+.rh--verso .rh-pub { text-align: right; }
+.rh--recto { flex-direction: row-reverse; }
+.rh--recto .rh-title { text-align: right; }
+@media (min-width: 720px) { .rh .rh-pub { display: block; } }
+
+.checker { height: var(--rule-check); background: repeating-conic-gradient(var(--check-a, var(--on-spot-fill)) 0 25%, var(--check-b, transparent) 0 50%) 0 0 / calc(2 * var(--rule-check)) calc(2 * var(--rule-check)); }
+
+.xh { position: absolute; width: 13px; height: 13px; translate: -50% -50%; background: linear-gradient(currentColor, currentColor) center / 1px 100% no-repeat, linear-gradient(currentColor, currentColor) center / 100% 1px no-repeat; pointer-events: none; }
+
+.end-mark { display: inline-block; width: 0.55em; height: 0.55em; margin-left: 0.3em; background: var(--spot-large); vertical-align: 0.05em; }
+.dots-end { display: block; width: 4.5rem; margin-top: var(--space-5); border-top: 3px dotted var(--ink-quiet); }
+
+/* Nudibranch rim: a ruffled edge where a colour field meets the page. */
+.rim { position: absolute; left: 0; right: 0; height: 14px; pointer-events: none; z-index: 2; }
+.rim::before, .rim::after { content: ""; position: absolute; inset: 0; -webkit-mask: var(--ruffle) repeat-x 0 0 / 120px 100%; mask: var(--ruffle) repeat-x 0 0 / 120px 100%; }
+.rim--bottom { top: 100%; }
+.rim--top { bottom: 100%; transform: scaleY(-1); }
+.rim::before { background: var(--rim-color, var(--spot-fill)); }
+.rim::after { background: var(--rim-fill, transparent); transform: translateY(-5px); }
+:root { --ruffle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 14' preserveAspectRatio='none'%3E%3Cpath d='M0 0H120V5C114 5 113 13 106 13S98 6 92 6 85 12 78 12 70 5 63 5 55 14 47 14 39 6 32 6 25 11 18 11 9 5 0 5Z'/%3E%3C/svg%3E"); }
+
+/* Colour fields: grain and a sun-faded mottle so the flat fills read as print. */
+.field-spot, .field-leaf { position: relative; isolation: isolate; z-index: 1; }
+.field-spot { background: var(--spot-fill); color: var(--on-spot-fill); --focus: var(--on-spot-fill); --rule: rgb(31 27 26 / 0.34); --ink-quiet: var(--on-spot-fill); --spot: var(--on-spot-fill); --spot-large: var(--on-spot-fill); --leaf: var(--on-spot-fill); }
+.field-leaf { background: var(--leaf-fill); color: var(--on-leaf-fill); --focus: var(--on-leaf-fill); --rule: rgb(31 27 26 / 0.3); --ink-quiet: var(--on-leaf-fill-quiet); --spot: var(--on-leaf-fill); --spot-large: var(--on-leaf-fill); --leaf: var(--on-leaf-fill); --ink: var(--on-leaf-fill); }
+.field-spot::before, .field-leaf::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(55% 45% at 14% 8%, rgb(255 238 214 / 0.34), transparent 70%),
+    radial-gradient(45% 60% at 92% 70%, rgb(255 238 214 / 0.16), transparent 70%),
+    radial-gradient(70% 55% at 70% 105%, rgb(60 20 8 / 0.24), transparent 72%);
+}
+.field-leaf::before { background: radial-gradient(55% 45% at 86% 6%, rgb(255 250 225 / 0.4), transparent 70%); }
+/* Grain under the type: z-index -1 inside each field's own stacking context. */
+.field-spot::after, .field-leaf::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background-image: var(--texture-grain); background-size: var(--texture-grain-tile); opacity: var(--field-grain-opacity); }
+.field-leaf::after { opacity: var(--leaf-grain-opacity); }
+
+/* Grainy fades: a CSS gradient with a second, stronger pass of grain across
+   its middle, which dithers the ramp the way grain does on an old print. */
+.fade { position: absolute; left: 0; right: 0; height: var(--fade-height, 7.5rem); pointer-events: none; }
+.fade::after { content: ""; position: absolute; inset: 0; background-image: var(--texture-grain); background-size: var(--texture-grain-tile); opacity: 0.85; -webkit-mask: linear-gradient(transparent, #000 30%, #000 62%, transparent); mask: linear-gradient(transparent, #000 30%, #000 62%, transparent); }
+
+/* Small framed images, Monocle style. */
+.framed { padding: 3px; box-shadow: inset 0 0 0 1px var(--ink-quiet); background: var(--sunk); }
+
+/* ---------- Department heads ---------- */
+.dept { position: relative; }
+.dept-head { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3) var(--space-4); align-items: end; margin-block: var(--space-5) var(--space-6); }
+.dept-id { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: 1fr auto; gap: var(--space-1) var(--space-4); align-items: end; }
+.dept-num { grid-row: span 2; font-family: var(--type-numeral-family); font-size: var(--type-numeral-size); font-weight: var(--type-numeral-weight); line-height: var(--type-numeral-line); letter-spacing: var(--type-numeral-tracking); font-variation-settings: var(--type-numeral-axes); color: var(--spot-large); }
+.dept-head h2 { font-family: var(--type-headline-family); font-size: var(--type-headline-size); font-weight: var(--type-headline-weight); line-height: var(--type-headline-line); letter-spacing: var(--type-headline-tracking); font-variation-settings: var(--type-headline-axes); }
+.dept-head .dept-intro { max-width: 36em; color: var(--ink-quiet); }
+@media (min-width: 840px) {
+  .dept-head { grid-template-columns: minmax(0, 1fr) minmax(0, 24rem); }
+  .dept-head .dept-intro { grid-column: -2; padding-left: var(--space-4); border-left: var(--rule-hairline) solid var(--rule); }
+}
+/* From 1024px the heads sit on the 12-column grid: the intro takes the last
+   three columns, on the same line as the Work margin and the Writing list. */
+@media (min-width: 1024px) {
+  .dept-head { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--layout-column-gap); }
+  .dept-head .dept-id { grid-column: 1 / span 9; }
+  .dept-head .dept-intro { grid-column: 10 / span 3; padding-left: var(--layout-column-gap); }
+}
+
+.dropcap::first-letter { float: left; margin: 0.08em 0.08em 0 0; font: 400 3.9em / 0.8 var(--font-display); font-variation-settings: 'SOFT' 0; color: var(--spot-large); }
+@supports (initial-letter: 3) or (-webkit-initial-letter: 3) {
+  .dropcap::first-letter { float: none; margin: 0 0.1em 0 0; font-size: 1em; line-height: 1; -webkit-initial-letter: 3; initial-letter: 3; }
+}
+.ref { position: relative; display: inline-grid; place-items: center; min-width: 1.05rem; height: 1.05rem; margin-inline: 0.12em 0.05em; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--spot-large); color: var(--spot); font: 600 0.625rem / 1 var(--font-label); text-decoration: none; vertical-align: 0.3em; font-feature-settings: 'tnum' 1; text-indent: 0; }
+.ref::before { content: ""; position: absolute; inset: -0.25rem; }
+.ref:hover { background: var(--spot-fill); color: var(--on-spot-fill); }
+.notes { list-style: none; display: grid; gap: var(--space-3); counter-reset: note; }
+.notes li { counter-increment: note; display: grid; grid-template-columns: 1.6rem minmax(0, 1fr); gap: var(--space-2); }
+.notes li::before { content: counter(note); display: grid; place-items: center; width: 1.375rem; height: 1.375rem; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--spot-large); color: var(--spot); font: 600 0.6875rem / 1 var(--font-label); }
+.notes li:target { background: color-mix(in srgb, var(--spot-fill) 14%, transparent); }
+
+.glance dl { display: grid; margin-top: var(--space-2); border-top: 1px solid var(--ink-quiet); }
+.glance dl > div { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: var(--space-3); padding-block: 0.45rem; border-bottom: var(--rule-hairline) solid var(--rule); }
+.glance dt { padding-top: 0.15rem; }
+.glance dd { font: var(--type-sidenote-weight) var(--type-sidenote-size) / var(--type-sidenote-line) var(--type-sidenote-family); text-wrap: pretty; }
+@media (min-width: 1024px) { .glance dl > div { grid-template-columns: 1fr; gap: 0.1rem; } }
+
+/* Fig. 1: one spot colour, thin frame, tracked caps, numbered caption. */
+.plate { border: 1px solid var(--spot-large); padding: var(--space-4) var(--space-4) var(--space-5); }
+.plate-title { display: flex; justify-content: space-between; gap: var(--space-3); color: var(--spot); font: 600 0.75rem / 1.2 var(--font-label); letter-spacing: 0.16em; text-transform: uppercase; font-stretch: 85%; }
+
+.legend { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); font: 500 0.8125rem / 1.3 var(--font-label); color: var(--ink-quiet); list-style: none; }
+.takeaway { max-width: 19rem; font: italic var(--text-weight) 1.0625rem / 1.3 var(--font-text); text-wrap: pretty; }
+.takeaway b { margin-right: 0.12em; font: 300 2.25rem / 0.8 var(--font-display); font-style: normal; font-variation-settings: 'SOFT' 0; letter-spacing: -0.03em; color: var(--spot-large); vertical-align: -0.08em; }
+.legend li { display: flex; align-items: center; gap: var(--space-2); }
+.legend svg { width: 0.875rem; height: 0.875rem; }
+.plate + figcaption, .fig-cap { margin-top: var(--space-3); }
+.fig-cap b { font: 600 0.8125rem / 1 var(--font-label); font-style: normal; letter-spacing: 0.06em; color: var(--spot); margin-right: var(--space-2); }
+
+.pull { position: relative; margin-block: 0 var(--space-6); padding-block: var(--space-5); border-block: var(--rule-hairline) solid var(--rule); color: var(--ink-quiet); }
+.pull p { font-family: var(--type-pullquote-family); font-size: var(--type-pullquote-size); font-weight: var(--type-pullquote-weight); line-height: var(--type-pullquote-line); letter-spacing: var(--type-pullquote-tracking); font-style: var(--type-pullquote-style); font-variation-settings: var(--type-pullquote-axes); color: var(--leaf); padding-left: 0.45em; text-indent: -0.45em; max-width: 26em; text-wrap: balance; }
+.pull footer { margin-top: var(--space-3); }
+.pull .xh { color: var(--ink-quiet); }
+.pull .xh--tl { left: 0; top: 0; } .pull .xh--tr { left: 100%; top: 0; } .pull .xh--bl { left: 0; top: 100%; } .pull .xh--br { left: 100%; top: 100%; }
+
+/* ---------- Paper insert: the other stock ----------
+   Paper inside the Night edition, charcoal inside the Day edition. The paper is
+   set in the markup (data-edition="day" data-insert) and tokens.css turns it
+   charcoal in Day, on screen only, so it is right before any script runs. */
+.insert { position: relative; background: var(--ground); color: var(--ink); overflow: hidden; }
+.insert::after { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: var(--texture-grain); background-size: var(--texture-grain-tile); opacity: var(--grain-opacity); mix-blend-mode: var(--grain-blend); }
+/* An insert fades into the page ground (the reverse in Day). */
+.insert > .fade { bottom: 0; background: linear-gradient(to bottom, transparent 0%, color-mix(in srgb, #A0785A 22%, transparent) 26%, color-mix(in srgb, #6B4E3D 58%, transparent) 54%, color-mix(in srgb, var(--page-ground) 86%, #4A3A30) 80%, var(--page-ground) 100%); }
+.insert > .fade::after { opacity: 0.5; }
+
+/* ---------- Phone disclosures ----------
+   A [data-fold] block is a header and a body. From 600px up the header is a
+   plain header. On phones the chrome script wraps the title in a disclosure
+   button, and the block closes into an M3 list row with one short line. */
+.fold-head { display: grid; gap: var(--space-2); align-content: start; }
+.fold-short { display: none; }
+[data-fold-body][hidden] { display: none !important; }
+
+.fold-btn { display: inline; padding: 0; border: 0; background: none; color: inherit; font: inherit; letter-spacing: inherit; text-align: inherit; text-transform: inherit; font-stretch: inherit; cursor: pointer; }
+.fold-btn::before, .fold-btn::after { content: ""; position: absolute; inset: 0 calc(-1 * var(--layout-gutter)); }
+.fold-btn::after { z-index: -1; background: currentColor; opacity: 0; transition: opacity var(--motion-duration-short); }
+.fold-btn:hover::after { opacity: var(--state-hover); }
+.fold-btn:active::after { opacity: var(--state-pressed); }
+.fold-btn:focus-visible { outline: none; }
+.fold-btn:focus-visible::before { outline: var(--focus-ring-width) solid var(--focus); outline-offset: calc(-1 * var(--focus-ring-width)); }
+.fold-btn .fold-chev { display: block; position: absolute; right: 0; top: 50%; width: 1.5rem; height: 1.5rem; margin-top: -0.75rem; color: var(--ink-quiet); transition: rotate var(--motion-duration-medium) var(--motion-easing-standard); }
+.fold-btn[aria-expanded="true"] .fold-chev { rotate: 180deg; }
+@media (max-width: 599px) {
+  [data-fold] > .fold-head { position: relative; isolation: isolate; display: grid; row-gap: 0.2rem; align-content: center; min-height: 4.5rem; padding-block: var(--space-4); padding-right: 2.5rem; }
+  [data-fold].is-closed .fold-long { display: none; }
+  [data-fold].is-closed .fold-short { display: inline; }
+}
+
+/* ---------- Menu sheet (M3 bottom sheet) ---------- */
+.menu-sheet { position: fixed; inset: auto 0 0 0; width: 100%; max-width: 40rem; max-height: 85svh; margin: 0 auto; border: 0; padding: var(--space-2) var(--layout-gutter) var(--space-6); border-radius: var(--shape-xl) var(--shape-xl) 0 0; background: var(--raised); color: var(--ink); }
+.menu-sheet::backdrop { background: var(--scrim); }
+.sheet-handle { width: 2rem; height: 4px; margin: var(--space-2) auto var(--space-3); border-radius: 2px; background: var(--outline); }
+.sheet-head { display: flex; align-items: center; justify-content: space-between; }
+.sheet-list { list-style: none; margin-block: var(--space-2) var(--space-5); border-bottom: 1px solid var(--rule); }
+.sheet-list a { position: relative; isolation: isolate; display: grid; grid-template-columns: 3rem minmax(0, 1fr) auto; align-items: center; min-height: 4rem; border-top: 1px solid var(--rule); color: inherit; text-decoration: none; }
+.sheet-list a::after { content: ""; position: absolute; inset: 0 calc(-1 * var(--layout-gutter)); z-index: -1; background: currentColor; opacity: 0; transition: opacity var(--motion-duration-short); }
+.sheet-list a:hover::after { opacity: var(--state-hover); }
+.sheet-list a:active::after { opacity: var(--state-pressed); }
+.sheet-list .n { font: 400 1.5rem / 1 var(--font-display); font-variation-settings: 'SOFT' 0; font-feature-settings: 'lnum' 1; letter-spacing: -0.02em; color: var(--spot); }
+.sheet-list .name { font: 400 1.875rem / 1.05 var(--font-display); font-variation-settings: 'SOFT' 50; letter-spacing: -0.02em; }
+.sheet-list .ico { width: 1.6rem; height: 1rem; color: var(--ink-quiet); }
+.sheet-foot { display: grid; gap: var(--space-3); }
+.sheet-edition { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.sheet-edition .edition-words { margin-right: -0.45rem; }
+.menu-sheet .btn--filled { width: 100%; }
+/* From 600px the masthead carries the edition switch, so the sheet does not repeat it. */
+@media (min-width: 600px) { .sheet-edition { display: none; } }
+
+/* ---------- Colophon ---------- */
+.colophon { background: var(--sunk); padding-block: 0 var(--space-7); }
+.colophon .checker { --check-a: var(--spot-fill); --check-b: var(--sunk); }
+.colophon-grid { display: grid; gap: var(--space-5); padding-top: var(--space-6); }
+.colophon h2 { font: var(--type-nameplate-weight) 1.5rem / 1 var(--type-nameplate-family); letter-spacing: var(--type-nameplate-tracking); word-spacing: 0.12em; text-transform: uppercase; }
+.colophon ul { list-style: none; display: grid; gap: var(--space-1); margin-top: var(--space-2); }
+.colophon li a { display: inline-flex; align-items: center; min-height: 2.25rem; }
+.colophon li a .num-o { margin-right: 0.45em; font-feature-settings: 'tnum' 1; }
+.colophon-grid .t-folio { display: block; }
+.write { display: grid; justify-items: start; align-content: start; }
+.write .btn { margin-top: var(--space-3); }
+.write .copy-status { margin-top: var(--space-2); }
+.write p { margin-top: var(--space-3); }
+/* The pill keeps its width when the label reads Copied, and the status line
+   keeps its height when empty, so nothing below it moves. */
+[data-copy-email] { min-inline-size: 9.25rem; }
+.copy-status { display: block; min-height: 2.8em; }
+.colophon h2 + p { margin-top: var(--space-2); }
+@media (min-width: 840px) { .colophon-grid { grid-template-columns: 2fr repeat(3, 1fr); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+/* Print is the Day edition (tokens.css). Grain, fades and the chrome stay on
+   screen; paper is the ground, so no page or stock paints a background. The
+   roles are never redefined here: filled buttons and rims read --ground as ink. */
+@media print {
+  body::after, .field-spot::after, .field-leaf::after, .insert::after, .fade { display: none; }
+  .skip-link, .masthead, .menu-sheet, .colophon { display: none; }
+  html, body, [data-edition] { background: none; }
+}
+
+/* More contrast: grain and fades off, quiet ink and hairlines at full strength. */
+@media (prefers-contrast: more) {
+  :root, [data-edition] { --ink-quiet: var(--ink); --rule: var(--outline); }
+  body::after, .field-spot::after, .field-leaf::after, .insert::after, .fade::after { display: none; }
+}
+
+/* Forced colours (Windows high contrast) drop box-shadow and backgrounds, and
+   several control edges here are inset box-shadows. Give every control a real
+   edge and keep the selected state and the focus ring visible. */
+@media (forced-colors: active) {
+  .btn:not(.btn--text), .icon-btn, .chip, .segmented, .ref, .notes li::before, .framed { outline: 1px solid ButtonText; outline-offset: -1px; }
+  .segmented button[aria-pressed="true"], .chip[aria-pressed="true"] { forced-color-adjust: none; background: SelectedItem; color: SelectedItemText; }
+  .field-box { border-bottom: 1px solid CanvasText; }
+  .field-box:focus-within { border-bottom: 2px solid Highlight; }
+  .edition-words button[aria-pressed="true"] { text-decoration-color: Highlight; }
+  .btn:focus-visible, .icon-btn:focus-visible, .chip:focus-visible, .segmented button:focus-visible, a:focus-visible, .fold-btn:focus-visible::before { outline: 2px solid Highlight; outline-offset: 2px; }
+  .menu-sheet { border: 1px solid CanvasText; border-bottom: 0; }
+}

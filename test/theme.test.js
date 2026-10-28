@@ -57,7 +57,8 @@ test('every edition defines the same roles as the default edition', () => {
 test('kit.html only reads custom properties that tokens.css or the page defines', () => {
   const kit = fs.readFileSync(path.join(ROOT, 'kit.html'), 'utf8');
   const tokens = fs.readFileSync(OUT, 'utf8');
-  const defined = new Set([...`${tokens}\n${kit}`.matchAll(/(--[a-z0-9-]+)\s*:/g)].map((m) => m[1]));
+  const site = fs.readFileSync(path.join(ROOT, 'site.css'), 'utf8');
+  const defined = new Set([...`${tokens}\n${site}\n${kit}`.matchAll(/(--[a-z0-9-]+)\s*:/g)].map((m) => m[1]));
   // var(--name, fallback) may be undefined on purpose; a bare var(--name) may not.
   const bare = [...kit.matchAll(/var\((--[a-z0-9-]+)\)/g)].map((m) => m[1]);
   const missing = [...new Set(bare.filter((name) => !defined.has(name)))];
@@ -69,8 +70,24 @@ test('kit.html copy has no em dashes (my-voice.md)', () => {
   assert.doesNotMatch(kit, /—|&mdash;|&#8212;|&#x2014;/i);
 });
 
-test('kit.html art is in sync with generate-kit-art.js (run `npm run generate-art`)', () => {
-  const { symbols, inline, KIT } = require('../generate-kit-art');
-  const kit = fs.readFileSync(KIT, 'utf8');
-  assert.equal(inline(kit, symbols().svg), kit);
+test('the art generator draws the same symbols every run', () => {
+  const { symbols, NAMES } = require('../generate-kit-art');
+  assert.deepEqual(NAMES, ['still-life', 'street', 'marigold']);
+  assert.equal(symbols(['marigold']).svg, symbols(['marigold']).svg);
+});
+
+test('kit.html and site.css only read custom properties that tokens.css or they define', () => {
+  const tokens = fs.readFileSync(OUT, 'utf8');
+  const site = fs.readFileSync(path.join(ROOT, 'site.css'), 'utf8');
+  for (const [name, text] of [['site.css', site], ['404.html', fs.readFileSync(path.join(ROOT, '404.html'), 'utf8')]]) {
+    const defined = new Set([...`${tokens}\n${site}\n${text}`.matchAll(/(--[a-z0-9-]+)\s*:/g)].map((m) => m[1]));
+    const bare = [...text.matchAll(/var\((--[a-z0-9-]+)\)/g)].map((m) => m[1]);
+    const missing = [...new Set(bare.filter((v) => !defined.has(v)))];
+    assert.deepEqual(missing, [], `${name}: undefined custom properties: ${missing.join(', ')}`);
+  }
+});
+
+test('the Day rule turns paper inserts charcoal on screen, before any script', () => {
+  const tokens = fs.readFileSync(OUT, 'utf8');
+  assert.match(tokens, /@media screen \{\n {2}:root\[data-edition="day"\] \[data-insert\] \{/);
 });
