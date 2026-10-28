@@ -12,10 +12,11 @@
 // after changing a drawing. `node generate-kit-art.js --check` exits non-zero
 // when kit.html is stale (the test suite runs the same comparison).
 //
-// Size discipline: integer coordinates, hatching done with masks (one pattern
-// per direction, so a window is one rectangle, not six lines), bobbles and
-// stipple as zero-length round-capped strokes. Colours are the palette in
-// theme.json; line work that must follow the edition uses currentColor.
+// Size discipline: integer coordinates, relative path commands, hatching done
+// with masks (one pattern per direction, so a window is one rectangle, not six
+// lines), seed nodules and stipple as zero-length round-capped strokes. Colours
+// are the palette in theme.json; line work that must follow the edition uses
+// currentColor.
 
 const fs = require('fs');
 const path = require('path');
@@ -47,8 +48,24 @@ const C = {
 const dot = (x, y) => `M${i0(x)} ${i0(y)}h0`;
 
 // ======================= COVER: still life =======================
+// Marigolds (Tagetes erecta) and hanging amaranth in a stoneware jar, after
+// Ben's bouquet photo. A marigold head is a dome of frilled petals placed on
+// an ellipsoid and projected, so heads can face the viewer, turn three
+// quarters or stand in profile on their green calyx. Amaranth is a knobbly
+// rope: a tapering body with round nodules along both edges, seed clusters
+// stippled inside and the shaded half hatched.
+
+// Head palettes: five tones from shadow to highlight, Toxic Orange to a
+// deeper marigold. The darkest two also fill the crevices under the petals.
+const HEADS = {
+  toxic: ['#A8341A', '#D84722', C.o2, '#FF7634', '#FF9140'],
+  ember: ['#AE3E16', '#DC5420', '#F86A28', '#FF8436', '#FF9F48'],
+  gold: ['#B04A12', '#DC6418', '#F47E1E', '#FF9532', '#FFAD4C'],
+};
+
 function stillLife() {
   const R = rng(20261027);
+  ropeIds = 0;
   const W = 600, H = 760;
   const out = [];
   out.push(`<rect width="${W}" height="${H}" fill="url(#art-murk)"/>`);
@@ -63,73 +80,315 @@ function stillLife() {
   out.push(`<rect y="676" width="${W}" height="${H - 676}" fill="${C.news}" mask="url(#art-m-h3)" opacity=".18"/>`);
   out.push(`<path d="M0 676H${W}" stroke="${C.news}" stroke-width="1.4" opacity=".4"/>`);
 
-  // upright plumes, behind everything
-  for (const [x, y, lean, len, th] of [[96, 560, -0.22, 470, 10], [52, 620, -0.38, 420, 8], [512, 540, 0.2, 500, 10], [560, 600, 0.36, 380, 8], [176, 500, -0.08, 420, 7], [432, 500, 0.1, 430, 7]]) {
-    out.push(plume(R, x, y, lean, len, th));
+  // upright amaranth spikes behind the bouquet: they rise, arch outward and
+  // nod a little at the tip. [x, y, dx, top, th, colour]
+  for (const [x, y, dx, top, th, k] of [[170, 480, -112, 46, 13, 'olive'], [120, 520, -84, 170, 11, 'deep'], [430, 480, 116, 36, 13, 'olive'], [490, 520, 80, 160, 11, 'deep']]) {
+    const curve = bez([x, y], [x + dx * 0.05, y - (y - top) * 0.55], [x + dx * 0.6, top - 26], [x + dx, top + 8]);
+    out.push(rope(R, curve, th, 0.85, AMA[k]));
   }
-  // foliage
-  for (const [a, l, x, y] of [[-2.55, 250, 290, 470], [-0.6, 260, 310, 470], [-2.0, 280, 290, 470], [-1.05, 300, 310, 470], [-3.05, 230, 280, 480], [-0.1, 230, 320, 480], [-1.55, 230, 300, 470], [-2.8, 160, 250, 380], [-0.35, 160, 350, 380]]) {
+
+  // heads: [x, y, r, pitch, roll, palette]. Pitch 0 faces the viewer; at
+  // about 1.2 the head stands in profile on its calyx. Roll turns the axis.
+  const heads = [
+    [290, 70, 38, 1.05, -0.2, 'gold'], [414, 92, 52, 0.7, 0.35, 'toxic'], [168, 144, 42, 0.95, -0.6, 'ember'],
+    [524, 198, 44, 1.15, 0.8, 'gold'], [330, 198, 68, 0.3, 0.1, 'toxic'], [86, 262, 40, 1.1, -0.9, 'toxic'],
+    [198, 284, 60, 0.45, -0.35, 'gold'], [462, 304, 58, 0.5, 0.45, 'ember'],
+    [316, 354, 76, 0.15, -0.05, 'toxic'], [122, 396, 48, 0.8, -0.7, 'ember'], [542, 402, 36, 1.2, 1.05, 'toxic'],
+    [214, 448, 52, 0.6, -0.3, 'toxic'], [430, 450, 60, 0.55, 0.4, 'gold'],
+  ];
+  // buds on long stems in the gaps and at the edges: [x, y, r, angle, open]
+  const buds = [[230, 36, 11, -0.25, 1], [482, 34, 10, 0.4, 0], [584, 294, 10, 1.2, 1], [28, 336, 10, -1.3, 0], [258, 190, 9, -0.1, 0], [578, 480, 9, 1.4, 0], [34, 476, 10, -1.4, 1], [108, 72, 9, -0.6, 0], [394, 262, 9, 0.3, 1], [520, 110, 9, 0.7, 1]];
+
+  // stems first, all running back to the jar mouth
+  let stems = '';
+  for (const [x, y, r, p, q] of heads) {
+    const [ax, ay] = [x - Math.sin(p) * Math.sin(q) * r * 1.2, y + Math.sin(p) * Math.cos(q) * r * 1.2];
+    const jx = 300 + (x - 300) * 0.25;
+    stems += `M${i0(ax)} ${i0(ay)}Q${i0((ax + jx) / 2 + (x - 300) * 0.2)} ${i0((ay + 486) / 2)} ${i0(jx)} 492`;
+  }
+  for (const [x, y, r, a] of buds) {
+    const jx = 300 + (x - 300) * 0.2;
+    stems += `M${i0(x - Math.sin(a) * r * 2)} ${i0(y + Math.cos(a) * r * 2)}Q${i0(x + (jx - x) * 0.2 - Math.sin(a) * 60)} ${i0(y + (486 - y) * 0.5)} ${i0(jx)} 492`;
+  }
+  out.push(`<path d="${stems}" fill="none" stroke="${C.char}" stroke-width="5.4"/><path d="${stems}" fill="none" stroke="${C.g1}" stroke-width="3"/>`);
+
+  // marigold foliage, pinnate and dark, so the heads sit apart
+  for (const [a, l, x, y] of [[-2.55, 250, 290, 470], [-0.6, 260, 310, 470], [-2.0, 280, 290, 470], [-1.05, 300, 310, 470], [-3.05, 230, 280, 480], [-0.1, 230, 320, 480], [-1.55, 230, 300, 470], [-2.8, 160, 250, 380], [-0.35, 160, 350, 380], [-1.3, 200, 330, 300], [-1.9, 190, 270, 300]]) {
     out.push(fern(R, x, y, a, l));
   }
-  // heads, back to front. [kind, x, y, r, tilt, squash]
-  const heads = [
-    ['o', 250, 96, 52, -0.3, 0.8], ['o', 400, 84, 58, 0.3, 0.78], ['g', 96, 196, 54, -0.5, 0.84], ['o', 548, 176, 60, 0.5, 0.8],
-    ['o', 172, 210, 62, -0.2, 0.86], ['o', 330, 176, 74, 0.05, 0.86], ['o', 470, 268, 72, 0.3, 0.86],
-    ['g', 552, 380, 48, 0.6, 0.8], ['o', 112, 330, 66, -0.4, 0.84], ['o', 250, 300, 84, -0.1, 0.88], ['o', 392, 352, 80, 0.15, 0.88],
-    ['o', 196, 424, 66, -0.25, 0.86], ['o', 306, 438, 60, 0.05, 0.84], ['o', 452, 448, 58, 0.3, 0.84],
-  ];
-  for (const [k, x, y, r, tilt, sq] of heads) out.push(pompom(R, x, y, r, tilt, sq, k === 'o' ? 'orange' : 'green'));
+  for (const [x, y, r, a, open] of buds) out.push(bud(R, x, y, r, a, open));
+  for (const [x, y, r, p, q, pal] of heads) out.push(marigold(R, x, y, r, p, q, HEADS[pal]));
 
   out.push(jar(R, 300, 486));
 
-  // hanging amaranth over the rim, in front
-  for (const [x, y, side, len, th] of [[232, 492, -1, 270, 11], [206, 486, -1, 214, 9], [256, 498, -1, 300, 12], [182, 482, -1, 168, 8],
-    [368, 494, 1, 290, 12], [394, 486, 1, 226, 10], [344, 500, 1, 250, 11], [418, 482, 1, 170, 8]]) {
-    out.push(tassel(R, x, y, side, len, th));
+  // hanging amaranth: up over the lip, a slow curve outward, then down in
+  // front of the jar; two more spill from the bunch over the lower heads.
+  // [x, y, side, reach, len, th, colour]
+  for (const [x, y, side, reach, len, th, k] of [
+    [148, 432, -1, 46, 240, 11, 'deep'], [476, 444, 1, 40, 200, 10, 'deep'],
+    [192, 484, -1, 44, 210, 10, 'deep'], [212, 486, -1, 30, 276, 13, 'pale'], [234, 490, -1, 12, 330, 14, 'pale'], [256, 496, -1, -4, 236, 10, 'deep'],
+    [404, 484, 1, 40, 150, 10, 'pale'], [384, 488, 1, 24, 228, 11, 'deep'], [362, 494, 1, 8, 296, 13, 'pale'],
+  ]) {
+    const end = [x + side * reach, y + len];
+    const sway = (R() - 0.5) * 14;
+    const curve = bez([x, y], [x + side * 28, y - 20], [end[0] + side * 6 + sway, y + len * 0.3], end);
+    if (len > 290) {
+      // a side branch leaves the rope near the top and hangs beside it
+      const bx = x + side * 18, by = y - 4;
+      out.push(rope(R, bez([bx, by], [bx + side * 30, by - 14], [end[0] + side * 34, by + len * 0.25], [end[0] + side * 30, by + len * 0.55]), th * 0.6, 0.9, AMA[k === 'pale' ? 'deep' : 'pale']));
+    }
+    out.push(rope(R, curve, th, 0.8, AMA[k]));
   }
   return { W, H, body: out.join('') };
 }
 
-// A chain of bobbles along a curve. Silhouette: an outline pass, then a fill
-// pass on the same dots; texture: darker stipple on the shaded side.
-function bobbles(R, curve, len, th, fills, side, taper = 0.65) {
-  const cls = {};
-  const shade = [];
-  let t = 0;
-  while (t < 1) {
-    const [x, y] = curve(t);
-    const r = th * (1 - taper * t) * (0.85 + R() * 0.3);
-    for (let k = 0; k < 2; k++) {
-      const dx = (R() - 0.5) * r * 1.1, dy = (R() - 0.5) * r * 0.5;
-      const rr = Math.max(1.5, Math.round(r * (0.66 + R() * 0.3) * 2) / 2);
-      (cls[rr] ||= []).push(dot(x + dx, y + dy));
-      if (R() < 0.45) shade.push(dot(x + dx + side * rr * 0.45, y + dy + rr * 0.35));
-    }
-    t += (r * 0.95) / len;
+// ---- small vector helpers
+const v3 = {
+  add: (...vs) => vs.reduce((a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]]),
+  mul: (a, k) => [a[0] * k, a[1] * k, a[2] * k],
+  dot: (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2],
+  cross: (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]],
+  norm: (a) => { const l = Math.hypot(...a) || 1; return [a[0] / l, a[1] / l, a[2] / l]; },
+};
+const LIGHT = v3.norm([-0.5, -0.65, 0.6]);
+
+// Compact path from absolute points: first point absolute, the rest relative
+// to the rounded previous end point, so rounding never drifts.
+function nums(list) {
+  let s = '';
+  list.forEach((v, i) => { s += (i && v >= 0 ? ' ' : '') + v; });
+  return s;
+}
+function relPath(start, segs, close = true) {
+  let px = Math.round(start[0]), py = Math.round(start[1]);
+  let d = `M${nums([px, py])}`;
+  for (const [cmd, ...pts] of segs) {
+    const r = pts.map(([x, y]) => [Math.round(x) - px, Math.round(y) - py]);
+    d += cmd + nums(r.flat());
+    const [ex, ey] = pts[pts.length - 1];
+    px = Math.round(ex); py = Math.round(ey);
   }
-  const sizes = Object.keys(cls).map(Number).sort((a, b) => b - a);
-  let o = '<g stroke-linecap="round">';
-  for (const s of sizes) o += `<path d="${cls[s].join('')}" stroke="${C.char}" stroke-width="${2 * s + 1.6}"/>`;
-  sizes.forEach((s, i) => { o += `<path d="${cls[s].join('')}" stroke="${fills[i % fills.length]}" stroke-width="${2 * s}"/>`; });
-  o += `<path d="${shade.join('')}" stroke="${C.g0}" stroke-width="1.6"/></g>`;
+  return close ? `${d}z` : d;
+}
+
+// One marigold head in a local frame of radius 100, scaled to r.
+function marigold(R, cx, cy, r, pitch, roll, pal, n = r < 50 ? 80 : 100) {
+  const A = [Math.sin(pitch) * Math.sin(roll), -Math.sin(pitch) * Math.cos(roll), Math.cos(pitch)];
+  const U = [Math.cos(roll), Math.sin(roll), 0];
+  const V = v3.cross(A, U);
+  const h = 0.78;
+  const thMax = 1.95 - 0.25 * Math.sin(pitch);
+  const cMin = Math.cos(thMax);
+  const petals = [];
+  // a golden-angle spiral over the dome, then a crumpled tuft on the crown
+  const spots = [];
+  for (let i = 0; i < n; i++) spots.push([1 - (1 - cMin) * Math.min(1, (i + R() * 0.9) / n), i * 2.39996 + (R() - 0.5) * 0.6]);
+  for (let i = 0; i < 9; i++) spots.push([Math.cos(0.12 + R() * 0.42), R() * TAU]);
+  for (const [c, ps] of spots) {
+    const th = Math.acos(c), st = Math.sin(th);
+    const radial = v3.add(v3.mul(U, Math.cos(ps)), v3.mul(V, Math.sin(ps)));
+    const P = v3.add(v3.mul(radial, 100 * st), v3.mul(A, 100 * h * c));
+    const N = v3.norm(v3.add(v3.mul(radial, st), v3.mul(A, c / h)));
+    const T = v3.norm(v3.add(v3.mul(radial, c), v3.mul(A, -st * h)));
+    const lift = 0.1 + 0.38 * (1 - th / thMax) + (R() - 0.5) * 0.3;
+    let D = v3.norm(v3.add(v3.mul(T, Math.cos(lift)), v3.mul(N, Math.sin(lift))));
+    let B = v3.norm(v3.cross(N, D));
+    const tw = (R() - 0.5) * (0.5 + 1.6 * (1 - th / thMax));
+    [D, B] = [v3.norm(v3.add(v3.mul(D, Math.cos(tw)), v3.mul(B, Math.sin(tw)))), v3.norm(v3.add(v3.mul(B, Math.cos(tw)), v3.mul(D, -Math.sin(tw))))];
+    const L = (27 + 20 * (th / thMax)) * (0.85 + R() * 0.3);
+    const Wd = L * (1.3 + R() * 0.35);
+    let Np = v3.cross(D, B);
+    const back = Np[2] < 0;
+    if (back) Np = v3.mul(Np, -1);
+    const tipZ = v3.add(P, v3.mul(D, L))[2];
+    const tip2 = [P[0] + D[0] * L, P[1] + D[1] * L];
+    // a petal facing away and lying inside the silhouette is never seen
+    if (N[2] < 0.05 && Math.hypot(...tip2) < 96 && Math.hypot(P[0], P[1]) < 96) continue;
+    const at = (u, out, nz = 0) => {
+      const p = v3.add(P, v3.mul(D, L * out), v3.mul(B, Wd * (u - 0.5)), v3.mul(N, nz));
+      return [p[0], p[1]];
+    };
+    // a rounded fan whose edge rolls in three ruffles of uneven size
+    const lobes = 3;
+    const segs = [['q', at(-0.14, 0.28), at(0.02, 0.66)]];
+    let u0 = 0.02;
+    for (let k = 0; k < lobes; k++) {
+      const u1 = k === lobes - 1 ? 0.98 : u0 + (0.98 - u0) / (lobes - k) * (0.7 + R() * 0.6);
+      const um = (u0 + u1) / 2;
+      const rise = (u) => 0.66 + 0.34 * Math.sin(Math.PI * u);
+      segs.push(['q', at(um, rise(um) + 0.3 + R() * 0.18, (R() - 0.5) * L * 0.5), at(u1, rise(u1) - (k < lobes - 1 ? 0.06 + R() * 0.1 : 0))]);
+      u0 = u1;
+    }
+    segs.push(['q', at(1.14, 0.28), at(0.5, -0.12)]);
+    const shade = v3.dot(Np, LIGHT);
+    let tone = Math.round(1.0 + shade * 2.8 + (R() - 0.5) * 0.9) - (back ? 1 : 0) - (th > 1.55 ? 1 : 0);
+    tone = Math.max(0, Math.min(4, tone));
+    petals.push({ z: (P[2] + tipZ) / 2, tone, d: relPath(at(0.5, -0.12), segs) });
+  }
+  petals.sort((a, b) => a.z - b.z);
+  const s = r / 100;
+  let o = `<g transform="translate(${i0(cx)} ${i0(cy)}) scale(${s.toFixed(3)})" stroke="${C.char}" stroke-width="1.7" stroke-linejoin="round">`;
+  // calyx: a ribbed green cup under the dome, seen when the head turns
+  const a2 = Math.hypot(A[0], A[1]);
+  if (a2 > 0.3) {
+    const dx = -A[0] / a2, dy = -A[1] / a2, px = -dy, py = dx;
+    const t0 = 34, t1 = 56 + 90 * a2, w0 = 56, w1 = 15;
+    const p = (t, w) => [dx * t + px * w, dy * t + py * w];
+    const cal = relPath(p(t0, -w0), [['c', p(t0 + 30, -w0 * 1.02), p(t1 - 22, -w1 * 1.4), p(t1, -w1)], ['l', p(t1 + 4, 0)], ['l', p(t1, w1)], ['c', p(t1 - 22, w1 * 1.4), p(t0 + 30, w0 * 1.02), p(t0, w0)]]);
+    let ribs = '';
+    for (const f of [-0.62, -0.22, 0.2, 0.6]) ribs += relPath(p(t0 + 10, w0 * f), [['q', p((t0 + t1) / 2 + 6, w0 * f * 0.9), p(t1 - 2, w1 * f)]], false);
+    let teeth = '';
+    for (const f of [-0.85, -0.4, 0.05, 0.5, 0.9]) teeth += relPath(p(t0 + 6, w0 * (f - 0.16)), [['l', p(t0 - 22, w0 * f)], ['l', p(t0 + 6, w0 * (f + 0.16))]]);
+    o += `<path d="${cal}${teeth}" fill="${C.g1}" stroke-width="2.4"/><path d="${ribs}" fill="none" stroke="${C.g0}" stroke-width="3"/>`;
+  }
+  // crevice ground and a cast shadow so overlapping heads separate
+  o += `<ellipse cx="6" cy="10" rx="98" ry="${i0(98 * (0.82 + 0.18 * Math.abs(A[2])))}" fill="${C.char}" opacity=".5" stroke="none"/>`;
+  o += `<ellipse rx="86" ry="${i0(86 * (0.78 + 0.22 * Math.abs(A[2])))}" transform="translate(${i0(A[0] * 30)} ${i0(A[1] * 30)})" fill="${pal[0]}" stroke="none"/>`;
+  o += `<circle cx="${i0(A[0] * 70)}" cy="${i0(A[1] * 70)}" r="40" fill="${pal[1]}" stroke="none"/>`;
+  // Petals go back to front in depth bands, one path per tone in a band.
+  // Within one path every outline is painted over every fill, so petals that
+  // overlap must not share a path. Depth bands keep that rare; the topmost
+  // petals, which pile up on the crown, each get a path of their own.
+  const top = petals.length - 8;
+  for (let b = 0; b < top; b += 12) {
+    const byTone = [[], [], [], [], []];
+    for (const pt of petals.slice(b, Math.min(top, b + 12))) byTone[pt.tone].push(pt.d);
+    byTone.forEach((ds, t) => { if (ds.length) o += `<path fill="${pal[t]}" d="${ds.join('')}"/>`; });
+  }
+  for (const pt of petals.slice(Math.max(0, top))) o += `<path fill="${pal[pt.tone]}" d="${pt.d}"/>`;
+  // engraved shade: diagonal hatching over the side away from the light, a
+  // crescent cut from the disc by the same disc moved toward the light
+  const rr = r * 0.9, ox = -0.4 * rr, oy = -0.5 * rr, dd = Math.hypot(ox, oy);
+  const hh = Math.sqrt(rr * rr - (dd / 2) ** 2), nx = -oy / dd, ny = ox / dd;
+  const mx = cx + ox / 2, my = cy + oy / 2;
+  const q = (v) => (Math.round(v * 2) / 2).toString();
+  o += `</g><path d="M${q(mx + nx * hh)} ${q(my + ny * hh)}A${q(rr)} ${q(rr)} 0 1 1 ${q(mx - nx * hh)} ${q(my - ny * hh)}A${q(rr)} ${q(rr)} 0 0 0 ${q(mx + nx * hh)} ${q(my + ny * hh)}z" fill="${C.char}" mask="url(#art-m-d)" opacity=".4"/>`;
   return o;
 }
 
-function plume(R, x0, y0, lean, len, th) {
-  const curve = (t) => [x0 + Math.sin(lean) * len * t + Math.sin(t * 5 + x0) * 5 * t, y0 - Math.cos(lean) * len * t];
-  return bobbles(R, curve, len, th, [C.g1, C.g2, C.g1], Math.sign(lean) || 1, 0.75);
+// A marigold bud: a ribbed green ovoid with pointed sepals, sometimes split
+// open on an orange tuft.
+function bud(R, x, y, r, ang, open) {
+  const s = r / 10;
+  let o = `<g transform="translate(${i0(x)} ${i0(y)}) rotate(${i0(ang * 57.3)}) scale(${s.toFixed(2)})" stroke="${C.char}" stroke-linejoin="round">`;
+  if (open) o += `<path d="M-6-8q-3-6 1-9q1-5 5-3q4-4 6 1q4 1 1 6l-7 9z" fill="${C.o2}" stroke-width="1"/><path d="M-3-12l3 6M3-14l-1 7" fill="none" stroke-width=".8"/>`;
+  o += `<path d="M-7-9q-2 10 2 20q5 4 10 0q4-10 2-20l-3 3l-2-6l-2 5l-3-5l-2 6z" fill="${C.g1}" stroke-width="1.1"/>`;
+  o += `<path d="M-3-5q-1 8 1 15M2-5q1 8 0 15" fill="none" stroke="${C.g0}" stroke-width="1"/>`;
+  return `${o}</g>`;
 }
 
-function tassel(R, x0, y0, side, len, th) {
-  const cx1 = x0 + side * 64, cy1 = y0 - 14;
-  const cx2 = x0 + side * (96 + R() * 30), cy2 = y0 + len * 0.35;
-  const ex = x0 + side * (70 + R() * 50), ey = y0 + len;
-  const curve = (t) => {
+// ---- amaranth
+const AMA = {
+  pale: { body: C.g3, hi: C.g4, sh: C.g2 },
+  deep: { body: C.g1, hi: C.g2, sh: C.g0 },
+  olive: { body: C.g2, hi: C.g3, sh: C.g1 },
+};
+
+function bez(p0, p1, p2, p3) {
+  return (t) => {
     const u = 1 - t;
-    return [u * u * u * x0 + 3 * u * u * t * cx1 + 3 * u * t * t * cx2 + t * t * t * ex,
-      u * u * u * y0 + 3 * u * u * t * cy1 + 3 * u * t * t * cy2 + t * t * t * ey];
+    return [0, 1].map((k) => u * u * u * p0[k] + 3 * u * u * t * p1[k] + 3 * u * t * t * p2[k] + t * t * t * p3[k]);
   };
-  return bobbles(R, curve, len, th, [C.g3, C.g4, C.g2, C.g3], side);
+}
+
+// A tapering rope of seed clusters along a curve. The body is one smooth
+// shape; round nodules ride along both edges and give it a knobbly outline.
+// Nodules of one size share one path, drawn through <use> twice: their dark
+// rims go under the body, their fills over it, so the outline is all bumps
+// and the inside stays one mass (no string of beads). Light nodules and dark
+// seed stipple the surface.
+let ropeIds = 0;
+function rope(R, curve, th, taper, pal) {
+  const fine = [];
+  for (let i = 0; i <= 160; i++) fine.push(curve(i / 160));
+  const acc = [0];
+  for (let i = 1; i < fine.length; i++) acc.push(acc[i - 1] + Math.hypot(fine[i][0] - fine[i - 1][0], fine[i][1] - fine[i - 1][1]));
+  const len = acc[acc.length - 1];
+  let j = 0;
+  const at = (d) => {
+    if (d < acc[j]) j = 0;
+    while (j < acc.length - 2 && acc[j + 1] < d) j++;
+    const f = Math.min(1, (d - acc[j]) / ((acc[j + 1] - acc[j]) || 1));
+    const [x0, y0] = fine[j], [x1, y1] = fine[j + 1];
+    const l = Math.hypot(x1 - x0, y1 - y0) || 1;
+    return [x0 + (x1 - x0) * f, y0 + (y1 - y0) * f, -(y1 - y0) / l, (x1 - x0) / l];
+  };
+  // half-width along the rope: taper, swellings where clusters bunch, a tip
+  let lump = 1, target = 1, lastD = -99;
+  const width = (d) => {
+    const t = d / len;
+    if (d - lastD > th * 1.1) { target = 0.62 + R() * 0.6; lastD = d; }
+    lump += (target - lump) * 0.35;
+    return th * Math.max(0.18, 1 - taper * t ** 1.15) * lump * (t > 0.9 ? Math.max(0.25, (1 - t) / 0.1) : 1);
+  };
+  const SIZES = [1.5, 2.5, 4];
+  const cls = SIZES.map(() => []);
+  const hi = [], sh = [], left = [], right = [], shade = [], spine = [];
+  for (let d = 0; d < len;) {
+    const w = width(d);
+    const [x, y, nx, ny] = at(d);
+    left.push([x + nx * w * 0.8, y + ny * w * 0.8]);
+    right.push([x - nx * w * 0.8, y - ny * w * 0.8]);
+    const k = w * 0.4 < 2 ? 0 : w * 0.4 < 3.2 ? 1 : 2;
+    const dr = SIZES[k];
+    for (const sgn of [1, -1]) {
+      const u = sgn * (0.8 + (R() - 0.5) * 0.25) * w;
+      cls[k].push([x + nx * u + (R() - 0.5) * dr * 0.6, y + ny * u + (R() - 0.5) * dr * 0.6]);
+    }
+    // the shaded half, for the engraved hatch
+    const sg = nx * 0.6 + ny * 0.8 > 0 ? 1 : -1;
+    shade.push([x + nx * sg * w * 0.95, y + ny * sg * w * 0.95]);
+    spine.push([x - nx * sg * w * 0.1, y - ny * sg * w * 0.1]);
+    // seed clusters inside: each a dark seed with a light bump up and left
+    if (w > th * 0.42) {
+      for (let q = 0; q < 1 + (w > 6); q++) {
+        const u = (R() * 1.4 - 0.7) * w;
+        const bx = x + nx * u, by = y + ny * u, bs = th * 0.17;
+        sh.push([bx + bs * 0.7, by + bs * 0.8]);
+        if (u * sg < 0.35 * w) hi.push([bx - bs * 0.3, by - bs * 0.35]);
+      }
+    }
+    d += Math.max(2.6, dr * 1.5);
+  }
+  const dots = (list) => {
+    let s = '', px = null, py = null;
+    for (const [x0, y0] of list) {
+      const x = Math.round(x0), y = Math.round(y0);
+      s += px === null ? `M${x} ${y}h0` : `m${nums([x - px, y - py])}h0`;
+      px = x; py = y;
+    }
+    return s;
+  };
+  const poly = (list) => {
+    let s = '', px = null, py = null;
+    for (let i = 0; i < list.length; i += 2) {
+      const x = Math.round(list[i][0]), y = Math.round(list[i][1]);
+      s += px === null ? `M${x} ${y}l` : `${nums([x - px, y - py])} `;
+      px = x; py = y;
+    }
+    return s.trim();
+  };
+  const tip = at(len);
+  const body = `${poly(left)} ${nums([Math.round(tip[0]) - Math.round(left[left.length - 1 - ((left.length - 1) % 2)][0]), Math.round(tip[1]) - Math.round(left[left.length - 1 - ((left.length - 1) % 2)][1])])}`;
+  const back = right.slice().reverse();
+  let bodyD = body, px = Math.round(tip[0]), py = Math.round(tip[1]);
+  for (let i = 0; i < back.length; i += 2) {
+    const x = Math.round(back[i][0]), y = Math.round(back[i][1]);
+    bodyD += ` ${nums([x - px, y - py])}`;
+    px = x; py = y;
+  }
+  const id = `art-n${ropeIds++}`;
+  let defs = '', rims = '', fills = '';
+  cls.forEach((list, k) => {
+    if (!list.length) return;
+    defs += `<path id="${id}-${k}" d="${dots(list)}"/>`;
+    rims += `<use href="#${id}-${k}" stroke="${C.char}" stroke-width="${(SIZES[k] * 2 + 1.8).toFixed(1)}"/>`;
+    fills += `<use href="#${id}-${k}" stroke="${pal.body}" stroke-width="${SIZES[k] * 2}"/>`;
+  });
+  const hatch = `${poly([...shade, ...spine.reverse()])}z`;
+  return `<defs>${defs}</defs><g stroke-linecap="round">${rims}<path d="${bodyD}z" fill="${pal.body}" stroke="${pal.body}" stroke-width="1.2"/>${fills}` +
+    `<path d="${hatch}" fill="${C.char}" mask="url(#art-m-d)" opacity=".3"/>` +
+    `<path d="${dots(sh)}" stroke="${pal.sh}" stroke-width="${Math.max(2.2, th * 0.36).toFixed(1)}"/><path d="${dots(hi)}" stroke="${pal.hi}" stroke-width="${Math.max(1.8, th * 0.3).toFixed(1)}"/></g>`;
 }
 
 function fern(R, x0, y0, ang, len) {
@@ -154,50 +413,6 @@ function fern(R, x0, y0, ang, len) {
   return `<path d="${rach}" fill="none" stroke="${C.g1}" stroke-width="2.4"/>` +
     `<path d="${leaflets.a.join('')}" fill="${C.g1}" stroke="${C.char}" stroke-width=".7"/>` +
     `<path d="${leaflets.b.join('')}" fill="${C.g0}" stroke="${C.char}" stroke-width=".7"/>`;
-}
-
-function pompom(R, cx, cy, Rad, tilt, squash, kind) {
-  // Ruffled head drawn in a local frame scaled by Rad/100, so the petals can use
-  // integer coordinates at any size.
-  const rings = kind === 'orange' ? 5 : 4;
-  const pal = kind === 'orange'
-    ? [[C.o0, C.o1], [C.o1, C.o2], [C.o1, C.o2], [C.o2, C.o3], [C.o3, C.o4]]
-    : [[C.g2, C.g3], [C.g3, C.g4], [C.g3, C.g4], [C.g4, '#ECF0C4']];
-  if (kind === 'orange' && R() < 0.3) pal.reverse();
-  const rim = kind === 'orange' ? C.char : C.o2;
-  const rimW = kind === 'orange' ? 1.1 : 3.2;
-  const s = Rad / 100;
-  let out = `<g transform="translate(${i0(cx)} ${i0(cy)}) rotate(${i0(tilt * 30)}) scale(${(s).toFixed(3)} ${(s * squash).toFixed(3)})">`;
-  out += `<circle cy="12" r="104" fill="${C.char}" opacity=".6"/>`;
-  for (let k = 0; k < rings; k++) {
-    const rk = 100 * (1 - (k / rings) * 0.8);
-    const n = Math.max(5, Math.round((TAU * rk) / 40));
-    const off = R() * TAU;
-    const layer = { a: [], b: [] };
-    const hatch = [];
-    for (let i = 0; i < n; i++) {
-      const th = off + (i / n) * TAU + (R() - 0.5) * 0.25;
-      const w = (Math.PI / n) * 1.4;
-      const rIn = rk * 0.3;
-      const rOut = rk * (0.9 + R() * 0.16);
-      const pt = (a, r) => `${i0(Math.cos(a) * r)} ${i0(Math.sin(a) * r)}`;
-      const am = th + (R() - 0.5) * w * 0.3;
-      let d = `M${pt(th - w * 0.45, rIn)}L${pt(th - w, rOut * 0.88)}`;
-      d += `Q${pt(th - w * 0.55, rOut * 1.14)} ${pt(am, rOut * (0.96 + R() * 0.04))}`;
-      d += `Q${pt(th + w * 0.55, rOut * 1.14)} ${pt(th + w, rOut * 0.88)}`;
-      d += `L${pt(th + w * 0.45, rIn)}Z`;
-      (Math.sin(th) > 0.15 ? layer.a : layer.b).push(d);
-      if (k > 0 || kind !== 'orange') hatch.push(`M${pt(th - w * 0.3, rk * 0.5)}L${pt(th - w * 0.36, rOut * 0.84)}`);
-    }
-    const [dark, light] = pal[k];
-    out += `<path d="${layer.a.join('')}" fill="${dark}" stroke="${rim}" stroke-width="${rimW}" stroke-linejoin="round"/>`;
-    out += `<path d="${layer.b.join('')}" fill="${light}" stroke="${rim}" stroke-width="${rimW}" stroke-linejoin="round"/>`;
-    out += `<path d="${hatch.join('')}" stroke="${C.char}" stroke-width="1" opacity="${kind === 'orange' ? 0.55 : 0.35}"/>`;
-  }
-  let throat = '';
-  for (let i = 0; i < 12; i++) { const a = R() * TAU, r = R() * 9; throat += dot(Math.cos(a) * r, Math.sin(a) * r); }
-  out += `<path d="${throat}" stroke="${C.char}" stroke-width="4" stroke-linecap="round"/></g>`;
-  return out;
 }
 
 function jar(R, cx, top) {
@@ -330,7 +545,7 @@ function street() {
 
 function single() {
   const R = rng(55);
-  return { W: 160, H: 150, body: pompom(R, 80, 76, 68, 0, 0.88, 'orange') };
+  return { W: 160, H: 150, body: marigold(R, 80, 60, 54, 0.95, -0.25, HEADS.toxic) };
 }
 
 function symbols() {

@@ -195,7 +195,10 @@ All free (SIL Open Font License) and self-hosted. Three families.
   Ben's palette photo), a street of apartment buildings with one orange-lit
   window (the Work feature; rental applications), and a single marigold. Crops
   of the still life do the small jobs, like the tall strip in the Writing
-  margin. Line work inks in Newsprint on charcoal and Char on paper. The mood
+  margin. The marigolds are domes of small ruffled petals with no centre disc,
+  in several sizes and angles, some in profile on a green calyx, with buds
+  among them. The amaranth hangs in long tapering tassels of clustered seed,
+  knobbly at the edge, never a string of beads. Line work inks in Newsprint on charcoal and Char on paper. The mood
   images (the cow painting, the nudibranch) aren't ours to publish.
 
 ## Layout grammar
