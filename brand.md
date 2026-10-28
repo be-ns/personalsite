@@ -295,6 +295,14 @@ All free (SIL Open Font License) and self-hosted. Three families.
 - **Paper proof:** whatever a tool prints, set on Day stock in either edition
   (`data-edition="day"`, no `data-insert`, so it never flips), with grain on
   screen and none on paper.
+- **Résumé:** the same proof stock, one Letter sheet set at its printed size
+  (in inches and points, shown at 115% on wide screens), so the screen
+  breaks every line where the PDF does. The name in light Fraunces, companies
+  in Fraunces, text in Newsreader, labels and dates in Instrument Sans. Burnt
+  Orange for the version's title and the line markers; Toxic Orange once, the
+  end mark. Caps on the sheet track at 0.08em, because a PDF reader takes
+  wider gaps for spaces. The PDFs come from the page's own print CSS
+  (`npm run generate-resume-pdf`), one Letter page each, Day ink on white.
 
 ## Motion
 

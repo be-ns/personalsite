@@ -26,7 +26,7 @@ const ORIGINAL_PENDING = [
 const PENDING = [
   'building-things-worth-losing.html', 'come-down.html', 'decision-assist.html', 'hot-pig-summer.html',
   'memorial-pamphlet.html', 'memorial-preferences.html', 'milk.html',
-  'native-plant-finder.html', 'nobody-claps.html', 'orale.html', 'resume.html', 'serotiny.html',
+  'native-plant-finder.html', 'nobody-claps.html', 'orale.html', 'serotiny.html',
   'service-of-life.html', 'the-room-love-needs-to-breathe.html', 'writings.html',
 ];
 

@@ -24,8 +24,11 @@
 //     sheet is open, and focus returns to Menu
 //   - forced colours: controls keep a real edge
 //   - more contrast: quiet ink and hairlines at full strength, inserts too
-//   - print page counts: the résumé, the worksheet and the Life Strategy
-//     plan on one page; a tool prints its proof alone, without the chrome
+//   - print page counts: each résumé version, the worksheet and the Life
+//     Strategy plan on one page; the résumé and a tool print their paper
+//     alone, without the chrome, in Day ink on white
+//   - the résumé's ?version= and ?role= links: the title, the order of the
+//     AppFolio lines and the PDF each version offers
 //   - the agent contract (test/fixtures/agent-contract.json): every WebMCP
 //     tool's schema and read-only output, the llms.txt example outputs, each
 //     example link showing what the tool shows for the same input and the
@@ -376,7 +379,32 @@ async function moreContrast(browser, base) {
 
 async function printCounts(browser, base) {
   const pages = (pdf) => (Buffer.from(pdf).toString('latin1').match(/\/Type\s*\/Page[^s]/g) || []).length;
-  for (const [file, formats] of [['resume.html', ['Letter']], ['memorial-preferences.html', ['Letter', 'A4']]]) {
+  // The résumé: each version on one Letter page from either edition, the
+  // sheet alone, Day ink on white paper (render-resume-pdf.js checks the
+  // committed PDFs the same way, and their fonts and reading order).
+  for (const version of ['payments', 'ai-native', 'general']) {
+    for (const edition of ['night', 'day']) {
+      const { page, close } = await open(browser, `${base}resume.html?version=${version}`, { edition });
+      const n = pages(await page.pdf({ printBackground: true, preferCSSPageSize: true }));
+      check(n === 1, `resume.html?version=${version} prints on ${n} pages (${edition}), want 1`);
+      await page.emulateMediaType('print');
+      const shown = await page.evaluate(() => {
+        const hidden = ['.masthead', '.menu-sheet', '.colophon', '.toolbar', '.versions'].filter((sel) => {
+          const el = document.querySelector(sel);
+          return el && getComputedStyle(el).display !== 'none';
+        });
+        const sheet = document.querySelector('.resume-sheet');
+        const grounds = [document.documentElement, document.body, sheet].map((el) => getComputedStyle(el).backgroundColor).filter((c) => c !== 'rgba(0, 0, 0, 0)');
+        return { hidden, grounds, ink: getComputedStyle(sheet).color, grain: getComputedStyle(sheet, '::after').display };
+      });
+      check(!shown.hidden.length, `resume.html?version=${version}: ${shown.hidden.join(', ')} still print (${edition})`);
+      check(!shown.grounds.length, `resume.html?version=${version}: print paints a ground, ${shown.grounds.join(', ')} (${edition})`);
+      check(shown.ink === 'rgb(52, 48, 47)', `resume.html?version=${version}: the sheet prints in ${shown.ink}, not the Day ink, Gondola (${edition})`);
+      check(shown.grain === 'none', `resume.html?version=${version}: the sheet prints its grain (${edition})`);
+      await close();
+    }
+  }
+  for (const [file, formats] of [['memorial-preferences.html', ['Letter', 'A4']]]) {
     const { page, close } = await open(browser, `${base}${file}`);
     for (const format of formats) {
       const n = pages(await page.pdf({ format, printBackground: true, preferCSSPageSize: true }));
@@ -520,6 +548,26 @@ async function agentContract(browser, base) {
       check(!errs.length, `${link.url}: ${errs.join('; ')}`);
       await done();
     }
+  }
+
+  // The résumé's links: ?version= and its alias ?role= pick the title, the
+  // order of the AppFolio lines and the PDF on offer (test/fixtures/
+  // resume-content.json); no value, or one it does not know, gives the default.
+  const resume = JSON.parse(fs.readFileSync(path.join(ROOT, 'test', 'fixtures', 'resume-content.json'), 'utf8'));
+  const links = [['resume.html', resume.default], ['resume.html?version=nope', resume.default], ['resume.html?role=', resume.default]];
+  for (const version of Object.keys(resume.versions)) links.push([`resume.html?version=${version}`, version], [`resume.html?role=${version}`, version]);
+  links.push(['resume.html?version=general&role=ai-native', 'general'], ['resume.html?version=nope&role=ai-native', 'payments']);
+  for (const [url, version] of links) {
+    const { page, errors, close } = await open(browser, `${base}${url}`);
+    const got = await page.evaluate(() => ({
+      title: document.getElementById('roleTitle').textContent,
+      bulletOrder: [...document.querySelectorAll('#appfolioBullets [data-bullet]')].map((li) => li.dataset.bullet),
+      pdf: document.getElementById('dlLink').getAttribute('href'),
+    }));
+    check(isDeepStrictEqual(got, resume.versions[version]), `${url}: shows ${JSON.stringify(got)}, want the ${version} version ${JSON.stringify(resume.versions[version])}`);
+    check(isDeepStrictEqual(got.pdf, contract.resume.versions[version]), `${url}: offers ${got.pdf}, the contract says ${contract.resume.versions[version]}`);
+    check(!errors.length, `${url}: ${errors.join('; ')}`);
+    await close();
   }
 }
 

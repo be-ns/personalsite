@@ -82,7 +82,8 @@ service-of-life.html
 memorial-preferences.html
 decision-assist.html
 writings.html              Poetry and prose
-resume.html                One-page resume with downloadable PDFs
+resume.html                One-page resume on proof stock, with its three PDFs
+render-resume-pdf.js       Prints the three resume PDFs and checks them: one Letter page, the site's fonts, reading order
 assets/native-plants/      Static JSON datasets: plants, regions, nurseries, ZIP index
 images/                    Generated Open Graph share images (1200x630)
 generate-og-images.js      Offline OG-image generator (Node + sharp)
@@ -90,7 +91,7 @@ generate-kit-art.js        Seeded drawings for the engravings, stamped by build-
 check-browser.js           Headless-Chrome checks: overflow, first screen, menu, tool keys, contrast, print, agent contract
 test/                      Test suite (node:test, no dependencies)
 test/page-sandbox.js       Runs a page's scripts in node:vm to read its WebMCP tools and URL parameters
-test/fixtures/             The agent contract, captured before any tool was restyled, and the chrome freeze
+test/fixtures/             The agent contract, captured before any tool was restyled, the chrome freeze, and the resume's words
 ```
 
 `sitemap.xml`, `robots.txt`, `site.webmanifest`, and `CNAME` handle discoverability and
