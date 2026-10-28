@@ -41,8 +41,10 @@ test('keys pressed in the menu sheet are the sheet\'s', () => {
   const at = js.indexOf("document.addEventListener('keydown'");
   assert.ok(at >= 0, 'the page has its keyboard shortcuts');
   const handler = js.slice(at, js.indexOf('});', at));
-  const guard = handler.indexOf("closest('dialog')) return;");
-  assert.ok(guard >= 0, 'the handler returns for keys pressed inside a dialog');
+  // Any open dialog, not only a key whose target is in one: with focus fallen
+  // to the body inside the open sheet, the Enter check would take it as Next.
+  const guard = handler.search(/if \(document\.querySelector\('dialog\[open\]'\)[^\n]*\) return;/);
+  assert.ok(guard >= 0, 'the handler returns while a dialog is open');
   assert.ok(guard < handler.indexOf("'Escape'") && guard < handler.indexOf("'Enter'"), 'before it looks at Enter or Escape');
 });
 

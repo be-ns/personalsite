@@ -20,15 +20,18 @@
 //     the section it names, so the next Tab stays there
 //   - the tools' own keys: on each tool on the chrome, Enter and Escape
 //     pressed in the menu sheet leave the tool where it was (Life Strategy
-//     advances on Enter), and focus returns to Menu
+//     advances on Enter), also with focus fallen to the page body while the
+//     sheet is open, and focus returns to Menu
 //   - forced colours: controls keep a real edge
 //   - more contrast: quiet ink and hairlines at full strength, inserts too
 //   - print page counts: the résumé, the worksheet and the Life Strategy
 //     plan on one page; a tool prints its proof alone, without the chrome
 //   - the agent contract (test/fixtures/agent-contract.json): every WebMCP
 //     tool's schema and read-only output, the llms.txt example outputs, each
-//     example link showing what the tool shows for the same input, and what
-//     each prefilled link loads (a draft) or does (the print dialog)
+//     example link showing what the tool shows for the same input and the
+//     answer the contract's summary names (Life Strategy's priority Health,
+//     with its quadrants), and what each prefilled link loads (a draft) or
+//     does (the print dialog)
 //   - no script errors
 //
 // Every page opens in its own browser context, so nothing one page saves in
@@ -40,6 +43,7 @@ const fs = require('fs');
 const http = require('http');
 const path = require('path');
 const crypto = require('crypto');
+const { isDeepStrictEqual } = require('util');
 const { chromePages } = require('./build-pages');
 
 const ROOT = __dirname;
@@ -267,46 +271,68 @@ async function menu(browser, base) {
 // The tools' own document-level keys must not fight the menu sheet. For each
 // tool on the chrome: bring it to a state, open the sheet from the keyboard,
 // press Enter (on whatever the sheet focused first) and Escape, and check the
-// tool is where it was and focus is back on Menu.
+// tool is where it was and focus is back on Menu. Then once more with focus
+// fallen to the page body inside the open sheet, as a tap on the sheet's text
+// leaves it in Safari: the tool's own Enter takes the body for itself, so only
+// its guard for an open dialog keeps that Enter from the tool.
 const TOOL_KEYS = {
-  'life-strategy.html': {
-    async setup(page) {
-      await page.click('#intro-begin');
-      await page.waitForSelector('#slider-input');
-      await page.focus('#slider-input');
-      await page.keyboard.press('ArrowRight');
+  'life-strategy.html': [
+    {
+      // A question, the slider moved: Enter would advance to the next one.
+      name: 'a question',
+      url: 'life-strategy.html',
+      async setup(page) {
+        await page.click('#intro-begin');
+        await page.waitForSelector('#slider-input');
+        await page.focus('#slider-input');
+        await page.keyboard.press('ArrowRight');
+      },
+      state: () => JSON.stringify({
+        heading: (document.querySelector('#tool h1') || {}).textContent,
+        progress: (document.querySelector('.progress-head') || {}).textContent,
+        value: (document.getElementById('slider-input') || {}).value,
+        next: !!document.getElementById('nav-next'),
+      }),
     },
-    state: () => JSON.stringify({
-      heading: (document.querySelector('#tool h1') || {}).textContent,
-      progress: (document.querySelector('.progress-head') || {}).textContent,
-      value: (document.getElementById('slider-input') || {}).value,
-      next: !!document.getElementById('nav-next'),
-    }),
-  },
+  ],
 };
 
 async function toolKeys(browser, base) {
-  for (const [file, tool] of Object.entries(TOOL_KEYS)) {
+  const presses = [
+    { what: 'Enter', keys: ['Enter'] },
+    { what: 'Escape', keys: ['Escape'] },
+    { what: 'Enter with focus on the page body, then Escape', blur: true, keys: ['Enter', 'Escape'] },
+  ];
+  for (const [file, screens] of Object.entries(TOOL_KEYS)) {
     if (!chromePages().includes(file)) continue;
-    for (const [width, height] of [[390, 844], [1024, 768]]) {
-      const { page, errors, close } = await open(browser, `${base}${file}`, { width, height });
-      await tool.setup(page);
-      await new Promise((r) => setTimeout(r, 300));
-      const before = await page.evaluate(tool.state);
-      for (const key of ['Enter', 'Escape']) {
-        await page.focus('[data-menu-open]');
-        await page.keyboard.press('Enter');
-        await page.waitForFunction(() => document.getElementById('menu').open, { timeout: 2000 }).catch(() => {});
-        await page.keyboard.press(key);
-        await page.waitForFunction(() => !document.getElementById('menu').open, { timeout: 2000 }).catch(() => {});
-        await new Promise((r) => setTimeout(r, 400));
-        const after = await page.evaluate(tool.state);
-        const where = await page.evaluate(() => ({ open: document.getElementById('menu').open, back: document.activeElement === document.querySelector('[data-menu-open]') }));
-        check(after === before, `${file} at ${width}x${height}: ${key} in the menu sheet changed the tool (${before} became ${after})`);
-        check(!where.open && where.back, `${file} at ${width}x${height}: after ${key} in the sheet, the sheet is closed and focus is on Menu (${JSON.stringify(where)})`);
+    for (const tool of screens) {
+      for (const [width, height] of [[390, 844], [1024, 768]]) {
+        const { page, errors, close } = await open(browser, `${base}${tool.url}`, { width, height });
+        await tool.setup(page);
+        await new Promise((r) => setTimeout(r, 300));
+        const before = await page.evaluate(tool.state);
+        for (const press of presses) {
+          await page.focus('[data-menu-open]');
+          await page.keyboard.press('Enter');
+          await page.waitForFunction(() => document.getElementById('menu').open, { timeout: 2000 }).catch(() => {});
+          if (press.blur) {
+            const body = await page.evaluate(() => { document.activeElement.blur(); return document.activeElement === document.body && document.getElementById('menu').open; });
+            check(body, `${file}, ${tool.name}, at ${width}x${height}: could not leave focus on the body with the sheet open`);
+          }
+          for (const key of press.keys) {
+            await page.keyboard.press(key);
+            await new Promise((r) => setTimeout(r, 200));
+          }
+          await page.waitForFunction(() => !document.getElementById('menu').open, { timeout: 2000 }).catch(() => {});
+          await new Promise((r) => setTimeout(r, 400));
+          const after = await page.evaluate(tool.state);
+          const where = await page.evaluate(() => ({ open: document.getElementById('menu').open, back: document.activeElement === document.querySelector('[data-menu-open]') }));
+          check(after === before, `${file}, ${tool.name}, at ${width}x${height}: ${press.what} in the menu sheet changed the tool (${before} became ${after})`);
+          check(!where.open && where.back, `${file}, ${tool.name}, at ${width}x${height}: after ${press.what} in the sheet, the sheet is closed and focus is on Menu (${JSON.stringify(where)})`);
+        }
+        check(!errors.length, `${file}, ${tool.name}: ${errors.join('; ')}`);
+        await close();
       }
-      check(!errors.length, `${file}: ${errors.join('; ')}`);
-      await close();
     }
   }
 }
@@ -385,6 +411,54 @@ async function printCounts(browser, base) {
   }
 }
 
+// The answer an llms.txt example link puts on the screen, read the way a
+// person reads it. Comparing the link with the tool alone would pass a
+// regression both share (they render through the same code), so each example
+// with a summary in the contract is read here against fixed values:
+//   - answer(out): the tool's output, whose hash the contract pins, in the
+//     summary's shape; it must equal the summary (what llms.txt promises,
+//     e.g. "(priority: Health)")
+//   - shown(): run in the page, what the link shows
+//   - want(summary, out): what it must show
+// Every example with a summary needs an entry.
+const ANSWERS = {
+  'life-strategy.html': {
+    answer: (out) => ({ priority: out.priority.area }),
+    shown: () => {
+      const t = (el) => (el ? el.textContent.trim() : null);
+      const quadrants = {};
+      for (const block of document.querySelectorAll('#results .quadrant-block')) {
+        quadrants[t(block.querySelector('.quadrant-block-title')).toLowerCase()] = [...block.querySelectorAll('.quadrant-block-list li:not(.is-empty)')].map(t);
+      }
+      return { priority: t(document.querySelector('#results .focus-category')), quadrants };
+    },
+    want: (summary, out) => ({ priority: summary.priority, quadrants: out.quadrants }),
+  },
+  'decision-assist.html': {
+    answer: (out) => ({ top_choice: out.top_choice, ranking: out.ranking.map((r) => [r.option, r.percentage]) }),
+    shown: () => {
+      const t = (el) => (el ? el.textContent.trim() : null);
+      return {
+        top_choice: t(document.querySelector('#results .winner-name')),
+        ranking: [...document.querySelectorAll('#results .ranked-item')].map((item) => [t(item.querySelector('.ranked-name')), parseInt(t(item.querySelector('.ranked-score')), 10)]),
+      };
+    },
+    want: (summary) => ({ top_choice: summary.top_choice, ranking: summary.ranking }),
+  },
+  'native-plant-finder.html': {
+    // The page groups plants by layer, so it shows the tool's plants in another order.
+    answer: (out) => ({ plants: out.plant_count, nurseries: out.nurseries.length, first: out.plants[0].common_name }),
+    shown: () => {
+      const t = (el) => el.textContent.trim();
+      return {
+        plants: [...document.querySelectorAll('.plant-card .plant-name')].map(t).sort(),
+        nurseries: [...document.querySelectorAll('.nursery-item .nursery-name')].map(t).sort(),
+      };
+    },
+    want: (summary, out) => ({ plants: out.plants.map((p) => p.common_name).sort(), nurseries: out.nurseries.map((n) => n.name).sort() }),
+  },
+};
+
 async function agentContract(browser, base) {
   const contract = JSON.parse(fs.readFileSync(path.join(ROOT, 'test', 'fixtures', 'agent-contract.json'), 'utf8'));
   const sha = (s) => crypto.createHash('sha256').update(s).digest('hex');
@@ -402,17 +476,31 @@ async function agentContract(browser, base) {
     await close();
 
     // Each llms.txt example twice: the tool on a fresh page (its output must
-    // hash the same), and the prefilled link (it must show what the tool showed).
+    // hash the same), and the prefilled link (it must show what the tool
+    // showed, and the answer the summary names).
     for (const ex of spec.examples) {
       const byTool = await open(browser, `${base}${file}`, { modelContext: true });
       const bare = await shown(byTool.page);
-      check(sha(await run(byTool.page, ex.tool, ex.input)) === ex.sha256, `${file}: ${ex.tool} on the llms.txt example returns something new`);
+      const out = await run(byTool.page, ex.tool, ex.input);
+      check(sha(out) === ex.sha256, `${file}: ${ex.tool} on the llms.txt example returns something new`);
       const afterTool = await shown(byTool.page);
       await byTool.close();
       const byLink = await open(browser, `${base}${ex.url}`, { modelContext: true });
       const afterLink = await shown(byLink.page);
       check(afterLink !== bare, `${file}: the prefilled link ${ex.url} leaves the page as it was`);
       check(afterLink === afterTool, `${file}: the prefilled link ${ex.url} shows something other than ${ex.tool} on the same input`);
+      if (ex.summary) {
+        const answers = ANSWERS[file];
+        check(!!answers, `${file}: the llms.txt example has a summary but check-browser.js has no reader for the page's answer`);
+        if (answers) {
+          const output = JSON.parse(out);
+          const said = answers.answer(output);
+          check(isDeepStrictEqual(said, ex.summary), `${file}: ${ex.tool} answers ${JSON.stringify(said)}, but the contract's summary (what llms.txt promises) is ${JSON.stringify(ex.summary)}`);
+          const got = await byLink.page.evaluate(answers.shown);
+          const want = answers.want(ex.summary, output);
+          check(isDeepStrictEqual(got, want), `${file}: the prefilled link ${ex.url} shows ${JSON.stringify(got)}, want ${JSON.stringify(want)}`);
+        }
+      }
       check(!byLink.errors.length, `${ex.url}: ${byLink.errors.join('; ')}`);
       await byLink.close();
     }

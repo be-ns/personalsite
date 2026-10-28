@@ -117,7 +117,7 @@
       ["inverse", "spot-fill", 3], ["inverse", "leaf-fill", 3],
       ["ink", "ground", 3, "slider: the handle"], ["leaf", "ground", 3, "slider: the active track"], ["outline", "ground", 3, "slider: the track"],
       ["spot-large", "ground", 3, "steps: the current step"], ["leaf", "ground", 3, "steps: an answered step"], ["outline", "ground", 3, "steps: a step not answered"],
-      ["ink", "spot-wash", 4.5, "chart wash: labels"], ["ink-quiet", "spot-wash", 4.5, "chart wash: quiet labels"], ["spot", "spot-wash", 4.5, "chart wash: the region's name"], ["outline", "spot-wash", 3, "chart wash: rules and points"]
+      ["ink", "spot-wash", 4.5, "chart wash: labels"], ["ink-quiet", "spot-wash", 4.5, "chart wash: quiet labels"], ["spot", "spot-wash", 4.5, "chart wash: the region's name"], ["outline", "spot-wash", 3, "chart wash: rules"], ["spot-large", "spot-wash", 3, "chart wash: Invest points"], ["focus", "spot-wash", 3, "chart wash: a point's focus ring"]
     ],
     "day": [
       ["ink", "ground", 4.5], ["ink", "sunk", 4.5], ["ink", "surface", 4.5], ["ink", "raised", 4.5],
@@ -133,7 +133,7 @@
       ["inverse", "spot-fill", 3], ["inverse", "leaf-fill", 3],
       ["ink", "ground", 3, "slider: the handle"], ["leaf", "ground", 3, "slider: the active track"], ["outline", "ground", 3, "slider: the track"],
       ["spot-large", "ground", 3, "steps: the current step"], ["leaf", "ground", 3, "steps: an answered step"], ["outline", "ground", 3, "steps: a step not answered"],
-      ["ink", "spot-wash", 4.5, "chart wash: labels"], ["ink-quiet", "spot-wash", 4.5, "chart wash: quiet labels"], ["spot", "spot-wash", 4.5, "chart wash: the region's name"], ["outline", "spot-wash", 3, "chart wash: rules and points"]
+      ["ink", "spot-wash", 4.5, "chart wash: labels"], ["ink-quiet", "spot-wash", 4.5, "chart wash: quiet labels"], ["spot", "spot-wash", 4.5, "chart wash: the region's name"], ["outline", "spot-wash", 3, "chart wash: rules"], ["spot-large", "spot-wash", 3, "chart wash: Invest points"], ["focus", "spot-wash", 3, "chart wash: a point's focus ring"]
     ]
   },
 

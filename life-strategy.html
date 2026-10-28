@@ -128,7 +128,10 @@
     .matrix-point:hover { transform: scale(1.15); }
     .matrix-point-dot { fill: var(--ink); stroke: var(--ground); stroke-width: 2px; }
     .matrix-point.is-invest .matrix-point-dot { fill: var(--spot-large); }
-    .matrix-point.is-active .matrix-point-dot, .matrix-point:focus-visible .matrix-point-dot { stroke: var(--focus); stroke-width: 3px; }
+    /* Focus, and the point a tooltip is up for: a ring outside the dot's ground
+       gap, so it shows on an orange Invest point too. */
+    .matrix-point-ring { fill: none; stroke: none; }
+    .matrix-point.is-active .matrix-point-ring, .matrix-point:focus-visible .matrix-point-ring { stroke: var(--focus); stroke-width: 2px; }
     .matrix-label { position: absolute; font: var(--type-folio-weight) var(--type-folio-size) / 1 var(--font-label); letter-spacing: var(--type-folio-tracking); text-transform: uppercase; font-stretch: var(--type-folio-stretch); color: var(--ink-quiet); pointer-events: none; }
     .matrix-label.q-rebalance { top: 0.6rem; left: 0.6rem; }
     .matrix-label.q-maintain { top: 0.6rem; right: 0.6rem; }
@@ -138,7 +141,7 @@
     .matrix-axis { position: absolute; font: var(--type-folio-weight) var(--type-folio-size) / 1 var(--font-label); letter-spacing: var(--type-folio-tracking); text-transform: uppercase; font-stretch: var(--type-folio-stretch); color: var(--ink-quiet); white-space: nowrap; }
     .matrix-axis--x { right: 0; bottom: 0.25rem; }
     .matrix-axis--y { left: 0.25rem; top: 0; writing-mode: vertical-rl; rotate: 180deg; }
-    .matrix-tooltip { position: absolute; z-index: 10; transform: translate(-50%, -100%); padding: 0.5rem 0.75rem; background: var(--raised); color: var(--ink); box-shadow: inset 0 0 0 1px var(--outline); font: 400 0.8125rem / 1.35 var(--font-label); white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity var(--motion-duration-short); }
+    .matrix-tooltip { position: absolute; z-index: 10; transform: translate(-50%, -100%); width: max-content; max-width: min(15rem, 100%); padding: 0.5rem 0.75rem; background: var(--raised); color: var(--ink); box-shadow: inset 0 0 0 1px var(--outline); font: 400 0.8125rem / 1.35 var(--font-label); opacity: 0; pointer-events: none; transition: opacity var(--motion-duration-short); }
     .matrix-tooltip.is-visible { opacity: 1; }
     .matrix-tooltip strong { display: block; font-weight: 600; }
     .matrix-tooltip span { color: var(--ink-quiet); }
@@ -436,6 +439,11 @@
 
       function getInitials(label) {
         return label.split(' ').map(function(w) { return w[0]; }).join('').slice(0, 2).toUpperCase();
+      }
+
+      // "Health", "Health and Rest", "Health, Work and Rest"
+      function listOf(labels) {
+        return labels.length > 1 ? labels.slice(0, -1).join(', ') + ' and ' + labels[labels.length - 1] : labels[0];
       }
 
       function getPointPosition(value) {
@@ -924,42 +932,59 @@
         // Labels and initials are HTML, so they stay readable at any size.
         const field = document.createElement('div');
         field.className = 'matrix-field';
+        // The quadrant names and axes are drawn for the eye; the caption, the
+        // lists beside the figure and each point's label say the same in words.
         let overlay = '' +
-          '<span class="matrix-label q-rebalance">Rebalance</span>' +
-          '<span class="matrix-label q-maintain">Maintain</span>' +
-          '<span class="matrix-label q-release">Release</span>' +
-          '<span class="matrix-label q-invest">Invest</span>';
+          '<span class="matrix-label q-rebalance" aria-hidden="true">Rebalance</span>' +
+          '<span class="matrix-label q-maintain" aria-hidden="true">Maintain</span>' +
+          '<span class="matrix-label q-release" aria-hidden="true">Release</span>' +
+          '<span class="matrix-label q-invest" aria-hidden="true">Invest</span>';
 
-        // Areas with the same scores sit side by side instead of on top of each other.
-        const seen = {};
+        // Areas with the same scores: two or three sit side by side, each with
+        // its initial. Four or more would crowd into one unreadable cluster, so
+        // they share one point marked with how many, and its label and tooltip
+        // name them all.
+        const groups = {};
         const rated = scores.filter(function(s) { return s.importance !== null && s.satisfaction !== null; });
         rated.forEach(function(s) {
           const key = s.importance + ',' + s.satisfaction;
-          seen[key] = (seen[key] || 0) + 1;
+          (groups[key] = groups[key] || []).push(s);
         });
         const placed = {};
 
-        // Points
+        // Points, in the order of the areas
         rated.forEach(function(s) {
           const key = s.importance + ',' + s.satisfaction;
-          const n = seen[key];
+          const tied = groups[key];
+          const shared = tied.length > 3;
+          if (shared && tied[0] !== s) return;
+          const members = shared ? tied : [s];
+          const n = shared ? 1 : tied.length;
           const k = placed[key] = (placed[key] || 0) + 1;
-          const spread = n > 1 ? Math.min(5, 12 / (n - 1)) : 0;
-          const x = getPointPosition(s.importance) + (k - 1 - (n - 1) / 2) * spread;
+          const x = getPointPosition(s.importance) + (k - 1 - (n - 1) / 2) * 5;
           const y = 100 - getPointPosition(s.satisfaction);
+          const label = listOf(members.map(function(m) { return m.label; }));
 
           const group = document.createElementNS(svgNS, 'g');
           group.classList.add('matrix-point');
           if (getQuadrant(s) === 'invest') group.classList.add('is-invest');
-          group.setAttribute('data-id', s.id);
-          group.setAttribute('data-label', s.label);
+          group.setAttribute('data-id', members.map(function(m) { return m.id; }).join(' '));
+          group.setAttribute('data-label', label);
           group.setAttribute('data-importance', s.importance);
           group.setAttribute('data-satisfaction', s.satisfaction);
           if (showTooltip) {
             group.setAttribute('tabindex', '0');
             group.setAttribute('role', 'button');
           }
-          group.setAttribute('aria-label', s.label + ': ' + s.importance + ' importance, ' + s.satisfaction + ' satisfaction');
+          group.setAttribute('aria-label', label + ': ' + s.importance + ' importance, ' + s.satisfaction + ' satisfaction');
+
+          const ring = document.createElementNS(svgNS, 'circle');
+          ring.setAttribute('cx', x);
+          ring.setAttribute('cy', y);
+          ring.setAttribute('r', '3.4');
+          ring.setAttribute('vector-effect', 'non-scaling-stroke');
+          ring.classList.add('matrix-point-ring');
+          group.appendChild(ring);
 
           const circle = document.createElementNS(svgNS, 'circle');
           circle.setAttribute('cx', x);
@@ -970,7 +995,8 @@
           group.appendChild(circle);
           svg.appendChild(group);
 
-          overlay += '<span class="matrix-tag" aria-hidden="true" style="left: ' + x + '%; top: ' + (y - 2) + '%">' + getInitials(s.label) + '</span>';
+          const tag = shared ? '\u00D7' + tied.length : getInitials(s.label);
+          overlay += '<span class="matrix-tag" aria-hidden="true" style="left: ' + x + '%; top: ' + (y - 2) + '%">' + tag + '</span>';
         });
 
         container.innerHTML = '';
@@ -978,12 +1004,14 @@
         field.insertAdjacentHTML('beforeend', overlay);
         container.appendChild(field);
         container.insertAdjacentHTML('beforeend',
-          '<span class="matrix-axis matrix-axis--x">Importance →</span>' +
-          '<span class="matrix-axis matrix-axis--y">Satisfaction →</span>');
+          '<span class="matrix-axis matrix-axis--x" aria-hidden="true">Importance →</span>' +
+          '<span class="matrix-axis matrix-axis--y" aria-hidden="true">Satisfaction →</span>');
 
         if (showTooltip) {
+          // What the point's own label already says, shown for the eye.
           const tooltip = document.createElement('div');
           tooltip.className = 'matrix-tooltip';
+          tooltip.setAttribute('aria-hidden', 'true');
           container.appendChild(tooltip);
 
           // Event listeners for tooltips
@@ -1159,10 +1187,12 @@
 
       // Keyboard navigation
       document.addEventListener('keydown', function(e) {
-        // Keys pressed in the menu sheet (or any dialog) are the sheet's: Enter
-        // follows its links and buttons, Escape closes it and focus goes back
-        // to Menu. Neither touches the tool.
-        if (e.target && e.target.closest && e.target.closest('dialog')) return;
+        // While the menu sheet (or any dialog) is open, keys are the sheet's:
+        // Enter follows its links and buttons, Escape closes it and focus goes
+        // back to Menu. The tool under it takes neither, even when focus has
+        // fallen to the page body, as a tap on the sheet's text leaves it in
+        // Safari (the check below would otherwise take that Enter as Next).
+        if (document.querySelector('dialog[open]') || (e.target && e.target.closest && e.target.closest('dialog'))) return;
         if (e.key === 'Escape') {
           const tip = document.querySelector('.matrix-tooltip.is-visible');
           if (tip) tip.classList.remove('is-visible');

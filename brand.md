@@ -241,7 +241,10 @@ All free (SIL Open Font License) and self-hosted. Three families.
   submitted"). Show only real numbers. Where a chart has one region that asks
   for action (Invest on the Life Strategy matrix), that region alone takes the
   chart wash, Toxic Orange at 14% on Gondola and 12% on paper (`spot-wash`),
-  and its points turn orange.
+  and its points turn orange. A focused point keeps its ground-colour gap and
+  takes the focus ring outside it, so focus shows on an orange point too.
+  Points that would land on each other sit side by side, up to three; four or
+  more share one point marked with how many (×4), and its label names them.
 - **Tools:** a Workshop tool is a calm work surface on the plain ground: no
   fields, fades, rims or seals while you work. It opens like a department
   (kicker, a light headline, a deck, the one orange button, the marigold in a
