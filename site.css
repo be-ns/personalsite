@@ -357,9 +357,11 @@ a:hover { text-decoration-thickness: var(--link-underline-hover); }
   html, body, [data-edition] { background: none; }
 }
 
-/* More contrast: grain and fades off, quiet ink and hairlines at full strength. */
+/* More contrast: grain and fades off, quiet ink and hairlines at full strength.
+   The last selector matches tokens.css's Day insert rule (0,3,0), which would
+   otherwise keep an insert's quiet ink in the Day edition. */
 @media (prefers-contrast: more) {
-  :root, [data-edition] { --ink-quiet: var(--ink); --rule: var(--outline); }
+  :root, [data-edition], :root[data-edition="day"] [data-insert] { --ink-quiet: var(--ink); --rule: var(--outline); }
   body::after, .field-spot::after, .field-leaf::after, .insert::after, .fade::after { display: none; }
 }
 

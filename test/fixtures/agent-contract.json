@@ -1,5 +1,5 @@
 {
-  "$comment": "The agent contract, captured from the committed pages at 561e4c4 before any tool was restyled. Every tool slice must keep it. test/agent-contract.test.js checks the static parts in node; check-browser.js checks the WebMCP schemas and outputs in a real browser. Change it only together with llms.txt, on purpose.",
+  "$comment": "The agent contract, captured from the committed pages at 561e4c4 before any tool was restyled. Every tool slice must keep it. test/agent-contract.test.js runs each page's scripts in node (test/page-sandbox.js) and checks the WebMCP tools it registers (names, descriptions, input schemas, annotations), the URL parameters it reads and the storage keys it touches against this file, plus the URL templates and the labels llms.txt quotes. check-browser.js runs the pages in Chrome and checks the read-only outputs, the llms.txt example outputs (sha256), that each example link shows what the tool shows for the same input, and what each prefilled link in `prefilled` loads or does. `urlParamNotes` names parameters a page reads that llms.txt does not list as URL parameters, with the reason. Change it only together with llms.txt, on purpose.",
   "capturedFrom": "561e4c4",
   "llms": "llms.txt",
   "pages": {
@@ -263,7 +263,8 @@
           },
           "sha256": "ea51c8922b2e70c4629533bdc1be43c45423938044b036f60c7b6ba3224b9a1a"
         }
-      ]
+      ],
+      "prefilled": []
     },
     "native-plant-finder.html": {
       "urlTemplates": [
@@ -394,7 +395,8 @@
           },
           "sha256": "ea1d035cd3df45a1f39cd50749a25c2b1ec4b48ae60e6d9de6ae1ee111982539"
         }
-      ]
+      ],
+      "prefilled": []
     },
     "memorial-pamphlet.html": {
       "urlTemplates": [
@@ -431,7 +433,8 @@
       ],
       "labels": [
         "Generate PDF",
-        "_Memorial_Pamphlet_"
+        "_Memorial_Pamphlet_",
+        "In Loving Memory"
       ],
       "webmcp": [
         {
@@ -544,7 +547,49 @@
           }
         }
       },
-      "examples": []
+      "examples": [],
+      "prefilled": [
+        {
+          "url": "memorial-pamphlet.html?name=Eleanor%20Grace%20Whitman&born=March%203%2C%201942&died=May%2018%2C%202026&service_date=Saturday%2C%20May%2030%2C%202026%20at%2011%3A00%20AM&location=Grace%20Community%20Chapel&order=Prelude&order=Opening%20Prayer&order=Eulogy&template=classic",
+          "readOnly": {
+            "get_memorial_pamphlet_draft": {
+              "full_name": "Eleanor Grace Whitman",
+              "dates": "March 3, 1942 - May 18, 2026",
+              "cover_title": "In Loving Memory",
+              "service_date_time": "Saturday, May 30, 2026 at 11:00 AM",
+              "service_location": "Grace Community Chapel",
+              "obituary": "",
+              "order_of_service": "Prelude\nOpening Prayer\nEulogy",
+              "closing_line": "",
+              "template": "classic",
+              "paper_size": "letter",
+              "has_cover_photo": false,
+              "has_back_photo": false,
+              "ready_to_export": true,
+              "options": {
+                "template": [
+                  "classic",
+                  "modern"
+                ],
+                "paper_size": [
+                  "letter",
+                  "a4"
+                ],
+                "max_length": {
+                  "full_name": 80,
+                  "dates": 80,
+                  "cover_title": 80,
+                  "service_date_time": 100,
+                  "service_location": 200,
+                  "obituary": 1800,
+                  "order_of_service": 2000,
+                  "closing_line": 240
+                }
+              }
+            }
+          }
+        }
+      ]
     },
     "service-of-life.html": {
       "urlTemplates": [
@@ -571,7 +616,8 @@
       ],
       "labels": [
         "Print / Save PDF",
-        "Export JSON"
+        "Export JSON",
+        "[Name]"
       ],
       "webmcp": [
         {
@@ -969,7 +1015,69 @@
           "preview_ready": false
         }
       },
-      "examples": []
+      "examples": [],
+      "prefilled": [
+        {
+          "url": "service-of-life.html?name=Margaret%20Anne%20Walker&date=Saturday%2C%20June%2020%2C%202026%20at%202%3A00%20PM&location=St.%20Luke%27s%20Episcopal%20Church&officiant=The%20Rev.%20Sarah%20Bennett&service_type=funeral",
+          "readOnly": {
+            "get_service_of_life_draft": {
+              "service_type": "funeral",
+              "tradition_profile": "anglican_default",
+              "meta": {
+                "name_of_deceased": "Margaret Anne Walker",
+                "date_time": "Saturday, June 20, 2026 at 2:00 PM",
+                "location": "St. Luke's Episcopal Church",
+                "officiant": "The Rev. Sarah Bennett"
+              },
+              "sections": [
+                {
+                  "section_id": "gathering",
+                  "label": "The Gathering",
+                  "optional": false,
+                  "enabled": true,
+                  "components": []
+                },
+                {
+                  "section_id": "word",
+                  "label": "Readings and Sermon",
+                  "optional": false,
+                  "enabled": true,
+                  "components": []
+                },
+                {
+                  "section_id": "prayers",
+                  "label": "Prayers",
+                  "optional": false,
+                  "enabled": true,
+                  "components": []
+                },
+                {
+                  "section_id": "commendation",
+                  "label": "Commendation and Farewell",
+                  "optional": false,
+                  "enabled": true,
+                  "components": []
+                },
+                {
+                  "section_id": "committal",
+                  "label": "The Committal",
+                  "optional": true,
+                  "enabled": false,
+                  "components": []
+                },
+                {
+                  "section_id": "dismissal",
+                  "label": "Dismissal",
+                  "optional": false,
+                  "enabled": true,
+                  "components": []
+                }
+              ],
+              "preview_ready": true
+            }
+          }
+        }
+      ]
     },
     "memorial-preferences.html": {
       "urlTemplates": [
@@ -1092,7 +1200,13 @@
           }
         }
       },
-      "examples": []
+      "examples": [],
+      "prefilled": [
+        {
+          "url": "memorial-preferences.html?print=1",
+          "prints": true
+        }
+      ]
     },
     "decision-assist.html": {
       "urlTemplates": [
@@ -1109,11 +1223,18 @@
       ],
       "urlParams": [
         "decision",
+        "context",
         "options",
         "criteria",
         "scores"
       ],
-      "labels": [],
+      "urlParamNotes": {
+        "context": "readUrl() reads it with the other four; llms.txt documents context only as a score_decision input."
+      },
+      "labels": [
+        "Upfront cost",
+        "Gut feeling"
+      ],
       "webmcp": [
         {
           "name": "score_decision",
@@ -1333,7 +1454,8 @@
           },
           "sha256": "33ca0d6b253cd16d3b7a648d723cecd44d472297f4f24ddd8347ec1362bfc7f1"
         }
-      ]
+      ],
+      "prefilled": []
     }
   },
   "storage": {

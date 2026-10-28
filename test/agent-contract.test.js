@@ -3,9 +3,13 @@
 // The agent contract: what someone's agent relies on to find and run the
 // tools. Captured in test/fixtures/agent-contract.json from the committed
 // pages before any tool was restyled, so a restyle that renames a parameter,
-// a WebMCP tool, a storage key or a label llms.txt quotes fails here.
-// These checks read the files; check-browser.js runs the pages and compares
-// the WebMCP schemas and outputs themselves.
+// changes a WebMCP tool or its input schema, drops a storage key or a label
+// llms.txt quotes fails here.
+//
+// The pages' own scripts run in node (test/page-sandbox.js), so these checks
+// see what the page actually registers and reads, not what its source happens
+// to mention. check-browser.js runs the pages in Chrome for the rest: the
+// tools' outputs, and what each prefilled link shows.
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
@@ -13,16 +17,11 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const { ROOT, readPage, inlineScripts } = require('./helpers');
+const { runPage } = require('./page-sandbox');
 const { parseHtml, findAll, hasClass, textContent, chromePages } = require('../build-pages');
 
 const contract = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'agent-contract.json'), 'utf8'));
 const llms = fs.readFileSync(path.join(ROOT, 'llms.txt'), 'utf8');
-
-// Inline scripts with string escapes undone, so a description written as
-// 'person\'s' in the source compares equal to the captured text.
-const scriptsOf = (page) => inlineScripts(readPage(page)).join('\n');
-const unescaped = (js) => js.replace(/\\(['"\\])/g, '$1');
-const quoted = (js, word) => new RegExp(`(['"\`])${word}\\1|\\b${word}\\s*:`).test(js);
 
 // The llms.txt section for a page: from its canonical URL to the next "## ".
 function llmsSection(page) {
@@ -30,6 +29,22 @@ function llmsSection(page) {
   assert.ok(at >= 0, `llms.txt lists ${page}`);
   const next = llms.indexOf('\n## ', at);
   return llms.slice(at, next < 0 ? llms.length : next);
+}
+
+// The example links llms.txt gives for a page, as site-relative paths.
+const llmsExamples = (page) => [...llmsSection(page).matchAll(/Example: https:\/\/bensiverly\.com\/(\S+)/g)].map((m) => m[1]);
+
+// One sandbox run per address, shared by the tests below.
+const runs = new Map();
+function run(url, options) {
+  const key = JSON.stringify([url, options || null]);
+  if (!runs.has(key)) runs.set(key, runPage(readPage(url.split('?')[0]), url, options));
+  return runs.get(key);
+}
+async function clean(url, options) {
+  const result = await run(url, options);
+  assert.deepEqual(result.errors, [], `${url} runs without errors in the sandbox`);
+  return result;
 }
 
 function potentialActions(html) {
@@ -48,28 +63,30 @@ for (const [page, spec] of Object.entries(contract.pages)) {
     assert.deepEqual(potentialActions(readPage(page)), spec.urlTemplates);
   });
 
-  test(`${page}: every URL parameter is documented and read`, () => {
+  test(`${page}: every URL parameter is documented in llms.txt`, () => {
     const section = llmsSection(page);
-    const js = scriptsOf(page);
+    const notes = spec.urlParamNotes || {};
     for (const param of spec.urlParams) {
+      if (notes[param]) continue;
       assert.ok(section.includes(`\`${param}\``) || section.includes(`?${param}=`) || section.includes(`&${param}=`), `llms.txt documents ${param}`);
-      assert.ok(quoted(js, param), `${page} reads the ${param} parameter`);
     }
+    for (const param of Object.keys(notes)) assert.ok(spec.urlParams.includes(param), `${param} has a note but is not a URL parameter`);
   });
 
-  test(`${page}: WebMCP tools keep their names, descriptions and inputs`, () => {
+  test(`${page}: reads exactly the contract's URL parameters from the query string`, async () => {
+    // The bare page, then every link llms.txt and the contract give: some
+    // parameters are read only once another one is present.
+    const urls = [...new Set([page, ...llmsExamples(page), ...spec.examples.map((e) => e.url), ...spec.prefilled.map((p) => p.url)])];
+    const read = new Set();
+    for (const url of urls) for (const p of (await clean(url)).params) read.add(p);
+    assert.deepEqual([...read].sort(), [...spec.urlParams].sort());
+  });
+
+  test(`${page}: registers the contract's WebMCP tools exactly`, async () => {
+    const { tools } = await clean(page);
+    assert.deepEqual(tools, spec.webmcp);
     const section = llmsSection(page);
-    const js = scriptsOf(page);
-    const plain = unescaped(js);
-    for (const tool of spec.webmcp) {
-      assert.match(js, new RegExp(`name:\\s*'${tool.name}'`), `${page} registers ${tool.name}`);
-      assert.ok(section.includes(`\`${tool.name}\``), `llms.txt lists ${tool.name}`);
-      assert.ok(plain.includes(tool.description), `${tool.name} keeps its description`);
-      for (const prop of Object.keys(tool.inputSchema.properties || {})) {
-        assert.ok(quoted(js, prop), `${tool.name} still names its ${prop} input`);
-      }
-      for (const key of tool.inputSchema.required || []) assert.ok(quoted(js, key), `${tool.name} still requires ${key}`);
-    }
+    for (const tool of spec.webmcp) assert.ok(section.includes(`\`${tool.name}\``), `llms.txt lists ${tool.name}`);
   });
 
   test(`${page}: the labels llms.txt quotes are still on the page`, () => {
@@ -79,20 +96,24 @@ for (const [page, spec] of Object.entries(contract.pages)) {
       assert.ok(html.includes(label), `${page} still says "${label}"`);
     }
   });
+
+  for (const link of spec.prefilled.filter((p) => 'prints' in p)) {
+    test(`${page}: ${link.url} ${link.prints ? 'opens' : 'does not open'} the print dialog, and the bare page does not`, async () => {
+      assert.equal((await clean(link.url)).printed, link.prints);
+      assert.equal((await clean(page)).printed, false);
+    });
+  }
 }
 
-test('storage keys are unchanged', () => {
+test('storage keys are unchanged', async () => {
   for (const [key, spec] of Object.entries(contract.storage)) {
     // The edition key belongs to the chrome, so every page that carries it uses it too.
     const pages = key === 'edition' ? [...new Set([...spec.pages, ...chromePages().filter((p) => readPage(p).includes('<!-- chrome:head'))])] : spec.pages;
     for (const page of pages) {
-      const js = inlineScripts(readPage(page)).join('\n');
-      if (key.endsWith('_unreadable')) {
-        // Built as STORAGE_KEY + '_unreadable' from the draft key.
-        assert.ok(js.includes(`'${key.replace(/_unreadable$/, '')}'`) && js.includes("'_unreadable'"), `${page} keeps ${key}`);
-      } else {
-        assert.ok(js.includes(`'${key}'`), `${page} uses the storage key ${key}`);
-      }
+      // A draft that fails to parse is set aside under KEY_unreadable.
+      const options = key.endsWith('_unreadable') ? { saved: { [key.replace(/_unreadable$/, '')]: '{not json' } } : undefined;
+      const { storage } = await clean(page, options);
+      assert.ok(storage.includes(key), `${page} uses the storage key ${key} (touched: ${storage.join(', ') || 'none'})`);
     }
   }
 });
@@ -120,10 +141,10 @@ test('the Memorial Preferences Worksheet still prints the same eight sections', 
   assert.deepEqual(findAll(foot, (el) => el.tag === 'p').map(text), contract.worksheet.closing);
 });
 
-test('the résumé keeps its version parameters and PDF files', () => {
+test('the résumé keeps its version parameters and PDF files', async () => {
   const { page, urlParams, versions } = contract.resume;
+  assert.deepEqual((await clean(page)).params, [...urlParams].sort(), `${page} reads ?${urlParams.join('= and ?')}=`);
   const js = inlineScripts(readPage(page)).join('\n');
-  for (const param of urlParams) assert.ok(js.includes(`params.get('${param}')`), `resume.html reads ?${param}=`);
   for (const [version, pdf] of Object.entries(versions)) {
     assert.ok(fs.existsSync(path.join(ROOT, pdf)), `${pdf} exists`);
     assert.ok(new RegExp(`'${version}':\\s*\\{[^}]*pdf:\\s*'${pdf.replace(/\./g, '\\.')}'`).test(js), `version ${version} offers ${pdf}`);

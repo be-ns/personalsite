@@ -86,8 +86,9 @@ assets/native-plants/      Static JSON datasets: plants, regions, nurseries, ZIP
 images/                    Generated Open Graph share images (1200x630)
 generate-og-images.js      Offline OG-image generator (Node + sharp)
 generate-kit-art.js        Seeded drawings for the engravings, stamped by build-pages.js
-check-browser.js           Headless-Chrome checks: overflow, first screen, menu, print, WebMCP
+check-browser.js           Headless-Chrome checks: overflow, first screen, menu, contrast, print, agent contract
 test/                      Test suite (node:test, no dependencies)
+test/page-sandbox.js       Runs a page's scripts in node:vm to read its WebMCP tools and URL parameters
 test/fixtures/             The agent contract, captured before any tool was restyled
 ```
 
@@ -122,12 +123,16 @@ npm run links       # offline link check (lychee)
 ```
 
 After editing `theme.json`, run `npm run tokens`; after editing `site.json`, `build-pages.js`
-or a drawing, run `npm run pages`. `npm run check-browser` (after `npm install`) opens every
-redesigned page in headless Chrome; CI runs it as an advisory job.
+or a drawing, run `npm run pages`. `npm run check-browser` (after `npm install`, Node 22.12 or
+later) opens every redesigned page and every tool in headless Chrome; name groups to run fewer,
+e.g. `node check-browser.js agent-contract`. In CI the agent contract is a required job and the
+other groups are advisory.
 
 The test suite covers page invariants (titles, descriptions, canonical URLs, heading
 structure), internal links and `#fragments`, sitemap coverage, inline-script syntax, the
-agent contract (every WebMCP tool, URL parameter, storage key and label `llms.txt` quotes),
+agent contract (each tool page's scripts run in `node:vm`, so the WebMCP tools it registers,
+the URL parameters it reads and the storage keys it touches must match the fixture, as must
+the labels `llms.txt` quotes),
 the chrome ratchet (which pages carry the shared chrome, which are pending, which are
 exempt and why), the characters each vendored font carries, and the
 integrity of the native-plant datasets: every plant, ZIP code, and nursery has to reference
