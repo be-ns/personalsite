@@ -3,13 +3,13 @@ title: What to call me about
 template: numbered
 order: 3
 kicker: Problems
-description: Seven problems Ben Siverly has worked on, from forms people don't finish to money that has to be right, with where he worked on each and what came of it.
-deck: Seven problems I've worked on, where, and the one number that came of each. Every number is on my résumé, word for word.
-teaser: Seven problems I've worked on, where, and what came of each.
-updated: 2026-10-28
+description: Seven problems Ben Siverly has worked on, from forms people don't finish to money that has to be right, with where, and one fact from his résumé for each.
+deck: Seven problems I've worked on, where, and one fact for each, quoted from my résumé word for word.
+teaser: Seven problems I've worked on, where, and one fact for each.
+updated: 2026-10-29
 art: street 128 7 260 260
 close: If one of these sounds like your week, write to me. The first conversation is free.
-llms: seven problems he has worked on (people who start and don't finish, payments that have to be right, measuring what a change did, AI plans, trying new tools, customers nobody has talked to, a first product person), each with where and one number, sourced to his résumé.
+llms: seven problems he has worked on (people who start and don't finish, payments that have to be right, measuring what a change did, AI plans, trying new tools, customers nobody has talked to, a first product person), each with where and one fact, quoted from his résumé.
 ---
 
 ## People start, and don't finish
@@ -28,7 +28,7 @@ At AppFolio I owned checkout for application fees. I designed an assumed-success
 
 A change ships, and a month later nobody can say what it did. The report that would tell you gets rebuilt by hand, when someone has time.
 
-At Lively there was no data-science function. I stood up the first one, and the data-services platform under it, and the work became the roadmap. At Oracle I automated a data pipeline that had taken **two analysts** full-time.[^3]
+At Lively nobody could see how product decisions moved the core metrics, and there was no data-science function. I stood up the first one, and the data-services platform under it, and the work became the roadmap. At Oracle I built a system to run hundreds of evaluations against model updates, so a change was judged on real statistical significance, not gut feelings. I also automated a data pipeline that had taken **two analysts** full-time.[^3]
 
 ## Everyone is asking what you're doing about AI
 
@@ -48,7 +48,7 @@ I run them on my own work first. AbiertoClaw, a plugin I wrote, tests the free A
 
 The numbers say people do something odd, and nobody on the team has asked them why.
 
-At AppFolio a lot of rent was still paid offline. I sized how much from accounting receipts, then asked renters why: irregular gig pay, no bank account and a drive of **15–30 minutes** for certified funds, and slow ACH.[^6] Leadership funded teams to build rent-split payments and a digital certified-funds partnership.
+At AppFolio I sized how much rent was paid offline, from accounting receipts, then asked renters why: irregular gig pay, no bank account and a drive of **15–30 minutes** for certified funds, and slow ACH.[^6] Leadership funded teams to build rent-split payments and a digital certified-funds partnership.
 
 ## You need a first product person, not a department
 

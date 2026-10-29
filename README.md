@@ -139,6 +139,11 @@ later) opens every redesigned page and every tool in headless Chrome; name group
 e.g. `node check-browser.js agent-contract`. In CI the agent contract is a required job and the
 other groups are advisory.
 
+Prospective clients are never named on the site. To guard that locally, list their names in
+`.client-names` at the repo root (one a line; `.gitignore` keeps it out of the repo) and
+`npm test` checks every page, every Markdown file, `llms.txt`, `sitemap.xml` and the latest
+commit message against it. Without the file the check skips.
+
 The test suite covers page invariants (titles, descriptions, canonical URLs, heading
 structure), internal links and `#fragments`, sitemap coverage, inline-script syntax, the
 agent contract (each tool page's scripts run in `node:vm`, so the WebMCP tools it registers,

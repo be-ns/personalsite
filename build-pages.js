@@ -740,9 +740,14 @@ function stamp(page, html, { site = loadSite(), theme = require('./build-tokens'
 //   A "-" list whose every item opens with **a term** becomes a list of
 //   terms and descriptions (a <dl>), the At a glance style.
 // Anything else stops the build with the file and line: raw HTML, entities,
-// images, code, tables, rules, other list markers, a hard line break (two
-// trailing spaces or a backslash), and em dashes (my-voice.md). Straight
-// quotes become curly ones and three dots an ellipsis; the text is escaped.
+// images, code, tables, rules, underlined (=== or ---) headings, _ and __
+// emphasis, ~~strikethrough~~, backslash escapes, other list markers (+, *,
+// 1)), a hard line break (two trailing spaces or a backslash), and em
+// dashes (my-voice.md). A link goes to https://, to #an-id on the page, or
+// to a file in the repo by a root-absolute path with no segment starting
+// with a dot (no /.., no /.git); no link may carry a quote, an angle
+// bracket, a backslash or a space. Straight quotes become curly ones and
+// three dots an ellipsis; the text is escaped.
 
 const CONTENT = path.join(ROOT, 'content', 'consulting');
 const SITE_URL = 'https://bensiverly.com/';
@@ -806,6 +811,11 @@ function checkText(file, line, text) {
   if (/&[#A-Za-z0-9]+;/.test(text)) mdFail(file, line, 'no HTML entities: type the character itself');
   if (/`/.test(text)) mdFail(file, line, 'no code');
   if (/!\[/.test(text)) mdFail(file, line, 'no images');
+  if (/\\/.test(text)) mdFail(file, line, 'no backslash escapes: the subset has nothing to escape');
+  if (/~~/.test(text)) mdFail(file, line, 'no ~~strikethrough~~');
+  // _ and __ emphasis; an underscore inside a word or a link target is left alone.
+  const prose = text.replace(/\]\([^()\s]*\)/g, ']()');
+  if (/(^|[^A-Za-z0-9])_+[^\s_]|[^\s_]_+($|[^A-Za-z0-9])/.test(prose)) mdFail(file, line, 'no _ or __ emphasis: write *italic* and **bold**');
 }
 
 // Curly quotes: a quote mark opens after a space, an opening bracket, a dash
@@ -824,11 +834,17 @@ function curly(text) {
 
 // Where a link in a source goes, written for a page at the site root.
 function linkHref(file, line, url, ctx) {
-  if (/^https:\/\/[^\s]+$/.test(url)) return url;
-  if (url.startsWith('#')) return url;
+  if (/["'<>\\`\s]/.test(url)) mdFail(file, line, `a link cannot carry a quote, an angle bracket, a backslash or a space: ${url}`);
+  if (/^https:\/\/[^/?#]/.test(url)) return url;
+  if (url.startsWith('#')) {
+    if (!/^#[A-Za-z0-9-]+$/.test(url)) mdFail(file, line, `a link on the page is # and then an id: ${url}`);
+    return url;
+  }
+  if (url.startsWith('//')) mdFail(file, line, `no protocol-relative links: write https:// for another site, or one / for this one: ${url}`);
   if (!url.startsWith('/')) mdFail(file, line, `write links root-absolute (/${url}) or as https:// URLs, so the raw Markdown works too: ${url}`);
   const local = url.slice(1);
   const target = local.split('#')[0];
+  if (target.split('/').some((seg) => seg.startsWith('.'))) mdFail(file, line, `no path segment may start with a dot (/.., /.git): ${url}`);
   if (target && !ctx.exists(target)) mdFail(file, line, `${url} links to a file that does not exist`);
   return local === '' ? 'index.html' : local.replace(/^#/, 'index.html#');
 }
@@ -877,6 +893,10 @@ function parseMarkdown(file, src, { firstLine = 1, exists = () => true } = {}) {
     if (/\t/.test(raw)) mdFail(file, at(k), 'no tabs');
     if (/ {2,}$/.test(raw) || /\\$/.test(raw)) mdFail(file, at(k), 'no hard line breaks (two trailing spaces or a backslash): start a new paragraph');
     if (/ $/.test(raw)) mdFail(file, at(k), 'trailing space');
+    // Checked on every line, since a paragraph's next line could otherwise
+    // carry them in as plain text.
+    if (/^ {0,3}(=+|-+)$/.test(raw)) mdFail(file, at(k), 'no horizontal rules or underlined headings (a line of = or -): use ## or ###');
+    if (/^ {0,3}([*+] |\d+\) )/.test(raw)) mdFail(file, at(k), 'write list items with "- " and numbered items with "1. "');
   }
   // Gathers a block's lines: the first, then continuation lines (indented
   // for list items and notes) until a blank line or the next block.

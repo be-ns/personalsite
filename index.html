@@ -131,10 +131,13 @@
     @media (min-width: 1024px) { .consult-teasers { grid-template-columns: repeat(4, minmax(0, 1fr)); } .consult-teasers .teaser:nth-child(odd):not(:first-child)::before { display: block; } }
     .consult-teasers .teaser { grid-template-rows: auto auto auto 1fr auto; }
     .consult-teasers .btn--text { align-self: end; }
-    /* The fifth contents row is for the second reader: on short desktop
-       windows its line gives way first, so the buttons keep their air. */
-    @media (min-width: 1024px) and (max-height: 939px) { .toc .desc--consult { display: none; } }
-    @media (min-width: 1024px) and (max-height: 789px) { .toc .desc { display: none; } }
+    /* Five contents rows: on short desktop windows each row sits closer, so
+       all five keep their line wherever four did and the buttons keep their
+       air (site.css still drops the lines below 760px tall). */
+    @media (min-width: 1024px) and (max-height: 959px) {
+      .toc a { padding-block: 0.3rem; }
+      .toc .desc { margin-top: 0; line-height: 1.3; }
+    }
     /* Phones: each page a list row, its title and one line, no engraving. */
     @media (max-width: 599px) {
       .consult-teasers { gap: 0; border-top: 1px solid var(--ink-quiet); }
@@ -293,7 +296,7 @@
               <li><a href="#method"><span class="n">02</span><span><span class="row"><span class="name">Method</span><span class="lead"></span><span class="rt"><span data-read="method">1</span> min</span></span><span class="desc t-small">Start with the job. Map the world. Write it down first.</span></span></a></li>
               <li><a href="#workshop"><span class="n">03</span><span><span class="row"><span class="name">Workshop</span><span class="lead"></span><span class="rt"><span data-read="workshop">1</span> min</span></span><span class="desc t-small">Six free tools and a Hermes plugin. Your agent can run them too.</span></span></a></li>
               <li><a href="#writing"><span class="n">04</span><span><span class="row"><span class="name">Writing</span><span class="lead"></span><span class="rt"><span data-read="writing">1</span> min</span></span><span class="desc t-small">Two essays, four poems and a story in draft.</span></span></a></li>
-              <li><a href="#consulting"><span class="n">05</span><span><span class="row"><span class="name">Consulting</span><span class="lead"></span><span class="rt"><span data-read="consulting">1</span> min</span></span><span class="desc desc--consult t-small">Strategy and operations for small companies, new tools tried first.</span></span></a></li>
+              <li><a href="#consulting"><span class="n">05</span><span><span class="row"><span class="name">Consulting</span><span class="lead"></span><span class="rt"><span data-read="consulting">1</span> min</span></span><span class="desc t-small">Strategy and operations for small and mid-size companies and startups.</span></span></a></li>
             </ol>
           </nav>
 
@@ -582,7 +585,7 @@
         <ul class="teasers consult-teasers">
           <li class="teaser"><div class="art" aria-hidden="true"><svg viewBox="60 100 480 360" preserveAspectRatio="xMidYMid slice"><use href="#art-still-life" width="600" height="760"/></svg></div><span class="t-kicker">The front page</span><h3 class="teaser-title">New tools, tried on real work first.</h3><p class="t-small t-quiet">I try the new tools on my own work first, and bring you the ones that held up.</p><a class="btn btn--text" href="consulting.html">Read<span class="visually-hidden"> New tools, tried on real work first</span> <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
           <li class="teaser"><div class="art" aria-hidden="true"><svg viewBox="-20 0 200 150" preserveAspectRatio="xMidYMid slice"><use href="#art-marigold" width="160" height="150"/></svg></div><span class="t-kicker">Rates</span><h3 class="teaser-title">Rate card</h3><p class="t-small t-quiet">One rate, four ways to work together. The first conversation is free.</p><a class="btn btn--text" href="consulting-rates.html">Read<span class="visually-hidden"> Rate card</span> <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
-          <li class="teaser"><div class="art" aria-hidden="true"><svg viewBox="85 7 347 260" preserveAspectRatio="xMidYMid slice"><use href="#art-street" width="1200" height="280"/></svg></div><span class="t-kicker">Problems</span><h3 class="teaser-title">What to call me about</h3><p class="t-small t-quiet">Seven problems I&rsquo;ve worked on, where, and what came of each.</p><a class="btn btn--text" href="consulting-problems.html">Read<span class="visually-hidden"> What to call me about</span> <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+          <li class="teaser"><div class="art" aria-hidden="true"><svg viewBox="85 7 347 260" preserveAspectRatio="xMidYMid slice"><use href="#art-street" width="1200" height="280"/></svg></div><span class="t-kicker">Problems</span><h3 class="teaser-title">What to call me about</h3><p class="t-small t-quiet">Seven problems I&rsquo;ve worked on, where, and one fact for each.</p><a class="btn btn--text" href="consulting-problems.html">Read<span class="visually-hidden"> What to call me about</span> <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
           <li class="teaser"><div class="art" aria-hidden="true"><svg viewBox="80 460 400 300" preserveAspectRatio="xMidYMid slice"><use href="#art-still-life" width="600" height="760"/></svg></div><span class="t-kicker">Perspective</span><h3 class="teaser-title">Where I&rsquo;m from</h3><p class="t-small t-quiet">Rural life, a job I left over the data, and why I take a few clients at a time.</p><a class="btn btn--text" href="consulting-perspective.html">Read<span class="visually-hidden"> Where I&rsquo;m from</span> <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
         </ul>
       </div>
@@ -600,7 +603,7 @@
         <p class="t-small colophon-note">As a recovering data scientist, I still revel in the data, hunting for what customers want but can’t name yet. I’ve built my own things for years: an apparel company back when, and a string of side projects I cared about enough to finish.</p>
         <p class="t-small colophon-note">I care about shipping things that actually work, staying close to my family, and building a few things that might outlast me. Proud future ancestor of the Choctaw Nation of Oklahoma. Probably the most optimistic person you’ll meet.</p>
         <p class="t-small colophon-note"><span class="t-folio" id="elsewhere-heading">Outside work</span>Native gardening in the Bay Area. Longevity science and preventive health. Liturgical practice and spiritual formation. Raising kids who are kind and grounded. <a href="writings.html">Writing poetry and prose</a>.</p>
-        <p class="t-small colophon-consulting">Consulting: <a href="consulting.html">strategy and operations for small companies and startups</a>.</p>
+        <p class="t-small colophon-consulting">Consulting: <a href="consulting.html">strategy and operations for small and mid-size companies and startups</a>.</p>
       </div>
       <div class="write">
         <span class="t-folio" id="contact-heading">Write to me</span>

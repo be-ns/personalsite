@@ -6,7 +6,7 @@ kicker: Perspective
 description: Rural life, the Choctaw Nation of Oklahoma, a job left over the data, and why Ben Siverly takes a few clients at a time. Then the work, selected.
 deck: And what it changes about the work.
 teaser: Rural life, a job I left over the data, and why I take a few clients at a time.
-updated: 2026-10-28
+updated: 2026-10-29
 art: still-life 130 460 300 300
 close: The first conversation is free, and it's the quickest way to find out whether we'd work well together.
 llms: where he is coming from: rural life and the Central Valley, the Choctaw Nation of Oklahoma, leaving Oracle over the data, building his own things, a few clients at a time. Ends with selected work and its numbers.
@@ -30,7 +30,7 @@ I still count everything. Then I poke at the count. One number with its source b
 
 ### I build my own things
 
-An apparel company, back when. Brava, nights and weekends with my brother. Six free tools on this site, written by hand, that someone's AI agent can run. I'd rather show you a working thing than a deck.
+An apparel company, back when. Brava, nights and weekends with my brother. Six free tools on this site that someone's AI agent can run. I'd rather show you a working thing than a deck.
 
 ### The unglamorous middle
 
@@ -49,4 +49,4 @@ I take on a few clients at a time, on purpose. Each one gets real attention, and
 - **Brava:** With my brother: the AI production pipeline, and a COPPA and privacy review for minors' data. [bravamade.com](https://bravamade.com)
 - **AbiertoClaw:** Finds the best free AI model each day with a real tool-call test. [On GitHub](https://github.com/be-ns/AbiertoClaw)
 - **Native Plant Finder:** A free tool that someone's AI agent can run, by link or over WebMCP. [Open it](/native-plant-finder.html)
-- **This site:** Written by hand in plain HTML, CSS and JavaScript. [The source](https://github.com/be-ns/personalsite)
+- **This site:** Plain HTML, CSS and JavaScript, with no framework. [The source](https://github.com/be-ns/personalsite)

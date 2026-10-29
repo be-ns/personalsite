@@ -86,8 +86,34 @@ test('the renderer refuses what the subset leaves out, with the file and line', 
     ['1. One\n3. Three', /number the list/],
     ['Tab\there.', /no tabs/],
     ['## A heading[^1]\n\n[^1]: Note.', /cannot go here/],
+    ['A heading\n===', /test\.md:2: no horizontal rules or underlined headings/],
+    ['A heading\n-', /test\.md:2: no horizontal rules or underlined headings/],
+    ['Some _italic_ text.', /no _ or __ emphasis/],
+    ['Some __bold__ text.', /no _ or __ emphasis/],
+    ['Some ~~struck~~ text.', /no ~~strikethrough~~/],
+    ['An \\* escape.', /no backslash escapes/],
+    ['+ item', /write list items with "- "/],
+    ['1) item', /numbered items with "1\. "/],
+    ['Text, then\n+ an item.', /test\.md:2: write list items/],
+    ['[up](/..)', /no path segment may start with a dot/],
+    ['[git](/.git/config)', /no path segment may start with a dot/],
+    ['[round](/content/../resume.html)', /no path segment may start with a dot/],
+    ['[x](javascript:alert)', /root-absolute/],
+    ['[x](data:text/html,hi)', /root-absolute/],
+    ['[x](http://example.com)', /root-absolute/],
+    ['[x](//example.com/a)', /no protocol-relative links/],
+    ['[x](https://example.com/"onmouseover=x)', /cannot carry a quote/],
+    ["[x](/resume.html#'x)", /cannot carry a quote/],
+    ['[x](#"onclick=x)', /cannot carry a quote/],
+    ['[x](#a.b)', /# and then an id/],
   ];
   for (const [src, message] of refuse) assert.throws(() => render(src), message, JSON.stringify(src));
+});
+
+test('the renderer escapes what it lets through', () => {
+  assert.equal(render('A < B & C > D, and snake_case stays.'), '<p>A &lt; B &amp; C &gt; D, and snake_case stays.</p>\n');
+  assert.equal(render('[q](https://example.com/?a=1&b=2)'), '<p><a href="https://example.com/?a=1&amp;b=2">q</a></p>\n');
+  assert.equal(render('[r](/resume.html#experience) and [t](#top)'), '<p><a href="resume.html#experience">r</a> and <a href="#top">t</a></p>\n');
 });
 
 test('a source names its page, and its front matter fits its template', () => {
@@ -244,6 +270,16 @@ test('the home page carries 05 Consulting: a contents line and the department, n
   const cover = findAll(doc, (el) => hasClass(el, 'cover'))[0];
   assert.doesNotMatch(flat(cover), /consult/i);
   assert.doesNotMatch(flat(findAll(doc, (el) => hasClass(el, 'briefing'))[0]), /consult/i);
+});
+
+test('the positioning reads the same everywhere: small and mid-size companies and startups', () => {
+  const who = 'small and mid-size companies and startups';
+  assert.ok(site.consulting.line.includes(who), 'site.json\'s consulting line, in every colophon');
+  assert.ok(sources[0].data.teaser.includes(who), 'the front page\'s teaser, in each contents box');
+  assert.ok(sources[0].data.description.includes(who), 'the front page\'s description');
+  const toc = findAll(parseHtml(readPage('index.html')), (el) => hasClass(el, 'toc'))[0];
+  const row = findAll(toc, (el) => el.tag === 'li').find((li) => findAll(li, (el) => el.tag === 'a')[0].attrs.href === '#consulting');
+  assert.ok(flat(findAll(row, (el) => hasClass(el, 'desc'))[0]).includes(who), 'the home page\'s contents line');
 });
 
 test('every colophon carries the consulting line', () => {

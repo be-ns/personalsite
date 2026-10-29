@@ -12,7 +12,8 @@
 //     on every page that carries the chrome, in Night and Day, and on the
 //     screens a tool renders after load (a question, the results, the plan)
 //   - first-screen bounding boxes: on the home page the positioning, the
-//     seal and both buttons with 24px of air at 1024 to 1440 wide, and the
+//     seal and both buttons with 24px of air at 1024 to 1440 wide, every
+//     contents line (01 to 05) on the common laptop windows, and the
 //     cover rows on phones; the kit's cover the same way; the 404's headline
 //     and way home; Life Strategy's Begin, and its Next on a question
 //   - the menu sheet from the keyboard: Enter opens it, Escape closes it,
@@ -39,7 +40,8 @@
 //     and chapter rules still there with Background graphics off
 //   - 05 Consulting: the front page's ask on the first screen, the rate
 //     card's $250 and free first row too; nothing on the card running past
-//     its edge on phones; each copy button reporting beside itself; the rate
+//     its edge on phones; the seal clear of the rate, its line and the rows
+//     from 320 to 1440 wide; each copy button reporting beside itself; the rate
 //     card printing alone on one Letter page with its plate, seal and whole
 //     crosshairs, none of them clipped by the page margin
 //   - the agent contract (test/fixtures/agent-contract.json): every WebMCP
@@ -190,6 +192,21 @@ async function firstScreen(browser, base) {
       }
       await close();
     }
+  }
+  // The contents keep every department's line, 05 Consulting's included,
+  // on the common laptop windows, with the buttons still 24px clear.
+  for (const [width, height] of [[1366, 768], [1280, 800], [1280, 900], [1440, 790], [1440, 900]]) {
+    const { page, close } = await open(browser, `${base}index.html`, { width, height });
+    const lines = await page.evaluate(() => [...document.querySelectorAll('.toc li')].map((li) => {
+      const d = li.querySelector('.desc');
+      const r = d && d.getBoundingClientRect();
+      return { n: li.querySelector('.n').textContent, shown: !!d && getComputedStyle(d).display !== 'none' && r.height > 0, bottom: r ? Math.round(r.bottom) : null };
+    }));
+    check(lines.length === 5, `index.html: the contents list ${lines.length} departments, want 5`);
+    for (const l of lines) check(l.shown && l.bottom <= height, `index.html: ${l.n}'s contents line is ${l.shown ? `below the first screen (${l.bottom})` : 'hidden'} at ${width}x${height}`);
+    const b = await bottom(page, '.cta-row');
+    check(b !== null && b <= height - 24, `index.html: the buttons end at ${b}, want 24px of air at ${width}x${height}`);
+    await close();
   }
   for (const [width, height] of [[390, 844], [375, 812], [320, 640]]) {
     const { page, close } = await open(browser, `${base}index.html`, { width, height });
@@ -779,6 +796,8 @@ async function agentContract(browser, base) {
 //   - on desktop the front page's ask is on the first screen, and so are
 //     the rate card's $250 and its first row (the free first conversation);
 //     on phones the front page's ask
+//   - the seal on the plate's corner never covers the $250, the rate line
+//     or the rows, at any width, in either edition
 //   - each copy button reports in the status line beside it: the page's
 //     own ask and the colophon's work apart
 //   - the rate card prints alone, on one Letter page, in Day ink, with its
@@ -801,6 +820,20 @@ async function consulting(browser, base) {
     const b = await bottom(page, '.c-opener .c-ask .btn');
     check(b !== null && b <= height, `consulting.html: the ask ends at ${b} on a ${width}x${height} phone`);
     await close();
+  }
+  // The seal bites the plate's corner, never the price beside or below it.
+  for (const width of [320, 390, 600, 768, 1024, 1280, 1440]) {
+    for (const edition of ['night', 'day']) {
+      const { page, close } = await open(browser, `${base}consulting-rates.html`, { width, height: 900, edition });
+      const hits = await page.evaluate(() => {
+        const box = (el) => el.getBoundingClientRect();
+        const seal = box(document.querySelector('.rc-seal'));
+        const meets = (a, b) => a.left < b.right - 0.5 && b.left < a.right - 0.5 && a.top < b.bottom - 0.5 && b.top < a.bottom - 0.5;
+        return ['.rc-rate', '.rc-line', '.rc-list'].filter((sel) => meets(seal, box(document.querySelector(sel))));
+      });
+      check(!hits.length, `consulting-rates.html: the seal covers ${hits.join(', ')} at ${width} wide (${edition})`);
+      await close();
+    }
   }
   // Nothing on the card or in the opener runs past its edge; the page's
   // horizontal clip would hide it from the overflow group.
