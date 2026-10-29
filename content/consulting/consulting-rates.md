@@ -17,7 +17,6 @@ unit_text: an hour
 card_no: 01
 seal_value: Free
 seal_label: First conversation
-rate_line: I have taste and I know what good looks like.
 cta: Ask for a first conversation
 small_print: US dollars.
 llms: $250 an hour in US dollars, by the hour, as a block of hours each week (month to month), or around an outcome (the result written down, an estimate with a cap). The first conversation is free, up to an hour by video.

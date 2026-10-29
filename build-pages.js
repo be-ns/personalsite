@@ -1028,7 +1028,7 @@ const TEMPLATES = ['front', 'rate-card', 'numbered', 'essay'];
 const FIELDS = {
   all: { required: ['title', 'template', 'order', 'kicker', 'description', 'teaser', 'updated'], optional: ['headline', 'deck', 'index', 'art', 'art_alt', 'llms'] },
   front: { required: ['service', 'cta'], optional: [] },
-  'rate-card': { required: ['rate', 'currency', 'unit_code', 'unit_text', 'card_no', 'seal_value', 'seal_label', 'rate_line', 'cta', 'small_print', 'lines'], optional: [] },
+  'rate-card': { required: ['rate', 'currency', 'unit_code', 'unit_text', 'card_no', 'seal_value', 'seal_label', 'cta', 'small_print', 'lines'], optional: [] },
   numbered: { required: ['close'], optional: [] },
   essay: { required: ['close'], optional: [] },
 };
@@ -1250,7 +1250,6 @@ function rateCardMain(model, all, site) {
     '    <div class="rc-price">',
     '      <p class="t-kicker">The rate</p>',
     `      <p class="rc-rate"><span class="rc-cur">$</span>${rate}<span class="rc-unit"> ${fmHtml(model, d.unit_text)}</span></p>`,
-    `      <p class="rc-line">${fmHtml(model, d.rate_line)}</p>`,
     '      <dl class="rc-list">',
     ...rows,
     '      </dl>',
@@ -1453,7 +1452,6 @@ const PAGE_CSS = {
 .rc-rate { margin-top: var(--space-3); font: 300 clamp(5rem, 10vw, 8.5rem) / 0.86 var(--font-display); font-variation-settings: 'SOFT' 0; font-feature-settings: 'lnum' 1; letter-spacing: -0.04em; white-space: nowrap; }
 .rc-cur { font-size: 0.42em; letter-spacing: 0; vertical-align: 0.95em; margin-right: 0.04em; }
 .rc-unit { font: 420 0.3em / 1 var(--font-display); font-variation-settings: 'SOFT' 50; letter-spacing: 0; color: var(--spot); }
-.rc-line { margin-top: var(--space-4); max-width: 24em; font: italic var(--type-deck-weight) var(--type-deck-size) / var(--type-deck-line) var(--font-text); text-wrap: pretty; }
 
 /* The price list: a real list of terms, in reading order, on dot leaders.
    A shape whose name and terms will not share a line puts its terms on the

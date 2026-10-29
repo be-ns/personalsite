@@ -17,8 +17,8 @@ critic's review. Brand reasoning stays in [`brand.md`](brand.md).
   management is one way the work gets done, not the headline.
 - **Rate:** $250 an hour. A free first conversation. Flexible on outcomes and on
   the number of hours.
-- **Pricing presentation:** "I have taste and I know what good looks like." A rate
-  card, not a tier table.
+- **Pricing presentation:** a rate card, not a tier table. It shows taste through
+  craft and does not claim it in a slogan.
 - **Never named on the site:** prospective clients.
 
 ## Architecture: stamped chrome, committed output

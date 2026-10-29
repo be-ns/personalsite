@@ -829,7 +829,7 @@ async function consulting(browser, base) {
         const box = (el) => el.getBoundingClientRect();
         const seal = box(document.querySelector('.rc-seal'));
         const meets = (a, b) => a.left < b.right - 0.5 && b.left < a.right - 0.5 && a.top < b.bottom - 0.5 && b.top < a.bottom - 0.5;
-        return ['.rc-rate', '.rc-line', '.rc-list'].filter((sel) => meets(seal, box(document.querySelector(sel))));
+        return ['.rc-rate', '.rc-list'].filter((sel) => meets(seal, box(document.querySelector(sel))));
       });
       check(!hits.length, `consulting-rates.html: the seal covers ${hits.join(', ')} at ${width} wide (${edition})`);
       await close();

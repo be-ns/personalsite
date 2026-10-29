@@ -178,7 +178,7 @@ test('the rate card: one rate, the same on the card, in the JSON-LD and in llms.
   const rate = Number(card.data.rate);
   const doc = parseHtml(readPage(card.page));
   assert.equal(flat(findAll(doc, (el) => hasClass(el, 'rc-rate'))[0]), `$${rate} an hour`, 'the number reads as one phrase');
-  assert.ok(flat(findAll(doc, (el) => hasClass(el, 'rate-card'))[0]).includes('I have taste and I know what good looks like.'));
+  assert.ok(!/taste/i.test(flat(findAll(doc, (el) => el.tag === 'main')[0])), 'the card shows taste; it does not claim it');
   const rows = findAll(doc, (el) => hasClass(el, 'rc-row')).map((r) => [flat(findAll(r, (el) => el.tag === 'dt')[0]), flat(findAll(r, (el) => hasClass(el, 'rc-terms'))[0])]);
   assert.deepEqual(rows, [
     ['First conversation', 'Free'],
