@@ -16,15 +16,18 @@
 //     contents line (01 to 05) on the common laptop windows, and the
 //     cover rows on phones; the kit's cover the same way; the 404's headline
 //     and way home; Life Strategy's Begin, and its Next on a question
-//   - the menu sheet from the keyboard: Enter opens it, Escape closes it,
-//     focus goes back to Menu; on the issue, a sheet link leaves focus in
-//     the section it names, so the next Tab stays there
+//   - the menu sheet from the keyboard: Enter opens it (with 05 Consulting
+//     on screen in it on a phone), Escape closes it, focus goes back to
+//     Menu; on the issue, a sheet link leaves focus in the section it names,
+//     so the next Tab stays there
 //   - the tools' own keys: on each tool on the chrome, Enter and Escape
 //     pressed in the menu sheet leave the tool where it was (Life Strategy
 //     advances on Enter), also with focus fallen to the page body while the
 //     sheet is open, and focus returns to Menu
 //   - forced colours: controls keep a real edge
 //   - more contrast: quiet ink and hairlines at full strength, inserts too
+//   - type on the colour fields: every line set on a Toxic Orange or Goody
+//     Gumdrop field meets AA against it, as rendered, in Night and Day
 //   - print page counts: each résumé version, the worksheet and the Life
 //     Strategy plan on one page; the résumé and a tool print their paper
 //     alone, without the chrome, in Day ink on white; the résumé's marks
@@ -269,6 +272,14 @@ async function menu(browser, base) {
     await page.keyboard.press('Enter');
     const opened = await page.evaluate(() => ({ open: document.getElementById('menu').open, expanded: document.querySelector('[data-menu-open]').getAttribute('aria-expanded'), inside: document.getElementById('menu').contains(document.activeElement) }));
     check(opened.open && opened.expanded === 'true' && opened.inside, `${file}: Enter on Menu opens the sheet and moves focus into it (${JSON.stringify(opened)})`);
+    // The sheet's fifth row, 05 Consulting, is on screen once the sheet is open.
+    const more = await page.evaluate(() => {
+      const a = document.querySelector('#menu .sheet-more a');
+      if (!a) return null;
+      const r = a.getBoundingClientRect();
+      return { href: a.getAttribute('href'), top: Math.round(r.top), bottom: Math.round(r.bottom), height: innerHeight };
+    });
+    check(more && /consulting\.html$/.test(more.href) && more.top >= 0 && more.bottom <= more.height, `${file}: the menu sheet shows 05 Consulting on a 390x844 phone (${JSON.stringify(more)})`);
     await page.keyboard.press('Escape');
     // The dialog's close event is queued, so give it a moment.
     await page.waitForFunction(() => !document.getElementById('menu').open && document.querySelector('[data-menu-open]').getAttribute('aria-expanded') === 'false', { timeout: 2000 }).catch(() => {});
@@ -898,7 +909,65 @@ async function consulting(browser, base) {
   }
 }
 
-const GROUPS = { overflow, 'first-screen': firstScreen, menu, 'tool-keys': toolKeys, 'forced-colors': forcedColors, 'more-contrast': moreContrast, print: printCounts, writing, consulting, 'agent-contract': agentContract };
+// Type on the colour fields, as rendered: every line of text that sits on a
+// Toxic Orange or Goody Gumdrop field (not on a button or plate of its own)
+// meets WCAG AA against the field, 4.5:1, or 3:1 from 24px (18.66px bold).
+// The tokens' pairs are tested in test/theme.test.js; this catches a rule
+// that inks type on a field with a role meant for the page ground.
+async function fieldContrast(browser, base) {
+  for (const file of chromePages()) {
+    for (const edition of ['night', 'day']) {
+      for (const [width, height] of [[390, 844], [1280, 900]]) {
+        const url = file === '404.html' ? `${base}some/missing/path` : `${base}${file}`;
+        const { page, close } = await open(browser, url, { width, height, edition });
+        const bad = await page.evaluate(() => {
+          const parse = (c) => {
+            const m = /rgba?\(([^)]+)\)/.exec(c);
+            if (!m) return null;
+            const [r, g, b, a = 1] = m[1].split(/[\s,/]+/).filter(Boolean).map(Number);
+            return { r, g, b, a };
+          };
+          const lum = ({ r, g, b }) => {
+            const f = (v) => { const x = v / 255; return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4; };
+            return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+          };
+          const ratio = (p, q) => { const [hi, lo] = [lum(p), lum(q)].sort((x, y) => y - x); return (hi + 0.05) / (lo + 0.05); };
+          const out = [];
+          for (const field of document.querySelectorAll('.field-spot, .field-leaf')) {
+            const bg = parse(getComputedStyle(field).backgroundColor);
+            if (!bg || bg.a === 0) continue;
+            const seen = new Set();
+            const walk = document.createTreeWalker(field, NodeFilter.SHOW_TEXT);
+            while (walk.nextNode()) {
+              const el = walk.currentNode.parentElement;
+              if (!walk.currentNode.textContent.trim() || seen.has(el)) continue;
+              seen.add(el);
+              if (el.closest('svg, .visually-hidden, [hidden]')) continue;
+              let own = false;
+              for (let a = el; a && a !== field; a = a.parentElement) {
+                const c = parse(getComputedStyle(a).backgroundColor);
+                if (c && c.a > 0) { own = true; break; }
+              }
+              const cs = getComputedStyle(el);
+              if (own || cs.visibility !== 'visible' || !el.getClientRects().length) continue;
+              let fg = parse(cs.color);
+              fg = { r: fg.r * fg.a + bg.r * (1 - fg.a), g: fg.g * fg.a + bg.g * (1 - fg.a), b: fg.b * fg.a + bg.b * (1 - fg.a) };
+              const size = parseFloat(cs.fontSize);
+              const need = size >= 24 || (size >= 18.66 && Number(cs.fontWeight) >= 700) ? 3 : 4.5;
+              const got = ratio(fg, bg);
+              if (got < need) out.push(`"${walk.currentNode.textContent.trim().slice(0, 30)}" ${got.toFixed(2)}:1 at ${size}px`);
+            }
+          }
+          return out;
+        });
+        check(!bad.length, `${file} (${edition}, ${width}): type on a colour field under AA: ${bad.join('; ')}`);
+        await close();
+      }
+    }
+  }
+}
+
+const GROUPS = { overflow, 'first-screen': firstScreen, menu, 'tool-keys': toolKeys, 'forced-colors': forcedColors, 'more-contrast': moreContrast, 'field-contrast': fieldContrast, print: printCounts, writing, consulting, 'agent-contract': agentContract };
 
 async function main(argv = process.argv.slice(2)) {
   const unknown = argv.filter((name) => !GROUPS[name]);

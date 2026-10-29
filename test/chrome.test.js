@@ -115,18 +115,31 @@ test('site.json keeps the facts the chrome needs', () => {
   assert.ok(readPage('index.html').includes(`data-email="${site.contact.email}"`));
 });
 
-test('consulting is on (redesign-plan.md, step 5): every colophon links its front page', () => {
+test('consulting is on (redesign-plan.md, step 5): the colophon and the menu sheet link its front page', () => {
   const site = press.loadSite();
   assert.equal(site.consulting.enabled, true);
   assert.equal(site.consulting.num, '05');
   assert.ok(fs.existsSync(path.join(ROOT, site.consulting.page)), `${site.consulting.page} exists`);
+  const own = press.loadSources().map((s) => s.page);
+  const href = (page) => `href="${page === '404.html' ? '/' : ''}${site.consulting.page}"`;
+  // Every colophon but those of the pages that carry the department itself
+  // (the issue and the Consulting pages), which would say it twice.
   for (const page of stamped().filter((p) => regions(p).includes('colophon'))) {
     const colophon = regionText(page, readPage(page), 'colophon');
-    assert.ok(colophon.includes(`href="${page === '404.html' ? '/' : ''}${site.consulting.page}"`), `${page}'s colophon links ${site.consulting.page}`);
+    if (page === 'index.html' || own.includes(page)) assert.doesNotMatch(colophon, /colophon-consulting/, `${page} carries 05 Consulting already`);
+    else assert.ok(colophon.includes(href(page)), `${page}'s colophon links ${site.consulting.page}`);
   }
-  // A department of the issue, not a masthead link: the masthead stays 01 to 04.
+  // A department of the issue, not a masthead link: the masthead stays 01 to
+  // 04. The menu sheet adds it as a quieter fifth row, so a phone reaches it
+  // without scrolling past the whole issue, marked on the Consulting pages.
   for (const page of stamped().filter((p) => regions(p).includes('top'))) {
-    assert.doesNotMatch(regionText(page, readPage(page), 'top'), /consulting/i, `${page}'s masthead`);
+    const top = regionText(page, readPage(page), 'top');
+    const masthead = top.slice(top.indexOf('<header class="masthead">'), top.indexOf('</header>'));
+    assert.doesNotMatch(masthead, /consulting/i, `${page}'s masthead`);
+    const row = /<li class="sheet-more"><a ([^>]*)>/.exec(top);
+    assert.ok(row && row[1].startsWith(href(page)), `${page}'s menu sheet has the 05 Consulting row`);
+    const here = page === site.consulting.page ? ' aria-current="page"' : own.includes(page) ? ' aria-current="true"' : '';
+    assert.equal(row[1], href(page) + here, `${page}: the 05 row is marked only on the Consulting pages`);
   }
 });
 

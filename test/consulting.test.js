@@ -274,7 +274,7 @@ test('the home page carries 05 Consulting: a contents line and the department, n
 
 test('the positioning reads the same everywhere: small and mid-size companies and startups', () => {
   const who = 'small and mid-size companies and startups';
-  assert.ok(site.consulting.line.includes(who), 'site.json\'s consulting line, in every colophon');
+  assert.ok(site.consulting.line.includes(who), 'site.json\'s consulting line, in the colophons');
   assert.ok(sources[0].data.teaser.includes(who), 'the front page\'s teaser, in each contents box');
   assert.ok(sources[0].data.description.includes(who), 'the front page\'s description');
   const toc = findAll(parseHtml(readPage('index.html')), (el) => hasClass(el, 'toc'))[0];
@@ -282,10 +282,14 @@ test('the positioning reads the same everywhere: small and mid-size companies an
   assert.ok(flat(findAll(row, (el) => hasClass(el, 'desc'))[0]).includes(who), 'the home page\'s contents line');
 });
 
-test('every colophon carries the consulting line', () => {
+test('every colophon carries the consulting line, but where the page carries the department', () => {
   for (const page of press.chromePages().filter((p) => press.regionsOf(p, readPage(p)).found.colophon)) {
     const doc = parseHtml(readPage(page));
     const line = findAll(doc, (el) => hasClass(el, 'colophon-consulting'));
+    if (page === 'index.html' || PAGES.includes(page)) {
+      assert.equal(line.length, 0, `${page}: its 05 Consulting already says it (say it once)`);
+      continue;
+    }
     assert.equal(line.length, 1, page);
     const link = findAll(line[0], (el) => el.tag === 'a')[0];
     assert.match(link.attrs.href, /^\/?consulting\.html$/, page);

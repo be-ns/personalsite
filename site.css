@@ -196,9 +196,13 @@ a:hover { text-decoration-thickness: var(--link-underline-hover); }
 .rim::after { background: var(--rim-fill, transparent); transform: translateY(-5px); }
 :root { --ruffle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 14' preserveAspectRatio='none'%3E%3Cpath d='M0 0H120V5C114 5 113 13 106 13S98 6 92 6 85 12 78 12 70 5 63 5 55 14 47 14 39 6 32 6 25 11 18 11 9 5 0 5Z'/%3E%3C/svg%3E"); }
 
-/* Colour fields: grain and a sun-faded mottle so the flat fills read as print. */
+/* Colour fields: grain and a sun-faded mottle so the flat fills read as print.
+   Every role that inks type is Char on a field, in both editions: Newsprint
+   on orange is 2.5:1 and Gondola 4.3:1, both under AA for small type. */
 .field-spot, .field-leaf { position: relative; isolation: isolate; z-index: 1; }
 .field-spot { background: var(--spot-fill); color: var(--on-spot-fill); --focus: var(--on-spot-fill); --rule: rgb(31 27 26 / 0.34); --ink-quiet: var(--on-spot-fill); --spot: var(--on-spot-fill); --spot-large: var(--on-spot-fill); --leaf: var(--on-spot-fill); }
+/* On screen; a page that prints its field (Serotiny) prints it as paper in Day ink. */
+@media screen { .field-spot { --ink: var(--on-spot-fill); } }
 .field-leaf { background: var(--leaf-fill); color: var(--on-leaf-fill); --focus: var(--on-leaf-fill); --rule: rgb(31 27 26 / 0.3); --ink-quiet: var(--on-leaf-fill-quiet); --spot: var(--on-leaf-fill); --spot-large: var(--on-leaf-fill); --leaf: var(--on-leaf-fill); --ink: var(--on-leaf-fill); }
 .field-spot::before, .field-leaf::before {
   content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
@@ -321,6 +325,13 @@ a:hover { text-decoration-thickness: var(--link-underline-hover); }
 .sheet-list .n { font: 400 1.5rem / 1 var(--font-display); font-variation-settings: 'SOFT' 0; font-feature-settings: 'lnum' 1; letter-spacing: -0.02em; color: var(--spot); }
 .sheet-list .name { font: 400 1.875rem / 1.05 var(--font-display); font-variation-settings: 'SOFT' 50; letter-spacing: -0.02em; }
 .sheet-list .ico { width: 1.6rem; height: 1rem; color: var(--ink-quiet); }
+/* 05 Consulting: a quieter fifth row under the four departments, its
+   numeral in quiet ink so 01 to 04 keep the orange. */
+.sheet-list .sheet-more a { min-height: 3.25rem; }
+.sheet-list .sheet-more .n { font-size: 1.125rem; color: var(--ink-quiet); }
+.sheet-list .sheet-more .name { font-size: 1.375rem; }
+.sheet-list a[aria-current] .name { text-decoration: underline; text-decoration-color: var(--spot-large); text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
+.masthead-actions .btn[aria-current]::after { opacity: var(--state-focus); }
 .sheet-foot { display: grid; gap: var(--space-3); }
 .sheet-edition { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
 .sheet-edition .edition-words { margin-right: -0.45rem; }

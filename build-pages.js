@@ -27,8 +27,10 @@
 //                       Marks that department's links aria-current.
 //   colophon  colophon  "standard" (default) or "home". Home also carries
 //                       site.json's home note, Outside work line and
-//                       contact line. Every colophon carries the consulting
-//                       line while site.json turns consulting on.
+//                       contact line. While site.json turns consulting on,
+//                       every colophon carries the consulting line but the
+//                       home page's and the Consulting pages', which carry
+//                       the department itself.
 //   art       art       drawing names, e.g. ["marigold"].
 //
 // The press refuses unknown regions and keys, a region in the wrong place,
@@ -277,12 +279,28 @@ function editionWords() {
     '</div>';
 }
 
+// The 05 Consulting pages, by the Markdown they are made from.
+function consultingPages() {
+  if (!fs.existsSync(CONTENT)) return [];
+  return fs.readdirSync(CONTENT).filter((f) => f.endsWith('.md')).map((f) => f.replace(/\.md$/, '.html'));
+}
+
 function topRegion(ctx) {
-  const { site, root } = ctx;
+  const { site, root, page } = ctx;
   const home = root === '/' ? '/' : 'index.html';
   const issue = `Issue ${esc(site.issue.number)}`;
   const nav = site.departments.map((d) => `      <li><a href="${deptHref(ctx, d)}"${current(ctx, d)}><span>${esc(d.num)}</span>${esc(d.name)}</a></li>`);
   const sheet = site.departments.map((d) => `      <li><a href="${deptHref(ctx, d)}"${current(ctx, d)}><span class="n">${esc(d.num)}</span><span class="name">${esc(d.name)}</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>`);
+  // The menu sheet's quieter fifth row: 05 Consulting, to its front page.
+  // The masthead names only the first four; on a phone the sheet is the one
+  // way to Consulting that does not scroll past the whole issue.
+  const consult = site.consulting && site.consulting.enabled ? site.consulting : null;
+  if (consult) {
+    const here = page === consult.page ? ' aria-current="page"' : consultingPages().includes(page) ? ' aria-current="true"' : '';
+    sheet.push(`      <li class="sheet-more"><a href="${root}${esc(consult.page)}"${here}><span class="n">${esc(consult.num)}</span><span class="name">${esc(consult.name)}</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>`);
+  }
+  // The Résumé pills say so on the résumé itself.
+  const resumeHere = page === site.resume.page ? ' aria-current="page"' : '';
   const indent = (block, n) => block.split('\n').map((l) => ' '.repeat(n) + l);
   return [
     '<a class="skip-link" href="#main">Skip to content</a>',
@@ -303,7 +321,7 @@ function topRegion(ctx) {
     '    </nav>',
     '    <div class="masthead-actions">',
     ...indent(editionWords(), 6),
-    `      <a class="btn btn--outlined btn--sm" href="${root}${esc(site.resume.page)}">Résumé</a>`,
+    `      <a class="btn btn--outlined btn--sm" href="${root}${esc(site.resume.page)}"${resumeHere}>Résumé</a>`,
     '      <button class="btn menu-btn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="menu" data-menu-open><svg aria-hidden="true"><use href="#i-menu"/></svg>Menu</button>',
     '    </div>',
     '  </div>',
@@ -324,7 +342,7 @@ function topRegion(ctx) {
     '      <span class="t-folio" aria-hidden="true">Edition</span>',
     ...indent(editionWords(), 6),
     '    </div>',
-    `    <a class="btn btn--filled" href="${root}${esc(site.resume.page)}">Résumé</a>`,
+    `    <a class="btn btn--filled" href="${root}${esc(site.resume.page)}"${resumeHere}>Résumé</a>`,
     '  </div>',
     '</dialog>',
   ];
@@ -369,8 +387,12 @@ function colophon(ctx) {
       `      <p class="t-small colophon-note"><span class="t-folio" id="elsewhere-heading">Outside work</span>${outside()}</p>`,
     );
   }
-  // The consulting line, on every page while site.json turns it on.
-  if (consulting) lines.push(`      <p class="t-small colophon-consulting">${esc(site.consulting.name)}: <a href="${root}${esc(site.consulting.page)}"${page === site.consulting.page ? ' aria-current="page"' : ''}>${esc(site.consulting.line)}</a>.</p>`);
+  // The consulting line, on every page while site.json turns it on, but the
+  // pages that carry 05 Consulting themselves (the issue, with its contents
+  // line and department, and the Consulting pages, with their contents box):
+  // there it would say the same sentence a screen later.
+  const carries = home || consultingPages().includes(page);
+  if (consulting && !carries) lines.push(`      <p class="t-small colophon-consulting">${esc(site.consulting.name)}: <a href="${root}${esc(site.consulting.page)}"${page === site.consulting.page ? ' aria-current="page"' : ''}>${esc(site.consulting.line)}</a>.</p>`);
   lines.push(
     '    </div>',
     '    <div class="write">',

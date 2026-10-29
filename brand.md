@@ -49,31 +49,16 @@ On wide screens the cover and the contents page open as a spread, so the first
 screen holds the positioning, the proof and both buttons, with at least 24px of
 air above the fold at 1280x900.
 
-## Readers
+## 05 Consulting
 
 Ben is independent: he left AppFolio in October 2026, builds Brava with his
-brother, and takes a few strategy and operations clients at a time. The site
-serves two readers.
-
-**A hiring manager** with about ten seconds, looking for four things. Each
-needs proof on the first screen, not a claim.
-
-| Signal | Proof |
-| --- | --- |
-| Taste | The site itself. The writing. |
-| Data | Applied research at Oracle, data science at Lively. Every number carries a source note. |
-| PM | AppFolio rental applications: submissions 44% → 70%, vacancies filled 3.4 days faster. |
-| AI | AI features at AppFolio. Agent-ready tools (llms.txt, WebMCP). AbiertoClaw. Brava's AI pipeline. |
-
-**Small and mid-size companies and startups** looking for strategy and
-operations help, the first call when something new (AI models, agents, a data
-question) might change how they run. Product management is one way the work
-gets done, not the headline. They have 05 Consulting:
-a line on the contents page, a short department after Writing, a line in
-every colophon, and four pages of their own (consulting.html and its rate
-card, problems and perspective, made from Markdown in `content/consulting/`).
-Never on the cover, the cover lines or In brief, so the first screen still
-answers the hiring manager, and the price only on the rate card.
+brother, and takes a few strategy and operations clients at a time. Consulting
+is a department of the issue, 05: a line on the contents page, a short
+department after Writing, a quieter fifth row in the menu sheet, a line in
+the colophon of every page that does not carry the department itself, and
+four pages of its own (consulting.html and its rate card, problems and
+perspective, made from Markdown in `content/consulting/`). It stays off the
+cover, the cover lines and In brief, and the price is only on the rate card.
 
 ## Feel
 
@@ -233,8 +218,9 @@ All free (SIL Open Font License) and self-hosted. Three families.
 - **Grid:** 12 columns from 840px up, 1.25rem gaps. One column with 16px gutters
   on phones.
 - **Departments:** 01 Work · 02 Method · 03 Workshop · 04 Writing ·
-  05 Consulting, the five the home page carries; the masthead and menu name
-  the first four, the proof a hiring manager came for. `kit.html` sets
+  05 Consulting, the five the home page carries. The masthead names the
+  first four; the menu sheet adds 05 Consulting as a quieter fifth row, its
+  name smaller and its numeral in quiet ink. `kit.html` sets
   01 to 04 as specimens and numbers its own 05 Kit, a supplement the
   colophon links as "How this issue is made". Each opens with a large soft
   numeral, its reading time, a light headline and a ruled intro, and each

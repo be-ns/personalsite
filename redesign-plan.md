@@ -10,12 +10,10 @@ Brand reasoning stays in [`brand.md`](brand.md).
 
 - **Status:** left AppFolio in October 2026. AppFolio becomes past tense on every
   page, in JSON-LD (`worksFor` goes) and in llms.txt.
-- **Second door:** consulting is now a real path, not a side note. The site serves
-  two readers: hiring managers (taste, data, PM, AI) and small and mid-size
-  companies and startups looking for strategy and operations help.
-- **Positioning:** the first call for strategy and operations when something new
-  (AI models, agents, a data question) might change how a company runs. Product
-  management is one way the work gets done, not the headline.
+- **Consulting:** a department of its own (05), with four pages: strategy and
+  operations for small and mid-size companies and startups, when something new
+  (AI models, agents, a data question) might change how they run. Product
+  management is one way the work gets done.
 - **Rate:** $250 an hour. A free first conversation. Flexible on outcomes and on
   the number of hours.
 - **Pricing presentation:** a rate card, not a tier table. It shows taste through
@@ -91,8 +89,8 @@ plus the four Consulting cards, README, CI. `styles.css` is deleted at the end.
 
 ## Build order and releases
 
-GitHub Pages serves `main`, so a hiring manager's first three clicks must all be
-the new design before anything merges. Status, end of October 2026: steps 0 to
+GitHub Pages serves `main`, so the home page and the pages it links first must
+all be on the new design before anything merges. Status, end of October 2026: steps 0 to
 6 are done and Release 1 is the next merge. Release 2 is what remains.
 
 | Step | Work | Done when | Status |
@@ -104,7 +102,7 @@ the new design before anything merges. Status, end of October 2026: steps 0 to
 | 4 | Writing: index, essays, poems, Serotiny | body text hashes match the originals | done |
 | 5 | Consulting: front page, rate card, problems, perspective | content approved by Ben | done |
 | 6 | Share cards for every page (four new ones for Consulting) and new plates to go with them, the site icon, the manifest, the rate card's slogan cut, `brand.md` brought up to date | no old palette or fonts on any card; icon reads at 16, 32 and 180 pixels | done |
-| **Release 1** | Squash-merge to `main`: everything above | hiring manager and client paths fully new, and the links to them | next |
+| **Release 1** | Squash-merge to `main`: everything above | the home page, résumé, Writing and Consulting fully new, and the links to them | next |
 | 7 | Decision Assist and Native Plant Finder on the tool template, each with its plate (the balance, the poppies) | agent contract unchanged | to do |
 | 8 | The three memorial tools (Memorial Pamphlet, Service of Life, Memorial Preferences) on the tool template, with the candle plate; `orale.html` takes the head; delete `styles.css` and the old fonts only it loads (Inter, JetBrains Mono, Zilla Slab) | printouts unchanged on paper; PENDING in `test/chrome.test.js` empty | to do |
 | **Release 2** | Merge to `main` | whole site on the new design | |
@@ -113,8 +111,8 @@ the new design before anything merges. Status, end of October 2026: steps 0 to
 
 **Placement.** Ben is independent, so Consulting gets a department in the issue
 (05, replacing the kit's specimen department on the home page), a line on the
-contents page, and a line in the colophon. It stays off the cover art and the
-In brief numbers so the first screen still answers the hiring manager.
+contents page, a quieter fifth row in the menu sheet, and a line in the
+colophon. It stays off the cover art and the In brief numbers.
 
 **Pages** (Markdown in `content/consulting/`, rendered to the site root):
 
@@ -158,8 +156,10 @@ In brief numbers so the first screen still answers the hiring manager.
 **As built (step 5).** The four pages are written in `content/consulting/*.md`
 and made whole by `build-pages.js` (its Markdown section lists the subset it
 accepts), which also writes their sitemap block and the `## Consulting`
-section of llms.txt. Every colophon carries the consulting line, not only
-the home page's; the masthead and menu still name 01 to 04. The open
+section of llms.txt. The colophon of every page that does not carry the
+department itself (the issue and the Consulting pages do) carries the
+consulting line; the masthead still names 01 to 04, and the menu sheet adds
+05 Consulting as a quieter fifth row (Release 1). The open
 questions below use their defaults: up to an hour by video, an estimate with
 a cap, no weekly minimum stated, no town, the home page's Choctaw wording, no
 family line, the copy-email button.
@@ -182,7 +182,8 @@ family line, the copy-email button.
 7. **Contact:** the copy-email button as today, or a scheduling link (default:
    copy-email; scheduling tools track visitors).
 8. **Before merging to `main`:** should `brand.md` and this plan ship publicly
-   (default: keep them; remove the strategy lines about readers).
+   (default: keep them; remove the strategy lines about readers). Done for
+   Release 1: both ship, with those lines taken out.
 
 ## QA, every step
 
