@@ -1,0 +1,1586 @@
+{
+  "$comment": "The agent contract, captured from the committed pages at 561e4c4 before any tool was restyled. Every tool slice must keep it. test/agent-contract.test.js runs each page's scripts in node (test/page-sandbox.js) and checks the WebMCP tools it registers (names, descriptions, input schemas, annotations), the URL parameters it reads and the storage keys it touches against this file, plus the URL templates and the labels llms.txt quotes. check-browser.js runs the pages in Chrome and checks the read-only outputs, the llms.txt example outputs (sha256), that each example link shows what the tool shows for the same input and the answer its `summary` names (the summary must also be what the tool returns), and what each prefilled link in `prefilled` loads or does. `urlParamNotes` names parameters a page reads that llms.txt does not list as URL parameters, with the reason. Change it only together with llms.txt, on purpose.",
+  "capturedFrom": "561e4c4",
+  "llms": "llms.txt",
+  "pages": {
+    "life-strategy.html": {
+      "urlTemplates": [
+        {
+          "@type": "UseAction",
+          "urlTemplate": "https://bensiverly.com/life-strategy.html?health={health}&work={work}&family={family}&spirituality={spirituality}&creativity={creativity}&relationships={relationships}&financial={financial}&rest={rest}",
+          "params": [
+            "health",
+            "work",
+            "family",
+            "spirituality",
+            "creativity",
+            "relationships",
+            "financial",
+            "rest"
+          ]
+        }
+      ],
+      "urlParams": [
+        "health",
+        "work",
+        "family",
+        "spirituality",
+        "creativity",
+        "relationships",
+        "financial",
+        "rest"
+      ],
+      "labels": [
+        "Invest",
+        "Maintain",
+        "Rebalance",
+        "Release"
+      ],
+      "webmcp": [
+        {
+          "name": "assess_life_balance",
+          "description": "Sort eight life areas (health, work, family, spirituality, creativity, relationships, financial, rest) into Invest, Maintain, Rebalance, or Release from how much each matters (importance 1-6) and how it is going (satisfaction 1-6), with 3.5 as the midpoint, and name the one area to focus on next. Rate as many areas as you know; all eight gives the full matrix. Returns each area's quadrant, the priority, and a link that reopens the same result. Also shows the result on the page.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "health": {
+                "type": "object",
+                "properties": {
+                  "importance": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 6,
+                    "description": "1 not important, 6 essential."
+                  },
+                  "satisfaction": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 6,
+                    "description": "1 struggling, 6 thriving."
+                  }
+                },
+                "required": [
+                  "importance",
+                  "satisfaction"
+                ]
+              },
+              "work": {
+                "type": "object",
+                "properties": {
+                  "importance": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 6,
+                    "description": "1 not important, 6 essential."
+                  },
+                  "satisfaction": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 6,
+                    "description": "1 struggling, 6 thriving."
+                  }
+                },
+                "required": [
+                  "importance",
+                  "satisfaction"
+                ]
+              },
+              "family": {
+                "type": "object",
+                "properties": {
+                  "importance": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 6,
+                    "description": "1 not important, 6 essential."
+                  },
+                  "satisfaction": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 6,
+                    "description": "1 struggling, 6 thriving."
+                  }
+                },
+                "required": [
+                  "importance",
+                  "satisfaction"
+                ]
+              },
+              "spirituality": {
+                "type": "object",
+                "properties": {
+                  "importance": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 6,
+                    "description": "1 not important, 6 essential."
+                  },
+                  "satisfaction": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 6,
+                    "description": "1 struggling, 6 thriving."
+                  }
+                },
+                "required": [
+                  "importance",
+                  "satisfaction"
+                ]
+              },
+              "creativity": {
+                "type": "object",
+                "properties": {
+                  "importance": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 6,
+                    "description": "1 not important, 6 essential."
+                  },
+                  "satisfaction": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 6,
+                    "description": "1 struggling, 6 thriving."
+                  }
+                },
+                "required": [
+                  "importance",
+                  "satisfaction"
+                ]
+              },
+              "relationships": {
+                "type": "object",
+                "properties": {
+                  "importance": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 6,
+                    "description": "1 not important, 6 essential."
+                  },
+                  "satisfaction": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 6,
+                    "description": "1 struggling, 6 thriving."
+                  }
+                },
+                "required": [
+                  "importance",
+                  "satisfaction"
+                ]
+              },
+              "financial": {
+                "type": "object",
+                "properties": {
+                  "importance": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 6,
+                    "description": "1 not important, 6 essential."
+                  },
+                  "satisfaction": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 6,
+                    "description": "1 struggling, 6 thriving."
+                  }
+                },
+                "required": [
+                  "importance",
+                  "satisfaction"
+                ]
+              },
+              "rest": {
+                "type": "object",
+                "properties": {
+                  "importance": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 6,
+                    "description": "1 not important, 6 essential."
+                  },
+                  "satisfaction": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 6,
+                    "description": "1 struggling, 6 thriving."
+                  }
+                },
+                "required": [
+                  "importance",
+                  "satisfaction"
+                ]
+              }
+            },
+            "minProperties": 1
+          },
+          "annotations": {
+            "readOnlyHint": true
+          }
+        }
+      ],
+      "readOnlyOutputs": {},
+      "examples": [
+        {
+          "url": "life-strategy.html?health=6,2&work=5,5&family=6,5&spirituality=3,3&creativity=2,5&relationships=4,4&financial=5,2&rest=3,2",
+          "tool": "assess_life_balance",
+          "input": {
+            "health": {
+              "importance": 6,
+              "satisfaction": 2
+            },
+            "work": {
+              "importance": 5,
+              "satisfaction": 5
+            },
+            "family": {
+              "importance": 6,
+              "satisfaction": 5
+            },
+            "spirituality": {
+              "importance": 3,
+              "satisfaction": 3
+            },
+            "creativity": {
+              "importance": 2,
+              "satisfaction": 5
+            },
+            "relationships": {
+              "importance": 4,
+              "satisfaction": 4
+            },
+            "financial": {
+              "importance": 5,
+              "satisfaction": 2
+            },
+            "rest": {
+              "importance": 3,
+              "satisfaction": 2
+            }
+          },
+          "summary": {
+            "priority": "Health"
+          },
+          "sha256": "ea51c8922b2e70c4629533bdc1be43c45423938044b036f60c7b6ba3224b9a1a"
+        }
+      ],
+      "prefilled": []
+    },
+    "native-plant-finder.html": {
+      "urlTemplates": [
+        {
+          "@type": "SearchAction",
+          "urlTemplate": "https://bensiverly.com/native-plant-finder.html?zip={zip}&sun={sun}&water={water}&wildlife={wildlife}&care={care}",
+          "params": [
+            "zip",
+            "sun",
+            "water",
+            "wildlife",
+            "care"
+          ]
+        }
+      ],
+      "urlParams": [
+        "zip",
+        "sun",
+        "water",
+        "wildlife",
+        "care"
+      ],
+      "labels": [
+        "My Garden"
+      ],
+      "webmcp": [
+        {
+          "name": "find_native_plants",
+          "description": "Find California native plants for a California ZIP code and sun exposure, optionally filtered by water needs, wildlife, and care. Returns each plant (name, layer, height, sun, water, bloom, wildlife supported) plus local nurseries and a link to the same result. Also shows the result on the page.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "zip": {
+                "type": "string",
+                "pattern": "^[0-9]{5}$",
+                "description": "California 5-digit ZIP code, e.g. 94110."
+              },
+              "sun": {
+                "type": "string",
+                "enum": [
+                  "full_shade",
+                  "part_shade",
+                  "part_sun",
+                  "full_sun"
+                ],
+                "description": "Direct sun per day: full_shade (<2 h), part_shade (2-4 h), part_sun (4-6 h), full_sun (6+ h). Defaults to part_sun."
+              },
+              "water": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "very_low",
+                    "low",
+                    "moderate"
+                  ]
+                },
+                "description": "Keep plants with any of these water needs."
+              },
+              "wildlife": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "hummingbirds",
+                    "butterflies",
+                    "birds"
+                  ]
+                },
+                "description": "Keep plants that support any of these."
+              },
+              "care": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "easy",
+                    "deer"
+                  ]
+                },
+                "description": "easy = easy to grow; deer = deer resistant."
+              }
+            },
+            "required": [
+              "zip"
+            ]
+          },
+          "annotations": {
+            "readOnlyHint": true
+          }
+        },
+        {
+          "name": "get_saved_native_plants",
+          "description": "List the plants the person has saved to My Garden in this browser.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {}
+          },
+          "annotations": {
+            "readOnlyHint": true
+          }
+        }
+      ],
+      "readOnlyOutputs": {
+        "get_saved_native_plants": {
+          "plants": []
+        }
+      },
+      "examples": [
+        {
+          "url": "native-plant-finder.html?zip=94110&sun=full_sun&water=very_low,low&wildlife=hummingbirds",
+          "tool": "find_native_plants",
+          "input": {
+            "zip": "94110",
+            "sun": "full_sun",
+            "water": [
+              "very_low",
+              "low"
+            ],
+            "wildlife": [
+              "hummingbirds"
+            ]
+          },
+          "summary": {
+            "plants": 3,
+            "nurseries": 3,
+            "first": "California Fuchsia"
+          },
+          "sha256": "ea1d035cd3df45a1f39cd50749a25c2b1ec4b48ae60e6d9de6ae1ee111982539"
+        }
+      ],
+      "prefilled": []
+    },
+    "memorial-pamphlet.html": {
+      "urlTemplates": [
+        {
+          "@type": "CreateAction",
+          "urlTemplate": "https://bensiverly.com/memorial-pamphlet.html?name={name}&dates={dates}&title={title}&service_date={service_date}&location={location}&obituary={obituary}&order={order}&closing={closing}&template={template}&paper={paper}",
+          "params": [
+            "name",
+            "dates",
+            "title",
+            "service_date",
+            "location",
+            "obituary",
+            "order",
+            "closing",
+            "template",
+            "paper"
+          ]
+        }
+      ],
+      "urlParams": [
+        "name",
+        "dates",
+        "born",
+        "died",
+        "title",
+        "service_date",
+        "location",
+        "obituary",
+        "order",
+        "closing",
+        "template",
+        "paper"
+      ],
+      "labels": [
+        "Generate PDF",
+        "_Memorial_Pamphlet_",
+        "In Loving Memory"
+      ],
+      "webmcp": [
+        {
+          "name": "fill_memorial_pamphlet",
+          "description": "Fill in the memorial pamphlet on this page: a letter or A4 sheet, printed both sides and folded in half, to hand out at a funeral or memorial service. Only the fields you pass change, and the person sees the preview update. Photos and the PDF download stay with the person: tell them to add photos if they want, then click Generate PDF.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "full_name": {
+                "type": "string",
+                "description": "Full name of the person who died (required before export, up to 80 characters)."
+              },
+              "dates": {
+                "type": "string",
+                "description": "Dates line under the name, e.g. \"March 3, 1942 - May 18, 2026\"."
+              },
+              "cover_title": {
+                "type": "string",
+                "description": "Small title above the photo. Default \"In Loving Memory\"."
+              },
+              "service_date_time": {
+                "type": "string",
+                "description": "e.g. \"Saturday, May 30, 2026 at 11:00 AM\"."
+              },
+              "service_location": {
+                "type": "string",
+                "description": "e.g. \"Grace Community Chapel, 415 Oak Avenue\"."
+              },
+              "obituary": {
+                "type": "string",
+                "description": "Short obituary or life summary, up to 1,800 characters. Blank lines separate paragraphs."
+              },
+              "order_of_service": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Parts of the service in order, one per item, e.g. [\"Prelude\", \"Opening Prayer\", \"Eulogy - Daniel Whitman\"]. Up to 2,000 characters in all."
+              },
+              "closing_line": {
+                "type": "string",
+                "description": "Short line on the back cover, e.g. \"Forever in our hearts.\""
+              },
+              "template": {
+                "type": "string",
+                "enum": [
+                  "classic",
+                  "modern"
+                ],
+                "description": "classic: centered serif cover. modern: dark cover, bolder name."
+              },
+              "paper_size": {
+                "type": "string",
+                "enum": [
+                  "letter",
+                  "a4"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "annotations": null
+        },
+        {
+          "name": "get_memorial_pamphlet_draft",
+          "description": "Read the memorial pamphlet as it is currently filled in on this page, plus the allowed templates, paper sizes, and field length limits.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {}
+          },
+          "annotations": {
+            "readOnlyHint": true
+          }
+        }
+      ],
+      "readOnlyOutputs": {
+        "get_memorial_pamphlet_draft": {
+          "full_name": "",
+          "dates": "",
+          "cover_title": "In Loving Memory",
+          "service_date_time": "",
+          "service_location": "",
+          "obituary": "",
+          "order_of_service": "",
+          "closing_line": "",
+          "template": "classic",
+          "paper_size": "letter",
+          "has_cover_photo": false,
+          "has_back_photo": false,
+          "ready_to_export": false,
+          "options": {
+            "template": [
+              "classic",
+              "modern"
+            ],
+            "paper_size": [
+              "letter",
+              "a4"
+            ],
+            "max_length": {
+              "full_name": 80,
+              "dates": 80,
+              "cover_title": 80,
+              "service_date_time": 100,
+              "service_location": 200,
+              "obituary": 1800,
+              "order_of_service": 2000,
+              "closing_line": 240
+            }
+          }
+        }
+      },
+      "examples": [],
+      "prefilled": [
+        {
+          "url": "memorial-pamphlet.html?name=Eleanor%20Grace%20Whitman&born=March%203%2C%201942&died=May%2018%2C%202026&service_date=Saturday%2C%20May%2030%2C%202026%20at%2011%3A00%20AM&location=Grace%20Community%20Chapel&order=Prelude&order=Opening%20Prayer&order=Eulogy&template=classic",
+          "readOnly": {
+            "get_memorial_pamphlet_draft": {
+              "full_name": "Eleanor Grace Whitman",
+              "dates": "March 3, 1942 - May 18, 2026",
+              "cover_title": "In Loving Memory",
+              "service_date_time": "Saturday, May 30, 2026 at 11:00 AM",
+              "service_location": "Grace Community Chapel",
+              "obituary": "",
+              "order_of_service": "Prelude\nOpening Prayer\nEulogy",
+              "closing_line": "",
+              "template": "classic",
+              "paper_size": "letter",
+              "has_cover_photo": false,
+              "has_back_photo": false,
+              "ready_to_export": true,
+              "options": {
+                "template": [
+                  "classic",
+                  "modern"
+                ],
+                "paper_size": [
+                  "letter",
+                  "a4"
+                ],
+                "max_length": {
+                  "full_name": 80,
+                  "dates": 80,
+                  "cover_title": 80,
+                  "service_date_time": 100,
+                  "service_location": 200,
+                  "obituary": 1800,
+                  "order_of_service": 2000,
+                  "closing_line": 240
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "service-of-life.html": {
+      "urlTemplates": [
+        {
+          "@type": "CreateAction",
+          "urlTemplate": "https://bensiverly.com/service-of-life.html?name={name}&date={date}&location={location}&officiant={officiant}&service_type={service_type}&tradition={tradition}",
+          "params": [
+            "name",
+            "date",
+            "location",
+            "officiant",
+            "service_type",
+            "tradition"
+          ]
+        }
+      ],
+      "urlParams": [
+        "name",
+        "date",
+        "location",
+        "officiant",
+        "service_type",
+        "tradition"
+      ],
+      "labels": [
+        "Print / Save PDF",
+        "Export JSON",
+        "[Name]"
+      ],
+      "webmcp": [
+        {
+          "name": "list_service_of_life_options",
+          "description": "List what this Service of Life Builder supports: service types and the sections each includes, tradition profiles, component types and their fields, suggested Scripture readings, and ready-made prayer texts.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {}
+          },
+          "annotations": {
+            "readOnlyHint": true
+          }
+        },
+        {
+          "name": "get_service_of_life_draft",
+          "description": "Read the order of service as it currently stands on this page: service type, tradition, name, date, place, officiant, and every section with its components.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {}
+          },
+          "annotations": {
+            "readOnlyHint": true
+          }
+        },
+        {
+          "name": "set_service_of_life_details",
+          "description": "Set the basics of the order of service on this page. Only the fields you pass change. Changing service_type keeps the content of sections the new type shares; if it would remove sections that hold content, it refuses unless allow_removing_content is true, so ask the person first.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "name_of_deceased": {
+                "type": "string",
+                "description": "Full name, as it should appear on the order of service."
+              },
+              "date_time": {
+                "type": "string",
+                "description": "e.g. \"Saturday, January 25, 2026 at 2:00 PM\"."
+              },
+              "location": {
+                "type": "string",
+                "description": "e.g. \"St. Mary's Church\"."
+              },
+              "officiant": {
+                "type": "string",
+                "description": "e.g. \"The Rev. Jane Doe\"."
+              },
+              "service_type": {
+                "type": "string",
+                "enum": [
+                  "memorial",
+                  "funeral",
+                  "graveside",
+                  "vigil"
+                ]
+              },
+              "tradition_profile": {
+                "type": "string",
+                "enum": [
+                  "anglican_default",
+                  "anglican_with_lutheran_headings",
+                  "anglican_with_catholic_station_mode"
+                ]
+              },
+              "allow_removing_content": {
+                "type": "boolean",
+                "description": "Only after the person agrees: lets a service_type change remove sections that hold content."
+              }
+            },
+            "additionalProperties": false
+          },
+          "annotations": null
+        },
+        {
+          "name": "add_service_of_life_component",
+          "description": "Add one item (a prayer or other text, a reading, music, a tribute, or a silence) to a section of the order of service on this page. Adding to a switched-off optional section switches it on. Use list_service_of_life_options for section ids and fields.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "section_id": {
+                "type": "string",
+                "description": "A section_id from get_service_of_life_draft, e.g. \"gathering\" or \"word\"."
+              },
+              "component_type": {
+                "type": "string",
+                "enum": [
+                  "text_block",
+                  "reading_ref",
+                  "music_item",
+                  "tribute_slot",
+                  "silence"
+                ]
+              },
+              "fields": {
+                "type": "object",
+                "description": "text_block: title, role (leader|all|reader|soloist|silent), body, rubric. reading_ref: label, citation, reader_name, full_text. music_item: title, kind (hymn|song|instrumental), details, performer. tribute_slot: speaker, prompt, time_limit_minutes (1-30). silence: label, duration_seconds (5-300). Unknown fields are ignored."
+              },
+              "position": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Where in the section, 0 = first. Defaults to the end."
+              }
+            },
+            "required": [
+              "section_id",
+              "component_type"
+            ],
+            "additionalProperties": false
+          },
+          "annotations": null
+        }
+      ],
+      "readOnlyOutputs": {
+        "list_service_of_life_options": {
+          "service_types": [
+            {
+              "id": "memorial",
+              "label": "Memorial Service",
+              "sections": [
+                {
+                  "section_id": "gathering",
+                  "label": "The Gathering",
+                  "optional": false
+                },
+                {
+                  "section_id": "word",
+                  "label": "Readings and Sermon",
+                  "optional": false
+                },
+                {
+                  "section_id": "prayers",
+                  "label": "Prayers",
+                  "optional": false
+                },
+                {
+                  "section_id": "commendation",
+                  "label": "Commendation and Farewell",
+                  "optional": false
+                },
+                {
+                  "section_id": "dismissal",
+                  "label": "Dismissal",
+                  "optional": false
+                }
+              ]
+            },
+            {
+              "id": "funeral",
+              "label": "Funeral Service",
+              "sections": [
+                {
+                  "section_id": "gathering",
+                  "label": "The Gathering",
+                  "optional": false
+                },
+                {
+                  "section_id": "word",
+                  "label": "Readings and Sermon",
+                  "optional": false
+                },
+                {
+                  "section_id": "prayers",
+                  "label": "Prayers",
+                  "optional": false
+                },
+                {
+                  "section_id": "commendation",
+                  "label": "Commendation and Farewell",
+                  "optional": false
+                },
+                {
+                  "section_id": "committal",
+                  "label": "The Committal",
+                  "optional": true
+                },
+                {
+                  "section_id": "dismissal",
+                  "label": "Dismissal",
+                  "optional": false
+                }
+              ]
+            },
+            {
+              "id": "graveside",
+              "label": "Graveside / Committal",
+              "sections": [
+                {
+                  "section_id": "sentences",
+                  "label": "Opening Words",
+                  "optional": false
+                },
+                {
+                  "section_id": "committal_core",
+                  "label": "Committal",
+                  "optional": false
+                },
+                {
+                  "section_id": "prayers_short",
+                  "label": "Prayers",
+                  "optional": false
+                },
+                {
+                  "section_id": "dismissal_short",
+                  "label": "Dismissal",
+                  "optional": false
+                }
+              ]
+            },
+            {
+              "id": "vigil",
+              "label": "Vigil / Wake",
+              "sections": [
+                {
+                  "section_id": "gathering_simple",
+                  "label": "Gathering",
+                  "optional": false
+                },
+                {
+                  "section_id": "readings_simple",
+                  "label": "Readings",
+                  "optional": false
+                },
+                {
+                  "section_id": "remembrance",
+                  "label": "Remembrance / Tributes",
+                  "optional": false
+                },
+                {
+                  "section_id": "intercessions",
+                  "label": "Intercessions",
+                  "optional": false
+                },
+                {
+                  "section_id": "lord_prayer",
+                  "label": "The Lord's Prayer",
+                  "optional": false
+                },
+                {
+                  "section_id": "dismissal_short",
+                  "label": "Dismissal",
+                  "optional": false
+                }
+              ]
+            }
+          ],
+          "tradition_profiles": [
+            "anglican_default",
+            "anglican_with_lutheran_headings",
+            "anglican_with_catholic_station_mode"
+          ],
+          "component_types": {
+            "text_block": {
+              "title": "",
+              "role": "leader",
+              "body": "",
+              "rubric": ""
+            },
+            "reading_ref": {
+              "label": "",
+              "citation": "",
+              "reader_name": "",
+              "full_text": ""
+            },
+            "music_item": {
+              "title": "",
+              "kind": "hymn",
+              "details": "",
+              "performer": ""
+            },
+            "tribute_slot": {
+              "speaker": "",
+              "prompt": "",
+              "time_limit_minutes": null
+            },
+            "silence": {
+              "label": "A moment of silence",
+              "duration_seconds": 30
+            }
+          },
+          "roles": [
+            "leader",
+            "all",
+            "reader",
+            "soloist",
+            "silent"
+          ],
+          "music_kinds": [
+            "hymn",
+            "song",
+            "instrumental"
+          ],
+          "number_ranges": {
+            "time_limit_minutes": [
+              1,
+              30
+            ],
+            "duration_seconds": [
+              5,
+              300
+            ]
+          },
+          "reading_suggestions": [
+            "John 11:25-26",
+            "Romans 8:38-39",
+            "Psalm 23",
+            "1 Corinthians 15:51-57",
+            "Revelation 21:1-6",
+            "Ecclesiastes 3:1-8"
+          ],
+          "starter_texts": [
+            {
+              "title": "Welcome",
+              "role": "leader",
+              "body": "We gather to remember [Name], to give thanks for their life, and to hold one another in grief and hope.",
+              "rubric": ""
+            },
+            {
+              "title": "Opening Prayer",
+              "role": "leader",
+              "body": "God of mercy, be near to us in our sorrow. Give us comfort, courage, and a clear love for one another.\nAmen.",
+              "rubric": ""
+            },
+            {
+              "title": "Commendation",
+              "role": "leader",
+              "body": "We entrust [Name] to your mercy, O God: receive them into your care, and sustain all who mourn.\nAmen.",
+              "rubric": ""
+            },
+            {
+              "title": "The Lord's Prayer",
+              "role": "all",
+              "body": "[Insert your community's customary version here.]",
+              "rubric": ""
+            },
+            {
+              "title": "Blessing",
+              "role": "leader",
+              "body": "May the God of peace, who brought again from the dead our Lord Jesus, make you complete in everything good.\nAmen.",
+              "rubric": ""
+            },
+            {
+              "title": "Dismissal",
+              "role": "leader",
+              "body": "Go in peace to love and serve the Lord.\n\nThanks be to God.",
+              "rubric": ""
+            }
+          ],
+          "notes": "[Name] in any text is replaced with the name of the deceased in the preview."
+        },
+        "get_service_of_life_draft": {
+          "service_type": "memorial",
+          "tradition_profile": "anglican_default",
+          "meta": {
+            "name_of_deceased": "",
+            "date_time": "",
+            "location": "",
+            "officiant": ""
+          },
+          "sections": [
+            {
+              "section_id": "gathering",
+              "label": "The Gathering",
+              "optional": false,
+              "enabled": true,
+              "components": []
+            },
+            {
+              "section_id": "word",
+              "label": "Readings and Sermon",
+              "optional": false,
+              "enabled": true,
+              "components": []
+            },
+            {
+              "section_id": "prayers",
+              "label": "Prayers",
+              "optional": false,
+              "enabled": true,
+              "components": []
+            },
+            {
+              "section_id": "commendation",
+              "label": "Commendation and Farewell",
+              "optional": false,
+              "enabled": true,
+              "components": []
+            },
+            {
+              "section_id": "dismissal",
+              "label": "Dismissal",
+              "optional": false,
+              "enabled": true,
+              "components": []
+            }
+          ],
+          "preview_ready": false
+        }
+      },
+      "examples": [],
+      "prefilled": [
+        {
+          "url": "service-of-life.html?name=Margaret%20Anne%20Walker&date=Saturday%2C%20June%2020%2C%202026%20at%202%3A00%20PM&location=St.%20Luke%27s%20Episcopal%20Church&officiant=The%20Rev.%20Sarah%20Bennett&service_type=funeral",
+          "readOnly": {
+            "get_service_of_life_draft": {
+              "service_type": "funeral",
+              "tradition_profile": "anglican_default",
+              "meta": {
+                "name_of_deceased": "Margaret Anne Walker",
+                "date_time": "Saturday, June 20, 2026 at 2:00 PM",
+                "location": "St. Luke's Episcopal Church",
+                "officiant": "The Rev. Sarah Bennett"
+              },
+              "sections": [
+                {
+                  "section_id": "gathering",
+                  "label": "The Gathering",
+                  "optional": false,
+                  "enabled": true,
+                  "components": []
+                },
+                {
+                  "section_id": "word",
+                  "label": "Readings and Sermon",
+                  "optional": false,
+                  "enabled": true,
+                  "components": []
+                },
+                {
+                  "section_id": "prayers",
+                  "label": "Prayers",
+                  "optional": false,
+                  "enabled": true,
+                  "components": []
+                },
+                {
+                  "section_id": "commendation",
+                  "label": "Commendation and Farewell",
+                  "optional": false,
+                  "enabled": true,
+                  "components": []
+                },
+                {
+                  "section_id": "committal",
+                  "label": "The Committal",
+                  "optional": true,
+                  "enabled": false,
+                  "components": []
+                },
+                {
+                  "section_id": "dismissal",
+                  "label": "Dismissal",
+                  "optional": false,
+                  "enabled": true,
+                  "components": []
+                }
+              ],
+              "preview_ready": true
+            }
+          }
+        }
+      ]
+    },
+    "memorial-preferences.html": {
+      "urlTemplates": [
+        {
+          "@type": "ViewAction",
+          "urlTemplate": "https://bensiverly.com/memorial-preferences.html?print=1",
+          "params": []
+        }
+      ],
+      "urlParams": [
+        "print"
+      ],
+      "labels": [],
+      "webmcp": [
+        {
+          "name": "get_memorial_preferences_worksheet",
+          "description": "Returns the questions on the one-page printable Memorial Preferences Worksheet (gathering type, music, prayers, readings, people, special touches, own words) as structured JSON, plus a link that opens it ready to print.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {}
+          },
+          "annotations": {
+            "readOnlyHint": true
+          }
+        },
+        {
+          "name": "print_memorial_preferences_worksheet",
+          "description": "Opens the browser print dialog for the one-page Memorial Preferences Worksheet. Only the worksheet prints.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {}
+          },
+          "annotations": null
+        }
+      ],
+      "readOnlyOutputs": {
+        "get_memorial_preferences_worksheet": {
+          "title": "My Wishes for My Memorial Service",
+          "intro": "Take your time. There are no wrong answers, and it is fine to leave anything blank.",
+          "header_fields": [
+            "My name",
+            "Date"
+          ],
+          "sections": [
+            {
+              "heading": "1. The kind of gathering I would like",
+              "hint": null,
+              "checkboxes": [
+                "A traditional religious service",
+                "A celebration of life",
+                "Something small and simple",
+                "I trust my family to decide"
+              ],
+              "fields": [
+                "Held at (a church, outdoors, a favorite place):",
+                "Led by (a pastor or priest, a friend, a family member):"
+              ],
+              "blank_lines": 0
+            },
+            {
+              "heading": "2. Music",
+              "hint": "Hymns or songs you love, and who you’d like to sing or play them, if you have someone in mind.",
+              "checkboxes": [],
+              "fields": [],
+              "blank_lines": 3
+            },
+            {
+              "heading": "3. Prayers",
+              "hint": "Prayers you would like said aloud (the Lord’s Prayer, a table grace, a blessing you love).",
+              "checkboxes": [],
+              "fields": [],
+              "blank_lines": 2
+            },
+            {
+              "heading": "4. Scripture or sacred readings",
+              "hint": "Passages that have meant something to you, from anywhere in the Bible, not only the familiar Psalms.",
+              "checkboxes": [],
+              "fields": [],
+              "blank_lines": 2
+            },
+            {
+              "heading": "5. Other readings",
+              "hint": "A poem, a letter, a passage from a favorite book. Anything you would like read aloud.",
+              "checkboxes": [],
+              "fields": [],
+              "blank_lines": 2
+            },
+            {
+              "heading": "6. People I would like to take part",
+              "hint": "Who might speak, share a memory, read, or serve as a pallbearer. Being asked is a kindness.",
+              "checkboxes": [],
+              "fields": [],
+              "blank_lines": 2
+            },
+            {
+              "heading": "7. Special touches",
+              "hint": "Flowers or a donation in your name? A favorite photograph? Anything that feels like you.",
+              "checkboxes": [],
+              "fields": [],
+              "blank_lines": 2
+            },
+            {
+              "heading": "8. In my own words",
+              "hint": "Anything else you want the people planning this to know.",
+              "checkboxes": [],
+              "fields": [],
+              "blank_lines": 2
+            }
+          ],
+          "closing": [
+            "When you have finished, keep this page somewhere safe, and tell someone you trust where to find it.",
+            "For the family: when the time comes, type these answers into the free planning tools at bensiverly.com to print an order of service."
+          ],
+          "pages": 1,
+          "paper": "Letter or A4, portrait",
+          "print_url": "https://bensiverly.com/memorial-preferences.html?print=1",
+          "related_tools": {
+            "service_of_life": "https://bensiverly.com/service-of-life.html",
+            "memorial_pamphlet": "https://bensiverly.com/memorial-pamphlet.html"
+          }
+        }
+      },
+      "examples": [],
+      "prefilled": [
+        {
+          "url": "memorial-preferences.html?print=1",
+          "prints": true
+        }
+      ]
+    },
+    "decision-assist.html": {
+      "urlTemplates": [
+        {
+          "@type": "UseAction",
+          "urlTemplate": "https://bensiverly.com/decision-assist.html?decision={decision}&options={options}&criteria={criteria}&scores={scores}",
+          "params": [
+            "decision",
+            "options",
+            "criteria",
+            "scores"
+          ]
+        }
+      ],
+      "urlParams": [
+        "decision",
+        "context",
+        "options",
+        "criteria",
+        "scores"
+      ],
+      "urlParamNotes": {
+        "context": "readUrl() reads it with the other four; llms.txt documents context only as a score_decision input."
+      },
+      "labels": [
+        "Upfront cost",
+        "Gut feeling"
+      ],
+      "webmcp": [
+        {
+          "name": "score_decision",
+          "description": "Rank 2-6 options with a weighted decision matrix. Give the options, 2-10 criteria with a weight from 1 (nice to have) to 5 (critical), and a 1-5 score for every option on every criterion (1 poor fit, 5 strong fit). Each option's total is the sum of weight x score; percentage is that total over the best possible. Returns the ranking with the math per criterion and a link that reopens the same result. Also shows the result on the page.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "decision": {
+                "type": "string",
+                "description": "The decision in a few words, e.g. \"Take the new job or stay put\"."
+              },
+              "context": {
+                "type": "string",
+                "description": "Optional background."
+              },
+              "options": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 6,
+                "items": {
+                  "type": "string"
+                },
+                "description": "The choices being compared."
+              },
+              "criteria": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 10,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "What matters, e.g. \"Commute\"."
+                    },
+                    "weight": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 5,
+                      "description": "1 nice to have, 2 somewhat important, 3 important (default), 4 very important, 5 critical."
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ]
+                }
+              },
+              "scores": {
+                "type": "array",
+                "description": "One row per option, in options order. Each row holds one 1-5 score per criterion, in criteria order.",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 5
+                  }
+                }
+              }
+            },
+            "required": [
+              "options",
+              "criteria",
+              "scores"
+            ]
+          },
+          "annotations": {
+            "readOnlyHint": true
+          }
+        },
+        {
+          "name": "list_decision_factors",
+          "description": "List the suggested decision criteria by category (financial, time, relationships, health, growth, values, practical, emotional) and what each weight and score number means. Use it to help someone choose criteria before calling score_decision; any other criterion name works too.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {}
+          },
+          "annotations": {
+            "readOnlyHint": true
+          }
+        }
+      ],
+      "readOnlyOutputs": {
+        "list_decision_factors": {
+          "categories": [
+            {
+              "category": "Financial",
+              "suggestions": [
+                "Upfront cost",
+                "Ongoing cost",
+                "Income potential",
+                "Financial risk"
+              ]
+            },
+            {
+              "category": "Time",
+              "suggestions": [
+                "Time investment required",
+                "Schedule flexibility",
+                "Time to results"
+              ]
+            },
+            {
+              "category": "Relationships",
+              "suggestions": [
+                "Impact on family",
+                "Impact on friendships",
+                "Partner alignment",
+                "Community/belonging"
+              ]
+            },
+            {
+              "category": "Health",
+              "suggestions": [
+                "Physical health impact",
+                "Mental health impact",
+                "Stress level",
+                "Sleep/recovery"
+              ]
+            },
+            {
+              "category": "Growth",
+              "suggestions": [
+                "Learning opportunity",
+                "Career advancement",
+                "Skill development",
+                "Challenge level"
+              ]
+            },
+            {
+              "category": "Values Alignment",
+              "suggestions": [
+                "Aligns with core values",
+                "Sense of meaning/purpose",
+                "Integrity/authenticity",
+                "Legacy/long-term impact"
+              ]
+            },
+            {
+              "category": "Practical",
+              "suggestions": [
+                "Feasibility",
+                "Reversibility",
+                "Dependencies/prerequisites",
+                "Risk of failure"
+              ]
+            },
+            {
+              "category": "Emotional",
+              "suggestions": [
+                "Excitement/energy",
+                "Fear/anxiety",
+                "Regret minimization",
+                "Gut feeling"
+              ]
+            }
+          ],
+          "weight_scale": {
+            "1": "Nice to have",
+            "2": "Somewhat important",
+            "3": "Important",
+            "4": "Very important",
+            "5": "Critical"
+          },
+          "score_scale": {
+            "1": "Poor",
+            "2": "Weak",
+            "3": "Neutral",
+            "4": "Good",
+            "5": "Strong"
+          }
+        }
+      },
+      "examples": [
+        {
+          "url": "decision-assist.html?decision=Take+the+job&options=Take+it|Stay&criteria=Pay:5|Commute:3&scores=4,2|3,5",
+          "tool": "score_decision",
+          "input": {
+            "decision": "Take the job",
+            "options": [
+              "Take it",
+              "Stay"
+            ],
+            "criteria": [
+              {
+                "name": "Pay",
+                "weight": 5
+              },
+              {
+                "name": "Commute",
+                "weight": 3
+              }
+            ],
+            "scores": [
+              [
+                4,
+                2
+              ],
+              [
+                3,
+                5
+              ]
+            ]
+          },
+          "summary": {
+            "top_choice": "Stay",
+            "ranking": [
+              [
+                "Stay",
+                75
+              ],
+              [
+                "Take it",
+                65
+              ]
+            ]
+          },
+          "sha256": "33ca0d6b253cd16d3b7a648d723cecd44d472297f4f24ddd8347ec1362bfc7f1"
+        }
+      ],
+      "prefilled": []
+    }
+  },
+  "storage": {
+    "edition": {
+      "pages": [
+        "kit.html"
+      ],
+      "note": "Night or Day, remembered by the masthead words on every redesigned page."
+    },
+    "nativePlantFavorites": {
+      "pages": [
+        "native-plant-finder.html"
+      ],
+      "note": "My Garden."
+    },
+    "sol_service_draft": {
+      "pages": [
+        "service-of-life.html"
+      ],
+      "note": "The order-of-service draft."
+    },
+    "sol_service_draft_unreadable": {
+      "pages": [
+        "service-of-life.html"
+      ],
+      "note": "A draft that failed to parse, kept rather than lost."
+    },
+    "orale:progress": {
+      "pages": [
+        "orale.html"
+      ],
+      "note": "Private single-user progress."
+    }
+  },
+  "worksheet": {
+    "page": "memorial-preferences.html",
+    "selector": ".mpw-sheet .mpw-section",
+    "sections": [
+      {
+        "heading": "1. The kind of gathering I would like",
+        "hint": null,
+        "checkboxes": [
+          "A traditional religious service",
+          "A celebration of life",
+          "Something small and simple",
+          "I trust my family to decide"
+        ],
+        "fields": [
+          "Held at (a church, outdoors, a favorite place):",
+          "Led by (a pastor or priest, a friend, a family member):"
+        ],
+        "blank_lines": 0
+      },
+      {
+        "heading": "2. Music",
+        "hint": "Hymns or songs you love, and who you’d like to sing or play them, if you have someone in mind.",
+        "checkboxes": [],
+        "fields": [],
+        "blank_lines": 3
+      },
+      {
+        "heading": "3. Prayers",
+        "hint": "Prayers you would like said aloud (the Lord’s Prayer, a table grace, a blessing you love).",
+        "checkboxes": [],
+        "fields": [],
+        "blank_lines": 2
+      },
+      {
+        "heading": "4. Scripture or sacred readings",
+        "hint": "Passages that have meant something to you, from anywhere in the Bible, not only the familiar Psalms.",
+        "checkboxes": [],
+        "fields": [],
+        "blank_lines": 2
+      },
+      {
+        "heading": "5. Other readings",
+        "hint": "A poem, a letter, a passage from a favorite book. Anything you would like read aloud.",
+        "checkboxes": [],
+        "fields": [],
+        "blank_lines": 2
+      },
+      {
+        "heading": "6. People I would like to take part",
+        "hint": "Who might speak, share a memory, read, or serve as a pallbearer. Being asked is a kindness.",
+        "checkboxes": [],
+        "fields": [],
+        "blank_lines": 2
+      },
+      {
+        "heading": "7. Special touches",
+        "hint": "Flowers or a donation in your name? A favorite photograph? Anything that feels like you.",
+        "checkboxes": [],
+        "fields": [],
+        "blank_lines": 2
+      },
+      {
+        "heading": "8. In my own words",
+        "hint": "Anything else you want the people planning this to know.",
+        "checkboxes": [],
+        "fields": [],
+        "blank_lines": 2
+      }
+    ],
+    "header_fields": [
+      "My name",
+      "Date"
+    ],
+    "title": "My Wishes for My Memorial Service",
+    "intro": "Take your time. There are no wrong answers, and it is fine to leave anything blank.",
+    "closing": [
+      "When you have finished, keep this page somewhere safe, and tell someone you trust where to find it.",
+      "For the family: when the time comes, type these answers into the free planning tools at bensiverly.com to print an order of service."
+    ]
+  },
+  "resume": {
+    "page": "resume.html",
+    "urlParams": [
+      "version",
+      "role"
+    ],
+    "versions": {
+      "payments": "Ben-Siverly-Resume-Payments.pdf",
+      "ai-native": "Ben-Siverly-Resume-AI-Native.pdf",
+      "general": "Ben-Siverly-Resume.pdf"
+    },
+    "default": "payments"
+  }
+}

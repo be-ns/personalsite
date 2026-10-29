@@ -1,0 +1,1086 @@
+/* site.css: the parts of the periodical every page shares. Hand-written,
+   reads tokens.css only. Anything two or more pages use lives here; a rule
+   one page uses stays in that page's own <style>, which loads after this
+   file and so wins ties. The chrome markup these rules dress (masthead, menu
+   sheet, colophon) is stamped into each page by build-pages.js. */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-size-adjust: 100%; scroll-padding-top: 4.5rem; }
+body {
+  background: var(--ground); color: var(--ink);
+  font: var(--type-body-style) var(--type-body-weight) var(--type-body-size) / var(--type-body-line) var(--type-body-family);
+  letter-spacing: var(--type-body-tracking);
+  overflow-x: clip;
+}
+img, svg { display: block; max-width: 100%; }
+img { height: auto; }
+button { font: inherit; color: inherit; }
+
+/* Film grain over the whole page. Light and dark specks, so it shows on charcoal. */
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: 90; pointer-events: none;
+  background-image: var(--texture-grain); background-size: var(--texture-grain-tile);
+  opacity: var(--grain-opacity); mix-blend-mode: var(--grain-blend);
+}
+
+::selection { background: var(--spot-fill); color: var(--on-spot-fill); }
+:focus-visible { outline: var(--focus-ring-width) solid var(--focus); outline-offset: var(--focus-ring-offset); }
+
+a { color: inherit; text-decoration-line: underline; text-decoration-color: var(--spot-large); text-decoration-thickness: var(--link-underline); text-underline-offset: var(--link-underline-offset); }
+a:hover { text-decoration-thickness: var(--link-underline-hover); }
+
+.skip-link { position: absolute; left: var(--space-2); top: -4rem; z-index: 100; padding: var(--space-3) var(--space-4); background: var(--spot-fill); color: var(--on-spot-fill); font: var(--type-label-weight) var(--type-label-size) / 1 var(--type-label-family); letter-spacing: var(--type-label-tracking); text-transform: uppercase; text-decoration: none; }
+.skip-link:focus { top: var(--space-2); }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.art-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.art-spot { fill: var(--spot-fill); }
+
+.wrap { width: min(100% - 2 * var(--layout-gutter), var(--layout-page)); margin-inline: auto; }
+
+/* The page's own ground, which inserts printed on the other stock fade into;
+   and two faint light leaks, cheap radial gradients under the grain. */
+:root { --page-ground: var(--ground); --leak-orange: rgb(254 95 53 / 0.12); --leak-green: rgb(202 213 118 / 0.1); }
+:root[data-edition="day"] { --leak-orange: rgb(254 95 53 / 0.1); --leak-green: rgb(150 170 50 / 0.13); }
+
+/* ---------- Type roles ---------- */
+.t-kicker, .t-folio, .t-label, .t-byline { font-family: var(--font-label); font-style: normal; }
+.t-kicker { font-size: var(--type-kicker-size); font-weight: var(--type-kicker-weight); line-height: var(--type-kicker-line); letter-spacing: var(--type-kicker-tracking); text-transform: uppercase; font-stretch: var(--type-kicker-stretch); color: var(--leaf); }
+.t-folio { font-size: var(--type-folio-size); font-weight: var(--type-folio-weight); line-height: var(--type-folio-line); letter-spacing: var(--type-folio-tracking); text-transform: uppercase; font-stretch: var(--type-folio-stretch); font-feature-settings: var(--type-folio-features); color: var(--ink-quiet); }
+.t-byline { font-size: var(--type-byline-size); font-weight: var(--type-byline-weight); line-height: var(--type-byline-line); letter-spacing: var(--type-byline-tracking); color: var(--ink-quiet); }
+.t-headline { font-family: var(--type-headline-family); font-size: var(--type-headline-size); font-weight: var(--type-headline-weight); line-height: var(--type-headline-line); letter-spacing: var(--type-headline-tracking); font-variation-settings: var(--type-headline-axes); text-wrap: balance; }
+.t-title { font-family: var(--type-title-family); font-size: var(--type-title-size); font-weight: var(--type-title-weight); line-height: var(--type-title-line); letter-spacing: var(--type-title-tracking); font-variation-settings: var(--type-title-axes); text-wrap: balance; }
+.t-deck { font-family: var(--type-deck-family); font-size: var(--type-deck-size); font-weight: var(--type-deck-weight); line-height: var(--type-deck-line); font-style: var(--type-deck-style); text-wrap: pretty; }
+.t-small { font-family: var(--type-body-sm-family); font-size: var(--type-body-sm-size); line-height: var(--type-body-sm-line); letter-spacing: var(--type-body-sm-tracking); text-wrap: pretty; }
+.t-note { font-family: var(--type-sidenote-family); font-size: var(--type-sidenote-size); line-height: var(--type-sidenote-line); color: var(--ink-quiet); text-wrap: pretty; }
+.t-caption { font-family: var(--type-caption-family); font-size: var(--type-caption-size); line-height: var(--type-caption-line); font-style: italic; color: var(--ink-quiet); text-wrap: pretty; }
+.t-quiet { color: var(--ink-quiet); }
+.num-o { color: var(--spot); }
+
+/* Icons */
+.ico { width: 1.15em; height: 0.75em; flex: none; overflow: visible; }
+
+/* ---------- Masthead bar (persistent navigation) ----------
+   The wordmark takes the free space (margin-right: auto), so the controls
+   always sit hard right, whether or not the department nav is showing. */
+.masthead { position: sticky; top: 0; z-index: 40; background: var(--ground); border-bottom: var(--rule-hairline) solid var(--rule); }
+.masthead-row { display: flex; align-items: center; gap: var(--space-2); min-height: 3.5rem; }
+.wordmark { display: inline-flex; align-items: center; gap: var(--space-3); min-width: 0; min-height: var(--touch-target); margin-right: auto; color: var(--ink); text-decoration: none; }
+.wordmark b { display: inline-block; max-width: 12rem; overflow: hidden; white-space: nowrap; font: var(--type-nameplate-weight) 1.1875rem / 1 var(--type-nameplate-family); letter-spacing: 0; word-spacing: 0.12em; text-transform: uppercase; transition: opacity var(--motion-duration-medium) var(--motion-easing-standard), max-width var(--motion-duration-medium) var(--motion-easing-standard); }
+.wordmark .t-folio { white-space: nowrap; }
+/* On a page with a cover, the wordmark appears once the nameplate has scrolled
+   away (the script sets data-cover-gone); until then, and without the script,
+   the folio. Pages without a cover show the wordmark from the start. */
+:root:has(.nameplate) .masthead:not([data-cover-gone]) .wordmark { gap: 0; }
+:root:has(.nameplate) .masthead:not([data-cover-gone]) .wordmark b { opacity: 0; max-width: 0; visibility: hidden; }
+.masthead-nav { display: none; }
+.masthead-nav ol { display: flex; list-style: none; }
+.masthead-nav a { display: inline-flex; align-items: center; gap: 0.4em; min-height: var(--touch-target); padding-inline: 0.7rem; color: var(--ink); text-decoration: none; font: var(--type-label-weight) var(--type-label-size) / 1 var(--font-label); letter-spacing: var(--type-label-tracking); text-transform: uppercase; font-stretch: var(--type-label-stretch); }
+.masthead-nav a span { color: var(--spot); font-feature-settings: 'tnum' 1; }
+.masthead-nav a:hover, .masthead-nav a[aria-current] { text-decoration: underline; text-decoration-color: var(--spot-large); }
+.masthead-actions { display: flex; align-items: center; gap: var(--space-2); }
+.masthead .edition-words { display: none; margin-right: var(--space-2); }
+.btn.menu-btn { gap: 0.5rem; padding-inline: 0.65rem 0.75rem; background: transparent; color: var(--ink); }
+.menu-btn svg { flex: none; width: 1.25rem; height: 1.25rem; }
+/* Phones: the issue folio while the cover is in view, the wordmark after. */
+@media (max-width: 599px) { .masthead[data-cover-gone] .wordmark .t-folio, :root:not(:has(.nameplate)) .wordmark .t-folio { display: none; } }
+/* Narrow phones, or a larger default text size (em queries follow it). */
+@media (max-width: 22.4375em) { .folio-season { display: none; } .wordmark b { font-size: 0.9rem; } }
+/* Without the script, the controls that need it stay out of the way. */
+:root:not(.js) .menu-btn, :root:not(.js) .edition-words, :root:not(.js) [data-copy-email] { display: none !important; }
+:root.js .nojs-only { display: none; }
+@media (min-width: 600px) { .masthead .edition-words { display: inline-flex; } }
+@media (min-width: 1100px) { .masthead-nav { display: block; } .menu-btn { display: none !important; } }
+
+/* Edition switch: quiet folio caps, an orange rule under the edition you are reading. */
+.edition-words { display: inline-flex; align-items: center; font: var(--type-folio-weight) var(--type-folio-size) / 1 var(--type-folio-family); letter-spacing: var(--type-folio-tracking); text-transform: uppercase; font-stretch: var(--type-folio-stretch); color: var(--ink-quiet); }
+.edition-words button { min-height: var(--touch-target); padding-inline: 0.45rem; border: 0; background: none; color: var(--ink-quiet); cursor: pointer; letter-spacing: inherit; text-transform: inherit; font-stretch: inherit; text-decoration: underline 2px transparent; text-underline-offset: 0.6em; transition: color var(--motion-duration-short), text-decoration-color var(--motion-duration-short); }
+.edition-words button:hover { color: var(--ink); text-decoration-color: var(--rule); }
+.edition-words button[aria-pressed="true"] { color: var(--ink); text-decoration-color: var(--spot-large); }
+
+/* ---------- Material 3 controls, dressed quiet ---------- */
+.btn {
+  position: relative; isolation: isolate; overflow: hidden;
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--button-gap);
+  min-height: var(--button-height); padding-inline: var(--button-padding-x);
+  border: 0; border-radius: var(--button-shape);
+  font: var(--type-label-weight) var(--type-label-size) / var(--type-label-line) var(--type-label-family);
+  font-stretch: var(--type-label-stretch); letter-spacing: var(--type-label-tracking); text-transform: uppercase; text-decoration: none;
+  cursor: pointer; white-space: nowrap;
+  transition: border-radius var(--motion-duration-short) var(--motion-easing-standard);
+}
+.btn::after { content: ""; position: absolute; inset: 0; z-index: -1; background: currentColor; opacity: 0; transition: opacity var(--motion-duration-short) var(--motion-easing-standard); }
+.btn:hover::after { opacity: var(--state-hover); }
+.btn:focus-visible::after { opacity: var(--state-focus); }
+.btn:active { border-radius: var(--button-shape-pressed); }
+.btn:active::after { opacity: var(--state-pressed); }
+.btn:disabled { cursor: not-allowed; color: color-mix(in srgb, var(--ink) calc(var(--state-disabled-content) * 100%), transparent); background: color-mix(in srgb, var(--ink) calc(var(--state-disabled-container) * 100%), transparent); box-shadow: none; }
+.btn:disabled::after { display: none; }
+.btn--filled { background: var(--ink); color: var(--ground); }
+.btn--spot { background: var(--spot-fill); color: var(--on-spot-fill); }
+.btn--outlined { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 var(--button-outline-width) var(--outline); }
+.btn--inverse { background: var(--inverse); color: var(--on-inverse); }
+.btn--text { padding-inline: 0.25rem; min-height: var(--touch-target); border-radius: var(--shape-xs); background: transparent; color: inherit; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.45em; transition: text-decoration-color var(--motion-duration-short); }
+.btn--text:hover { text-decoration-color: currentColor; }
+.btn--text::after { display: none; }
+.btn--sm { min-height: 2.25rem; padding-inline: 1.1rem; }
+.btn--sm::before { content: ""; position: absolute; inset: -6px 0; }
+
+.icon-btn { position: relative; display: inline-grid; place-items: center; width: var(--touch-target); height: var(--touch-target); border: 0; border-radius: var(--shape-full); background: transparent; color: var(--ink); cursor: pointer; }
+.icon-btn::after { content: ""; position: absolute; inset: 4px; border-radius: inherit; background: currentColor; opacity: 0; }
+.icon-btn:hover::after { opacity: var(--state-hover); }
+.icon-btn svg { width: 1.375rem; height: 1.375rem; }
+
+/* M3 segmented button: one pill, the selected segment filled Goody Gumdrop. */
+.segmented { display: inline-flex; padding: 0; border-radius: var(--segmented-shape); box-shadow: inset 0 0 0 var(--button-outline-width) var(--outline); }
+.segmented button {
+  position: relative; isolation: isolate; display: inline-flex; align-items: center; gap: 0.45em;
+  min-height: var(--segmented-height); padding-inline: 0.85rem; border: 0; border-radius: var(--segmented-shape); background: transparent; color: var(--ink); cursor: pointer;
+  font: var(--type-label-weight) 0.6875rem / 1 var(--font-label); letter-spacing: var(--type-label-tracking); text-transform: uppercase; font-stretch: var(--type-label-stretch);
+}
+.segmented button::before { content: ""; position: absolute; inset: -6px 0; }
+.segmented button::after { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: currentColor; opacity: 0; transition: opacity var(--motion-duration-short) var(--motion-easing-standard); }
+.segmented button:hover::after { opacity: var(--state-hover); }
+.segmented button[aria-pressed="true"] { background: var(--leaf-fill); color: var(--on-leaf-fill); }
+.segmented button[aria-pressed="true"] .pip { opacity: 1; }
+.segmented .pip { width: 0.4rem; height: 0.4rem; border-radius: 50%; background: currentColor; opacity: 0; }
+.segmented button:focus-visible { outline-offset: 1px; }
+
+.chip {
+  position: relative; isolation: isolate; overflow: hidden; display: inline-flex; align-items: center; gap: 0.5em;
+  min-height: var(--chip-height); padding-inline: var(--chip-padding-x); border: 0; border-radius: var(--chip-shape);
+  background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--outline); cursor: pointer;
+  font: 500 0.8125rem / 1 var(--font-label); letter-spacing: 0.04em; font-stretch: 92%;
+}
+.chip::before { content: ""; position: absolute; inset: -6px 0; }
+.chip::after { content: ""; position: absolute; inset: 0; z-index: -1; background: currentColor; opacity: 0; transition: opacity var(--motion-duration-short) var(--motion-easing-standard); }
+.chip:hover::after { opacity: var(--state-hover); }
+.chip[aria-pressed="true"] { background: var(--leaf-fill); color: var(--on-leaf-fill); box-shadow: none; }
+
+/* M3 filled text field: container, label, active indicator, supporting text. */
+.field { display: grid; gap: var(--space-1); max-width: 24rem; }
+.field-box { position: relative; display: grid; background: var(--surface); border-radius: var(--field-shape) var(--field-shape) 0 0; box-shadow: inset 0 -1px 0 var(--outline); transition: box-shadow var(--motion-duration-short); }
+.field-box:focus-within { box-shadow: inset 0 -2px 0 var(--focus); }
+.field label { padding: 0.6rem 1rem 0; font: 600 0.6875rem / 1.2 var(--font-label); letter-spacing: 0.12em; text-transform: uppercase; font-stretch: 85%; color: var(--ink-quiet); }
+.field-box:focus-within label { color: var(--spot); }
+.field input { min-height: 2.5rem; padding: 0.25rem 1rem 0.6rem; border: 0; background: transparent; color: var(--ink); font: var(--type-ui-weight) var(--type-ui-size) / var(--type-ui-line) var(--type-ui-family); }
+.field input:focus { outline: none; }
+.field small { padding-inline: 1rem; font: 400 0.8125rem / 1.4 var(--font-label); color: var(--ink-quiet); }
+
+/* ---------- Running heads, rules, ornaments ---------- */
+.rh { display: flex; align-items: baseline; gap: var(--space-3); padding-block: var(--space-2); border-bottom: var(--rule-hairline) solid var(--rule); white-space: nowrap; }
+.rh > * { flex: none; }
+.rh .rh-pg { color: var(--spot); font-weight: 600; }
+.rh .rh-title { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; color: var(--ink); }
+.rh .rh-pub { display: none; }
+.rh--verso .rh-pub { text-align: right; }
+.rh--recto { flex-direction: row-reverse; }
+.rh--recto .rh-title { text-align: right; }
+@media (min-width: 720px) { .rh .rh-pub { display: block; } }
+
+.checker { height: var(--rule-check); background: repeating-conic-gradient(var(--check-a, var(--on-spot-fill)) 0 25%, var(--check-b, transparent) 0 50%) 0 0 / calc(2 * var(--rule-check)) calc(2 * var(--rule-check)); }
+
+.xh { position: absolute; width: 13px; height: 13px; translate: -50% -50%; background: linear-gradient(currentColor, currentColor) center / 1px 100% no-repeat, linear-gradient(currentColor, currentColor) center / 100% 1px no-repeat; pointer-events: none; }
+
+/* The end mark is drawn as a border, not a background, so it still prints
+   with the print dialog's Background graphics box off (its default) and
+   keeps an edge in forced colours. */
+.end-mark { display: inline-block; width: 0; height: 0; margin-left: 0.3em; border: 0.275em solid var(--spot-large); vertical-align: 0.05em; }
+.dots-end { display: block; width: 4.5rem; margin-top: var(--space-5); border-top: 3px dotted var(--ink-quiet); }
+
+/* Nudibranch rim: a ruffled edge where a colour field meets the page. */
+.rim { position: absolute; left: 0; right: 0; height: 14px; pointer-events: none; z-index: 2; }
+.rim::before, .rim::after { content: ""; position: absolute; inset: 0; -webkit-mask: var(--ruffle) repeat-x 0 0 / 120px 100%; mask: var(--ruffle) repeat-x 0 0 / 120px 100%; }
+.rim--bottom { top: 100%; }
+.rim--top { bottom: 100%; transform: scaleY(-1); }
+.rim::before { background: var(--rim-color, var(--spot-fill)); }
+.rim::after { background: var(--rim-fill, transparent); transform: translateY(-5px); }
+:root { --ruffle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 14' preserveAspectRatio='none'%3E%3Cpath d='M0 0H120V5C114 5 113 13 106 13S98 6 92 6 85 12 78 12 70 5 63 5 55 14 47 14 39 6 32 6 25 11 18 11 9 5 0 5Z'/%3E%3C/svg%3E"); }
+
+/* Colour fields: grain and a sun-faded mottle so the flat fills read as print.
+   Every role that inks type is Char on a field, in both editions: Newsprint
+   on orange is 2.5:1 and Gondola 4.3:1, both under AA for small type. */
+.field-spot, .field-leaf { position: relative; isolation: isolate; z-index: 1; }
+.field-spot { background: var(--spot-fill); color: var(--on-spot-fill); --focus: var(--on-spot-fill); --rule: rgb(31 27 26 / 0.34); --ink-quiet: var(--on-spot-fill); --spot: var(--on-spot-fill); --spot-large: var(--on-spot-fill); --leaf: var(--on-spot-fill); }
+/* On screen; a page that prints its field (Serotiny) prints it as paper in Day ink. */
+@media screen { .field-spot { --ink: var(--on-spot-fill); } }
+.field-leaf { background: var(--leaf-fill); color: var(--on-leaf-fill); --focus: var(--on-leaf-fill); --rule: rgb(31 27 26 / 0.3); --ink-quiet: var(--on-leaf-fill-quiet); --spot: var(--on-leaf-fill); --spot-large: var(--on-leaf-fill); --leaf: var(--on-leaf-fill); --ink: var(--on-leaf-fill); }
+.field-spot::before, .field-leaf::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(55% 45% at 14% 8%, rgb(255 238 214 / 0.34), transparent 70%),
+    radial-gradient(45% 60% at 92% 70%, rgb(255 238 214 / 0.16), transparent 70%),
+    radial-gradient(70% 55% at 70% 105%, rgb(60 20 8 / 0.24), transparent 72%);
+}
+.field-leaf::before { background: radial-gradient(55% 45% at 86% 6%, rgb(255 250 225 / 0.4), transparent 70%); }
+/* Grain under the type: z-index -1 inside each field's own stacking context. */
+.field-spot::after, .field-leaf::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background-image: var(--texture-grain); background-size: var(--texture-grain-tile); opacity: var(--field-grain-opacity); }
+.field-leaf::after { opacity: var(--leaf-grain-opacity); }
+
+/* Grainy fades: a CSS gradient with a second, stronger pass of grain across
+   its middle, which dithers the ramp the way grain does on an old print. */
+.fade { position: absolute; left: 0; right: 0; height: var(--fade-height, 7.5rem); pointer-events: none; }
+.fade::after { content: ""; position: absolute; inset: 0; background-image: var(--texture-grain); background-size: var(--texture-grain-tile); opacity: 0.85; -webkit-mask: linear-gradient(transparent, #000 30%, #000 62%, transparent); mask: linear-gradient(transparent, #000 30%, #000 62%, transparent); }
+
+/* Small framed images, Monocle style. */
+.framed { padding: 3px; box-shadow: inset 0 0 0 1px var(--ink-quiet); background: var(--sunk); }
+
+/* ---------- Department heads ---------- */
+.dept { position: relative; }
+.dept-head { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3) var(--space-4); align-items: end; margin-block: var(--space-5) var(--space-6); }
+.dept-id { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: 1fr auto; gap: var(--space-1) var(--space-4); align-items: end; }
+.dept-num { grid-row: span 2; font-family: var(--type-numeral-family); font-size: var(--type-numeral-size); font-weight: var(--type-numeral-weight); line-height: var(--type-numeral-line); letter-spacing: var(--type-numeral-tracking); font-variation-settings: var(--type-numeral-axes); color: var(--spot-large); }
+.dept-head h2 { font-family: var(--type-headline-family); font-size: var(--type-headline-size); font-weight: var(--type-headline-weight); line-height: var(--type-headline-line); letter-spacing: var(--type-headline-tracking); font-variation-settings: var(--type-headline-axes); }
+.dept-head .dept-intro { max-width: 36em; color: var(--ink-quiet); }
+@media (min-width: 840px) {
+  .dept-head { grid-template-columns: minmax(0, 1fr) minmax(0, 24rem); }
+  .dept-head .dept-intro { grid-column: -2; padding-left: var(--space-4); border-left: var(--rule-hairline) solid var(--rule); }
+}
+/* From 1024px the heads sit on the 12-column grid: the intro takes the last
+   three columns, on the same line as the Work margin and the Writing list. */
+@media (min-width: 1024px) {
+  .dept-head { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--layout-column-gap); }
+  .dept-head .dept-id { grid-column: 1 / span 9; }
+  .dept-head .dept-intro { grid-column: 10 / span 3; padding-left: var(--layout-column-gap); }
+}
+
+.dropcap::first-letter { float: left; margin: 0.08em 0.08em 0 0; font: 400 3.9em / 0.8 var(--font-display); font-variation-settings: 'SOFT' 0; color: var(--spot-large); }
+@supports (initial-letter: 3) or (-webkit-initial-letter: 3) {
+  .dropcap::first-letter { float: none; margin: 0 0.1em 0 0; font-size: 1em; line-height: 1; -webkit-initial-letter: 3; initial-letter: 3; }
+}
+.ref { position: relative; display: inline-grid; place-items: center; min-width: 1.05rem; height: 1.05rem; margin-inline: 0.12em 0.05em; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--spot-large); color: var(--spot); font: 600 0.625rem / 1 var(--font-label); text-decoration: none; vertical-align: 0.3em; font-feature-settings: 'tnum' 1; text-indent: 0; }
+.ref::before { content: ""; position: absolute; inset: -0.25rem; }
+.ref:hover { background: var(--spot-fill); color: var(--on-spot-fill); }
+.notes { list-style: none; display: grid; gap: var(--space-3); counter-reset: note; }
+.notes li { counter-increment: note; display: grid; grid-template-columns: 1.6rem minmax(0, 1fr); gap: var(--space-2); }
+.notes li::before { content: counter(note); display: grid; place-items: center; width: 1.375rem; height: 1.375rem; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--spot-large); color: var(--spot); font: 600 0.6875rem / 1 var(--font-label); }
+.notes li:target { background: color-mix(in srgb, var(--spot-fill) 14%, transparent); }
+
+.glance dl { display: grid; margin-top: var(--space-2); border-top: 1px solid var(--ink-quiet); }
+.glance dl > div { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: var(--space-3); padding-block: 0.45rem; border-bottom: var(--rule-hairline) solid var(--rule); }
+.glance dt { padding-top: 0.15rem; }
+.glance dd { font: var(--type-sidenote-weight) var(--type-sidenote-size) / var(--type-sidenote-line) var(--type-sidenote-family); text-wrap: pretty; }
+@media (min-width: 1024px) { .glance dl > div { grid-template-columns: 1fr; gap: 0.1rem; } }
+
+/* Fig. 1: one spot colour, thin frame, tracked caps, numbered caption. */
+.plate { border: 1px solid var(--spot-large); padding: var(--space-4) var(--space-4) var(--space-5); }
+.plate-title { display: flex; justify-content: space-between; gap: var(--space-3); color: var(--spot); font: 600 0.75rem / 1.2 var(--font-label); letter-spacing: 0.16em; text-transform: uppercase; font-stretch: 85%; }
+
+.legend { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); font: 500 0.8125rem / 1.3 var(--font-label); color: var(--ink-quiet); list-style: none; }
+.takeaway { max-width: 19rem; font: italic var(--text-weight) 1.0625rem / 1.3 var(--font-text); text-wrap: pretty; }
+.takeaway b { margin-right: 0.12em; font: 300 2.25rem / 0.8 var(--font-display); font-style: normal; font-variation-settings: 'SOFT' 0; letter-spacing: -0.03em; color: var(--spot-large); vertical-align: -0.08em; }
+.legend li { display: flex; align-items: center; gap: var(--space-2); }
+.legend svg { width: 0.875rem; height: 0.875rem; }
+.plate + figcaption, .fig-cap { margin-top: var(--space-3); }
+.fig-cap b { font: 600 0.8125rem / 1 var(--font-label); font-style: normal; letter-spacing: 0.06em; color: var(--spot); margin-right: 0.375em; }
+
+.pull { position: relative; margin-block: 0 var(--space-6); padding-block: var(--space-5); border-block: var(--rule-hairline) solid var(--rule); color: var(--ink-quiet); }
+.pull p { font-family: var(--type-pullquote-family); font-size: var(--type-pullquote-size); font-weight: var(--type-pullquote-weight); line-height: var(--type-pullquote-line); letter-spacing: var(--type-pullquote-tracking); font-style: var(--type-pullquote-style); font-variation-settings: var(--type-pullquote-axes); color: var(--leaf); padding-left: 0.45em; text-indent: -0.45em; max-width: 26em; text-wrap: balance; }
+.pull footer { margin-top: var(--space-3); }
+.pull .xh { color: var(--ink-quiet); }
+.pull .xh--tl { left: 0; top: 0; } .pull .xh--tr { left: 100%; top: 0; } .pull .xh--bl { left: 0; top: 100%; } .pull .xh--br { left: 100%; top: 100%; }
+
+/* ---------- Paper insert: the other stock ----------
+   Paper inside the Night edition, charcoal inside the Day edition. The paper is
+   set in the markup (data-edition="day" data-insert) and tokens.css turns it
+   charcoal in Day, on screen only, so it is right before any script runs. */
+.insert { position: relative; background: var(--ground); color: var(--ink); overflow: hidden; }
+.insert::after { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: var(--texture-grain); background-size: var(--texture-grain-tile); opacity: var(--grain-opacity); mix-blend-mode: var(--grain-blend); }
+/* An insert fades into the page ground (the reverse in Day). */
+.insert > .fade { bottom: 0; background: linear-gradient(to bottom, transparent 0%, color-mix(in srgb, #A0785A 22%, transparent) 26%, color-mix(in srgb, #6B4E3D 58%, transparent) 54%, color-mix(in srgb, var(--page-ground) 86%, #4A3A30) 80%, var(--page-ground) 100%); }
+.insert > .fade::after { opacity: 0.5; }
+
+/* ---------- Phone disclosures ----------
+   A [data-fold] block is a header and a body. From 600px up the header is a
+   plain header. On phones the chrome script wraps the title in a disclosure
+   button, and the block closes into an M3 list row with one short line. */
+.fold-head { display: grid; gap: var(--space-2); align-content: start; }
+.fold-short { display: none; }
+[data-fold-body][hidden] { display: none !important; }
+
+.fold-btn { display: inline; padding: 0; border: 0; background: none; color: inherit; font: inherit; letter-spacing: inherit; text-align: inherit; text-transform: inherit; font-stretch: inherit; cursor: pointer; }
+.fold-btn::before, .fold-btn::after { content: ""; position: absolute; inset: 0 calc(-1 * var(--layout-gutter)); }
+.fold-btn::after { z-index: -1; background: currentColor; opacity: 0; transition: opacity var(--motion-duration-short); }
+.fold-btn:hover::after { opacity: var(--state-hover); }
+.fold-btn:active::after { opacity: var(--state-pressed); }
+.fold-btn:focus-visible { outline: none; }
+.fold-btn:focus-visible::before { outline: var(--focus-ring-width) solid var(--focus); outline-offset: calc(-1 * var(--focus-ring-width)); }
+.fold-btn .fold-chev { display: block; position: absolute; right: 0; top: 50%; width: 1.5rem; height: 1.5rem; margin-top: -0.75rem; color: var(--ink-quiet); transition: rotate var(--motion-duration-medium) var(--motion-easing-standard); }
+.fold-btn[aria-expanded="true"] .fold-chev { rotate: 180deg; }
+@media (max-width: 599px) {
+  [data-fold] > .fold-head { position: relative; isolation: isolate; display: grid; row-gap: 0.2rem; align-content: center; min-height: 4.5rem; padding-block: var(--space-4); padding-right: 2.5rem; }
+  [data-fold].is-closed .fold-long { display: none; }
+  [data-fold].is-closed .fold-short { display: inline; }
+}
+
+/* ---------- Menu sheet (M3 bottom sheet) ---------- */
+.menu-sheet { position: fixed; inset: auto 0 0 0; width: 100%; max-width: 40rem; max-height: 85svh; margin: 0 auto; border: 0; padding: var(--space-2) var(--layout-gutter) var(--space-6); border-radius: var(--shape-xl) var(--shape-xl) 0 0; background: var(--raised); color: var(--ink); }
+.menu-sheet::backdrop { background: var(--scrim); }
+.sheet-handle { width: 2rem; height: 4px; margin: var(--space-2) auto var(--space-3); border-radius: 2px; background: var(--outline); }
+.sheet-head { display: flex; align-items: center; justify-content: space-between; }
+.sheet-list { list-style: none; margin-block: var(--space-2) var(--space-5); border-bottom: 1px solid var(--rule); }
+.sheet-list a { position: relative; isolation: isolate; display: grid; grid-template-columns: 3rem minmax(0, 1fr) auto; align-items: center; min-height: 4rem; border-top: 1px solid var(--rule); color: inherit; text-decoration: none; }
+.sheet-list a::after { content: ""; position: absolute; inset: 0 calc(-1 * var(--layout-gutter)); z-index: -1; background: currentColor; opacity: 0; transition: opacity var(--motion-duration-short); }
+.sheet-list a:hover::after { opacity: var(--state-hover); }
+.sheet-list a:active::after { opacity: var(--state-pressed); }
+.sheet-list .n { font: 400 1.5rem / 1 var(--font-display); font-variation-settings: 'SOFT' 0; font-feature-settings: 'lnum' 1; letter-spacing: -0.02em; color: var(--spot); }
+.sheet-list .name { font: 400 1.875rem / 1.05 var(--font-display); font-variation-settings: 'SOFT' 50; letter-spacing: -0.02em; }
+.sheet-list .ico { width: 1.6rem; height: 1rem; color: var(--ink-quiet); }
+/* 05 Consulting: a quieter fifth row under the four departments, its
+   numeral in quiet ink so 01 to 04 keep the orange. */
+.sheet-list .sheet-more a { min-height: 3.25rem; }
+.sheet-list .sheet-more .n { font-size: 1.125rem; color: var(--ink-quiet); }
+.sheet-list .sheet-more .name { font-size: 1.375rem; }
+.sheet-list a[aria-current] .name { text-decoration: underline; text-decoration-color: var(--spot-large); text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
+.masthead-actions .btn[aria-current]::after { opacity: var(--state-focus); }
+.sheet-foot { display: grid; gap: var(--space-3); }
+.sheet-edition { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.sheet-edition .edition-words { margin-right: -0.45rem; }
+.menu-sheet .btn--filled { width: 100%; }
+/* From 600px the masthead carries the edition switch, so the sheet does not repeat it. */
+@media (min-width: 600px) { .sheet-edition { display: none; } }
+/* The section a sheet link sent focus to: the next Tab starts there, and the
+   whole section does not wear a focus ring on the way. */
+[data-sheet-target]:focus { outline: none; }
+
+/* ---------- Colophon ---------- */
+.colophon { background: var(--sunk); padding-block: 0 var(--space-7); }
+.colophon .checker { --check-a: var(--spot-fill); --check-b: var(--sunk); }
+.colophon-grid { display: grid; gap: var(--space-5); padding-top: var(--space-6); }
+.colophon h2 { font: var(--type-nameplate-weight) 1.5rem / 1 var(--type-nameplate-family); letter-spacing: var(--type-nameplate-tracking); word-spacing: 0.12em; text-transform: uppercase; }
+.colophon ul { list-style: none; display: grid; gap: var(--space-1); margin-top: var(--space-2); }
+.colophon li a { display: inline-flex; align-items: center; min-height: 2.25rem; }
+.colophon li a .num-o { margin-right: 0.45em; font-feature-settings: 'tnum' 1; }
+.colophon-grid .t-folio { display: block; }
+.write { display: grid; justify-items: start; align-content: start; }
+.write .btn { margin-top: var(--space-3); }
+.write .copy-status { margin-top: var(--space-2); }
+.write p { margin-top: var(--space-3); }
+/* The pill keeps its width when the label reads Copied, and the status line
+   keeps its height when empty, so nothing below it moves. */
+[data-copy-email] { min-inline-size: 9.25rem; }
+.copy-status { display: block; min-height: 2.8em; }
+.colophon h2 + p { margin-top: var(--space-2); }
+.colophon-note { max-width: 34em; margin-top: var(--space-3); }
+.colophon-note .t-folio { margin-bottom: var(--space-1); }
+.colophon-consulting { max-width: 34em; margin-top: var(--space-3); }
+@media (min-width: 840px) { .colophon-grid { grid-template-columns: 2fr repeat(3, 1fr); } }
+
+/* ---------- The Workshop tools ----------
+   A tool page is a calm work surface on the plain ground: the tool bar (the
+   running head, with Start over), an opener with the engraving, then the
+   controls. No fields, fades, rims or seals on the surface, and one orange
+   button a screen. The slider and the progress steps are specified in
+   theme.json (component.slider, component.steps, with their contrast pairs)
+   and rendered on kit.html. */
+.toolbar { align-items: center; min-height: 3rem; padding-block: 0; }
+/* The title runs the bar's full height, so the department link is a whole touch target. */
+.toolbar .rh-title { line-height: 3rem; }
+.toolbar .rh-title a { padding-block: 0.9rem; color: inherit; text-decoration-color: var(--rule); }
+.toolbar .rh-title a:hover { text-decoration-color: var(--spot-large); }
+.toolbar .tool-label { color: var(--ink-quiet); }
+.toolbar .btn--text { min-height: 2.25rem; padding-inline: 0.25rem; font: inherit; letter-spacing: inherit; text-transform: inherit; font-stretch: inherit; color: var(--ink); }
+.toolbar .btn--text::before { content: ""; position: absolute; inset: -6px 0; }
+/* Start over waits until there is something to start over. */
+.toolbar-reset:not(.is-visible) { visibility: hidden; }
+/* The narrowest phones keep the tool's name whole; the masthead's Menu has the department. */
+@media (max-width: 359px) { .toolbar .rh-title > a, .toolbar .rh-title > a + span { display: none; } }
+
+/* The opener: kicker, a light headline, a deck, the one orange button, and
+   the engraving in a frame. */
+.opener { display: grid; gap: var(--space-5) var(--space-7); padding-block: var(--space-6) var(--space-7); }
+.opener-copy { display: grid; justify-items: start; align-content: start; gap: var(--space-4); }
+.opener-title { font: 300 clamp(2.5rem, 6vw, 4.75rem) / 0.98 var(--font-display); font-variation-settings: 'SOFT' 50; letter-spacing: -0.035em; text-wrap: balance; }
+.opener-copy .t-deck { max-width: 30em; }
+.opener-copy .btn { margin-top: var(--space-2); }
+/* Phones and tablets frame it wide, the engraving centred in its plate; from
+   840px it is a square beside the copy. */
+.opener-art .art { aspect-ratio: 3 / 2; max-height: 18rem; border: 1px solid currentColor; background: var(--art-ground); }
+.opener-art svg { width: 100%; height: 100%; padding-block: var(--space-3); }
+@media (min-width: 600px) and (max-width: 839px) { .opener-art .art { aspect-ratio: 5 / 2; max-height: none; } }
+@media (min-width: 840px) {
+  .opener { grid-template-columns: minmax(0, 1fr) clamp(12rem, 21vw, 17rem); align-items: end; }
+  .opener-art .art { aspect-ratio: 1; max-height: none; }
+  .opener-art svg { padding-block: 0; }
+}
+
+/* Slider: a native range input with an M3 Expressive face. The page sets
+   --p, the handle's place from 0 to 1, as the value moves. */
+.slider { --p: 0.5; display: grid; gap: var(--space-1); padding-inline: 0.75rem; }
+.slider-readout { display: flex; flex-wrap: wrap; align-items: baseline; align-content: flex-end; gap: var(--space-1) var(--space-4); min-height: calc(clamp(4rem, 9vw, 6rem) * 0.82); margin-inline: -0.75rem; }
+.slider-value { min-width: 1ch; font: 300 clamp(4rem, 9vw, 6rem) / 0.82 var(--font-display); font-variation-settings: 'SOFT' 0; letter-spacing: -0.04em; font-feature-settings: 'lnum' 1; }
+.slider-value.is-unset { display: none; }
+.slider-value-label { font: var(--type-label-weight) var(--type-label-size) / 1.3 var(--font-label); letter-spacing: var(--type-label-tracking); text-transform: uppercase; font-stretch: var(--type-label-stretch); }
+.slider-value-label.is-hint { color: var(--leaf); }
+.slider input {
+  --x: calc(var(--slider-handle-width) / 2 + (100% - var(--slider-handle-width)) * var(--p));
+  --active: var(--leaf); --active-h: var(--slider-track-active); --track: var(--outline); --handle: var(--ink);
+  -webkit-appearance: none; appearance: none; display: block; width: 100%; height: var(--slider-height); margin: 0; background: transparent; cursor: pointer;
+}
+.slider input.is-unset { --active: var(--outline); --active-h: var(--slider-track); --handle: var(--outline); }
+.slider input::-webkit-slider-runnable-track {
+  height: var(--slider-handle-height); border: 0;
+  background:
+    linear-gradient(var(--active), var(--active)) left center / max(0px, calc(var(--x) - var(--slider-handle-gap))) var(--active-h) no-repeat,
+    linear-gradient(var(--track), var(--track)) right center / max(0px, calc(100% - var(--x) - var(--slider-handle-gap))) var(--slider-track) no-repeat;
+}
+.slider input::-moz-range-track {
+  height: var(--slider-handle-height); border: 0;
+  background:
+    linear-gradient(var(--active), var(--active)) left center / max(0px, calc(var(--x) - var(--slider-handle-gap))) var(--active-h) no-repeat,
+    linear-gradient(var(--track), var(--track)) right center / max(0px, calc(100% - var(--x) - var(--slider-handle-gap))) var(--slider-track) no-repeat;
+}
+.slider input::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: var(--slider-handle-width); height: var(--slider-handle-height); border: 0; border-radius: 2px; background: var(--handle); }
+.slider input::-moz-range-thumb { width: var(--slider-handle-width); height: var(--slider-handle-height); border: 0; border-radius: 2px; background: var(--handle); }
+.slider input:active { cursor: grabbing; }
+/* Focus rings the handle, not the whole row, so it reads as the control in hand. */
+.slider input:focus-visible { outline: none; }
+.slider input:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 2px var(--ground), 0 0 0 4px var(--focus); }
+.slider input:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 2px var(--ground), 0 0 0 4px var(--focus); }
+/* The stops: a ruler tick over each whole number, the chosen one underlined
+   in orange. Set --n (stops less one) on the row and --i on each tick. */
+.slider-ticks { position: relative; height: 2.75rem; }
+.slider-tick {
+  --i: 0; position: absolute; top: 0; left: calc(var(--slider-handle-width) / 2 + (100% - var(--slider-handle-width)) * var(--i) / var(--n, 5)); translate: -50% 0;
+  display: grid; justify-items: center; min-width: 2.25rem; height: 2.75rem; padding-top: 0.75rem;
+  font: 500 0.9375rem / 1 var(--font-label); font-feature-settings: 'tnum' 1; color: var(--ink-quiet); cursor: pointer;
+  text-decoration: underline 2px transparent; text-underline-offset: 0.5em;
+}
+.slider-tick::before { content: ""; position: absolute; top: 0; left: 50%; width: 1px; height: 0.4375rem; background: var(--outline); }
+.slider-tick:hover { color: var(--ink); }
+.slider-tick.is-active { color: var(--ink); font-weight: 600; text-decoration-color: var(--spot-large); }
+.slider-scale { display: flex; justify-content: space-between; gap: var(--space-3); margin-inline: -0.75rem; font: var(--type-folio-weight) var(--type-folio-size) / var(--type-folio-line) var(--font-label); letter-spacing: var(--type-folio-tracking); text-transform: uppercase; font-stretch: var(--type-folio-stretch); color: var(--ink-quiet); }
+
+/* Progress steps: real buttons, a bar over each. The page marks answered
+   steps data-done and the current one aria-current="step". */
+.steps { display: grid; grid-template-columns: repeat(var(--steps, 8), minmax(0, 1fr)); gap: 0 var(--space-2); list-style: none; }
+.step {
+  position: relative; isolation: isolate; display: flex; align-items: center; justify-content: flex-start; gap: 0.6em;
+  width: 100%; min-height: var(--steps-height); padding: calc(var(--steps-bar-current) + var(--space-2)) 0 var(--space-2); border: 0; background: none; cursor: pointer; text-align: left;
+  font: var(--type-folio-weight) var(--type-folio-size) / 1.2 var(--font-label); letter-spacing: var(--type-folio-tracking); text-transform: uppercase; font-stretch: var(--type-folio-stretch);
+  color: var(--ink-quiet);
+}
+.step::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: var(--steps-bar); background: var(--outline); }
+.step::after { content: ""; position: absolute; inset: 0 -0.25rem; z-index: -1; background: currentColor; opacity: 0; transition: opacity var(--motion-duration-short) var(--motion-easing-standard); }
+.step:hover::after { opacity: var(--state-hover); }
+.step:active::after { opacity: var(--state-pressed); }
+.step[data-done] { color: var(--ink); }
+.step[data-done]::before { background: var(--leaf); }
+.step[aria-current="step"] { color: var(--ink); }
+.step[aria-current="step"]::before { height: var(--steps-bar-current); background: var(--spot-large); }
+.step-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.25rem; }
+.step-val { flex: none; font: 400 1.0625rem / 1.25rem var(--font-display); font-variation-settings: 'SOFT' 0; letter-spacing: 0; text-transform: none; font-feature-settings: 'lnum' 1, 'tnum' 1; }
+/* Under 1024px the steps are too narrow for names: each keeps its bar and
+   value, and the name stays in the button for screen readers. */
+@media (max-width: 1023px) {
+  .step { justify-content: center; }
+  .step-name { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); }
+}
+
+/* Back, Skip and Next: under a hairline, Next to the right. */
+.tool-nav { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding-top: var(--space-4); border-top: var(--rule-hairline) solid var(--rule); }
+.tool-nav .is-hidden { visibility: hidden; }
+.ico--back { scale: -1 1; }
+
+/* The privacy line, once a page. */
+.tool-note { padding-block: var(--space-5) var(--space-7); }
+
+/* A paper proof: what a tool prints, set on Day stock inside any edition
+   (data-edition="day" in the markup, no data-insert, so it never flips). */
+.proof { position: relative; isolation: isolate; background: var(--ground); color: var(--ink); padding: clamp(1.25rem, 5vw, 3.5rem); box-shadow: inset 0 0 0 1px var(--rule); }
+.proof::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background-image: var(--texture-grain); background-size: var(--texture-grain-tile); opacity: var(--grain-opacity); mix-blend-mode: var(--grain-blend); }
+
+/* ---------- The issue ----------
+   The cover and contents spread, In brief and departments 01 to 04. The home
+   page sets them with real content and kit.html again as specimens; both mark
+   <main class="issue">. Every selector here is scoped with :where(.issue),
+   which adds no specificity, so a page's own <style> still wins ties and other
+   pages that use names like .tool, .phase or .story are left alone. */
+:where(.issue) .print { filter: url(#print); }
+
+/* ---------- Opening spread: cover + contents ---------- */
+:where(.issue) .opening { padding-block: var(--space-4) var(--space-section); background: radial-gradient(42rem 34rem at 96% 16%, var(--leak-orange), transparent 70%) no-repeat; }
+:where(.issue) .opening-grid { display: grid; gap: var(--space-6); }
+
+:where(.issue) .cover { position: relative; isolation: isolate; container-type: inline-size; display: flex; flex-direction: column; background: var(--spot-fill); color: var(--on-spot-fill); --focus: var(--on-spot-fill); overflow: clip; }
+:where(.issue) .cover::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(60% 34% at 18% 6%, rgb(255 236 210 / 0.36), transparent 72%), radial-gradient(50% 40% at 96% 60%, rgb(255 236 210 / 0.14), transparent 70%), linear-gradient(to top, rgb(255 236 210 / 0.12), transparent 13%), var(--vignette); }
+/* Grain sits under the type (z-index -1 in the cover's own stacking context);
+   the engraving gets its own pass so the art still reads as a print. */
+:where(.issue) .cover::after, :where(.issue) .cover-art::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background-image: var(--texture-grain); background-size: var(--texture-grain-tile); opacity: var(--field-grain-opacity); }
+:where(.issue) .cover-in { flex: 1; display: flex; flex-direction: column; padding: 3.4cqi 4cqi 3.2cqi; --rail: max(12.5px, 2.15cqi); --g: calc(var(--rail) * 0.5 + 2.2cqi); }
+
+/* The nameplate is one SVG path drawn from the display cut (Fraunces 144, 800),
+   so it spans the cover edge to edge at every width with no font loading. */
+:where(.issue) .nameplate { line-height: 0; }
+:where(.issue) .nameplate svg { width: 100%; height: auto; fill: currentColor; overflow: visible; }
+:where(.issue) .issue-line { display: flex; align-items: center; justify-content: center; gap: 0.75em; margin-top: 2.4cqi; padding-block: 1.2cqi; border-block: 1px solid currentColor; font: 400 var(--rail) / 1.2 var(--font-text); white-space: nowrap; }
+:where(.issue) .issue-line .dash, :where(.issue) .rail .dash { flex: none; inline-size: 2em; block-size: 1px; background: currentColor; }
+@media (max-width: 399px) { :where(.issue) .issue-line { gap: 0.55em; } :where(.issue) .issue-line .dash { inline-size: 1em; } }
+
+:where(.issue) .cover-frame { position: relative; flex: 1; min-height: 16rem; margin: calc(var(--g) + var(--rail) + 1.6cqi) 0 calc(var(--g) + var(--rail) + 1.2cqi); }
+:where(.issue) .cover-art { position: absolute; inset: 0; isolation: isolate; overflow: hidden; background: var(--art-ground); box-shadow: 0 0 0 1.5px var(--on-spot-fill); }
+:where(.issue) .cover-art::after { z-index: 1; }
+:where(.issue) .cover-art svg { width: 100%; height: 100%; }
+:where(.issue) .rail { position: absolute; display: flex; align-items: center; gap: 0.7em; padding-inline: 1.15em; font: 400 var(--rail) / 1 var(--font-text); white-space: nowrap; }
+:where(.issue) .rail .run { flex: 1 1 0; min-inline-size: 1em; block-size: 1px; background: currentColor; }
+:where(.issue) .rail--top { left: 0; right: 0; top: calc(-1 * var(--g) - var(--rail) / 2); height: var(--rail); }
+:where(.issue) .rail--bottom { left: 0; right: 0; top: calc(100% + var(--g) - var(--rail) / 2); height: var(--rail); }
+:where(.issue) .rail--left, :where(.issue) .rail--right, :where(.issue) .rail .rail-wide { display: none; }
+:where(.issue) .cover-frame .xh--tl { left: 0; top: calc(-1 * var(--g)); }
+:where(.issue) .cover-frame .xh--tr { left: 100%; top: calc(-1 * var(--g)); }
+:where(.issue) .cover-frame .xh--bl { left: 0; top: calc(100% + var(--g)); }
+:where(.issue) .cover-frame .xh--br { left: 100%; top: calc(100% + var(--g)); }
+@media (min-width: 520px) {
+  :where(.issue) .cover-frame { margin: 4.2cqi 6.6cqi calc(var(--g) + var(--rail) + 3cqi); }
+  :where(.issue) .rail--top { display: none; }
+  :where(.issue) .rail .rail-wide { display: block; }
+  :where(.issue) .rail--left, :where(.issue) .rail--right { display: flex; top: calc(-1 * var(--g)); bottom: calc(-1 * var(--g)); width: var(--rail); writing-mode: vertical-rl; }
+  :where(.issue) .rail--left { left: calc(-1 * var(--g) - var(--rail) / 2); transform: rotate(180deg); }
+  :where(.issue) .rail--right { left: calc(100% + var(--g) - var(--rail) / 2); }
+  :where(.issue) .rail--bottom { left: calc(-1 * var(--g)); right: calc(-1 * var(--g)); }
+  :where(.issue) .cover-frame .xh--tl { left: calc(-1 * var(--g)); }
+  :where(.issue) .cover-frame .xh--tr { left: calc(100% + var(--g)); }
+  :where(.issue) .cover-frame .xh--bl { left: calc(-1 * var(--g)); }
+  :where(.issue) .cover-frame .xh--br { left: calc(100% + var(--g)); }
+}
+/* The narrowest desktop covers (short windows): tighter rails so the bottom one ends clear of its crosshair. */
+@container (max-width: 519px) { :where(.issue) .rail { gap: 0.5em; padding-inline: 1em; } :where(.issue) .rail .dash { inline-size: 1.5em; } }
+
+/* The seal is its own container, so the figures and label scale with it and
+   always sit inside the dashed ring: 12px label minimum, 8rem seal minimum. */
+:where(.issue) .seal { position: absolute; right: 3cqi; bottom: 3cqi; z-index: 6; width: max(8rem, 25cqi); aspect-ratio: 1; container-type: inline-size; display: grid; place-items: center; text-align: center; color: var(--on-leaf-fill); transform: rotate(-9deg); }
+:where(.issue) .seal::before, :where(.issue) .seal::after { content: ""; position: absolute; clip-path: url(#scallop); z-index: -1; }
+:where(.issue) .seal::before { inset: -5%; background: var(--spot-fill); }
+:where(.issue) .seal::after { inset: 0; background: var(--leaf-fill); }
+:where(.issue) .seal-in { display: grid; place-items: center; align-content: center; gap: 0.12em; width: 84%; aspect-ratio: 1; border-radius: 50%; border: 1px dashed currentColor; }
+:where(.issue) .seal b { font: 600 calc(18.5cqi - 3px) / 0.9 var(--font-display); font-variation-settings: 'SOFT' 100; letter-spacing: -0.03em; white-space: nowrap; }
+:where(.issue) .seal b i { font-style: normal; font-size: 0.58em; vertical-align: 0.3em; }
+:where(.issue) .seal b .ar { font-size: 0.62em; vertical-align: 0.12em; margin-inline: 0.04em; }
+:where(.issue) .seal small { font: 600 max(0.75rem, 7.6cqi) / 1.1 var(--font-label); letter-spacing: 0.04em; text-transform: uppercase; font-stretch: 82%; }
+
+:where(.issue) .cover-credit { font: 500 max(13px, 2.05cqi) / 1.3 var(--font-text); text-wrap: balance; }
+
+/* Phones: a standfirst under the issue line, and the cover lines as tappable
+   rows under the frame. They stand in for the contents list, which phones skip. */
+:where(.issue) .cover-standfirst { margin-top: 0.85rem; font: italic 400 1.0625rem / 1.34 var(--font-text); text-wrap: pretty; }
+:where(.issue) .cover-lines { list-style: none; margin-top: 0.85rem; border-bottom: 1px solid rgb(31 27 26 / 0.34); }
+:where(.issue) .cover-lines a { position: relative; isolation: isolate; display: grid; grid-template-columns: 2.1rem minmax(0, 1fr) auto; align-items: center; gap: var(--space-2); min-height: var(--touch-target); border-top: 1px solid rgb(31 27 26 / 0.34); color: inherit; text-decoration: none; }
+:where(.issue) .cover-lines a::after { content: ""; position: absolute; inset: 0 -0.5rem; z-index: -1; background: currentColor; opacity: 0; transition: opacity var(--motion-duration-short); }
+:where(.issue) .cover-lines a:hover::after { opacity: var(--state-hover); }
+:where(.issue) .cover-lines a:active::after { opacity: var(--state-pressed); }
+:where(.issue) .cover-lines .n { font: 400 1.0625rem / 1 var(--font-display); font-variation-settings: 'SOFT' 0; font-feature-settings: 'lnum' 1; }
+:where(.issue) .cover-lines .t { font: 480 1.1875rem / 1.15 var(--font-display); font-variation-settings: 'SOFT' 30; letter-spacing: -0.01em; }
+:where(.issue) .cover-lines .ico { width: 1.25rem; height: 0.8rem; }
+@media (min-width: 520px) { :where(.issue) .cover-standfirst, :where(.issue) .cover-lines { display: none; } }
+
+:where(.issue) .contents-page { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
+:where(.issue) .contents-title { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); }
+:where(.issue) .editor { display: grid; grid-template-columns: 5.25rem minmax(0, 1fr); gap: var(--space-4); align-items: start; padding-bottom: var(--space-3); border-bottom: var(--rule-hairline) solid var(--rule); }
+:where(.issue) .editor img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+:where(.issue) .editor .t-deck { margin-top: var(--space-1); }
+:where(.issue) .editor .t-byline { margin-top: var(--space-2); }
+:where(.issue) .lead-story { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: var(--space-4); align-items: start; color: inherit; text-decoration: none; }
+:where(.issue) .lead-story .thumb { aspect-ratio: 4 / 3; color: var(--art-ink); }
+:where(.issue) .lead-story .thumb svg { width: 100%; height: 100%; }
+:where(.issue) .lead-story h3 { margin-block: var(--space-1); }
+:where(.issue) .lead-story .t-small { display: block; }
+:where(.issue) .lead-story:hover h3 { text-decoration: underline; text-decoration-color: var(--spot-large); text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
+:where(.issue) .toc { list-style: none; border-bottom: var(--rule-hairline) solid var(--rule); }
+:where(.issue) .toc a { display: grid; grid-template-columns: 2.6rem minmax(0, 1fr); gap: var(--space-3); align-items: baseline; min-height: var(--touch-target); padding-block: 0.45rem; border-top: var(--rule-hairline) solid var(--rule); color: inherit; text-decoration: none; }
+:where(.issue) .toc .n { font-family: var(--font-display); font-size: 1.75rem; font-weight: 300; line-height: 0.9; font-variation-settings: 'SOFT' 100; letter-spacing: -0.04em; color: var(--spot-large); }
+:where(.issue) .toc .row { display: flex; align-items: baseline; gap: var(--space-2); }
+:where(.issue) .toc .name { font-family: var(--font-display); font-size: 1.25rem; font-weight: 480; line-height: 1.15; font-variation-settings: 'SOFT' 30; }
+:where(.issue) .toc .lead { flex: 1; min-width: 1rem; border-bottom: 2px dotted var(--rule); transform: translateY(-0.25em); }
+:where(.issue) .toc .rt { font: 500 0.8125rem / 1 var(--font-label); font-feature-settings: 'tnum' 1; letter-spacing: 0.04em; color: var(--ink-quiet); white-space: nowrap; }
+:where(.issue) .toc .desc { display: block; margin-top: 0.15rem; color: var(--ink-quiet); }
+:where(.issue) .toc a:hover .name { text-decoration: underline; text-decoration-color: var(--spot-large); text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
+:where(.issue) .cta-row { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+
+@media (min-width: 1024px) {
+  :where(.issue) .opening-grid { grid-template-columns: auto minmax(0, 1fr); gap: clamp(2rem, 3.6vw, 3.25rem); align-items: start; }
+  :where(.issue) .cover { width: clamp(30rem, calc((100svh - 7rem) * 0.75), 40rem); aspect-ratio: 3 / 4; }
+}
+@media (max-width: 1023px) {
+  :where(.issue) .cover { margin-inline: calc(-1 * var(--layout-gutter)); min-height: calc(100svh - 3.6rem); }
+  :where(.issue) .opening { padding-top: 0; }
+}
+/* Phones: the cover carries the standfirst and the cover lines, so the
+   contents page keeps only the editor's note, in other words, and the buttons. */
+:where(.issue) .ed-phone { display: none; }
+@media (max-width: 519px) {
+  /* The frame gives way first, so the cover rows stay on the first screen. */
+  :where(.issue) .cover-frame { min-height: 12rem; }
+  :where(.issue) .ed-wide { display: none; }
+  :where(.issue) .ed-phone { display: inline; }
+  :where(.issue) .contents-page > .rh, :where(.issue) .contents-title, :where(.issue) .lead-story, :where(.issue) .contents-page > nav { display: none; }
+}
+/* Short or narrow desktop windows: the spread still fits the first screen,
+   buttons included, by dropping the lead story and then the contents notes. */
+@media (min-width: 1024px) and (max-height: 869px), (min-width: 1024px) and (max-width: 1199px) and (max-height: 959px) { :where(.issue) .lead-story { display: none; } }
+@media (min-width: 1024px) and (max-height: 759px), (min-width: 1024px) and (max-width: 1199px) and (max-height: 819px) { :where(.issue) .toc .desc { display: none; } }
+
+/* ---------- Briefing ---------- */
+:where(.issue) .briefing { background: var(--sunk); padding-block: var(--space-5) var(--space-7); }
+:where(.issue) .briefing-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); padding-bottom: var(--space-3); border-bottom: var(--rule-double) var(--rule); }
+:where(.issue) .briefing-head h2 { font: 300 clamp(2rem, 4vw, 3rem) / 1 var(--font-display); font-variation-settings: 'SOFT' 100; letter-spacing: -0.03em; }
+/* A figure and its unit, a tracked-caps label and one source. */
+:where(.issue) .briefs { display: grid; list-style: none; }
+:where(.issue) .brief { display: grid; align-content: start; gap: var(--space-2); padding-block: var(--space-4) var(--space-5); border-bottom: var(--rule-hairline) solid var(--rule); }
+:where(.issue) .brief .fig { display: flex; align-items: baseline; font-family: var(--type-figure-family); font-weight: var(--type-figure-weight); font-size: clamp(2.75rem, 4.4vw, 3.75rem); line-height: 0.95; letter-spacing: -0.04em; font-variation-settings: var(--type-figure-axes); white-space: nowrap; }
+:where(.issue) .brief .fig .ico { width: 0.5em; height: 0.3em; margin-inline: 0.06em; align-self: center; color: var(--ink-quiet); }
+:where(.issue) .brief .fig small { margin-left: 0.06em; font-size: 0.42em; font-weight: 420; letter-spacing: -0.01em; color: var(--spot); }
+:where(.issue) .brief .fig small.w { margin-left: 0.24em; letter-spacing: 0; }
+:where(.issue) .brief .fig small.plus { margin-left: 0.04em; font-size: 0.6em; font-weight: 300; align-self: center; }
+:where(.issue) .brief h3 { margin-top: var(--space-1); color: var(--ink); }
+:where(.issue) .brief .src { margin-top: var(--space-1); }
+:where(.issue) .src b { margin-right: 0.25em; font: 600 0.6875rem / 1 var(--font-label); letter-spacing: 0.14em; text-transform: uppercase; font-stretch: 85%; color: var(--spot); }
+@media (min-width: 600px) and (max-width: 839px) { :where(.issue) .briefs { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-6); } }
+@media (min-width: 840px) {
+  :where(.issue) .briefs { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  :where(.issue) .brief { padding: var(--space-4) var(--space-4) var(--space-2); border-bottom: 0; border-left: var(--rule-hairline) solid var(--rule); }
+  :where(.issue) .brief:first-child { border-left: 0; padding-left: 0; }
+}
+
+/* From 1024px the heads sit on the 12-column grid (site.css); the Workshop
+   head makes room for its marigold and the Writing head sits on its subgrid. */
+@media (min-width: 1024px) {
+  :where(.issue) .dept.workshop .dept-head { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--layout-column-gap); }
+  :where(.issue) .dept.workshop .dept-id { grid-column: 1 / span 8; }
+  :where(.issue) .dept.workshop .dept-head .dept-intro { grid-column: 10 / span 3; }
+  :where(.issue) .dept.workshop .workshop-art { grid-column: 9; justify-self: end; width: min(100%, 5.5rem); }
+  :where(.issue) .writing-grid .dept-head .dept-id { grid-column: 1 / span 8; }
+  :where(.issue) .writing-grid .dept-head .dept-intro { grid-column: 9 / span 3; }
+}
+
+/* ---------- 01 Work: the opener band ---------- */
+:where(.issue) .band { padding-block: clamp(1.25rem, 3vw, 2rem) clamp(1.5rem, 3.5vw, 2.5rem); }
+/* Charcoal fades into the orange opener over about 120px. */
+:where(.issue) .dept--work .band { padding-top: calc(var(--fade-height, 7.5rem) + clamp(0.5rem, 1.5vw, 1rem)); }
+:where(.issue) .band > .fade { top: 0; z-index: 0; background: linear-gradient(to bottom, var(--sunk) 0%, color-mix(in srgb, var(--sunk) 80%, transparent) 22%, color-mix(in srgb, var(--sunk) 52%, transparent) 46%, color-mix(in srgb, var(--sunk) 22%, transparent) 72%, transparent 100%); }
+:where(.issue) .band > .wrap { position: relative; z-index: 1; }
+:where(.issue) .band .checker { margin-bottom: var(--space-4); }
+:where(.issue) .band .checker + .band-frame + .checker { margin: var(--space-4) 0 0; }
+:where(.issue) .band-frame { position: relative; border: 1px solid currentColor; padding: calc(1.6rem + clamp(1.25rem, 4vw, 3rem)) clamp(1rem, 4vw, 3rem); }
+:where(.issue) .band-frame::before { content: ""; position: absolute; inset: 1.6rem 0; border-block: 1px solid currentColor; pointer-events: none; }
+/* Running border: whole phrases, justified so the line always ends on a word.
+   A phrase that will not fit wraps onto a hidden second line instead of
+   being clipped. Each dot is glued to the phrase after it with a no-break
+   space, so no line ends on a dot; inside a phrase the spaces are
+   four-per-em spaces in a nowrap span, which justification leaves alone. */
+:where(.issue) .ticker { position: absolute; left: 0; right: 0; height: 1.6rem; overflow: hidden; padding-inline: 0.75rem; font: 600 0.6875rem / 1.6rem var(--font-label); letter-spacing: 0.18em; text-transform: uppercase; font-stretch: 80%; text-align: justify; text-align-last: justify; white-space: normal; }
+:where(.issue) .ticker--top { top: 0; } :where(.issue) .ticker--bottom { bottom: 0; }
+/* On a phone only a phrase or two fit, and justifying them opens wide gaps:
+   centre them at their natural spacing instead. */
+@media (max-width: 599px) { :where(.issue) .ticker { text-align: center; text-align-last: center; } }
+:where(.issue) .ticker span { white-space: nowrap; }
+:where(.issue) .band-grid { display: grid; gap: var(--space-4); }
+:where(.issue) .band-num { font: 300 clamp(5rem, 14vw, 11rem) / 0.78 var(--font-display); font-variation-settings: 'SOFT' 100; letter-spacing: -0.06em; }
+:where(.issue) .band-num small { display: block; margin-top: 0.6rem; font: 600 0.75rem / 1 var(--font-label); letter-spacing: 0.16em; text-transform: uppercase; font-stretch: 80%; }
+:where(.issue) .band h2 { font-family: var(--type-display-family); font-size: var(--type-display-size); font-weight: var(--type-display-weight); line-height: var(--type-display-line); letter-spacing: var(--type-display-tracking); text-transform: var(--type-display-case); font-variation-settings: var(--type-display-axes); text-wrap: balance; margin-block: var(--space-3); }
+:where(.issue) .band .t-deck { max-width: 30em; }
+:where(.issue) .band .t-byline { margin-top: var(--space-3); color: inherit; }
+:where(.issue) .band-aside { display: none; }
+@media (min-width: 1024px) {
+  :where(.issue) .band-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--layout-column-gap); align-items: end; }
+  :where(.issue) .band-num { grid-column: 1 / span 2; align-self: start; }
+  :where(.issue) .band-main { grid-column: 3 / span 8; }
+  :where(.issue) .band-aside { display: block; grid-column: 11 / span 2; }
+}
+:where(.issue) .band-aside figure { color: var(--on-spot-fill); }
+:where(.issue) .band-aside .art { aspect-ratio: 1; border: 1px solid currentColor; background: var(--art-ground); }
+:where(.issue) .band-aside .art svg { width: 100%; height: 100%; }
+:where(.issue) .band-aside figcaption { margin-top: var(--space-2); font: italic 460 0.9375rem / 1.35 var(--font-text); }
+:where(.issue) .dept--work > .rim { --rim-fill: var(--ground); }
+
+/* Story interior */
+:where(.issue) .story { padding-block: var(--space-6) var(--space-section); }
+:where(.issue) .story-text, :where(.issue) .excerpt-body, :where(.issue) .earlier p, :where(.issue) .phase p { text-align: left; hyphens: auto; -webkit-hyphens: auto; hyphenate-limit-chars: 7 3 3; -webkit-hyphenate-limit-before: 3; -webkit-hyphenate-limit-after: 3; text-wrap: pretty; }
+/* A comfortable measure on tablets: one column is capped, two start at 720px. */
+@media (max-width: 839px) { :where(.issue) .story-text p, :where(.issue) .excerpt-body p { max-width: 31em; } :where(.issue) .earlier p, :where(.issue) .phase p { max-width: 30em; } }
+:where(.issue) .story-grid { display: grid; gap: var(--space-6); margin-top: var(--space-5); }
+:where(.issue) .story-text p + p { margin-top: 0.75em; }
+:where(.issue) .story-text p { text-wrap: pretty; }
+
+:where(.issue) .margin-col { display: grid; gap: var(--space-5); align-content: start; }
+
+:where(.issue) .waffles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); margin-top: var(--space-4); }
+:where(.issue) .waffle svg { width: 100%; max-width: 15rem; aspect-ratio: 1; }
+:where(.issue) .waffle .w-f { fill: var(--spot-large); }
+:where(.issue) .waffle .w-h { fill: var(--spot-large); }
+:where(.issue) .waffle .w-e { fill: none; stroke: var(--spot-large); stroke-width: 1; opacity: 0.55; }
+:where(.issue) .waffle-label { display: flex; align-items: baseline; gap: var(--space-2); margin-top: var(--space-3); font: 500 0.875rem / 1.2 var(--font-label); letter-spacing: 0.04em; color: var(--ink-quiet); }
+:where(.issue) .waffle-label b { font: 300 2.25rem / 1 var(--font-display); letter-spacing: -0.03em; color: var(--ink); font-variation-settings: 'SOFT' 0; }
+:where(.issue) .plate-foot { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-3) var(--space-6); margin-top: var(--space-4); }
+
+:where(.issue) .earlier { display: grid; gap: 0; border-top: var(--rule-double) var(--rule); }
+:where(.issue) .earlier article { padding-block: var(--space-4); border-bottom: var(--rule-hairline) solid var(--rule); }
+:where(.issue) .earlier h3 { margin-block: var(--space-2); }
+:where(.issue) .earlier p { text-wrap: pretty; }
+:where(.issue) .frieze { color: var(--art-ink); opacity: 0.88; margin-top: var(--space-2); }
+:where(.issue) .frieze svg { width: 100%; height: clamp(8.5rem, 22vw, 17.5rem); }
+
+@media (min-width: 720px) {
+  :where(.issue) .story-text { columns: 2; column-gap: var(--layout-text-columns-gap); column-rule: 1px solid var(--rule); }
+  :where(.issue) .story-text p { max-width: none; }
+}
+@media (min-width: 840px) {
+  :where(.issue) .earlier { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  :where(.issue) .earlier article { padding: var(--space-4) var(--space-5) var(--space-4) 0; border-bottom: 0; }
+  :where(.issue) .earlier article + article { padding-left: var(--space-5); border-left: var(--rule-hairline) solid var(--rule); }
+}
+@media (min-width: 1024px) {
+  :where(.issue) .story-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--layout-column-gap); row-gap: var(--space-6); }
+  :where(.issue) .story-text { grid-column: 1 / span 9; }
+  :where(.issue) .margin-col { grid-column: 10 / span 3; grid-row: 1 / span 2; padding-left: var(--layout-column-gap); border-left: var(--rule-hairline) solid var(--rule); }
+  :where(.issue) .story-fig { grid-column: 1 / span 9; }
+  :where(.issue) .earlier, :where(.issue) .frieze { grid-column: 1 / -1; }
+}
+
+/* ---------- 02 Method ---------- */
+:where(.issue) .method { padding-block: var(--space-5) var(--space-section); border-top: var(--rule-hairline) solid var(--rule); }
+
+:where(.issue) .phases { display: grid; gap: var(--space-5); list-style: none; }
+:where(.issue) .phase h3 { margin-block: var(--space-2) var(--space-3); }
+:where(.issue) .phase p { text-wrap: pretty; }
+:where(.issue) .method-close { margin-top: var(--space-6); max-width: 36em; text-wrap: balance; font-family: var(--type-deck-family); font-size: var(--type-deck-size); font-style: italic; line-height: var(--type-deck-line); }
+@media (min-width: 840px) {
+  :where(.issue) .phases { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; }
+  :where(.issue) .phase { padding-right: var(--space-5); }
+  :where(.issue) .phase + .phase { padding-left: var(--space-5); border-left: var(--rule-hairline) solid var(--rule); }
+  :where(.issue) .pull { margin-right: 16%; }
+}
+
+/* ---------- 03 Workshop: the Goody Gumdrop field ---------- */
+:where(.issue) .workshop { padding-block: calc(var(--space-5) + 6px) var(--space-section); }
+:where(.issue) .workshop .rim { --rim-fill: var(--leaf-fill); }
+:where(.issue) .workshop .dept-num { color: var(--on-leaf-fill); }
+:where(.issue) .workshop .dept-head .dept-intro { color: var(--on-leaf-fill); }
+:where(.issue) .tools { display: grid; list-style: none; border-top: 1px solid var(--on-leaf-fill); }
+:where(.issue) .tool { display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); grid-template-rows: auto 1fr auto; gap: 0 var(--space-3); padding-block: var(--space-4); border-bottom: 1px solid var(--rule); }
+:where(.issue) .tool .n { grid-row: span 3; font: 300 2rem / 0.9 var(--font-display); font-variation-settings: 'SOFT' 100; letter-spacing: -0.04em; }
+:where(.issue) .tool p { color: var(--on-leaf-fill-quiet); margin-block: var(--space-1) var(--space-2); }
+:where(.issue) .tool .btn { justify-self: start; align-self: end; }
+:where(.issue) .tool .btn--text, :where(.issue) .excerpt > .btn--text { margin-left: -0.25rem; }
+:where(.issue) .tool--agents { background: var(--inverse); color: var(--on-inverse); padding-inline: var(--space-4); --focus: var(--leaf-fill); }
+:where(.issue) .tool--agents p { color: var(--on-inverse); }
+:where(.issue) .tool .t-kicker { color: var(--on-leaf-fill-quiet); }
+:where(.issue) .tool.tool--agents .t-kicker { color: var(--leaf-fill); }
+@media (min-width: 720px) { :where(.issue) .tools { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-5); } }
+@media (min-width: 1024px) {
+  :where(.issue) .tools { grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: 0; }
+  :where(.issue) .tool { padding: var(--space-4) var(--space-4) var(--space-5); border-right: 1px solid var(--rule); }
+  :where(.issue) .tool:nth-child(4n) { border-right: 0; }
+  :where(.issue) .tool:nth-child(4n + 1) { padding-left: 0; }
+  :where(.issue) .tool--agents { padding-left: var(--space-4) !important; }
+}
+:where(.issue) .workshop-art { display: none; }
+@media (min-width: 840px) {
+  :where(.issue) .workshop .dept-head { grid-template-columns: minmax(0, 1fr) minmax(0, 20rem) 5.5rem; }
+  :where(.issue) .workshop .dept-head .dept-intro { grid-column: 2; grid-row: 1; }
+  :where(.issue) .workshop-art { display: block; grid-column: 3; grid-row: 1; align-self: end; color: var(--on-leaf-fill); }
+  :where(.issue) .workshop-art .art { aspect-ratio: 1; border: 1px solid currentColor; background: var(--art-ground); }
+  :where(.issue) .workshop-art svg { width: 100%; height: 100%; }
+}
+
+:where(.issue) .sprig { display: none; aspect-ratio: 96 / 380; pointer-events: none; }
+:where(.issue) .sprig svg { width: 100%; height: 100%; }
+:where(.issue) .writing-grid { display: grid; gap: var(--space-6); position: relative; }
+:where(.issue) .excerpt .t-headline { margin-block: var(--space-2) var(--space-1); }
+:where(.issue) .excerpt-body { margin-top: var(--space-4); }
+:where(.issue) .excerpt-body { orphans: 1; widows: 2; }
+:where(.issue) .excerpt-body p + p { text-indent: 1.25em; }
+:where(.issue) .excerpt-quote { margin-block: var(--space-5); padding-block: var(--space-4); border-block: var(--rule-hairline) solid var(--rule); font: var(--type-pullquote-style) var(--type-pullquote-weight) clamp(1.5rem, 2.6vw, 2.125rem) / 1.14 var(--font-display); font-variation-settings: 'SOFT' 100; color: var(--spot-large); text-wrap: balance; }
+:where(.issue) .pieces-col > .fold-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); padding-bottom: var(--space-2); }
+:where(.issue) .pieces-col > .fold-head .t-folio { display: none; }
+:where(.issue) .pieces { list-style: none; border-top: var(--rule-double) var(--rule); }
+:where(.issue) .pieces a { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-1) var(--space-3); padding-block: var(--space-3); min-height: var(--touch-target); border-bottom: var(--rule-hairline) solid var(--rule); color: inherit; text-decoration: none; }
+:where(.issue) .pieces .t-title { font-size: 1.1875rem; }
+:where(.issue) .pieces a:hover .t-title { text-decoration: underline; text-decoration-color: var(--spot-large); text-decoration-thickness: 1px; }
+:where(.issue) .pieces .t-folio { align-self: baseline; }
+:where(.issue) .pieces .t-note { grid-column: 1 / -1; font-style: italic; }
+@media (min-width: 720px) {
+  :where(.issue) .excerpt-body { columns: 2; column-gap: var(--layout-text-columns-gap); column-fill: balance; }
+  :where(.issue) .excerpt-body p { max-width: none; }
+}
+@media (min-width: 1024px) {
+  :where(.issue) .writing-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--layout-column-gap); }
+  :where(.issue) .writing-grid .dept-head { grid-column: 2 / -1; grid-row: 1; grid-template-columns: subgrid; }
+  :where(.issue) .excerpt { grid-column: 2 / span 7; }
+  :where(.issue) .pieces-col { grid-column: 10 / span 3; }
+  :where(.issue) .sprig { display: block; grid-column: 1; grid-row: 1 / span 2; align-self: start; width: 100%; margin-top: var(--space-5); }
+}
+
+:where(.issue) .insert { padding-block: var(--space-5) calc(var(--space-section) + var(--fade-height, 7.5rem)); }
+@media (max-width: 599px) {
+  :where(.issue) .pieces-col > .fold-head { display: grid; row-gap: 0.2rem; min-height: 3.5rem; padding-block: var(--space-2); }
+  :where(.issue) .pieces-col > .fold-head .t-folio { display: block; }
+}
+
+@media print { :where(.issue) .cover::after { display: none; } }
+
+/* ---------- 04 Writing: the supplement ----------
+   writings.html and its seven pieces are printed on the other stock:
+   <main class="writing insert" data-edition="day" data-insert> is paper in
+   the Night edition and charcoal in the Day edition (tokens.css), and it
+   fades into the colophon's ground. The feature (the two essays) and the
+   poem (the four poems) are set here, with the way on to the next piece,
+   and so are the long read's chapter numerals and the machine's voice,
+   which the kit shows too; the index and the rest of the long read
+   (Serotiny) keep their own rules in their pages. The words are set, never
+   restyled: titles keep their own case, the poems' lowercase included, and
+   verse takes no drop cap, hyphenation, justification or text-wrap. Scoped
+   with :where(.writing), like the issue. */
+:root:has(main.writing) { --page-ground: var(--sunk); }
+main.writing { overflow: clip; padding-bottom: calc(var(--space-section) + var(--fade-height, 7.5rem)); }
+:where(.writing) .rh-title a { color: inherit; text-decoration-color: var(--rule); }
+:where(.writing) .rh-title a:hover { text-decoration-color: var(--spot-large); }
+
+/* The opener: the plate, a kicker, a light headline, a deck and the byline.
+   Phones and tablets set it as one block with the plate floated beside the
+   kicker and headline, so a long title still runs the full width under it.
+   Wide screens make it a column (the feature) or put the plate in the
+   margin (the poem). */
+:where(.writing) .piece-head { display: flow-root; padding-block: var(--space-6); }
+:where(.writing) .piece-head > * + * { margin-top: var(--space-3); }
+:where(.writing) .piece-head > .piece-art:first-child + * { margin-top: 0; }
+:where(.writing) .piece-head > .t-byline { margin-top: var(--space-4); }
+:where(.writing) .piece-head > .piece-art { float: right; width: 4.5rem; margin: var(--space-3) 0 var(--space-3) var(--space-4); }
+:where(.writing) .piece-head > .piece-art:first-child { margin-top: 0.25rem; }
+:where(.writing) .piece-title { font: 300 clamp(2.75rem, 1.6rem + 4.4vw, 5.25rem) / 0.96 var(--font-display); font-variation-settings: 'SOFT' 50; letter-spacing: -0.035em; text-wrap: balance; }
+:where(.writing) .piece-deck { max-width: 28em; }
+:where(.writing) .piece-art .art { aspect-ratio: 1; border: 1px solid currentColor; background: var(--art-ground); }
+:where(.writing) .piece-art svg { width: 100%; height: 100%; }
+@media (min-width: 600px) { :where(.writing) .piece-head > .piece-art { width: 7rem; margin-left: var(--space-6); } }
+
+/* Text: Newsreader at reading size, one column at the measure, ragged right
+   and hyphenated, each paragraph after the first indented as in print. */
+:where(.writing) .prose { max-width: var(--layout-measure); font-size: clamp(1.0625rem, 0.97rem + 0.4vw, 1.1875rem); line-height: 1.62; text-align: left; hyphens: auto; -webkit-hyphens: auto; hyphenate-limit-chars: 7 3 3; -webkit-hyphenate-limit-before: 3; -webkit-hyphenate-limit-after: 3; text-wrap: pretty; orphans: 2; widows: 2; }
+:where(.writing) .prose p + p { text-indent: 1.4em; }
+
+/* The feature: on wide screens a spread, the opener and its plate held on
+   the left while the text runs down the right at the measure. */
+:where(.writing) .feature { display: grid; grid-template-columns: minmax(0, 1fr); column-gap: var(--layout-column-gap); }
+:where(.writing) .feature-body { padding-bottom: var(--space-4); }
+@media (min-width: 1024px) {
+  :where(.writing) .feature { grid-template-columns: repeat(12, minmax(0, 1fr)); align-items: start; }
+  :where(.writing) .feature > .rh { grid-column: 1 / -1; }
+  :where(.writing) .feature-head { grid-column: 1 / span 5; display: grid; justify-items: start; align-content: start; gap: var(--space-3); position: sticky; top: 3.5rem; padding-block: var(--space-7); }
+  :where(.writing) .feature-head > * { margin-top: 0; }
+  :where(.writing) .feature-head > .t-byline { margin-top: var(--space-1); }
+  :where(.writing) .feature-head > .piece-art { order: 1; float: none; width: min(100%, 14rem); margin: var(--space-5) 0 0; }
+  :where(.writing) .feature-body { grid-column: 7 / -1; padding: var(--space-7) 0 var(--space-4) var(--layout-column-gap); border-left: var(--rule-hairline) solid var(--rule); }
+}
+
+/* The poem: one column as wide as its longest line, centred on the page,
+   with the marigold beside the title (in the margin on wide screens). Each
+   line is its own block with a hanging indent, so a line a phone has to wrap
+   reads as one line carried over, never as a new one. The <br> between
+   lines is for readers that take no CSS. */
+:where(.writing) .poem { display: grid; grid-template-columns: minmax(0, max-content); justify-content: center; padding-bottom: var(--space-4); }
+:where(.writing) .poem .piece-head { position: relative; padding-block: var(--space-7); }
+:where(.writing) .poem .piece-art svg { height: auto; }
+:where(.writing) .poem .piece-title { contain: inline-size; font-style: italic; }
+@media (min-width: 1024px) {
+  :where(.writing) .poem .piece-head > .piece-art { position: absolute; float: none; top: var(--space-7); right: calc(100% + var(--space-8)); width: 10rem; margin: 0; }
+}
+:where(.writing) .verse { font: var(--text-weight) clamp(1.125rem, 1.02rem + 0.45vw, 1.3125rem) / 1.6 var(--font-text); letter-spacing: 0.002em; text-align: left; hyphens: manual; text-wrap: wrap; }
+:where(.writing) .stanza + .stanza { margin-top: 1.6em; }
+:where(.writing) .stanza br { display: none; }
+:where(.writing) .ln { display: block; padding-left: 1.5em; text-indent: -1.5em; }
+:where(.writing) .piece-end { display: flex; align-items: center; gap: var(--space-2); margin-top: var(--space-6); }
+:where(.writing) .piece-end .end-mark { margin: 0; }
+
+/* The long read's chapters: soft numerals between hairlines (borders, so
+   they print without background graphics). The machine's voice: Instrument
+   Sans, a little narrow, on the sunk stock with an orange rule, so it reads
+   apart from the prose at any width without shrinking below 15px. */
+:where(.writing) .chapter { display: flex; align-items: center; gap: var(--space-4); margin: 2.25em 0 1em; font: 300 clamp(2.25rem, 1.8rem + 2vw, 3.25rem) / 1 var(--font-display); font-variation-settings: 'SOFT' 100; font-feature-settings: 'lnum' 1; letter-spacing: -0.03em; color: var(--spot-large); }
+:where(.writing) .chapter::before, :where(.writing) .chapter::after { content: ""; flex: 1; border-top: var(--rule-hairline) solid var(--rule); }
+:where(.writing) .chapter:first-child { margin-top: 0; }
+:where(.writing) .machine { margin: 1.5em 0; padding: var(--space-3) var(--space-4); border-left: 2px solid var(--spot); background: var(--sunk); font: 400 0.9375rem / 1.5 var(--font-label); font-stretch: 94%; letter-spacing: 0.01em; hyphens: manual; text-wrap: wrap; }
+:where(.writing) .machine p + p { margin-top: var(--space-2); text-indent: 0; }
+:where(.writing) .machine .prompt { font-weight: 600; }
+
+/* More writing: the piece before and after this one in the index, and the
+   way back to it. */
+:where(.writing) .piece-nav { display: grid; margin-top: var(--space-8); border-top: var(--rule-double) var(--rule); }
+:where(.writing) .piece-nav a { position: relative; isolation: isolate; display: grid; align-content: start; gap: var(--space-2); min-height: var(--touch-target); padding-block: var(--space-4); border-bottom: var(--rule-hairline) solid var(--rule); color: inherit; text-decoration: none; }
+:where(.writing) .piece-nav a::after { content: ""; position: absolute; inset: 0 calc(-1 * var(--space-2)); z-index: -1; background: currentColor; opacity: 0; transition: opacity var(--motion-duration-short); }
+:where(.writing) .piece-nav a:hover::after { opacity: var(--state-hover); }
+:where(.writing) .piece-nav a:active::after { opacity: var(--state-pressed); }
+:where(.writing) .piece-nav .t-folio { display: inline-flex; align-items: center; gap: 0.5em; }
+:where(.writing) .piece-nav .t-folio .ico { color: var(--spot); }
+:where(.writing) .pn-title { font: 400 clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem) / 1.15 var(--font-display); font-variation-settings: 'SOFT' 50; letter-spacing: -0.015em; text-wrap: balance; }
+:where(.writing) .piece-nav a:hover .pn-title { text-decoration: underline; text-decoration-color: var(--spot-large); text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
+@media (min-width: 720px) {
+  :where(.writing) .piece-nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  :where(.writing) .piece-nav a { padding-inline: var(--space-4); border-bottom: 0; }
+  :where(.writing) .piece-nav a::after { inset: 0; }
+  :where(.writing) .piece-nav .pn--prev { grid-column: 1; padding-left: 0; }
+  :where(.writing) .piece-nav .pn--index { grid-column: 2; justify-items: center; text-align: center; border-inline: var(--rule-hairline) solid var(--rule); }
+  :where(.writing) .piece-nav .pn--next { grid-column: 3; justify-items: end; text-align: right; padding-right: 0; }
+}
+:where(.writing) .rights { margin-top: var(--space-6); }
+
+/* Print: the piece alone, in Day ink on white, at a printed size (12pt
+   text), so a short piece takes one sheet and no sheet holds only the end
+   matter. The year and end mark stay with the last stanza: the verse box
+   steps aside (display: contents) so the stanzas and the year are siblings,
+   since Chrome honours break-before: avoid only between siblings. The
+   machine prints on the paper itself, its orange rule kept. */
+@media print {
+  main.writing { padding-bottom: 0; }
+  :where(.writing) .piece-nav, :where(.writing) .piece-art { display: none; }
+  :where(.writing) .feature { display: block; }
+  :where(.writing) .feature-head { position: static; }
+  :where(.writing) .feature-body { border-left: 0; }
+  :where(.writing) .piece-head, :where(.writing) .poem .piece-head { padding-block: var(--space-4) var(--space-5); }
+  :where(.writing) .piece-title { font-size: 36pt; }
+  :where(.writing) .prose { font-size: 12pt; line-height: 1.5; }
+  :where(.writing) .poem { display: block; width: fit-content; max-width: 100%; margin-inline: auto; }
+  :where(.writing) .verse { display: contents; font-size: 12.5pt; line-height: 1.5; }
+  :where(.writing) .stanza { break-inside: avoid; }
+  :where(.writing) .piece-end { break-before: avoid; margin-top: var(--space-5); }
+  :where(.writing) .rights { margin-top: var(--space-4); }
+  :where(.writing) .chapter { break-after: avoid; }
+  :where(.writing) .machine { break-inside: avoid; background: none; }
+}
+
+/* ---------- Teasers, not cards ----------
+   An engraving crop, a kicker, a title, one line and a text button; no
+   boxes, hairlines between the columns. The kit shows them, the home
+   page's 05 Consulting and the Consulting front page use them. */
+.teasers { display: grid; gap: var(--space-5); list-style: none; }
+.teaser { display: grid; gap: var(--space-2); align-content: start; justify-items: start; }
+.teaser .art { justify-self: stretch; aspect-ratio: 4 / 3; overflow: hidden; color: var(--art-ink); background: var(--sunk); }
+.teaser .art svg { width: 100%; height: 100%; }
+.teaser h4, .teaser .teaser-title { font: 480 1.25rem / 1.15 var(--font-display); font-variation-settings: 'SOFT' 30; letter-spacing: -0.01em; text-wrap: balance; }
+.teaser .btn--text { margin-left: -0.25rem; }
+@media (min-width: 720px) {
+  .teasers { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 var(--space-6); }
+  .teaser { position: relative; }
+  .teaser + .teaser::before { content: ""; position: absolute; top: 0; bottom: 0; left: calc(-0.5 * var(--space-6)); border-left: 1px solid var(--rule); }
+}
+
+/* ---------- 05 Consulting ----------
+   consulting.html and its three pages, made from content/consulting/*.md
+   by build-pages.js. Each opens like a Workshop tool (the running head,
+   then the opener: kicker, a light headline, a deck, at most one orange
+   button and the engraving in its frame) on the Night ground, and closes
+   with the department's contents, or on the front page the other three as
+   teasers. Each page's own layout (the rate card, the numbered problems,
+   the essay) is in its <style>. Scoped with :where(.consult). */
+main.consult { padding-bottom: var(--space-section); }
+
+/* The nudibranch: each page opens on a Goody Gumdrop field with Char type,
+   the plate in a dark frame with crosshair corners, and a ruffled rim where
+   the field meets the page, green ruffles edged in orange. One Toxic Orange
+   band later in the page edges its rims in green, so orange touches green.
+   Charcoal is the dash between them. */
+:where(.consult) .c-field { padding-bottom: var(--space-2); }
+:where(.consult) .c-field .c-opener { border-bottom: 0; }
+:where(.consult) .c-field > .rim { --rim-color: var(--spot-fill); --rim-fill: var(--leaf-fill); }
+:where(.consult) .c-band { margin-block: calc(var(--space-6) + 14px); padding-block: var(--space-6) var(--space-7); }
+:where(.consult) .c-band > .rim { --rim-color: var(--leaf-fill); --rim-fill: var(--spot-fill); }
+:where(.consult) .opener-art { position: relative; }
+:where(.consult) .opener-art .xh--tl { left: -0.6rem; top: -0.6rem; } :where(.consult) .opener-art .xh--tr { left: calc(100% + 0.6rem); top: -0.6rem; }
+:where(.consult) .opener-art .xh--bl { left: -0.6rem; top: calc(100% + 0.6rem); } :where(.consult) .opener-art .xh--br { left: calc(100% + 0.6rem); top: calc(100% + 0.6rem); }
+:where(.consult) .c-ask--band { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-5); margin-top: var(--space-5); }
+:where(.consult) .c-ask--band .copy-status { flex-basis: 100%; order: 3; }
+:where(.consult) .c-end .c-close { max-width: 26em; margin-top: 0; font-size: clamp(1.375rem, 1.1rem + 1.2vw, 1.875rem); line-height: 1.25; }
+:where(.consult) .c-end .c-work { padding-top: 0; border-top: 0; }
+:where(.consult) .c-end .c-work + .c-close { margin-top: var(--space-7); }
+@media print {
+  :where(.consult) .c-field, :where(.consult) .c-band { margin: 0; background: none; }
+  :where(.consult) .c-field > .rim, :where(.consult) .c-band > .rim, :where(.consult) .field-leaf::before, :where(.consult) .field-spot::before { display: none; }
+}
+:where(.consult) .rh-title a { color: inherit; text-decoration-color: var(--rule); }
+:where(.consult) .rh-title a:hover { text-decoration-color: var(--spot-large); }
+/* The engravings sit on their dark plate in both editions; the street is
+   line work, inked in Newsprint on it. */
+:where(.consult) .art, :where(.consult) .teaser .art { background: var(--art-ground); }
+:where(.consult) .art svg { color: var(--palette-newsprint); }
+:where(.consult) .c-opener { border-bottom: var(--rule-hairline) solid var(--rule); }
+:where(.consult) .c-ask { display: grid; justify-items: start; gap: var(--space-1); margin-top: var(--space-2); }
+:where(.consult) .c-ask .copy-status { min-height: 1.45em; }
+:where(.consult) .c-ask [data-copy-email] { min-inline-size: min(17.5rem, 100%); }
+
+/* Text at reading size: one column at the measure, ragged right, hyphenated. */
+:where(.consult) .c-text p, :where(.consult) .c-part p, :where(.consult) .c-sec p { max-width: var(--layout-measure); font-size: clamp(1.0625rem, 0.97rem + 0.4vw, 1.1875rem); line-height: 1.58; text-align: left; hyphens: auto; -webkit-hyphens: auto; hyphenate-limit-chars: 7 3 3; text-wrap: pretty; }
+:where(.consult) .c-text p + p, :where(.consult) .c-part p + p, :where(.consult) .c-sec p + p { margin-top: 0.8em; }
+:where(.consult) .c-h2 { font: 360 clamp(1.5rem, 2.6vw, 2rem) / 1.08 var(--font-display); font-variation-settings: 'SOFT' 50; letter-spacing: -0.02em; text-wrap: balance; }
+:where(.consult) .c-text .c-h2 { margin-block: var(--space-6) var(--space-3); }
+:where(.consult) .c-text .c-h2:first-child { margin-top: 0; }
+:where(.consult) .c-close { max-width: 34em; margin-top: var(--space-6); font: italic var(--type-deck-weight) var(--type-deck-size) / var(--type-deck-line) var(--font-text); text-wrap: pretty; }
+
+/* The other pages as teasers (the front page), each art crop on its plate. */
+:where(.consult) .c-more { padding-top: var(--space-5); border-top: var(--rule-double) var(--rule); }
+:where(.consult) .c-more > h2 { margin-bottom: var(--space-4); }
+:where(.consult) .teaser { grid-template-rows: auto auto auto 1fr auto; }
+:where(.consult) .teaser .btn--text { align-self: end; }
+/* Phones: each teaser a list row, its title and one line, no engraving. */
+@media (max-width: 599px) {
+  :where(.consult) .teasers { gap: 0; border-top: 1px solid var(--ink-quiet); }
+  :where(.consult) .teaser { gap: var(--space-1); padding-block: var(--space-4); border-bottom: var(--rule-hairline) solid var(--rule); }
+  :where(.consult) .teaser .art { display: none; }
+}
+
+/* The department's contents: dot leaders, minutes to read, this page marked. */
+:where(.consult) .c-contents { max-width: 46rem; margin-top: var(--space-8); }
+:where(.consult) .c-contents > h2 { padding-bottom: var(--space-2); border-bottom: var(--rule-double) var(--rule); }
+:where(.consult) .c-toc { list-style: none; }
+:where(.consult) .c-toc a { display: grid; gap: 0.15rem; min-height: var(--touch-target); padding-block: var(--space-3); border-bottom: var(--rule-hairline) solid var(--rule); color: inherit; text-decoration: none; }
+:where(.consult) .c-toc .row { display: flex; align-items: baseline; gap: var(--space-2); }
+:where(.consult) .c-toc .name { font: 480 1.25rem / 1.15 var(--font-display); font-variation-settings: 'SOFT' 30; letter-spacing: -0.01em; }
+:where(.consult) .c-toc .lead { flex: 1; min-width: 1rem; border-bottom: 2px dotted var(--rule); transform: translateY(-0.25em); }
+:where(.consult) .c-toc .rt { font: 500 0.8125rem / 1 var(--font-label); font-feature-settings: 'tnum' 1; letter-spacing: 0.04em; color: var(--ink-quiet); white-space: nowrap; }
+:where(.consult) .c-toc .desc { color: var(--ink-quiet); }
+:where(.consult) .c-toc a:hover .name { text-decoration: underline; text-decoration-color: var(--spot-large); text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
+:where(.consult) .c-toc a[aria-current="page"] .name::before { content: ""; display: inline-block; width: 0; height: 0; margin-right: 0.45em; border: 0.25em solid var(--spot-large); vertical-align: 0.12em; }
+@media print {
+  :where(.consult) .c-ask, :where(.consult) .c-more, :where(.consult) .c-contents { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+/* Print is the Day edition (tokens.css). Grain, fades and the chrome stay on
+   screen; paper is the ground, so no page or stock paints a background. The
+   roles are never redefined here: filled buttons and rims read --ground as ink. */
+@media print {
+  body::after, .field-spot::after, .field-leaf::after, .insert::after, .proof::after, .fade { display: none; }
+  .skip-link, .masthead, .menu-sheet, .colophon { display: none; }
+  html, body, [data-edition] { background: none; }
+  /* A tool prints its proof alone: no tool bar, controls or privacy line. */
+  .toolbar, .tool-nav, .tool-note { display: none; }
+  .proof { padding: 0; box-shadow: none; }
+}
+
+/* More contrast: grain and fades off, quiet ink and hairlines at full strength.
+   The last selector matches tokens.css's Day insert rule (0,3,0), which would
+   otherwise keep an insert's quiet ink in the Day edition. */
+@media (prefers-contrast: more) {
+  :root, [data-edition], :root[data-edition="day"] [data-insert] { --ink-quiet: var(--ink); --rule: var(--outline); }
+  body::after, .field-spot::after, .field-leaf::after, .insert::after, .fade::after { display: none; }
+}
+
+/* Forced colours (Windows high contrast) drop box-shadow and backgrounds, and
+   several control edges here are inset box-shadows. Give every control a real
+   edge and keep the selected state and the focus ring visible. */
+@media (forced-colors: active) {
+  .btn:not(.btn--text), .icon-btn, .chip, .segmented, .ref, .notes li::before, .framed { outline: 1px solid ButtonText; outline-offset: -1px; }
+  .segmented button[aria-pressed="true"], .chip[aria-pressed="true"] { forced-color-adjust: none; background: SelectedItem; color: SelectedItemText; }
+  .field-box { border-bottom: 1px solid CanvasText; }
+  .field-box:focus-within { border-bottom: 2px solid Highlight; }
+  .edition-words button[aria-pressed="true"] { text-decoration-color: Highlight; }
+  .btn:focus-visible, .icon-btn:focus-visible, .chip:focus-visible, .segmented button:focus-visible, a:focus-visible, .fold-btn:focus-visible::before { outline: 2px solid Highlight; outline-offset: 2px; }
+  .menu-sheet { border: 1px solid CanvasText; border-bottom: 0; }
+  /* The slider keeps its track, handle and chosen stop in system colours. */
+  .slider input { forced-color-adjust: none; --active: Highlight; --track: CanvasText; --handle: CanvasText; }
+  .slider input.is-unset { --active: CanvasText; --handle: CanvasText; }
+  .slider-tick.is-active { text-decoration-color: Highlight; }
+  .step::before { forced-color-adjust: none; background: GrayText; }
+  .step[data-done]::before { background: CanvasText; }
+  .step[aria-current="step"]::before { background: Highlight; }
+  .step:focus-visible, .slider input:focus-visible { outline: 2px solid Highlight; outline-offset: 2px; }
+}

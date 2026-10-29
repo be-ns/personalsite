@@ -1,0 +1,107 @@
+{
+  "$comment": "The résumé's words, captured from resume.html at 47eeca3, before the redesign retypeset it. test/resume.test.js holds the page to it: the same text in the same order (whitespace aside), the same links, the same emphasis, the same AppFolio bullets under the same keys, and the same three versions (title, bullet order, PDF). Change it only together with the résumé, on purpose, and regenerate the PDFs (npm run generate-resume-pdf).",
+  "capturedFrom": "47eeca3",
+  "text": "Ben Siverly Product Manager · Payments & Money Movement San Francisco Bay Area benjaminsiverly@gmail.com linkedin.com/in/be-ns github.com/be-ns · bensiverly.com Experience AppFolio · Product Manager, Rental Applications & Payments Jan 2023 – Oct 2026 Property-management software for 23,000+ customers. Sole PM for the rental application line, across two codebases. Owned checkout for $200M a year in application fees, built on AppFolio’s internal payments API. 70% of applications carry an embedded payment: the applicant pays, the property manager acts on it. Designed an assumed-success window and a tokenized failed-payment recovery path, reaching 99.1% application-payment completion. On the payments team, sized offline rent from accounting receipts and interviewed renters on why they pay offline: irregular gig pay, unbanked renters driving 15–30 minutes for certified funds, 2–3 day ACH. Presented to payments leadership, who funded teams to build rent-split payments with Flex and a digital certified-funds partnership. Rebuilt the rental application end to end. Submission rates went from 44% to 70%, and properties on the new flow fill vacancies 3.4 days faster than offline workflows. Kept follow-up inside the authenticated app so every interaction stays auditable for screening compliance; customer satisfaction rose 18%. Built a secure applicant-data API and launched it with Zillow. Reached 70% customer adoption, then pushed to wind it down when the frictionless path buried property managers in unqualified applicants. Lively · Data Scientist → Product Manager Nov 2019 – Dec 2022 HSA platform for tax-advantaged health spending, offered through financial-institution partners. Built the money-movement platform: bank and card-network transfers, processor integrations, ledgers, and the partner data model. Financial-institution partners could offer compliant HSAs without building their own infrastructure. Scoped multi-tenancy with our second partner bank’s executives. The move captured ~90 bps more yield on AUM as rates rose, and opened room for future partners. Built partner APIs and migration pipelines that moved $50M+ in HSA assets between financial institutions with zero data loss. Cut the work from two migration teams to one. Stood up the company’s first data-science function and data-services platform; promoted to PM in 2021 as the work became the roadmap. Oracle · Data Scientist, Applied Research Sep 2017 – Sep 2019 Rebuilt model validation on a representative U.S. population sample, correcting a skew that distorted model performance. Automated a data pipeline that had taken two analysts full-time. Selected Work Brava (bravamade.com). Automated college-recruiting profiles for youth athletes, launching with women’s soccer outside major metros. Built with my brother. Sized the market across five sports, ran a COPPA and privacy review for minors’ data, and built the AI production pipeline: coach-verified stats, benchmark rankings, generated media. Payments on Stripe: a parent checkout flow built from scratch with AI coding agents. AbiertoClaw (github.com/be-ns/AbiertoClaw). Open-source plugin for the Hermes agent. Each day it finds the best free model that passes a real tool-call test and switches Hermes to it, with a local model as the fallback. Skills Product: jobs-to-be-done (50–100 customer calls a year), spec-driven development, tests/evals as release gates, OOUX Payments: checkout, failed-payment recovery, money movement, ledgers, processor integrations, partner APIs Data: SQL, Python, experimentation, pipelines AI: RAG, tool use, agents, evals Writing: Published poet (opol.space, 2026) Education B.A. Communication Studies, Westmont College · Data Science Immersive (ML), Galvanize",
+  "links": [
+    {
+      "href": "mailto:benjaminsiverly@gmail.com",
+      "text": "benjaminsiverly@gmail.com"
+    },
+    {
+      "href": "https://www.linkedin.com/in/be-ns/",
+      "text": "linkedin.com/in/be-ns"
+    },
+    {
+      "href": "https://github.com/be-ns",
+      "text": "github.com/be-ns"
+    },
+    {
+      "href": "https://bensiverly.com",
+      "text": "bensiverly.com"
+    },
+    {
+      "href": "https://www.appfolio.com",
+      "text": "AppFolio"
+    },
+    {
+      "href": "https://livelyme.com",
+      "text": "Lively"
+    },
+    {
+      "href": "https://www.oracle.com",
+      "text": "Oracle"
+    },
+    {
+      "href": "https://bravamade.com",
+      "text": "bravamade.com"
+    },
+    {
+      "href": "https://github.com/be-ns/AbiertoClaw",
+      "text": "github.com/be-ns/AbiertoClaw"
+    },
+    {
+      "href": "https://opol.space",
+      "text": "opol.space"
+    }
+  ],
+  "strong": [
+    "Owned checkout for $200M a year in application fees,",
+    "99.1% application-payment completion",
+    "funded teams",
+    "rent-split payments with Flex",
+    "digital certified-funds partnership",
+    "44% to 70%",
+    "3.4 days faster",
+    "18%",
+    "pushed to wind it down",
+    "Built the money-movement platform:",
+    "~90 bps more yield on AUM",
+    "$50M+ in HSA assets",
+    "zero data loss",
+    "Payments on Stripe:",
+    "Product:",
+    "Payments:",
+    "Data:",
+    "AI:",
+    "Writing:"
+  ],
+  "bullets": {
+    "payments": "Owned checkout for $200M a year in application fees, built on AppFolio’s internal payments API. 70% of applications carry an embedded payment: the applicant pays, the property manager acts on it. Designed an assumed-success window and a tokenized failed-payment recovery path, reaching 99.1% application-payment completion.",
+    "payments-team": "On the payments team, sized offline rent from accounting receipts and interviewed renters on why they pay offline: irregular gig pay, unbanked renters driving 15–30 minutes for certified funds, 2–3 day ACH. Presented to payments leadership, who funded teams to build rent-split payments with Flex and a digital certified-funds partnership.",
+    "rebuild": "Rebuilt the rental application end to end. Submission rates went from 44% to 70%, and properties on the new flow fill vacancies 3.4 days faster than offline workflows. Kept follow-up inside the authenticated app so every interaction stays auditable for screening compliance; customer satisfaction rose 18%.",
+    "zillow": "Built a secure applicant-data API and launched it with Zillow. Reached 70% customer adoption, then pushed to wind it down when the frictionless path buried property managers in unqualified applicants."
+  },
+  "default": "payments",
+  "versions": {
+    "payments": {
+      "title": "Product Manager · Payments & Money Movement",
+      "bulletOrder": [
+        "payments",
+        "payments-team",
+        "rebuild",
+        "zillow"
+      ],
+      "pdf": "Ben-Siverly-Resume-Payments.pdf"
+    },
+    "ai-native": {
+      "title": "Senior Product Manager · AI-Native Products",
+      "bulletOrder": [
+        "payments",
+        "rebuild",
+        "zillow",
+        "payments-team"
+      ],
+      "pdf": "Ben-Siverly-Resume-AI-Native.pdf"
+    },
+    "general": {
+      "title": "Senior Product Manager",
+      "bulletOrder": [
+        "rebuild",
+        "payments",
+        "payments-team",
+        "zillow"
+      ],
+      "pdf": "Ben-Siverly-Resume.pdf"
+    }
+  }
+}

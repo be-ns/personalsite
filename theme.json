@@ -1,0 +1,312 @@
+{
+  "$description": "Ben Siverly theme. Source of truth for color, type, space, shape, texture, motion and components. Tokens use $value/$type with {alias} references. `npm run tokens` compiles this file to tokens.css; never edit tokens.css by hand. The brand reasoning lives in brand.md.",
+  "meta": {
+    "name": "Ben Siverly",
+    "version": "0.2.0",
+    "direction": "Monocle density",
+    "defaultEdition": "night"
+  },
+
+  "palette": {
+    "$description": "Primitives. Pages never use these directly; they use the edition roles below. The three named swatches are Ben's card: Toxic Orange, Goody Gumdrop, Gondola.",
+    "toxic-orange": { "$type": "color", "$value": "#FE5F35", "$description": "Fields, bands, chart ink, large type. 4.3:1 on Gondola, so small orange text uses Ember." },
+    "ember": { "$type": "color", "$value": "#FF8460", "$description": "Toxic Orange lifted so it reads as small text on Gondola and its raised surface." },
+    "burnt-orange": { "$type": "color", "$value": "#B63A14", "$description": "Orange as text on paper." },
+    "goody-gumdrop": { "$type": "color", "$value": "#CAD576", "$description": "Fields, pull quotes, kickers, selected states." },
+    "moss": { "$type": "color", "$value": "#404026", "$description": "Quiet ink on a Goody Gumdrop field." },
+    "olive": { "$type": "color", "$value": "#5C6B1E", "$description": "Green as text on paper." },
+    "char": { "$type": "color", "$value": "#1F1B1A", "$description": "The darkest ink. All type on orange and green fields." },
+    "deep-gondola": { "$type": "color", "$value": "#2A2625", "$description": "Wells, the colophon, the cover art's night ground." },
+    "gondola": { "$type": "color", "$value": "#34302F", "$description": "Ben's swatch. The Night page itself." },
+    "high-gondola": { "$type": "color", "$value": "#3E3937" },
+    "higher-gondola": { "$type": "color", "$value": "#48423F" },
+    "pewter": { "$type": "color", "$value": "#A0978C", "$description": "Control outlines on Gondola (3:1 and up)." },
+    "ash": { "$type": "color", "$value": "#B8AFA3" },
+    "newsprint": { "$type": "color", "$value": "#EFE8DC" },
+    "paper": { "$type": "color", "$value": "#F4EFE6" },
+    "paper-sunk": { "$type": "color", "$value": "#EDE7DC" },
+    "paper-card": { "$type": "color", "$value": "#E9E2D6" },
+    "paper-high": { "$type": "color", "$value": "#E1D9CB" },
+    "flint": { "$type": "color", "$value": "#7A7168" },
+    "umber": { "$type": "color", "$value": "#655D55" },
+    "cinder": { "$type": "color", "$value": "#503730", "$description": "Toxic Orange at 14% on Gondola: the one chart wash in Night." },
+    "paper-blush": { "$type": "color", "$value": "#F5DED1", "$description": "Toxic Orange at 12% on paper: the one chart wash in Day and in print." }
+  },
+
+  "editions": {
+    "$description": "Semantic roles. Night is the default on every device; Day is a toggle and always used for print. Orange and green are fields first: type on them is always Char. Small orange text uses spot; spot-large is for type 24px and up.",
+    "night": {
+      "color-scheme": { "$value": "dark" },
+      "ground": { "$type": "color", "$value": "{palette.gondola}", "$description": "Page background: Ben's Gondola, never black." },
+      "sunk": { "$type": "color", "$value": "{palette.deep-gondola}", "$description": "Wells: colophon, inset panels." },
+      "surface": { "$type": "color", "$value": "{palette.high-gondola}", "$description": "Field containers, one step up in tone, no shadow." },
+      "raised": { "$type": "color", "$value": "{palette.higher-gondola}", "$description": "Menus, sheets, dialogs. Ink only." },
+      "ink": { "$type": "color", "$value": "{palette.newsprint}" },
+      "ink-quiet": { "$type": "color", "$value": "{palette.ash}", "$description": "Captions, bylines, folios." },
+      "outline": { "$type": "color", "$value": "{palette.pewter}", "$description": "Boundaries of controls (3:1 minimum)." },
+      "rule": { "$type": "color", "$value": "rgb(239 232 220 / 0.2)", "$description": "Decorative hairlines. Never the only cue for a control." },
+      "spot": { "$type": "color", "$value": "{palette.ember}", "$description": "Small orange text: department numbers, links, units, note markers." },
+      "spot-large": { "$type": "color", "$value": "{palette.toxic-orange}", "$description": "Orange type 24px and up, chart ink." },
+      "spot-fill": { "$type": "color", "$value": "{palette.toxic-orange}", "$description": "The cover, the Work band, the one orange button." },
+      "on-spot-fill": { "$type": "color", "$value": "{palette.char}" },
+      "leaf": { "$type": "color", "$value": "{palette.goody-gumdrop}", "$description": "Green text: kickers, pull quotes." },
+      "leaf-fill": { "$type": "color", "$value": "{palette.goody-gumdrop}", "$description": "The Workshop field, selected states, the cover seal." },
+      "on-leaf-fill": { "$type": "color", "$value": "{palette.char}" },
+      "on-leaf-fill-quiet": { "$type": "color", "$value": "{palette.moss}" },
+      "inverse": { "$type": "color", "$value": "{palette.char}", "$description": "Buttons that sit on an orange or green field." },
+      "on-inverse": { "$type": "color", "$value": "{palette.newsprint}" },
+      "focus": { "$type": "color", "$value": "{palette.toxic-orange}" },
+      "scrim": { "$type": "color", "$value": "rgb(20 18 17 / 0.64)" },
+      "art-ink": { "$type": "color", "$value": "{palette.newsprint}", "$description": "Engraving line work on the page ground." },
+      "art-ground": { "$type": "color", "$value": "{palette.deep-gondola}", "$description": "The murky ground inside the cover frame." },
+      "spot-wash": { "$type": "color", "$value": "{palette.cinder}", "$description": "Charts: a wash of the spot colour over the one region that asks for action (Invest on the Life Strategy matrix). Type on it keeps its ink." },
+      "text-weight": { "$type": "fontWeight", "$value": 370, "$description": "Light text on dark reads heavier, so body text drops a touch." },
+      "grain-opacity": { "$type": "number", "$value": 0.24 },
+      "grain-blend": { "$value": "normal" },
+      "field-grain-opacity": { "$type": "number", "$value": 0.4, "$description": "Grain on orange fields, where it shows most." },
+      "leaf-grain-opacity": { "$type": "number", "$value": 0.22, "$description": "Grain on Goody Gumdrop. Lighter, so the dark specks stay out from under small text." },
+      "vignette": { "$value": "radial-gradient(120% 95% at 50% 35%, transparent 55%, rgb(31 27 26 / 0.28) 100%)", "$description": "Cover only. Never over body text." }
+    },
+    "day": {
+      "color-scheme": { "$value": "light" },
+      "ground": { "$type": "color", "$value": "{palette.paper}" },
+      "sunk": { "$type": "color", "$value": "{palette.paper-sunk}" },
+      "surface": { "$type": "color", "$value": "{palette.paper-card}" },
+      "raised": { "$type": "color", "$value": "{palette.paper-high}" },
+      "ink": { "$type": "color", "$value": "{palette.gondola}" },
+      "ink-quiet": { "$type": "color", "$value": "{palette.umber}" },
+      "outline": { "$type": "color", "$value": "{palette.flint}" },
+      "rule": { "$type": "color", "$value": "rgb(52 48 47 / 0.2)" },
+      "spot": { "$type": "color", "$value": "{palette.burnt-orange}" },
+      "spot-large": { "$type": "color", "$value": "{palette.burnt-orange}" },
+      "spot-fill": { "$type": "color", "$value": "{palette.toxic-orange}" },
+      "on-spot-fill": { "$type": "color", "$value": "{palette.char}" },
+      "leaf": { "$type": "color", "$value": "{palette.olive}" },
+      "leaf-fill": { "$type": "color", "$value": "{palette.goody-gumdrop}" },
+      "on-leaf-fill": { "$type": "color", "$value": "{palette.char}" },
+      "on-leaf-fill-quiet": { "$type": "color", "$value": "{palette.moss}" },
+      "inverse": { "$type": "color", "$value": "{palette.char}" },
+      "on-inverse": { "$type": "color", "$value": "{palette.newsprint}" },
+      "focus": { "$type": "color", "$value": "{palette.burnt-orange}" },
+      "scrim": { "$type": "color", "$value": "rgb(52 48 47 / 0.4)" },
+      "art-ink": { "$type": "color", "$value": "{palette.char}" },
+      "art-ground": { "$type": "color", "$value": "{palette.deep-gondola}" },
+      "spot-wash": { "$type": "color", "$value": "{palette.paper-blush}" },
+      "text-weight": { "$type": "fontWeight", "$value": 400 },
+      "grain-opacity": { "$type": "number", "$value": 0.18 },
+      "grain-blend": { "$value": "multiply" },
+      "field-grain-opacity": { "$type": "number", "$value": 0.36 },
+      "leaf-grain-opacity": { "$type": "number", "$value": 0.2 },
+      "vignette": { "$value": "radial-gradient(120% 95% at 50% 35%, transparent 60%, rgb(31 27 26 / 0.16) 100%)" }
+    }
+  },
+
+  "contrast": {
+    "$description": "Every text/background pair kit.html uses, checked against WCAG AA by the test suite: 4.5 for text, 3 for large text (24px and up), control boundaries and chart ink. spot on raised is the 24px department numerals in the menu sheet. A fourth entry names the control a pair belongs to: the Workshop tools' slider and progress steps, and the chart wash.",
+    "night": [
+      ["ink", "ground", 4.5], ["ink", "sunk", 4.5], ["ink", "surface", 4.5], ["ink", "raised", 4.5],
+      ["ink-quiet", "ground", 4.5], ["ink-quiet", "sunk", 4.5], ["ink-quiet", "surface", 4.5], ["ink-quiet", "raised", 4.5],
+      ["spot", "ground", 4.5], ["spot", "sunk", 4.5], ["spot", "surface", 4.5], ["spot", "raised", 3],
+      ["spot-large", "ground", 3], ["spot-large", "sunk", 3],
+      ["leaf", "ground", 4.5], ["leaf", "sunk", 4.5], ["leaf", "surface", 4.5],
+      ["on-spot-fill", "spot-fill", 4.5], ["on-leaf-fill", "leaf-fill", 4.5], ["on-leaf-fill-quiet", "leaf-fill", 4.5],
+      ["on-inverse", "inverse", 4.5], ["ground", "ink", 4.5], ["on-leaf-fill", "spot-fill", 4.5],
+      ["ink", "art-ground", 4.5],
+      ["outline", "ground", 3], ["outline", "surface", 3], ["outline", "raised", 3],
+      ["focus", "ground", 3], ["focus", "sunk", 3], ["spot-fill", "ground", 3], ["leaf-fill", "ground", 3],
+      ["inverse", "spot-fill", 3], ["inverse", "leaf-fill", 3],
+      ["ink", "ground", 3, "slider: the handle"], ["leaf", "ground", 3, "slider: the active track"], ["outline", "ground", 3, "slider: the track"],
+      ["spot-large", "ground", 3, "steps: the current step"], ["leaf", "ground", 3, "steps: an answered step"], ["outline", "ground", 3, "steps: a step not answered"],
+      ["ink", "spot-wash", 4.5, "chart wash: labels"], ["ink-quiet", "spot-wash", 4.5, "chart wash: quiet labels"], ["spot", "spot-wash", 4.5, "chart wash: the region's name"], ["outline", "spot-wash", 3, "chart wash: rules"], ["spot-large", "spot-wash", 3, "chart wash: Invest points"], ["focus", "spot-wash", 3, "chart wash: a point's focus ring"]
+    ],
+    "day": [
+      ["ink", "ground", 4.5], ["ink", "sunk", 4.5], ["ink", "surface", 4.5], ["ink", "raised", 4.5],
+      ["ink-quiet", "ground", 4.5], ["ink-quiet", "sunk", 4.5], ["ink-quiet", "surface", 4.5], ["ink-quiet", "raised", 4.5],
+      ["spot", "ground", 4.5], ["spot", "sunk", 4.5], ["spot", "surface", 4.5], ["spot", "raised", 3],
+      ["spot-large", "ground", 3], ["spot-large", "sunk", 3],
+      ["leaf", "ground", 4.5], ["leaf", "sunk", 4.5], ["leaf", "surface", 4.5],
+      ["on-spot-fill", "spot-fill", 4.5], ["on-leaf-fill", "leaf-fill", 4.5], ["on-leaf-fill-quiet", "leaf-fill", 4.5],
+      ["on-inverse", "inverse", 4.5], ["ground", "ink", 4.5], ["on-leaf-fill", "spot-fill", 4.5],
+      ["on-inverse", "art-ground", 4.5],
+      ["outline", "ground", 3], ["outline", "surface", 3], ["outline", "raised", 3],
+      ["focus", "ground", 3], ["focus", "sunk", 3],
+      ["inverse", "spot-fill", 3], ["inverse", "leaf-fill", 3],
+      ["ink", "ground", 3, "slider: the handle"], ["leaf", "ground", 3, "slider: the active track"], ["outline", "ground", 3, "slider: the track"],
+      ["spot-large", "ground", 3, "steps: the current step"], ["leaf", "ground", 3, "steps: an answered step"], ["outline", "ground", 3, "steps: a step not answered"],
+      ["ink", "spot-wash", 4.5, "chart wash: labels"], ["ink-quiet", "spot-wash", 4.5, "chart wash: quiet labels"], ["spot", "spot-wash", 4.5, "chart wash: the region's name"], ["outline", "spot-wash", 3, "chart wash: rules"], ["spot-large", "spot-wash", 3, "chart wash: Invest points"], ["focus", "spot-wash", 3, "chart wash: a point's focus ring"]
+    ]
+  },
+
+  "font": {
+    "$description": "Free (SIL OFL), self-hosted, Latin subset. Fraunces is pinned at optical size 72 and keeps its SOFT axis; Newsreader at 16; Instrument Sans keeps its width axis so labels can run condensed, Monocle style. The display cut is one static Fraunces instance at optical size 144, weight 800, SOFT 0: sharp wedge serifs and high contrast for the nameplate and wordmark, 17 KB. Every face also carries a four-per-em space, a thin space and left and right arrows (U+2005, U+2009, U+2190, U+2192). No upstream face has the two spaces, so they are added at fixed widths. Instrument Sans keeps its own arrows, with their variations; Fraunces and Newsreader have none upstream, so theirs are drawn for this site from each face's own en dash, the stroke following the weight axis.",
+    "display": { "$type": "fontFamily", "$value": "'Fraunces', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif" },
+    "display-cut": { "$type": "fontFamily", "$value": "'Fraunces Display', 'Fraunces', 'Iowan Old Style', Georgia, serif" },
+    "text": { "$type": "fontFamily", "$value": "'Newsreader', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif" },
+    "label": { "$type": "fontFamily", "$value": "'Instrument Sans', 'Helvetica Neue', Arial, sans-serif" },
+    "faces": {
+      "$value": [
+        { "family": "Fraunces", "file": "assets/fonts/fraunces-roman.woff2", "weight": "300 700", "style": "normal" },
+        { "family": "Fraunces", "file": "assets/fonts/fraunces-italic.woff2", "weight": "300 700", "style": "italic" },
+        { "family": "Fraunces Display", "file": "assets/fonts/fraunces-display.woff2", "weight": "800", "style": "normal" },
+        { "family": "Newsreader", "file": "assets/fonts/newsreader-roman.woff2", "weight": "300 700", "style": "normal" },
+        { "family": "Newsreader", "file": "assets/fonts/newsreader-italic.woff2", "weight": "300 700", "style": "italic" },
+        { "family": "Instrument Sans", "file": "assets/fonts/instrument-sans.woff2", "weight": "400 700", "style": "normal", "stretch": "75% 100%" }
+      ]
+    }
+  },
+
+  "type": {
+    "$description": "Roles, not sizes. Each expands to --type-<role>-family/size/weight/line/tracking/case/style/stretch/axes/features. Weight and width carry the hierarchy as much as size: crisp heavy caps on the cover, light soft headlines inside, condensed tracked labels.",
+    "nameplate": { "$type": "typography", "$value": { "fontFamily": "{font.display-cut}", "fontSize": "clamp(2.5rem, 14.6cqi, 9rem)", "fontWeight": 800, "lineHeight": 0.86, "letterSpacing": "-0.02em", "textTransform": "uppercase" }, "$description": "The display cut, caps. On the cover it is drawn as one SVG path from fraunces-display.woff2, so it spans the cover edge to edge at every width; this role sets the wordmark, the specimen and the fallback." },
+    "display": { "$type": "typography", "$value": { "fontFamily": "{font.display}", "fontSize": "clamp(2.125rem, 6.2vw, 5.25rem)", "fontWeight": 640, "lineHeight": 0.94, "letterSpacing": "-0.012em", "textTransform": "uppercase", "fontVariationSettings": "'SOFT' 100" }, "$description": "Feature openers. Soft, decorative caps on a colour band." },
+    "headline": { "$type": "typography", "$value": { "fontFamily": "{font.display}", "fontSize": "clamp(1.75rem, 3.4vw, 2.75rem)", "fontWeight": 360, "lineHeight": 1.04, "letterSpacing": "-0.022em", "fontVariationSettings": "'SOFT' 50" } },
+    "title": { "$type": "typography", "$value": { "fontFamily": "{font.display}", "fontSize": "clamp(1.1875rem, 1.7vw, 1.375rem)", "fontWeight": 480, "lineHeight": 1.16, "letterSpacing": "-0.01em", "fontVariationSettings": "'SOFT' 30" } },
+    "figure": { "$type": "typography", "$value": { "fontFamily": "{font.display}", "fontSize": "clamp(3.25rem, 7vw, 5.5rem)", "fontWeight": 300, "lineHeight": 0.88, "letterSpacing": "-0.035em", "fontVariationSettings": "'SOFT' 0" } },
+    "numeral": { "$type": "typography", "$value": { "fontFamily": "{font.display}", "fontSize": "clamp(2.5rem, 5vw, 4rem)", "fontWeight": 300, "lineHeight": 0.85, "letterSpacing": "-0.04em", "fontVariationSettings": "'SOFT' 100" }, "$description": "Department numbers." },
+    "pullquote": { "$type": "typography", "$value": { "fontFamily": "{font.display}", "fontSize": "clamp(1.625rem, 3vw, 2.5rem)", "fontWeight": 380, "lineHeight": 1.12, "letterSpacing": "-0.015em", "fontStyle": "italic", "fontVariationSettings": "'SOFT' 100" } },
+    "deck": { "$type": "typography", "$value": { "fontFamily": "{font.text}", "fontSize": "clamp(1.125rem, 1.6vw, 1.3125rem)", "fontWeight": "var(--text-weight)", "lineHeight": 1.38, "letterSpacing": "0", "fontStyle": "italic" } },
+    "body": { "$type": "typography", "$value": { "fontFamily": "{font.text}", "fontSize": "1.0625rem", "fontWeight": "var(--text-weight)", "lineHeight": 1.52, "letterSpacing": "0.003em" }, "$description": "17px. Two ragged-right columns on wide screens." },
+    "body-sm": { "$type": "typography", "$value": { "fontFamily": "{font.text}", "fontSize": "0.9375rem", "fontWeight": "var(--text-weight)", "lineHeight": 1.48, "letterSpacing": "0.004em" }, "$description": "15px. Briefs, contents lines, teasers." },
+    "sidenote": { "$type": "typography", "$value": { "fontFamily": "{font.text}", "fontSize": "0.875rem", "fontWeight": "var(--text-weight)", "lineHeight": 1.42, "letterSpacing": "0.005em" } },
+    "caption": { "$type": "typography", "$value": { "fontFamily": "{font.text}", "fontSize": "0.875rem", "fontWeight": "var(--text-weight)", "lineHeight": 1.38, "letterSpacing": "0.005em", "fontStyle": "italic" } },
+    "kicker": { "$type": "typography", "$value": { "fontFamily": "{font.label}", "fontSize": "0.75rem", "fontWeight": 600, "lineHeight": 1.25, "letterSpacing": "0.14em", "textTransform": "uppercase", "fontStretch": "85%" } },
+    "label": { "$type": "typography", "$value": { "fontFamily": "{font.label}", "fontSize": "0.75rem", "fontWeight": 600, "lineHeight": 1.2, "letterSpacing": "0.14em", "textTransform": "uppercase", "fontStretch": "88%" }, "$description": "Buttons, chips, tabs." },
+    "folio": { "$type": "typography", "$value": { "fontFamily": "{font.label}", "fontSize": "0.75rem", "fontWeight": 500, "lineHeight": 1.25, "letterSpacing": "0.1em", "textTransform": "uppercase", "fontStretch": "80%", "fontFeatureSettings": "'tnum' 1" }, "$description": "Running heads and page numbers." },
+    "byline": { "$type": "typography", "$value": { "fontFamily": "{font.label}", "fontSize": "0.8125rem", "fontWeight": 500, "lineHeight": 1.35, "letterSpacing": "0.02em" } },
+    "ui": { "$type": "typography", "$value": { "fontFamily": "{font.label}", "fontSize": "1rem", "fontWeight": 400, "lineHeight": 1.45, "letterSpacing": "0" }, "$description": "Form fields, tool controls, tables." }
+  },
+
+  "space": {
+    "$description": "4px base.",
+    "1": { "$type": "dimension", "$value": "0.25rem" },
+    "2": { "$type": "dimension", "$value": "0.5rem" },
+    "3": { "$type": "dimension", "$value": "0.75rem" },
+    "4": { "$type": "dimension", "$value": "1rem" },
+    "5": { "$type": "dimension", "$value": "1.5rem" },
+    "6": { "$type": "dimension", "$value": "2rem" },
+    "7": { "$type": "dimension", "$value": "3rem" },
+    "8": { "$type": "dimension", "$value": "4rem" },
+    "9": { "$type": "dimension", "$value": "6rem" },
+    "10": { "$type": "dimension", "$value": "8rem" },
+    "section": { "$type": "dimension", "$value": "clamp(2.5rem, 5vw, 4.5rem)", "$description": "Between departments. A change of ground does the separating, not air." }
+  },
+
+  "layout": {
+    "$description": "Window classes follow Material 3: compact < 600, medium 600-839, expanded 840-1199, large 1200+. A 12-column grid from expanded up.",
+    "page": { "$type": "dimension", "$value": "80rem" },
+    "measure": { "$type": "dimension", "$value": "34em", "$description": "Single text column, about 66 characters of Newsreader." },
+    "margin-column": { "$type": "dimension", "$value": "16rem", "$description": "Sidenotes, figures, engravings." },
+    "gutter": { "$type": "dimension", "$value": "clamp(1rem, 3.2vw, 2rem)", "$description": "16px on phones." },
+    "columns": { "$type": "number", "$value": 12 },
+    "column-gap": { "$type": "dimension", "$value": "1.25rem" },
+    "text-columns-gap": { "$type": "dimension", "$value": "1.75rem", "$description": "Between the two text columns." },
+    "bp-medium": { "$type": "dimension", "$value": "600px" },
+    "bp-expanded": { "$type": "dimension", "$value": "840px" },
+    "bp-large": { "$type": "dimension", "$value": "1200px" }
+  },
+
+  "shape": {
+    "$description": "Material 3 shape scale. Editorial blocks are square; controls are pills.",
+    "none": { "$type": "dimension", "$value": "0" },
+    "xs": { "$type": "dimension", "$value": "4px" },
+    "sm": { "$type": "dimension", "$value": "8px" },
+    "md": { "$type": "dimension", "$value": "12px" },
+    "lg": { "$type": "dimension", "$value": "16px" },
+    "xl": { "$type": "dimension", "$value": "28px" },
+    "full": { "$type": "dimension", "$value": "999px" }
+  },
+
+  "rule": {
+    "hairline": { "$type": "dimension", "$value": "1px" },
+    "heavy": { "$type": "dimension", "$value": "2px" },
+    "double": { "$value": "4px double", "$description": "Under running heads on openers." },
+    "terminal": { "$value": "+", "$description": "Ends of cover rules and frame corners, Works in Progress style." },
+    "check": { "$type": "dimension", "$value": "8px", "$description": "Square size of the checkered rule between departments." }
+  },
+
+  "state": {
+    "$description": "Material 3 state layers: a wash of the label color over the container.",
+    "hover": { "$type": "number", "$value": 0.08 },
+    "focus": { "$type": "number", "$value": 0.10 },
+    "pressed": { "$type": "number", "$value": 0.12 },
+    "dragged": { "$type": "number", "$value": 0.16 },
+    "disabled-container": { "$type": "number", "$value": 0.12 },
+    "disabled-content": { "$type": "number", "$value": 0.38 }
+  },
+
+  "motion": {
+    "$description": "Material 3 durations and easings. Things arrive once, then sit still.",
+    "duration": {
+      "short": { "$type": "duration", "$value": "150ms" },
+      "medium": { "$type": "duration", "$value": "300ms" },
+      "long": { "$type": "duration", "$value": "500ms" }
+    },
+    "easing": {
+      "standard": { "$type": "cubicBezier", "$value": [0.2, 0, 0, 1] },
+      "emphasized-decelerate": { "$type": "cubicBezier", "$value": [0.05, 0.7, 0.1, 1] },
+      "emphasized-accelerate": { "$type": "cubicBezier", "$value": [0.3, 0, 0.8, 0.15] }
+    },
+    "arrive-distance": { "$type": "dimension", "$value": "8px" }
+  },
+
+  "texture": {
+    "$description": "Grain is an inline SVG tile of fine film grain: soft light and dark specks on separate noise channels, so it shows on charcoal and on paper. Low gain and a low threshold give many faint specks instead of a few bright ones (bright ones read as dust at 1x). The light channel is softer than the dark one. Opacity and blend come from the edition. The photo treatment is an SVG filter in the page that reads the same values.",
+    "grain": {
+      "$value": { "baseFrequency": 1.2, "octaves": 3, "tile": 160, "gain": 2.4, "threshold": 0.02, "lightGain": 1.6, "lightThreshold": 0.02, "light": "#F6EFE3", "dark": "#1A1615" }
+    },
+    "photo": {
+      "$value": { "shadows": "#4A413B", "highlights": "#E8DCC8", "saturation": 0.7, "grain": 0.16 },
+      "$description": "A faded print: blacks lifted to a warm charcoal, highlights held at cream, color pulled back, visible grain."
+    }
+  },
+
+  "component": {
+    "$description": "Material 3 anatomy, dressed as quiet sportswear. Prefix 'component' is dropped in CSS: component.button.height -> --button-height.",
+    "button": {
+      "height": { "$type": "dimension", "$value": "3rem" },
+      "padding-x": { "$type": "dimension", "$value": "1.75rem" },
+      "gap": { "$type": "dimension", "$value": "0.625rem" },
+      "shape": { "$type": "dimension", "$value": "{shape.full}" },
+      "shape-pressed": { "$type": "dimension", "$value": "{shape.md}", "$description": "Material 3 Expressive shape morph on press." },
+      "outline-width": { "$type": "dimension", "$value": "1px" }
+    },
+    "chip": {
+      "height": { "$type": "dimension", "$value": "2.25rem" },
+      "padding-x": { "$type": "dimension", "$value": "1rem" },
+      "shape": { "$type": "dimension", "$value": "{shape.full}" }
+    },
+    "segmented": {
+      "height": { "$type": "dimension", "$value": "2.25rem" },
+      "shape": { "$type": "dimension", "$value": "{shape.full}" }
+    },
+    "field": {
+      "height": { "$type": "dimension", "$value": "3.5rem" },
+      "shape": { "$type": "dimension", "$value": "{shape.xs}", "$description": "Top corners only: the M3 filled field." }
+    },
+    "focus-ring": {
+      "width": { "$type": "dimension", "$value": "2px" },
+      "offset": { "$type": "dimension", "$value": "2px" }
+    },
+    "link": {
+      "underline": { "$type": "dimension", "$value": "1px" },
+      "underline-hover": { "$type": "dimension", "$value": "2px" },
+      "underline-offset": { "$type": "dimension", "$value": "0.22em" }
+    },
+    "slider": {
+      "$description": "Material 3 Expressive slider, dressed quiet: a hairline track, a heavier active track in leaf, and a bar handle in ink with a gap either side. Whole-number stops are labelled below, a ruler tick over each number, the chosen one underlined in orange like the edition words. The control is a native range input, so it keeps the keyboard and the screen reader.",
+      "height": { "$type": "dimension", "$value": "{component.touch-target}" },
+      "track": { "$type": "dimension", "$value": "2px", "$description": "The whole track, in outline." },
+      "track-active": { "$type": "dimension", "$value": "4px", "$description": "From the start to the handle, in leaf. Thicker as well as green, so the two parts differ in Day, where olive and flint sit close." },
+      "handle-width": { "$type": "dimension", "$value": "4px" },
+      "handle-height": { "$type": "dimension", "$value": "2.5rem" },
+      "handle-gap": { "$type": "dimension", "$value": "6px", "$description": "Clear track either side of the handle." }
+    },
+    "steps": {
+      "$description": "Progress steps: one real button per step, a bar over a tracked-caps name. A step not answered has a hairline bar in outline, an answered one a leaf bar and its value, the current one a heavier orange bar. Each step is a full touch target, and the names give way to the values on phones.",
+      "height": { "$type": "dimension", "$value": "{component.touch-target}" },
+      "bar": { "$type": "dimension", "$value": "2px" },
+      "bar-current": { "$type": "dimension", "$value": "4px" }
+    },
+    "touch-target": { "$type": "dimension", "$value": "48px" }
+  }
+}
