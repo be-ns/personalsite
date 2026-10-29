@@ -34,7 +34,6 @@
 
     /* Small orange panels take the light mottle only; the dark burn would read as a stain. */
     .tex.field-spot::before, .on-field::before { background: radial-gradient(60% 55% at 14% 8%, rgb(255 238 214 / 0.3), transparent 70%); }
-    .teaser .btn--text { margin-left: -0.25rem; }
 
     /* ---------- 05 Kit: specimens ---------- */
     .kit { padding-block: var(--space-5) var(--space-section); background: radial-gradient(44rem 36rem at 2% 30rem, var(--leak-green), transparent 70%) no-repeat; }
@@ -128,17 +127,6 @@
     .control-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
     .control-label { display: block; margin-bottom: var(--space-3); }
     .on-field { padding: var(--space-4); }
-    .teasers { display: grid; gap: var(--space-5); list-style: none; }
-    .teaser { display: grid; gap: var(--space-2); align-content: start; justify-items: start; }
-    .teaser .art { justify-self: stretch; }
-    .teaser .art { aspect-ratio: 4 / 3; overflow: hidden; color: var(--art-ink); background: var(--sunk); }
-    .teaser .art svg { width: 100%; height: 100%; }
-    .teaser h4 { font: 480 1.25rem / 1.15 var(--font-display); font-variation-settings: 'SOFT' 30; }
-    @media (min-width: 720px) {
-      .teasers { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 var(--space-6); }
-      .teaser { position: relative; }
-      .teaser + .teaser::before { content: ""; position: absolute; top: 0; bottom: 0; left: calc(-0.5 * var(--space-6)); border-left: 1px solid var(--rule); }
-    }
     /* M3 states, rendered: the same buttons held in each state. */
     .btn.is-hover::after { opacity: var(--state-hover); }
     .btn.is-focus::after { opacity: var(--state-focus); }
@@ -870,6 +858,7 @@
       <div>
         <h2>Ben Siverly</h2>
         <p class="t-small t-quiet">Issue 01 &middot; Autumn 2026. Set in Fraunces, Newsreader and Instrument Sans.</p>
+        <p class="t-small colophon-consulting">Consulting: <a href="consulting.html">strategy and operations for small companies and startups</a>.</p>
       </div>
       <div class="write">
         <span class="t-folio">Write to me</span>
@@ -1005,12 +994,13 @@
       fold();
       phone.addEventListener('change', fold);
 
-      // Copy email: the address sits base64-encoded in data-email.
-      const copyButton = document.querySelector('[data-copy-email]');
-      if (copyButton) {
+      // Copy email: the address sits base64-encoded in data-email. A page can
+      // carry more than one button (the colophon's, a page's own ask); each
+      // reports in the status line beside it.
+      document.querySelectorAll('[data-copy-email]').forEach((copyButton) => {
         const label = copyButton.querySelector('[data-copy-label]');
         const original = label.textContent;
-        const status = document.querySelector('.copy-status');
+        const status = copyButton.parentElement.querySelector('.copy-status');
         const say = (message) => { if (status) status.textContent = message; };
         let reset = 0;
         const copied = (email) => {
@@ -1029,7 +1019,7 @@
           }
           say(`The address is ${email}.`);
         });
-      }
+      });
 
       // On a page with a cover, the masthead wordmark waits for the nameplate
       // to scroll away.

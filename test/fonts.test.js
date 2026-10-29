@@ -144,3 +144,11 @@ for (const page of chromePages()) {
     assert.deepEqual(outside(inlineScripts(readPage(page)).join('\n')), []);
   });
 }
+
+// The consulting pages are typeset from Markdown (build-pages.js), and the
+// sources are served as they are, so their characters must fit too.
+for (const name of fs.readdirSync(path.join(ROOT, 'content', 'consulting')).filter((f) => f.endsWith('.md'))) {
+  test(`content/consulting/${name} uses only characters every face carries`, () => {
+    assert.deepEqual(outside(fs.readFileSync(path.join(ROOT, 'content', 'consulting', name), 'utf8')), []);
+  });
+}

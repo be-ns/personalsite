@@ -64,13 +64,15 @@ Nothing is hidden from people: there is no invisible text aimed at models.
 ## Repository layout
 
 ```
-index.html                 Home, set as the issue: cover, contents, In brief, departments 01-04, colophon
+index.html                 Home, set as the issue: cover, contents, In brief, departments 01-05, colophon
 llms.txt                   Agent-readable guide to the tools
 theme.json                 Theme source of truth: color, type, space, texture, motion, components
 tokens.css                 Generated from theme.json by build-tokens.js (npm run tokens)
 site.css                   The shared periodical styles, the issue's cover and departments among them
 site.json                  Facts the shared chrome carries: issue, departments, résumé PDF, contact, home colophon
-build-pages.js             Stamps the shared chrome into each page between markers (npm run pages)
+build-pages.js             Stamps the shared chrome into each page between markers, and makes the Consulting pages (npm run pages)
+content/consulting/        05 Consulting as Markdown, one file per page; also served as-is for agents
+consulting*.html           Made by build-pages.js from content/consulting/: the front page, rate card, problems, perspective
 kit.html                   Design kit: every token rendered, Night and Day editions (noindex)
 brand.md                   Brand brief: the reasoning behind the theme
 redesign-plan.md           How the redesign reaches every page, in order
@@ -88,10 +90,10 @@ assets/native-plants/      Static JSON datasets: plants, regions, nurseries, ZIP
 images/                    Generated Open Graph share images (1200x630)
 generate-og-images.js      Offline OG-image generator (Node + sharp)
 generate-kit-art.js        Seeded drawings for the engravings, stamped by build-pages.js
-check-browser.js           Headless-Chrome checks: overflow, first screen, menu, tool keys, contrast, print, agent contract
+check-browser.js           Headless-Chrome checks: overflow, first screen, menu, tool keys, contrast, print, Writing, Consulting, agent contract
 test/                      Test suite (node:test, no dependencies)
 test/page-sandbox.js       Runs a page's scripts in node:vm to read its WebMCP tools and URL parameters
-test/fixtures/             The agent contract, captured before any tool was restyled, the chrome freeze, and the resume's words
+test/fixtures/             The agent contract, captured before any tool was restyled, the chrome freeze, the resume's and Writing's words, and the Markdown renderer's golden file
 ```
 
 `sitemap.xml`, `robots.txt`, `site.webmanifest`, and `CNAME` handle discoverability and
@@ -100,8 +102,8 @@ GitHub Pages hosting.
 ## Design
 
 The site is moving to a periodical design, set out in [`brand.md`](brand.md) and rendered
-on [`kit.html`](kit.html). Pages on it (the home page, the kit, the 404 and the Life Strategy
-Matrix, the first tool) read
+on [`kit.html`](kit.html). Pages on it (the home page, the kit, the 404, the résumé, the
+Writing pages, 05 Consulting and the Life Strategy Matrix, the first tool) read
 `tokens.css`, compiled from `theme.json`, and the shared `site.css`, with self-hosted
 Fraunces, Newsreader and Instrument Sans, in a Night and a Day edition. The pages not yet
 moved still use the old system in `styles.css` (Inter, Zilla Slab, JetBrains Mono) or their
@@ -128,8 +130,11 @@ npm run validate    # HTML lint (htmlhint)
 npm run links       # offline link check (lychee)
 ```
 
-After editing `theme.json`, run `npm run tokens`; after editing `site.json`, `build-pages.js`
-or a drawing, run `npm run pages`. `npm run check-browser` (after `npm install`, Node 22.12 or
+After editing `theme.json`, run `npm run tokens`; after editing `site.json`, `build-pages.js`,
+a drawing or a page in `content/consulting/`, run `npm run pages`. The Consulting pages are
+written whole from their Markdown (a small, safe subset: `build-pages.js` lists it and stops on
+anything else, em dashes included), along with their block of `sitemap.xml` and their section of
+`llms.txt`; never edit `consulting*.html` by hand. `npm run check-browser` (after `npm install`, Node 22.12 or
 later) opens every redesigned page and every tool in headless Chrome; name groups to run fewer,
 e.g. `node check-browser.js agent-contract`. In CI the agent contract is a required job and the
 other groups are advisory.
@@ -143,7 +148,9 @@ the chrome ratchet (which pages carry the shared chrome, which are pending, whic
 exempt and why), the chrome freeze (every page's masthead, menu, head links, colophon and
 chrome script come from the same partials, pinned by `test/fixtures/chrome-freeze.json`), the
 contrast pairs the tools' slider and progress steps need, the characters each vendored font
-carries, and the
+carries, the Consulting pages (the Markdown renderer against a golden file and every input it
+refuses, one rate on the card, in the JSON-LD and in `llms.txt`, and every number on the
+problems page quoting the résumé word for word), and the
 integrity of the native-plant datasets: every plant, ZIP code, and nursery has to reference
 vocabulary and regions that actually exist.
 

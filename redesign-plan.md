@@ -153,6 +153,15 @@ In brief numbers so the first screen still answers the hiring manager.
 **Discoverability:** indexed, in the sitemap and llms.txt, with
 `ProfessionalService` JSON-LD and an Offer at 250 USD per hour.
 
+**As built (step 5).** The four pages are written in `content/consulting/*.md`
+and made whole by `build-pages.js` (its Markdown section lists the subset it
+accepts), which also writes their sitemap block and the `## Consulting`
+section of llms.txt. Every colophon carries the consulting line, not only
+the home page's; the masthead and menu still name 01 to 04. The open
+questions below use their defaults: up to an hour by video, an estimate with
+a cap, no weekly minimum stated, no town, the home page's Choctaw wording, no
+family line, the copy-email button.
+
 ## Open questions for Ben (each has a default so work can proceed)
 
 1. **Cover standfirst** replacing "Product manager at AppFolio". Default: "Product

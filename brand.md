@@ -41,8 +41,8 @@ composition:
   one per department. They stand in for the contents list, which phones skip;
   the editor's note that follows says something the standfirst does not.
 - Grain sits under the type on every field and on the cover, never over it.
-- One seal: a Goody Gumdrop scallop with a Toxic Orange rim (the nudibranch)
-  carrying the one number that matters, 44% to 70%. Its label never drops
+- One seal a page: on the cover, a Goody Gumdrop scallop with a Toxic Orange
+  rim (the nudibranch) carrying the one number that matters, 44% to 70%. Its label never drops
   under 12px, and the figures and label always sit inside the dashed ring.
 
 On wide screens the cover and the contents page open as a spread, so the first
@@ -61,10 +61,14 @@ proof on the first screen, not a claim.
 | PM | AppFolio rental applications: submissions 44% → 70%, vacancies filled 3.4 days faster. |
 | AI | AI features at AppFolio. Agent-ready tools (llms.txt, WebMCP). AbiertoClaw. Brava's AI pipeline. |
 
-**Second reader: fractional clients.** Later, a line in the colophon, never the
-cover or the contents. A hiring manager who meets pricing on the front page
-reads "one foot out the door." There is no fractional page yet, so nothing
-links to one.
+**Second reader: small and mid-size companies and startups** looking for
+strategy and operations help, the first call when something new (AI models,
+agents, a data question) might change how they run. They have 05 Consulting:
+a line on the contents page, a short department after Writing, a line in
+every colophon, and four pages of their own (consulting.html and its rate
+card, problems and perspective, made from Markdown in `content/consulting/`).
+Never on the cover, the cover lines or In brief, so the first screen still
+answers the hiring manager, and the price only on the rate card.
 
 ## Feel
 
@@ -211,11 +215,13 @@ All free (SIL Open Font License) and self-hosted. Three families.
 
 - **Grid:** 12 columns from 840px up, 1.25rem gaps. One column with 16px gutters
   on phones.
-- **Departments:** 01 Work · 02 Method · 03 Workshop · 04 Writing, the four
-  the home page carries. `kit.html` sets the same four as specimens and adds
-  05 Kit, a supplement the colophon links as "How this issue is made". Each
-  opens with a large soft numeral, its reading time, a light headline and a
-  ruled intro, and each sits on its own ground.
+- **Departments:** 01 Work · 02 Method · 03 Workshop · 04 Writing ·
+  05 Consulting, the five the home page carries; the masthead and menu name
+  the first four, the proof a hiring manager came for. `kit.html` sets
+  01 to 04 as specimens and numbers its own 05 Kit, a supplement the
+  colophon links as "How this issue is made". Each opens with a large soft
+  numeral, its reading time, a light headline and a ruled intro, and each
+  sits on its own ground.
 - **Running heads** on every department: department number, title, and
   "Ben Siverly · Issue 01 · season" on the other side, alternating sides like
   left and right pages. On phones, number and title only.
@@ -300,7 +306,16 @@ All free (SIL Open Font License) and self-hosted. Three families.
 - **States:** hover 8%, focus 10%, press 12%, a 2px focus ring (Char on fields),
   pills ease to 12px corners on press. No shadows. The Kit renders every state.
 - **Colophon:** "Write to me" as an outlined pill that copies the address (the
-  home page's pattern, with a live status line), and "For agents: llms.txt".
+  home page's pattern, with a live status line), "For agents: llms.txt", and
+  one line to 05 Consulting.
+- **Rate card:** a seed-catalog price list on the paper stock (an insert, so
+  charcoal in Day): a double rule and folio caps across the top, one engraved
+  marigold plate in a hairline frame with crosshair corners, the page's one
+  seal on its corner ("Free, first conversation"), one number in light
+  Fraunces with its dollar sign raised and its unit in orange, the shapes of
+  work on dot leaders (a name too long to share a line puts its terms on the
+  next), and the page's one orange button, which copies the address. It
+  prints alone on one Letter page, the button giving way to the address.
 - **Tool bar:** a running head with the department, the tool's name and a
   text button, Start over, that appears once there is something to start over.
 - **Progress steps:** one real button per step, a bar over a tracked-caps name:

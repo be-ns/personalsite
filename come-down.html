@@ -167,6 +167,7 @@
       <div>
         <h2>Ben Siverly</h2>
         <p class="t-small t-quiet">Issue 01 &middot; Autumn 2026. Set in Fraunces, Newsreader and Instrument Sans.</p>
+        <p class="t-small colophon-consulting">Consulting: <a href="consulting.html">strategy and operations for small companies and startups</a>.</p>
       </div>
       <div class="write">
         <span class="t-folio">Write to me</span>
@@ -273,12 +274,13 @@
       fold();
       phone.addEventListener('change', fold);
 
-      // Copy email: the address sits base64-encoded in data-email.
-      const copyButton = document.querySelector('[data-copy-email]');
-      if (copyButton) {
+      // Copy email: the address sits base64-encoded in data-email. A page can
+      // carry more than one button (the colophon's, a page's own ask); each
+      // reports in the status line beside it.
+      document.querySelectorAll('[data-copy-email]').forEach((copyButton) => {
         const label = copyButton.querySelector('[data-copy-label]');
         const original = label.textContent;
-        const status = document.querySelector('.copy-status');
+        const status = copyButton.parentElement.querySelector('.copy-status');
         const say = (message) => { if (status) status.textContent = message; };
         let reset = 0;
         const copied = (email) => {
@@ -297,7 +299,7 @@
           }
           say(`The address is ${email}.`);
         });
-      }
+      });
 
       // On a page with a cover, the masthead wordmark waits for the nameplate
       // to scroll away.

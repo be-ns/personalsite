@@ -351,6 +351,7 @@ a:hover { text-decoration-thickness: var(--link-underline-hover); }
 .colophon h2 + p { margin-top: var(--space-2); }
 .colophon-note { max-width: 34em; margin-top: var(--space-3); }
 .colophon-note .t-folio { margin-bottom: var(--space-1); }
+.colophon-consulting { max-width: 34em; margin-top: var(--space-3); }
 @media (min-width: 840px) { .colophon-grid { grid-template-columns: 2fr repeat(3, 1fr); } }
 
 /* ---------- The Workshop tools ----------
@@ -932,6 +933,80 @@ main.writing { overflow: clip; padding-bottom: calc(var(--space-section) + var(-
   :where(.writing) .rights { margin-top: var(--space-4); }
   :where(.writing) .chapter { break-after: avoid; }
   :where(.writing) .machine { break-inside: avoid; background: none; }
+}
+
+/* ---------- Teasers, not cards ----------
+   An engraving crop, a kicker, a title, one line and a text button; no
+   boxes, hairlines between the columns. The kit shows them, the home
+   page's 05 Consulting and the Consulting front page use them. */
+.teasers { display: grid; gap: var(--space-5); list-style: none; }
+.teaser { display: grid; gap: var(--space-2); align-content: start; justify-items: start; }
+.teaser .art { justify-self: stretch; aspect-ratio: 4 / 3; overflow: hidden; color: var(--art-ink); background: var(--sunk); }
+.teaser .art svg { width: 100%; height: 100%; }
+.teaser h4, .teaser .teaser-title { font: 480 1.25rem / 1.15 var(--font-display); font-variation-settings: 'SOFT' 30; letter-spacing: -0.01em; text-wrap: balance; }
+.teaser .btn--text { margin-left: -0.25rem; }
+@media (min-width: 720px) {
+  .teasers { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 var(--space-6); }
+  .teaser { position: relative; }
+  .teaser + .teaser::before { content: ""; position: absolute; top: 0; bottom: 0; left: calc(-0.5 * var(--space-6)); border-left: 1px solid var(--rule); }
+}
+
+/* ---------- 05 Consulting ----------
+   consulting.html and its three pages, made from content/consulting/*.md
+   by build-pages.js. Each opens like a Workshop tool (the running head,
+   then the opener: kicker, a light headline, a deck, at most one orange
+   button and the engraving in its frame) on the Night ground, and closes
+   with the department's contents, or on the front page the other three as
+   teasers. Each page's own layout (the rate card, the numbered problems,
+   the essay) is in its <style>. Scoped with :where(.consult). */
+main.consult { padding-bottom: var(--space-section); }
+:where(.consult) .rh-title a { color: inherit; text-decoration-color: var(--rule); }
+:where(.consult) .rh-title a:hover { text-decoration-color: var(--spot-large); }
+/* The engravings sit on their dark plate in both editions; the street is
+   line work, inked in Newsprint on it. */
+:where(.consult) .art, :where(.consult) .teaser .art { background: var(--art-ground); }
+:where(.consult) .art svg { color: var(--palette-newsprint); }
+:where(.consult) .c-opener { border-bottom: var(--rule-hairline) solid var(--rule); }
+:where(.consult) .c-ask { display: grid; justify-items: start; gap: var(--space-1); margin-top: var(--space-2); }
+:where(.consult) .c-ask .copy-status { min-height: 1.45em; }
+:where(.consult) .c-ask [data-copy-email] { min-inline-size: min(17.5rem, 100%); }
+
+/* Text at reading size: one column at the measure, ragged right, hyphenated. */
+:where(.consult) .c-text p, :where(.consult) .c-part p, :where(.consult) .c-sec p { max-width: var(--layout-measure); font-size: clamp(1.0625rem, 0.97rem + 0.4vw, 1.1875rem); line-height: 1.58; text-align: left; hyphens: auto; -webkit-hyphens: auto; hyphenate-limit-chars: 7 3 3; text-wrap: pretty; }
+:where(.consult) .c-text p + p, :where(.consult) .c-part p + p, :where(.consult) .c-sec p + p { margin-top: 0.8em; }
+:where(.consult) .c-h2 { font: 360 clamp(1.5rem, 2.6vw, 2rem) / 1.08 var(--font-display); font-variation-settings: 'SOFT' 50; letter-spacing: -0.02em; text-wrap: balance; }
+:where(.consult) .c-text .c-h2 { margin-block: var(--space-6) var(--space-3); }
+:where(.consult) .c-text .c-h2:first-child { margin-top: 0; }
+:where(.consult) .c-close { max-width: 34em; margin-top: var(--space-6); font: italic var(--type-deck-weight) var(--type-deck-size) / var(--type-deck-line) var(--font-text); text-wrap: pretty; }
+:where(.consult) .c-on { margin-top: var(--space-5); }
+:where(.consult) .c-on .btn--text { margin-left: -0.25rem; }
+
+/* The other pages as teasers (the front page), each art crop on its plate. */
+:where(.consult) .c-more { padding-top: var(--space-5); border-top: var(--rule-double) var(--rule); }
+:where(.consult) .c-more > h2 { margin-bottom: var(--space-4); }
+:where(.consult) .teaser { grid-template-rows: auto auto auto 1fr auto; }
+:where(.consult) .teaser .btn--text { align-self: end; }
+/* Phones: each teaser a list row, its title and one line, no engraving. */
+@media (max-width: 599px) {
+  :where(.consult) .teasers { gap: 0; border-top: 1px solid var(--ink-quiet); }
+  :where(.consult) .teaser { gap: var(--space-1); padding-block: var(--space-4); border-bottom: var(--rule-hairline) solid var(--rule); }
+  :where(.consult) .teaser .art { display: none; }
+}
+
+/* The department's contents: dot leaders, minutes to read, this page marked. */
+:where(.consult) .c-contents { max-width: 46rem; margin-top: var(--space-8); }
+:where(.consult) .c-contents > h2 { padding-bottom: var(--space-2); border-bottom: var(--rule-double) var(--rule); }
+:where(.consult) .c-toc { list-style: none; }
+:where(.consult) .c-toc a { display: grid; gap: 0.15rem; min-height: var(--touch-target); padding-block: var(--space-3); border-bottom: var(--rule-hairline) solid var(--rule); color: inherit; text-decoration: none; }
+:where(.consult) .c-toc .row { display: flex; align-items: baseline; gap: var(--space-2); }
+:where(.consult) .c-toc .name { font: 480 1.25rem / 1.15 var(--font-display); font-variation-settings: 'SOFT' 30; letter-spacing: -0.01em; }
+:where(.consult) .c-toc .lead { flex: 1; min-width: 1rem; border-bottom: 2px dotted var(--rule); transform: translateY(-0.25em); }
+:where(.consult) .c-toc .rt { font: 500 0.8125rem / 1 var(--font-label); font-feature-settings: 'tnum' 1; letter-spacing: 0.04em; color: var(--ink-quiet); white-space: nowrap; }
+:where(.consult) .c-toc .desc { color: var(--ink-quiet); }
+:where(.consult) .c-toc a:hover .name { text-decoration: underline; text-decoration-color: var(--spot-large); text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
+:where(.consult) .c-toc a[aria-current="page"] .name::before { content: ""; display: inline-block; width: 0; height: 0; margin-right: 0.45em; border: 0.25em solid var(--spot-large); vertical-align: 0.12em; }
+@media print {
+  :where(.consult) .c-ask, :where(.consult) .c-more, :where(.consult) .c-contents, :where(.consult) .c-on { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -37,6 +37,11 @@
 //     each piece printing alone in Day ink with no stanza or machine block
 //     split across pages, on the sheets it needs and no more, its end mark
 //     and chapter rules still there with Background graphics off
+//   - 05 Consulting: the front page's ask on the first screen, the rate
+//     card's $250 and free first row too; nothing on the card running past
+//     its edge on phones; each copy button reporting beside itself; the rate
+//     card printing alone on one Letter page with its plate, seal and whole
+//     crosshairs, none of them clipped by the page margin
 //   - the agent contract (test/fixtures/agent-contract.json): every WebMCP
 //     tool's schema and read-only output, the llms.txt example outputs, each
 //     example link showing what the tool shows for the same input and the
@@ -769,7 +774,98 @@ async function agentContract(browser, base) {
   }
 }
 
-const GROUPS = { overflow, 'first-screen': firstScreen, menu, 'tool-keys': toolKeys, 'forced-colors': forcedColors, 'more-contrast': moreContrast, print: printCounts, writing, 'agent-contract': agentContract };
+// 05 Consulting (redesign-plan.md, step 5): the four pages build-pages.js
+// makes from content/consulting/.
+//   - on desktop the front page's ask is on the first screen, and so are
+//     the rate card's $250 and its first row (the free first conversation);
+//     on phones the front page's ask
+//   - each copy button reports in the status line beside it: the page's
+//     own ask and the colophon's work apart
+//   - the rate card prints alone, on one Letter page, in Day ink, with its
+//     plate, seal and crosshairs still printed with Background graphics off
+async function consulting(browser, base) {
+  const site = JSON.parse(fs.readFileSync(path.join(ROOT, 'site.json'), 'utf8'));
+  const email = Buffer.from(site.contact.email, 'base64').toString('utf8');
+  for (const [width, height] of [[1024, 768], [1280, 720], [1280, 900], [1366, 768], [1440, 900]]) {
+    for (const [file, selectors] of [['consulting.html', ['.c-opener .c-ask .btn']], ['consulting-rates.html', ['.rc-rate', '.rc-row:first-child']]]) {
+      const { page, close } = await open(browser, `${base}${file}`, { width, height });
+      for (const selector of selectors) {
+        const b = await bottom(page, selector);
+        check(b !== null && b <= height, `${file}: ${selector} ends at ${b}, past the first screen at ${width}x${height}`);
+      }
+      await close();
+    }
+  }
+  for (const [width, height] of [[390, 844], [375, 812], [320, 640]]) {
+    const { page, close } = await open(browser, `${base}consulting.html`, { width, height });
+    const b = await bottom(page, '.c-opener .c-ask .btn');
+    check(b !== null && b <= height, `consulting.html: the ask ends at ${b} on a ${width}x${height} phone`);
+    await close();
+  }
+  // Nothing on the card or in the opener runs past its edge; the page's
+  // horizontal clip would hide it from the overflow group.
+  for (const [width, height] of [[320, 640], [360, 740], [390, 844], [768, 1024]]) {
+    for (const file of ['consulting.html', 'consulting-rates.html']) {
+      const { page, close } = await open(browser, `${base}${file}`, { width, height });
+      const out = await page.evaluate(() => [...document.querySelectorAll('.c-opener .btn, .rate-card .btn, .rc-seal, .rc-row')].filter((el) => {
+        const box = el.closest('.rate-card') || el.closest('.wrap');
+        return getComputedStyle(el).display !== 'none' && el.getBoundingClientRect().right > box.getBoundingClientRect().right + 0.5;
+      }).map((el) => el.className));
+      check(!out.length, `${file}: ${out.join(', ')} runs past its edge at ${width}x${height}`);
+      await close();
+    }
+  }
+  for (const file of ['consulting.html', 'consulting-rates.html']) {
+    const { page, errors, close } = await open(browser, `${base}${file}`, { width: 1280, height: 900 });
+    const statusOf = (scope) => page.$eval(`${scope} .copy-status`, (el) => el.textContent);
+    const ask = file === 'consulting.html' ? '.c-opener .c-ask' : '.rc-foot .c-ask';
+    await page.click(`${ask} [data-copy-email]`);
+    await new Promise((r) => setTimeout(r, 150));
+    check((await statusOf(ask)).includes(email), `${file}: the ask's own status line names the address after a click`);
+    check((await statusOf('.colophon')) === '', `${file}: the ask leaves the colophon's status line alone`);
+    await page.click('.colophon [data-copy-email]');
+    await new Promise((r) => setTimeout(r, 150));
+    check((await statusOf('.colophon')).includes(email), `${file}: the colophon's button still works beside it`);
+    check(!errors.length, `${file}: ${errors.join('; ')}`);
+    await close();
+  }
+  const pages = (pdf) => (Buffer.from(pdf).toString('latin1').match(/\/Type\s*\/Page[^s]/g) || []).length;
+  for (const edition of ['night', 'day']) {
+    const { page, close } = await open(browser, `${base}consulting-rates.html`, { edition });
+    const plain = Buffer.from(await page.pdf({ printBackground: false, preferCSSPageSize: true }));
+    const full = Buffer.from(await page.pdf({ printBackground: true, preferCSSPageSize: true }));
+    for (const [pdf, how] of [[plain, 'Background graphics off'], [full, 'Background graphics on']]) {
+      check(pages(pdf) === 1, `consulting-rates.html prints on ${pages(pdf)} pages (${edition}, ${how}), want 1`);
+    }
+    // The plate's dark ground, the seal's green face and orange rim.
+    const off = fills(plain);
+    for (const colour of ['#2A2625', '#CAD576', '#FE5F35']) check(off[colour], `consulting-rates.html: ${colour} is missing from the print with Background graphics off (${edition})`);
+    await page.emulateMediaType('print');
+    const shown = await page.evaluate(() => {
+      const hidden = ['.masthead', '.colophon', '.c-opener', '.c-after', '.c-contents', '.rc-foot .c-ask'].filter((sel) => {
+        const el = document.querySelector(sel);
+        return el && getComputedStyle(el).display !== 'none';
+      });
+      const card = document.querySelector('.rate-card');
+      const marks = [...document.querySelectorAll('.rc-frame .xh')].map((x) => getComputedStyle(x).printColorAdjust);
+      // The card meets the page margin, and print clips what falls in it.
+      const edge = card.getBoundingClientRect();
+      const outside = [...document.querySelectorAll('.rc-frame .xh')].filter((x) => {
+        const r = x.getBoundingClientRect();
+        return r.left < edge.left - 0.5 || r.right > edge.right + 0.5;
+      }).map((x) => x.className);
+      return { hidden, ink: getComputedStyle(card).color, url: getComputedStyle(document.querySelector('.rc-url')).display, marks, outside };
+    });
+    check(!shown.hidden.length, `consulting-rates.html: ${shown.hidden.join(', ')} still print (${edition})`);
+    check(shown.ink === 'rgb(52, 48, 47)', `consulting-rates.html: the card prints in ${shown.ink}, not the Day ink, Gondola (${edition})`);
+    check(shown.url !== 'none', `consulting-rates.html: the page's address takes the button's place in print (${edition})`);
+    check(shown.marks.length === 4 && shown.marks.every((m) => m === 'exact'), `consulting-rates.html: the plate's crosshairs print with Background graphics off (${edition})`);
+    check(!shown.outside.length, `consulting-rates.html: ${shown.outside.join(', ')} fall off the card into the page margin in print (${edition})`);
+    await close();
+  }
+}
+
+const GROUPS = { overflow, 'first-screen': firstScreen, menu, 'tool-keys': toolKeys, 'forced-colors': forcedColors, 'more-contrast': moreContrast, print: printCounts, writing, consulting, 'agent-contract': agentContract };
 
 async function main(argv = process.argv.slice(2)) {
   const unknown = argv.filter((name) => !GROUPS[name]);

@@ -95,9 +95,10 @@ jobs:
     name: Browser checks (non-blocking)
     runs-on: ubuntu-latest
     # Overflow, first-screen boxes, the menu from the keyboard, forced colours,
-    # more contrast, print page counts and the Writing pages (their poems'
-    # lines, Serotiny's chapters and how each piece prints), in headless
-    # Chrome. Advisory for now.
+    # more contrast, print page counts, the Writing pages (their poems'
+    # lines, Serotiny's chapters and how each piece prints) and 05 Consulting
+    # (its first screen, copy buttons and the rate card on one Letter page),
+    # in headless Chrome. Advisory for now.
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
@@ -108,4 +109,4 @@ jobs:
       - name: Install dev dependencies
         run: npm ci
       - name: Run check-browser.js
-        run: node check-browser.js overflow first-screen menu tool-keys forced-colors more-contrast print writing
+        run: node check-browser.js overflow first-screen menu tool-keys forced-colors more-contrast print writing consulting

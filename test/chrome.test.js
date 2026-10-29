@@ -115,13 +115,18 @@ test('site.json keeps the facts the chrome needs', () => {
   assert.ok(readPage('index.html').includes(`data-email="${site.contact.email}"`));
 });
 
-test('consulting stays off until its pages exist (redesign-plan.md, step 5)', () => {
+test('consulting is on (redesign-plan.md, step 5): every colophon links its front page', () => {
   const site = press.loadSite();
-  assert.equal(site.consulting.enabled, false);
-  for (const page of htmlPages()) {
-    const html = readPage(page);
-    assert.doesNotMatch(html, /href="\/?consulting[^"]*\.html/, `${page} links no consulting page`);
-    if (!page.startsWith('consulting')) assert.ok(!html.includes('$250'), `${page} shows no rate`);
+  assert.equal(site.consulting.enabled, true);
+  assert.equal(site.consulting.num, '05');
+  assert.ok(fs.existsSync(path.join(ROOT, site.consulting.page)), `${site.consulting.page} exists`);
+  for (const page of stamped().filter((p) => regions(p).includes('colophon'))) {
+    const colophon = regionText(page, readPage(page), 'colophon');
+    assert.ok(colophon.includes(`href="${page === '404.html' ? '/' : ''}${site.consulting.page}"`), `${page}'s colophon links ${site.consulting.page}`);
+  }
+  // A department of the issue, not a masthead link: the masthead stays 01 to 04.
+  for (const page of stamped().filter((p) => regions(p).includes('top'))) {
+    assert.doesNotMatch(regionText(page, readPage(page), 'top'), /consulting/i, `${page}'s masthead`);
   }
 });
 
@@ -173,8 +178,10 @@ function normalized(name, text) {
   const depts = site.departments.map((d) => d.id).join('|');
   let lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
   if (name === 'colophon') {
+    // The consulting line (step 5) is a site.json switch, not a change to
+    // the frozen partial: it comes out with the home colophon's own lines.
     const contact = `<p class="t-small">${esc(site.home.contact)}</p>`;
-    lines = lines.filter((l) => !l.startsWith('<p class="t-small colophon-note">') && l !== contact);
+    lines = lines.filter((l) => !l.startsWith('<p class="t-small colophon-note">') && !l.startsWith('<p class="t-small colophon-consulting">') && l !== contact);
   }
   return lines.join('\n')
     .replace(/ aria-current="(true|page)"/g, '')

@@ -33,7 +33,7 @@ function graph(page) {
 test('the old home page links still land, and so do the departments', () => {
   // The old sections' heading ids, kept as aliases on the new headings and in
   // the home colophon, plus the issue's own sections.
-  for (const id of ['hero-heading', 'work-heading', 'tools-heading', 'skills-heading', 'elsewhere-heading', 'contact-heading', 'contents', 'work', 'method', 'workshop', 'writing']) {
+  for (const id of ['hero-heading', 'work-heading', 'tools-heading', 'skills-heading', 'elsewhere-heading', 'contact-heading', 'contents', 'work', 'method', 'workshop', 'writing', 'consulting']) {
     assert.ok(ids.has(id), `index.html has id="${id}"`);
   }
   assert.ok(findAll(doc, (el) => el.tag === 'h1' && el.attrs.id === 'hero-heading').length === 1, 'the nameplate is the h1 and carries #hero-heading');
@@ -165,14 +165,19 @@ test('In brief shows five figures, each one the résumé\'s or the tool count', 
   const tools = graph('index.html').find((n) => n['@id'] === 'https://bensiverly.com/#tools').itemListElement.length;
   assert.equal(figs[4], `${tools}tools`, 'the tools figure counts the tool list');
   const llms = fs.readFileSync(path.join(ROOT, 'llms.txt'), 'utf8');
-  assert.equal((llms.match(/^## /gm) || []).length - 3, tools, 'llms.txt has a section per tool (plus Projects, About and Optional)');
+  assert.equal((llms.match(/^## /gm) || []).length - 4, tools, 'llms.txt has a section per tool (plus Projects, About, Consulting and Optional)');
   // The story's figures are the résumé's too.
   for (const figure of ['44% to 70%', '3.4 days']) assert.ok(body.includes(figure) && resume.includes(figure), figure);
 });
 
-test('no consulting on the home page until its pages exist (step 5)', () => {
-  assert.doesNotMatch(html, /consult/i);
-  assert.ok(!html.includes('$250'));
+test('05 Consulting is a department of the issue, off the cover and the briefs, with no price (step 5)', () => {
+  assert.ok(ids.has('consulting'), 'index.html has #consulting');
+  const cover = findAll(doc, (el) => hasClass(el, 'cover'))[0];
+  assert.doesNotMatch(flat(cover), /consult/i, 'the cover is for the hiring manager');
+  assert.doesNotMatch(flat(findAll(doc, (el) => hasClass(el, 'briefing'))[0]), /consult/i);
+  assert.ok(!html.includes('$250'), 'the rate is on the rate card');
+  // The phone cover rows stay the four departments that carry proof.
+  assert.equal(findAll(doc, (el) => hasClass(el, 'cover-lines'))[0].children.filter((c) => c.type === 'element').length, 4);
 });
 
 test('the old motion is gone: no scroll reveal, cursor glow or progress bar', () => {
