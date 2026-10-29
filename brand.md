@@ -215,12 +215,16 @@ All free (SIL Open Font License) and self-hosted. Three families.
   among them. The amaranth hangs in long tapering tassels of clustered seed,
   knobbly at the edge, never a string of beads. Line work inks in Newsprint on charcoal and Char on paper. The mood
   images (the cow painting, the nudibranch) aren't ours to publish.
-- **Plates.** Small framed drawings in the same hand, one a page where a page
-  needs its own: California poppies for the Native Plant Finder, an orange
-  watering can over a seedling for Life Strategy, a bronze balance weighing a
-  marigold for Decision Assist, a lit candle with a marigold laid beside it for
-  the three memorial tools, and a trowel left in the dirt by a marigold
-  seedling for Consulting (new tools, tried on real work first). Coloured fills
+- **Plates.** Small framed drawings in the same hand, one for each tool and
+  one for Consulting, drawn first for their share cards: California poppies
+  for the Native Plant Finder, an orange watering can over a seedling for Life
+  Strategy, a bronze balance weighing a marigold for Decision Assist, a lit
+  candle with a marigold laid beside it for the three memorial tools, and a
+  trowel left in the dirt by a marigold seedling for Consulting (new tools,
+  tried on real work first). The poppies, the balance and the candle go on
+  their pages when those tools move to the tool template in Release 2. The
+  watering can and the trowel stay on the share cards only for now: Life
+  Strategy and the Consulting pages are finished without them. Coloured fills
   under Char outlines, shade cut with the hatch masks, no ground of their own:
   the frame gives them the dark plate.
 
@@ -363,16 +367,24 @@ All free (SIL Open Font License) and self-hosted. Three families.
 - **Share cards** (`npm run generate-og`, `generate-og-images.js`): the picture
   a link shows on LinkedIn, Slack and the rest, 1200 by 630, one system for
   every page. Each card is a page of the issue in miniature, set with
-  tokens.css and site.css through headless Chromium: a running head in folio
-  caps, the department's soft numeral in the left wing, the words in the
-  middle, a framed engraving with crosshair corners in the right wing, and the
-  address on a hairline foot. The field is the department's: Toxic Orange for
-  the cover and any piece that opens on an orange band (Serotiny), Goody
-  Gumdrop for the Workshop tools, paper for Writing and the résumé, charcoal
-  with a ruffled orange rim on a pale green body for Consulting (the
-  nudibranch). The words (a kicker, the title, one line a person can read on
-  a phone) stay between x 300 and 900, so a square crop keeps all of them.
-  The filenames are public and never change; the alt text is the card's own.
+  tokens.css and site.css through headless Chromium: a running head with the
+  issue in folio caps, the nameplate small in the middle (so a card in a
+  feed says whose it is) and the department; the department's soft numeral
+  in the left wing; the words in the middle; a framed engraving with
+  crosshair corners in the right wing; and the address on a hairline foot.
+  The cover lists the five departments in its running head, since its title
+  is the nameplate, and stands its seal in the left wing, big enough to read
+  in a phone's feed. The field is the department's: Toxic Orange for the
+  cover and any piece that opens on an orange band (Serotiny), Goody Gumdrop
+  for the Workshop tools, paper for Writing and the résumé, charcoal with a
+  ruffled orange rim on a pale green body for Consulting (the nudibranch).
+  The words (a kicker, the title, one line a person can read on a phone)
+  stay between x 300 and 900, so a square crop keeps all of them, and
+  everything else sits wholly inside that crop or wholly outside it. Say it
+  once: the line never repeats the title, nor anything the seal says. A
+  poem's lines hang, as on its page, so a wrap never passes for a line
+  break. The filenames are public and never change; the alt text is the
+  card's own, as og:image:alt and twitter:image:alt.
 - **Site icon:** "BS" from the nameplate's display cut, drawn as paths, Char
   on a Toxic Orange square: the cover at 16 pixels. Chosen over a single B,
   the letters on Gondola and a simplified marigold, side by side at 16, 32 and

@@ -9,7 +9,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { ROOT, htmlPages, readPage } = require('./helpers');
-const { CARDS, ALT, SAFE, W, H, DEPTS, ART } = require('../generate-og-images');
+const { CARDS, ALT, SAFE, CROP, GAP, W, H, DEPTS, ART } = require('../generate-og-images');
 const { NAMES } = require('../generate-kit-art');
 
 const SITE = 'https://bensiverly.com/';
@@ -57,6 +57,8 @@ test('every indexed page carries its card, with the card\'s alt text', () => {
     assert.equal(meta(html, 'og:image:width'), String(W), `${card.page} og:image:width`);
     assert.equal(meta(html, 'og:image:height'), String(H), `${card.page} og:image:height`);
     assert.equal(meta(html, 'og:image:alt'), ALT(card), `${card.page} og:image:alt`);
+    // X reads only its own alt text.
+    assert.equal(meta(html, 'twitter:image:alt'), ALT(card), `${card.page} twitter:image:alt`);
   }
   // No page points at an image that is not a card.
   for (const page of htmlPages()) {
@@ -76,10 +78,26 @@ test('each card is a department of the issue, set in its words and art', () => {
     }
   }
   assert.deepEqual(SAFE, [300, 900], 'the words stay in the middle a square crop keeps');
+  assert.deepEqual(CROP, [285, 915], 'a square crop of the middle');
+  assert.ok(GAP >= 38, 'the numeral keeps 38px clear of the words\' column (32 of an italic\'s overhang)');
   // The Workshop tools and Consulting have plates of their own.
   const art = (page) => CARDS.find((c) => c.page === page).art[0];
   assert.equal(art('native-plant-finder.html'), 'poppy');
   assert.equal(art('consulting.html'), 'trowel');
+});
+
+test('each card says it once (brand.md)', () => {
+  const plain = (s) => s.replace(/<br>/g, ' ').toLowerCase().replace(/[^a-z0-9%$ ]/g, '').replace(/\s+/g, ' ').trim();
+  for (const card of CARDS) {
+    const line = plain(card.line);
+    assert.ok(!line.includes(plain(card.title)), `${card.file}: the line repeats the title`);
+    const elsewhere = [line, plain(card.kicker), ...(card.rail || []).map(plain)];
+    if (card.seal) {
+      for (const bit of [card.seal[0], card.seal[1], card.seal[2]].filter(Boolean).map(plain)) {
+        for (const text of elsewhere) assert.ok(!text.includes(bit), `${card.file}: the seal's "${bit}" is said again in "${text}"`);
+      }
+    }
+  }
 });
 
 test('the cards leave the old design behind: no old palette, no old fonts', () => {

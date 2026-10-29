@@ -43,6 +43,9 @@
 // words a minute, at least 1. Hidden copy (aria-hidden, svg, script, style and the
 // phone-only .fold-short lines) is not counted.
 //
+// It keeps each share card's alt text (og:image:alt and twitter:image:alt)
+// in step with generate-og-images.js on every page that shows the card.
+//
 // And it makes the 05 Consulting pages from Markdown: each file in
 // content/consulting/ becomes a whole page at the site root (consulting.md
 // makes consulting.html), written over whatever was there, with the chrome
@@ -1612,6 +1615,30 @@ function shareCard(model) {
   return { url: `${SITE_URL}images/${card.file}`, width: W, height: H, alt: ALT(card) };
 }
 
+// Every page with a share card says what the card shows twice: og:image:alt
+// for LinkedIn, Slack and iMessage, and twitter:image:alt for X, which reads
+// only its own. Both are the card's ALT(card), kept in step here on every
+// page, hand-written or not, so a card's new words reach its page's alt
+// text with `npm run pages` (and --check catches a page that lags).
+const OG_ALT = /^([ \t]*)<meta property="og:image:alt" content="[^"]*">\n/m;
+const TW_IMAGE = /^[ \t]*<meta name="twitter:image" content="[^"]*">\n/m;
+const TW_ALT = /^[ \t]*<meta name="twitter:image:alt" content="[^"]*">\n/m;
+
+function withShareAlt(page, html) {
+  const { CARDS, ALT } = require('./generate-og-images');
+  const card = CARDS.find((c) => c.page === page);
+  if (!card || html === null) return html;
+  const og = OG_ALT.exec(html);
+  if (!og) throw new Error(`${page} has a share card (${card.file}) but no <meta property="og:image:alt"> to carry its alt text`);
+  const tw = TW_IMAGE.exec(html);
+  if (!tw) throw new Error(`${page} has a share card (${card.file}) but no <meta name="twitter:image">`);
+  const alt = esc(ALT(card));
+  const line = (key, attr) => `${og[1]}<meta ${attr}="${key}" content="${alt}">\n`;
+  let out = html.replace(OG_ALT, () => line('og:image:alt', 'property'));
+  out = TW_ALT.test(out) ? out.replace(TW_ALT, () => line('twitter:image:alt', 'name')) : out.replace(TW_IMAGE, (m) => m + line('twitter:image:alt', 'name'));
+  return out;
+}
+
 function pageTitle(model, site) {
   const title = fmText(model.data.title);
   return model.page === site.consulting.page ? `${title} · ${site.name}` : `${title} · ${site.consulting.name} · ${site.name}`;
@@ -1652,6 +1679,7 @@ function renderPage(model, all, site) {
     `  <meta name="twitter:title" content="${title}">`,
     `  <meta name="twitter:description" content="${description}">`,
     `  <meta name="twitter:image" content="${card.url}">`,
+    `  <meta name="twitter:image:alt" content="${esc(card.alt)}">`,
     '',
     `  <link rel="canonical" href="${model.url}">`,
     `  <link rel="alternate" type="text/markdown" href="content/consulting/${model.name}">`,
@@ -1756,6 +1784,14 @@ function plan() {
       continue;
     }
     out.push({ page, current, next: stamp(page, current, { site, theme, sources }) });
+  }
+  // The share cards' alt text, on every page that shows a card.
+  for (const p of out) p.next = withShareAlt(p.page, p.next);
+  const { CARDS } = require('./generate-og-images');
+  for (const card of CARDS) {
+    if (out.some((p) => p.page === card.page)) continue;
+    const current = read(card.page);
+    out.push({ page: card.page, current, next: withShareAlt(card.page, current) });
   }
   const models = rendered.map((r) => r.model);
   for (const [file, make] of [['sitemap.xml', (t) => withSitemap(t, models)], ['llms.txt', (t) => withLlms(t, models, site)]]) {

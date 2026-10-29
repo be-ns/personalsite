@@ -11,22 +11,34 @@
 //     Goody Gumdrop for the Workshop tools, paper for Writing and the
 //     résumé, charcoal with a ruffled orange rim for Consulting (the
 //     nudibranch: dark ground, orange rim, a pale green line on it)
-//   - a running head in Instrument Sans folio caps between hairlines, and a
-//     foot with the address on a hairline running to a crosshair each end
-//   - the department's numeral, large and soft, in the left wing
+//   - a running head between hairlines: the issue and season in Instrument
+//     Sans folio caps in the left wing, the nameplate cut (drawn as paths,
+//     small) in the middle so every card says whose it is, and the
+//     department in the right wing. The cover, whose title is the nameplate,
+//     carries the issue's five departments there instead; the résumé, whose
+//     title is the name, leaves the middle to its hairlines.
+//   - a foot with the address on a hairline running to a crosshair each end
+//   - the department's numeral, large and soft, in the left wing; the cover
+//     puts its one seal there instead
 //   - the words in the middle: a kicker, the title (the nameplate cut for
 //     the cover, the display caps on a colour field, a light headline or the
 //     poem's own italic on paper), and one line a person scrolling on a
-//     phone can read
+//     phone can read (a poem's lines hang, as on the poem's page, so a wrap
+//     never passes for a line break)
 //   - an engraving in a hairline frame with crosshair corners in the right
 //     wing, drawn by generate-kit-art.js (a plate per tool, one for
 //     Consulting, crops of the still life for Writing)
 //
 // The words stay inside x 300 to 900, so a square crop of the middle (some
-// apps show 630x630) keeps all of them; the wings may go. The script fits
-// each title to its column and refuses to write any card whose words leave
-// the safe column, whose text overflows, or that is set in anything but
-// Fraunces, Newsreader and Instrument Sans.
+// apps show 630x630, x 285 to 915) keeps all of them. Everything else sits
+// wholly inside that crop or wholly outside it, so the crop never opens on
+// half a word, a sliver of the numeral or the arm of a crosshair; only the
+// hairlines and the rims run across. The numeral's ink (measured, not its
+// box) ends 38px short of the words' column, so even an italic's overhang
+// keeps 32px clear of it. The script fits each title to its column and
+// refuses to write any card that breaks one of those rules, whose text
+// overflows, or that is set in anything but Fraunces, Newsreader and
+// Instrument Sans.
 //
 // The filenames are public URLs (og:image on every page), so they never
 // change. Each card's alt text is ALT(card); the pages' og:image:alt must
@@ -46,6 +58,13 @@ const W = 1200;
 const H = 630;
 // A square crop of the middle keeps x 285 to 915; the words keep 15px clear.
 const SAFE = [300, 900];
+const CROP = [(W - H) / 2, (W + H) / 2];
+// The least room between the numeral's ink and the words' column at x 300.
+// An italic's first letter hangs about 6px left of its box, so 38 here keeps
+// 32 between ink and ink. The cover's seal, a round shape beside the upright
+// nameplate, keeps 24 (three quarters of 32) to its rim's points.
+const GAP = 38;
+const SEAL_GAP = 24;
 const SITE_URL = 'https://bensiverly.com';
 
 // Departments: the field, its edition and its numeral.
@@ -73,16 +92,17 @@ const ART = {
 // The cards. page: the page that shows it. dept: a DEPTS key. kicker, title,
 // line: the words (line may carry <br> where a poem breaks). title style:
 // nameplate, display (caps), light, italic, name (the résumé's) or rate.
-// art: [drawing, crop "x y w h"]; artAlt says what a crop shows. seal: [figure, second figure, label], the
-// page's one seal, on the plate's corner (sealAt). rail: cover lines up the
-// left wing. what: how the alt text names the page.
+// art: [drawing, crop "x y w h"]; artAlt says what a crop shows. seal:
+// [figure, second figure, label], the page's one seal, on the plate's corner
+// (sealAt) or, on the cover, in the left wing. rail: lines up the left wing.
+// what: how the alt text names the page. Say it once: no card repeats its
+// title in its line, or its seal anywhere else.
 const CARDS = [
   {
     file: 'og-home.png', page: 'index.html', dept: 'cover', style: 'nameplate',
     kicker: 'Product, data and AI', title: 'Ben Siverly',
     line: 'Product manager, data scientist first.',
-    art: ['still-life', '40 0 520 690'], seal: ['44%', '70%', 'Applications submitted'], sealAt: 'right: -24px; bottom: -46px',
-    rail: ['The application nobody could finish', '44% to 70%'],
+    art: ['still-life', '40 0 520 690'], seal: ['44%', '70%', 'Applications submitted'], sealAt: 'wing',
     what: 'the cover of Ben Siverly’s site, Issue 01, Autumn 2026',
   },
   {
@@ -96,7 +116,7 @@ const CARDS = [
   {
     file: 'og-native-plant-finder.png', page: 'native-plant-finder.html', dept: 'workshop', style: 'display',
     kicker: 'Free tool · no account', title: 'Native Plant Finder',
-    line: 'Find native plants for your garden, by location and sun.',
+    line: 'California native plants for your ZIP code and sun.',
     art: ['poppy', '0 0 200 240'], what: 'a free tool by Ben Siverly',
   },
   {
@@ -138,7 +158,7 @@ const CARDS = [
   {
     file: 'og-nobody-claps.png', page: 'nobody-claps.html', dept: 'writing', style: 'light',
     kicker: 'Essay · June 2026', title: 'Nobody Claps',
-    line: 'Nobody claps. That’s how I know it’s working.',
+    line: 'The two most durable things I’ll ever make are asleep down the hall.',
     art: ['marigold', '10 -14 140 175'], what: 'an essay by Ben Siverly',
   },
   {
@@ -186,7 +206,7 @@ const CARDS = [
   {
     file: 'og-consulting-rates.png', page: 'consulting-rates.html', dept: 'consulting', style: 'rate',
     kicker: 'Rate card', title: '$250 an hour',
-    line: 'One rate, four ways to work together. The first conversation is free.',
+    line: 'One rate, four ways to work together.',
     art: ['marigold', '10 -14 140 175'], seal: ['Free', '', 'First conversation'], sealAt: 'right: -24px; bottom: -46px',
     what: 'Ben Siverly’s consulting rate card',
   },
@@ -220,7 +240,12 @@ function ALT(card) {
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 // Words may carry <br> (a poem's line break); everything else is escaped.
-const words = (s) => s.split('<br>').map((l) => esc(l).replace(/(\S+-\S+)/g, '<span class="nw">$1</span>')).join('<br>');
+const nw = (l) => esc(l).replace(/(\S+-\S+)/g, '<span class="nw">$1</span>');
+const words = (s) => s.split('<br>').map(nw).join('<br>');
+// A poem's lines, each its own block with a hanging indent, as on the poem's
+// page: a line too long for the card wraps indented, so a wrap never passes
+// for one of Ben's line breaks.
+const poemLines = (s) => s.split('<br>').map((l) => `<span class="ln">${nw(l)}</span>`).join('');
 
 function site() {
   return JSON.parse(fs.readFileSync(path.join(ROOT, 'site.json'), 'utf8'));
@@ -245,9 +270,13 @@ body::after { content: none; }
 .og.paper::before { content: ""; position: absolute; inset: 0; z-index: -2; background: radial-gradient(60% 50% at 12% 0%, rgb(255 252 244 / 0.7), transparent 70%), radial-gradient(50% 60% at 100% 100%, rgb(160 120 90 / 0.12), transparent 70%); }
 .og.charcoal::before { content: ""; position: absolute; inset: 0; z-index: -2; background: radial-gradient(48% 60% at 92% 30%, var(--leak-orange), transparent 70%), radial-gradient(40% 50% at 8% 90%, var(--leak-green), transparent 70%); }
 
-/* Running head: folio caps between hairlines. */
-.og-rh { display: flex; justify-content: space-between; align-items: center; gap: 24px; padding-block: 10px; border-block: 1px solid currentColor; font: 600 17px / 1 var(--font-label); letter-spacing: 0.14em; text-transform: uppercase; font-stretch: 82%; white-space: nowrap; }
+/* Running head: folio caps in the wings, the nameplate in the middle, between hairlines. */
+.og-rh { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 24px; height: 48px; border-block: 1px solid currentColor; font: 600 17px / 1 var(--font-label); letter-spacing: 0.14em; text-transform: uppercase; font-stretch: 82%; white-space: nowrap; }
+.og-rh > :first-child { justify-self: start; }
+.og-rh > :last-child { justify-self: end; margin-right: -0.14em; }
 .og-rh b { font-weight: 600; color: var(--og-num); }
+.og-rh .np { display: block; height: 26px; width: auto; fill: currentColor; overflow: visible; }
+.og-rh .depts { display: flex; gap: 20px; font-size: 16px; letter-spacing: 0.1em; }
 
 /* The foot: the address on a hairline that runs to a crosshair at each end. */
 .og-foot { position: relative; display: flex; align-items: center; gap: 18px; padding-inline: 22px; height: 34px; font: 400 21px / 1 var(--font-text); }
@@ -256,7 +285,8 @@ body::after { content: none; }
 .og-foot .xh--l { left: 0; } .og-foot .xh--r { left: 100%; }
 
 .og-main { position: relative; display: grid; grid-template-columns: 260px 584px 1fr; align-items: center; min-height: 0; }
-.og-wing { justify-self: start; font: 300 250px / 0.8 var(--font-display); font-variation-settings: 'SOFT' 100; letter-spacing: -0.05em; color: var(--og-num); margin-left: -10px; }
+.og-wing { justify-self: end; margin-right: 46px; font: 300 218px / 0.8 var(--font-display); font-variation-settings: 'SOFT' 100; letter-spacing: -0.05em; color: var(--og-num); }
+.og-wing--seal { justify-self: start; margin: 0 0 0 6px; }
 .og-words { display: flex; flex-direction: column; gap: 16px; min-width: 0; max-height: 100%; }
 .og-kicker { font: 600 22px / 1.1 var(--font-label); letter-spacing: 0.14em; text-transform: uppercase; font-stretch: 85%; color: var(--og-kicker); }
 .og-title { overflow-wrap: normal; word-break: keep-all; hyphens: none; text-wrap: balance; }
@@ -271,13 +301,14 @@ body::after { content: none; }
 .og-title--nameplate svg { width: 100%; height: auto; fill: currentColor; overflow: visible; }
 .og-issue { display: flex; align-items: center; justify-content: center; gap: 14px; padding-block: 9px; border-block: 1px solid currentColor; font: 400 22px / 1.2 var(--font-text); white-space: nowrap; }
 .og-issue .dash { width: 40px; height: 1px; background: currentColor; }
-.og-line { font: italic 400 34px / 1.24 var(--font-text); text-wrap: pretty; }
+.og-line { font: italic 400 34px / 1.24 var(--font-text); text-wrap: balance; }
 .og-line .nw { white-space: nowrap; }
+.og-line .ln { display: block; padding-left: 1em; text-indent: -1em; text-wrap: pretty; }
 .og-title--name + .og-rules + .og-line { font: 600 20px / 1.3 var(--font-label); letter-spacing: 0.1em; text-transform: uppercase; font-stretch: 88%; color: var(--og-num); }
 .og-rules { height: 7px; border-block: 2px solid currentColor; }
 
 /* The engraving: a dark plate in a hairline frame with crosshair corners. */
-.og-plate { position: relative; justify-self: end; width: 236px; }
+.og-plate { position: relative; justify-self: end; width: 220px; }
 .og-art { position: relative; isolation: isolate; overflow: hidden; color: var(--palette-newsprint); background: radial-gradient(70% 60% at 50% 40%, #4C423B, #342D2A 50%, #1F1B1A); box-shadow: 0 0 0 1.5px var(--og-frame); }
 .og-art::after { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: var(--texture-grain); background-size: var(--texture-grain-tile); opacity: 0.28; }
 .og-art svg { display: block; width: 100%; height: auto; }
@@ -295,8 +326,15 @@ body::after { content: none; }
 .og-seal b i { font-style: normal; font-size: 0.6em; }
 .og-seal b.pair { font-size: 26px; }
 .og-seal small { max-width: 80%; font: 600 13px / 1.1 var(--font-label); letter-spacing: 0.04em; text-transform: uppercase; font-stretch: 82%; }
+/* The cover's seal stands in the left wing, where a department's numeral goes,
+   at a size a phone's feed can read. */
+.og-seal--wing { position: relative; width: 220px; }
+.og-seal--wing .in { gap: 6px; }
+.og-seal--wing b { font-size: 48px; }
+.og-seal--wing b.pair { font-size: 38px; }
+.og-seal--wing small { font-size: 18px; letter-spacing: 0.05em; }
 
-/* A rail of cover lines up the left wing, as on the cover. */
+/* A rail of lines up the left wing, as on the cover (the résumé's employers). */
 .og-rail { position: absolute; left: 44px; top: 50%; width: max-content; translate: -50% -50%; rotate: -90deg; display: flex; align-items: center; gap: 12px; font: 400 18px / 1 var(--font-text); white-space: nowrap; }
 .og-rail .run { flex: none; width: 44px; height: 1px; background: currentColor; }
 
@@ -317,8 +355,18 @@ function cardHtml(card, ctx) {
   const { svg } = ctx.art([...new Set([card.art[0]])]);
   const cls = ['og', `og--${card.dept}`, dept.field].join(' ');
   const s = ctx.site;
-  const deptName = dept.num ? `<b>${dept.num}</b>&ensp;${esc(dept.name)}` : esc(dept.name);
-  const rh = `<header class="og-rh"><span>${esc(s.name)} · Issue ${esc(s.issue.number)} · ${esc(s.issue.season)}</span><span>${deptName}</span></header>`;
+  const folio = (num, name) => (num ? `<b>${esc(num)}</b>&ensp;${esc(name)}` : esc(name));
+  // The running head: the issue, whose card it is, the department. The cover
+  // says the first two in its own nameplate and issue line, so it lists the
+  // issue's departments instead; the résumé's title is the name already.
+  let rh;
+  if (card.style === 'nameplate') {
+    const depts = [...s.departments, ...(s.consulting && s.consulting.enabled ? [s.consulting] : [])];
+    rh = `<header class="og-rh"><span></span><span class="depts">${depts.map((d) => `<span>${folio(d.num, d.name)}</span>`).join('')}</span><span></span></header>`;
+  } else {
+    const np = card.style === 'name' ? '<span></span>' : `<svg class="np" viewBox="${ctx.np.box}" role="img" aria-label="${esc(s.name)}"><path d="${ctx.np.d}"/></svg>`;
+    rh = `<header class="og-rh"><span>Issue ${esc(s.issue.number)} · ${esc(s.issue.season)}</span>${np}<span>${folio(dept.num, dept.name)}</span></header>`;
+  }
   const foot = `<footer class="og-foot"><span class="xh xh--l" aria-hidden="true"></span><span class="run"></span><span>bensiverly.com</span><span class="run"></span><span class="xh xh--r" aria-hidden="true"></span></footer>`;
   let title;
   if (card.style === 'nameplate') {
@@ -335,9 +383,12 @@ function cardHtml(card, ctx) {
   const [name, box] = card.art;
   const [, , bw, bh] = box.split(' ').map(Number);
   const size = ctx.sizes[name];
-  const seal = card.seal ? `<p class="og-seal" style="${card.sealAt || 'left: -62px; bottom: -40px'}"><span class="in">${card.seal[1] ? `<b class="pair">${esc(card.seal[0])}<i>→</i>${esc(card.seal[1])}</b>` : `<b>${esc(card.seal[0])}</b>`}<small>${esc(card.seal[2])}</small></span></p>` : '';
+  const inWing = card.sealAt === 'wing';
+  const seal = !card.seal ? '' : `<p class="og-seal${inWing ? ' og-seal--wing' : ''}"${inWing ? '' : ` style="${card.sealAt || 'left: -62px; bottom: -40px'}"`}><span class="in">${card.seal[1] ? `<b class="pair">${esc(card.seal[0])}<i>→</i>${esc(card.seal[1])}</b>` : `<b>${esc(card.seal[0])}</b>`}<small>${esc(card.seal[2])}</small></span></p>`;
   const xh = ['tl', 'tr', 'bl', 'br'].map((c) => `<span class="xh xh--${c}" aria-hidden="true"></span>`).join('');
-  const plate = `<figure class="og-plate"><div class="og-art"><svg viewBox="${box}" style="aspect-ratio: ${bw} / ${bh}"><use href="#art-${name}" width="${size[0]}" height="${size[1]}"/></svg></div>${xh}${seal}</figure>`;
+  const plate = `<figure class="og-plate"><div class="og-art"><svg viewBox="${box}" style="aspect-ratio: ${bw} / ${bh}"><use href="#art-${name}" width="${size[0]}" height="${size[1]}"/></svg></div>${xh}${inWing ? '' : seal}</figure>`;
+  const wing = inWing ? `<div class="og-wing og-wing--seal">${seal}</div>` : `<div class="og-wing" aria-hidden="true">${dept.num}</div>`;
+  const line = card.style === 'italic' ? poemLines(card.line) : words(card.line);
   const rail = card.rail ? `<p class="og-rail" aria-hidden="true">${card.rail.map(esc).join('<span class="run"></span>')}</p>` : '';
   const rims = dept.field === 'charcoal' ? '<div class="rim rim--edge-top"></div><div class="rim rim--edge-bottom"></div>' : '';
   return `<!DOCTYPE html>
@@ -356,8 +407,8 @@ ${svg}
 ${rims}
 ${rh}
 <div class="og-main">
-<div class="og-wing" aria-hidden="true">${dept.num}</div>${rail}
-<div class="og-words" data-safe>${kicker}${title}${rules}<p class="og-line">${words(card.line)}</p></div>
+${wing}${rail}
+<div class="og-words" data-safe>${kicker}${title}${rules}<p class="og-line">${line}</p></div>
 ${plate}
 </div>
 ${foot}
@@ -391,7 +442,7 @@ function serve(pages) {
 
 // In the page: fit the title to its column (largest size whose words all fit
 // and whose lines stay within max), then report anything out of bounds.
-function fitAndCheck(safe) {
+function fitAndCheck({ safe, crop, gap, sealGap }) {
   const problems = [];
   const words = document.querySelector('.og-words');
   const main = document.querySelector('.og-main');
@@ -414,6 +465,38 @@ function fitAndCheck(safe) {
     if (el.scrollWidth > el.clientWidth + 1 && getComputedStyle(el).overflow !== 'visible') problems.push(`<${el.tagName.toLowerCase()}> overflows`);
   }
   if (words.scrollHeight > main.clientHeight - 47) problems.push('the words crowd the running head or the foot');
+  // Everything else sits wholly inside the square crop or wholly outside it,
+  // so the crop never opens on half a word, a sliver of the numeral or a
+  // crosshair's arm. Only the hairlines and the rims run across.
+  const placed = (l, r) => r <= crop[0] + 0.5 || l >= crop[1] - 0.5 || (l >= crop[0] - 0.5 && r <= crop[1] + 0.5);
+  for (const el of document.querySelectorAll('.og-rh > *, .og-rh .depts > *, .og-foot > :not(.run), .og-wing:not(.og-wing--seal), .og-rail, .og-plate, .og-plate .xh')) {
+    const r = el.getBoundingClientRect();
+    if (!r.width) continue;
+    if (!placed(r.left, r.right)) problems.push(`<${el.tagName.toLowerCase()} class="${el.getAttribute('class')}"> runs from x ${Math.round(r.left)} to ${Math.round(r.right)}, across an edge of the square crop (${crop[0]} to ${crop[1]})`);
+  }
+  // A seal by its round rim (its box grows as it turns).
+  for (const seal of document.querySelectorAll('.og-seal')) {
+    const b = seal.getBoundingClientRect();
+    const cx = (b.left + b.right) / 2, rad = (seal.offsetWidth * 1.05) / 2;
+    if (!placed(cx - rad, cx + rad)) problems.push(`the seal's rim runs from x ${Math.round(cx - rad)} to ${Math.round(cx + rad)}, across an edge of the square crop`);
+    if (seal.closest('.og-wing') && cx + rad > safe[0] - sealGap) problems.push(`the seal's rim comes within ${Math.round(safe[0] - cx - rad)}px of the words`);
+  }
+  // The numeral's ink, not its box, ends at least gap short of the words:
+  // measured as the canvas draws it, letter spacing and all.
+  const wing = document.querySelector('.og-wing:not(.og-wing--seal)');
+  if (wing && wing.textContent.trim()) {
+    const cs = getComputedStyle(wing);
+    const pen = document.createElement('canvas').getContext('2d');
+    pen.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    pen.letterSpacing = cs.letterSpacing;
+    const m = pen.measureText(wing.textContent.trim());
+    const range = document.createRange();
+    range.selectNodeContents(wing);
+    const r = range.getBoundingClientRect();
+    const ink = [r.left - m.actualBoundingBoxLeft, r.left + m.actualBoundingBoxRight];
+    if (ink[1] > safe[0] - gap) problems.push(`the numeral's ink ends at x ${Math.round(ink[1])}, closer than ${gap}px to the words at ${safe[0]}`);
+    if (!placed(...ink)) problems.push(`the numeral's ink runs from x ${Math.round(ink[0])} to ${Math.round(ink[1])}, across an edge of the square crop`);
+  }
   // A seal's figures and label sit inside its dashed ring.
   // (Measured in the seal's own, unrotated layout.)
   for (const ring of document.querySelectorAll('.og-seal .in')) {
@@ -485,7 +568,7 @@ async function main() {
       await page.setViewport({ width: W, height: H, deviceScaleFactor: 1 });
       await page.goto(`${base}/__og/${card.file.replace('.png', '.html')}`, { waitUntil: 'networkidle0' });
       await page.evaluate(() => document.fonts.ready);
-      const { problems, size } = await page.evaluate(fitAndCheck, SAFE);
+      const { problems, size } = await page.evaluate(fitAndCheck, { safe: SAFE, crop: CROP, gap: GAP, sealGap: SEAL_GAP });
       const fonts = await usedFonts(page);
       for (const f of fonts) if (!ALLOWED.test(f)) problems.push(`set in ${f}`);
       if (problems.length) failures.push(`${card.file}:\n  ${problems.join('\n  ')}`);
@@ -509,7 +592,7 @@ async function main() {
   }
 }
 
-module.exports = { CARDS, ALT, SAFE, W, H, DEPTS, ART };
+module.exports = { CARDS, ALT, SAFE, CROP, GAP, W, H, DEPTS, ART };
 
 if (require.main === module) {
   main().catch((err) => { console.error(err); process.exit(1); });
