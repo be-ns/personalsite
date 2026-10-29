@@ -17,8 +17,9 @@ entirely in the browser: no accounts, no servers, no tracking. Inputs can arrive
 saved state lives in `localStorage`, and PDFs are generated client-side with [jsPDF](https://github.com/parallax/jsPDF),
 loaded only on the pages that need it.
 
-The single dev dependency that touches pixels, [sharp](https://sharp.pixelplumbing.com/),
-powers an offline script that renders the Open Graph share images. It never ships to the
+The dev dependencies that touch pixels, headless Chrome through
+[Puppeteer](https://pptr.dev/) and [sharp](https://sharp.pixelplumbing.com/), power offline
+scripts that draw the share cards, the site icons and the résumé PDFs. They never ship to the
 browser.
 
 One asterisk. The parts every page shares (the head links, the masthead and menu, the
@@ -87,9 +88,10 @@ writings.html              Poetry and prose
 resume.html                One-page resume on proof stock, with its three PDFs
 render-resume-pdf.js       Prints the three resume PDFs and checks them: one Letter page, the site's fonts, reading order
 assets/native-plants/      Static JSON datasets: plants, regions, nurseries, ZIP index
-images/                    Generated Open Graph share images (1200x630)
-generate-og-images.js      Offline OG-image generator (Node + sharp)
-generate-kit-art.js        Seeded drawings for the engravings, stamped by build-pages.js
+images/                    The share cards (og-*.png, 1200x630) and the manifest's icons
+generate-og-images.js      Draws the share cards in headless Chrome with the site's own CSS and fonts (npm run generate-og)
+generate-icons.js          Draws apple-touch-icon.png and the manifest's icons from favicon.svg (npm run generate-icons)
+generate-kit-art.js        Seeded drawings for the engravings and plates, stamped by build-pages.js
 check-browser.js           Headless-Chrome checks: overflow, first screen, menu, tool keys, contrast, print, Writing, Consulting, agent contract
 test/                      Test suite (node:test, no dependencies)
 test/page-sandbox.js       Runs a page's scripts in node:vm to read its WebMCP tools and URL parameters
@@ -159,11 +161,12 @@ problems page quoting the résumé word for word), and the
 integrity of the native-plant datasets: every plant, ZIP code, and nursery has to reference
 vocabulary and regions that actually exist.
 
-To regenerate the Open Graph images:
+To redraw the share cards and the icons:
 
 ```bash
-npm install          # installs sharp (build-time only)
-npm run generate-og  # writes images/og-*.png
+npm install             # installs Puppeteer and sharp (build-time only)
+npm run generate-og     # writes images/og-*.png, one card a page; refuses any card whose words leave the middle
+npm run generate-icons  # writes apple-touch-icon.png and images/icon-*.png from favicon.svg
 ```
 
 ## Deployment

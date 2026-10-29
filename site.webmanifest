@@ -1,18 +1,36 @@
 {
   "name": "Ben Siverly",
   "short_name": "Ben Siverly",
-  "description": "Personal site and a workshop of free, private, no-account browser tools.",
+  "description": "Ben Siverly's site, set as an issue of a magazine: product, data and AI, free browser tools your AI agent can run, writing, and consulting for small and mid-size companies and startups.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#0047ab",
+  "background_color": "#34302F",
+  "theme_color": "#34302F",
   "icons": [
     {
       "src": "/favicon.svg",
       "type": "image/svg+xml",
       "sizes": "any",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icon-maskable-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
     }
   ]
 }

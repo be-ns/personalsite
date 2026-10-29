@@ -11,7 +11,7 @@
 //
 // Markers: <!-- chrome:NAME {json} --> ... <!-- /chrome:NAME -->
 //
-//   head      inside <head>: theme-color, icon, manifest, the pre-paint
+//   head      inside <head>: theme-color, icons, manifest, the pre-paint
 //             edition script, font preloads, tokens.css and site.css.
 //   top       first in <body>: skip link, icons, masthead, menu sheet.
 //   art       in <body>, after top and before <main>: the engravings the
@@ -230,7 +230,9 @@ function head(ctx) {
   });
   return [
     `<meta name="theme-color" content="${night}">`,
+    `<link rel="icon" type="image/png" sizes="32x32" href="${root}images/icon-32.png">`,
     `<link rel="icon" type="image/svg+xml" href="${root}favicon.svg">`,
+    `<link rel="apple-touch-icon" href="${root}apple-touch-icon.png">`,
     `<link rel="manifest" href="${root}site.webmanifest">`,
     '<script>',
     '  // Apply a saved edition before first paint. Night is the default on every device.',

@@ -16,6 +16,7 @@
     "validate": "htmlhint \"*.html\"",
     "links": "lychee --no-progress --offline \"*.html\"",
     "generate-og": "node generate-og-images.js",
+    "generate-icons": "node generate-icons.js",
     "generate-art": "node build-pages.js",
     "generate-resume-pdf": "node render-resume-pdf.js",
     "tokens": "node build-tokens.js",
