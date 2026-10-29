@@ -26,11 +26,11 @@ At Oracle the company was pulling together location data, browsing behavior and 
 
 ### A recovering data scientist
 
-I still count everything. Then I poke at the count. One number with its source beats five without one.
+I still count everything, then I poke at the count. At AppFolio, 44 of every 100 started rental applications were submitted. Every applicant was anonymous, so the number couldn't say who stopped, or where.
 
 ### I build my own things
 
-An apparel company, back when. Brava, nights and weekends with my brother. Six free tools on this site that someone's AI agent can run. I'd rather show you a working thing than a deck.
+An apparel company, back when. Brava, with my brother. Six free tools on this site that someone's AI agent can run. I'd rather show you a working thing than a deck.
 
 ### The unglamorous middle
 
@@ -45,7 +45,7 @@ I take on a few clients at a time, on purpose. Each one gets real attention, and
 - **AppFolio, applications:** Rebuilt the rental application end to end. Submissions went from 44% to 70%. [The story](/index.html#work)
 - **AppFolio, payments:** Checkout for application fees, with a recovery path for failed payments. 99.1% of application payments completed. [Résumé](/resume.html)
 - **Lively:** Built the money-movement platform, and moved $50M+ in HSA assets between financial institutions with zero data loss. [Résumé](/resume.html)
-- **Oracle:** Built a system to run hundreds of evaluations against model updates, so a change was judged on real statistical significance, not gut feelings. [The story](/index.html#work)
+- **Oracle:** Built a system to run hundreds of evaluations against model updates, so a change was judged on real statistical significance, not gut feelings. [The story](/index.html#oracle)
 - **Brava:** With my brother: the AI production pipeline, and a COPPA and privacy review for minors' data. [bravamade.com](https://bravamade.com)
 - **AbiertoClaw:** Finds the best free AI model each day with a real tool-call test. [On GitHub](https://github.com/be-ns/AbiertoClaw)
 - **Native Plant Finder:** A free tool that someone's AI agent can run, by link or over WebMCP. [Open it](/native-plant-finder.html)

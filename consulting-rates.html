@@ -61,7 +61,7 @@
         "headline": "What it costs",
         "description": "Ben Siverly’s rate for strategy and operations work: $250 an hour, in US dollars. The first conversation is free.",
         "inLanguage": "en",
-        "dateModified": "2026-10-28",
+        "dateModified": "2026-10-29",
         "isPartOf": {
           "@id": "https://bensiverly.com/#website"
         },
@@ -196,13 +196,16 @@
       .rc-foot .btn { width: 100%; min-inline-size: 0; }
     }
     @media (max-width: 359px) { .rc-rate { font-size: 4.25rem; } }
+    /* On a phone the seal sits in a little from the plate's corner, so the
+       corner's crosshair would poke out beside its rim: the seal stands for it. */
+    @media screen and (max-width: 599px) { .rc-frame .xh--br { visibility: hidden; } }
 
     /* Print: the card alone, on one Letter page, in Day ink on paper. The
        button gives way to the page's address. */
     @media print {
       @page { size: Letter; margin: 0.6in; }
       main.consult { padding: 0; }
-      .consult--rate-card .rh, .consult--rate-card .c-opener, .c-after, .c-contents, .c-on, .rc-foot .c-ask { display: none !important; }
+      .consult--rate-card .c-field, .consult--rate-card .rh, .consult--rate-card .c-opener, .c-after, .c-contents, .rc-foot .c-ask { display: none !important; }
       .rc-wrap { width: auto; padding: 0; }
       .rate-card { max-width: none; padding: 0; break-inside: avoid; }
       .rc-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: 0.5in; }
@@ -282,15 +285,18 @@
   <!-- /chrome:art -->
 
   <main id="main" class="consult consult--rate-card">
-    <div class="wrap">
-      <div class="rh rh--verso t-folio"><span class="rh-pg">05</span><span class="rh-title"><a href="consulting.html">Consulting</a><span aria-hidden="true"> &middot; </span>Rate card</span><span class="rh-pub">Ben Siverly &middot; Issue 01 &middot; Autumn 2026</span></div>
-      <header class="opener c-opener">
-        <div class="opener-copy">
-          <p class="t-kicker">Rates &middot; <span data-read="consult-body">1</span> min read</p>
-          <h1 class="opener-title">What it costs</h1>
-          <p class="t-deck">One rate for every kind of work. What changes is the shape.</p>
-        </div>
-      </header>
+    <div class="c-field field-leaf">
+      <div class="wrap">
+        <div class="rh rh--verso t-folio"><span class="rh-pg">05</span><span class="rh-title"><a href="consulting.html">Consulting</a><span aria-hidden="true"> &middot; </span>Rate card</span><span class="rh-pub">Ben Siverly &middot; Issue 01 &middot; Autumn 2026</span></div>
+        <header class="opener c-opener">
+          <div class="opener-copy">
+            <p class="t-kicker">Rates &middot; <span data-read="consult-body">1</span> min read</p>
+            <h1 class="opener-title">What it costs</h1>
+            <p class="t-deck">One rate for every kind of work. What changes is the shape.</p>
+          </div>
+        </header>
+      </div>
+      <span class="rim rim--bottom" aria-hidden="true"></span>
     </div>
     <div id="consult-body">
       <svg class="art-defs" width="0" height="0" aria-hidden="true" focusable="false"><defs><clipPath id="scallop" clipPathUnits="objectBoundingBox"><path d="M0.5 0 L0.56 0.07 L0.64 0.03 L0.69 0.11 L0.78 0.1 L0.8 0.19 L0.89 0.21 L0.88 0.3 L0.96 0.35 L0.92 0.43 L1 0.5 L0.92 0.57 L0.96 0.65 L0.88 0.7 L0.89 0.79 L0.8 0.81 L0.78 0.9 L0.69 0.89 L0.64 0.97 L0.56 0.93 L0.5 1 L0.44 0.93 L0.36 0.97 L0.31 0.89 L0.22 0.9 L0.2 0.81 L0.11 0.79 L0.12 0.7 L0.04 0.65 L0.08 0.57 L0 0.5 L0.08 0.43 L0.04 0.35 L0.12 0.3 L0.11 0.21 L0.2 0.19 L0.22 0.1 L0.31 0.11 L0.36 0.03 L0.44 0.07 Z"/></clipPath></defs></svg>
@@ -324,10 +330,16 @@
           </div>
         </section>
       </div>
-      <div class="wrap c-text c-after">
-        <h2 class="c-h2" id="how-the-hours-work">How the hours work</h2>
-        <p>One rate covers every shape, so the only question is which shape fits the work. By the hour suits a decision that needs a second pair of eyes, or a plan to pressure-test before anyone builds. A weekly block suits a team with product work and nobody to own it yet. An outcome suits a result you can name.</p>
-        <p>Whichever it is, before the first paid hour we write down what good looks like and agree on it. If you can’t tell which shape fits, that’s what the first conversation is for.<span class="end-mark" aria-hidden="true"></span></p>
+      <div class="c-band field-spot c-after">
+        <span class="rim rim--top" aria-hidden="true"></span>
+        <div class="wrap">
+          <div class="c-text">
+            <h2 class="c-h2" id="how-the-hours-work">How the hours work</h2>
+            <p>By the hour suits a decision that needs a second pair of eyes, or a plan to pressure-test before anyone builds. A weekly block suits a team with product work and nobody to own it yet. An outcome suits a result you can name.</p>
+            <p>Whichever it is, before the first paid hour we write down what good looks like and agree on it. If you can’t tell which shape fits, that’s what the first conversation is for.<span class="end-mark" aria-hidden="true"></span></p>
+          </div>
+        </div>
+        <span class="rim rim--bottom" aria-hidden="true"></span>
       </div>
     </div>
     <div class="wrap">
@@ -336,7 +348,7 @@
         <ol class="c-toc">
           <li><a href="consulting.html"><span class="row"><span class="name">Consulting</span><span class="lead"></span><span class="rt"><span data-read="consulting.html#consult-body">1</span> min</span></span><span class="desc t-small">Strategy and operations for small and mid-size companies and startups.</span></a></li>
           <li><a href="consulting-rates.html" aria-current="page"><span class="row"><span class="name">Rate card</span><span class="lead"></span><span class="rt"><span data-read="consulting-rates.html#consult-body">1</span> min</span></span><span class="desc t-small">One rate, four ways to work together. The first conversation is free.</span></a></li>
-          <li><a href="consulting-problems.html"><span class="row"><span class="name">What to call me about</span><span class="lead"></span><span class="rt"><span data-read="consulting-problems.html#consult-body">3</span> min</span></span><span class="desc t-small">Seven problems I’ve worked on, where, and one fact for each.</span></a></li>
+          <li><a href="consulting-problems.html"><span class="row"><span class="name">What to call me about</span><span class="lead"></span><span class="rt"><span data-read="consulting-problems.html#consult-body">3</span> min</span></span><span class="desc t-small">Seven problems I’ve worked on, where I met each one, and one fact for each.</span></a></li>
           <li><a href="consulting-perspective.html"><span class="row"><span class="name">Where I’m from</span><span class="lead"></span><span class="rt"><span data-read="consulting-perspective.html#consult-body">2</span> min</span></span><span class="desc t-small">Rural life, a job I left over the data, and why I take a few clients at a time.</span></a></li>
         </ol>
       </nav>

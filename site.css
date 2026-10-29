@@ -971,6 +971,29 @@ main.writing { overflow: clip; padding-bottom: calc(var(--space-section) + var(-
    teasers. Each page's own layout (the rate card, the numbered problems,
    the essay) is in its <style>. Scoped with :where(.consult). */
 main.consult { padding-bottom: var(--space-section); }
+
+/* The nudibranch: each page opens on a Goody Gumdrop field with Char type,
+   the plate in a dark frame with crosshair corners, and a ruffled rim where
+   the field meets the page, green ruffles edged in orange. One Toxic Orange
+   band later in the page edges its rims in green, so orange touches green.
+   Charcoal is the dash between them. */
+:where(.consult) .c-field { padding-bottom: var(--space-2); }
+:where(.consult) .c-field .c-opener { border-bottom: 0; }
+:where(.consult) .c-field > .rim { --rim-color: var(--spot-fill); --rim-fill: var(--leaf-fill); }
+:where(.consult) .c-band { margin-block: calc(var(--space-6) + 14px); padding-block: var(--space-6) var(--space-7); }
+:where(.consult) .c-band > .rim { --rim-color: var(--leaf-fill); --rim-fill: var(--spot-fill); }
+:where(.consult) .opener-art { position: relative; }
+:where(.consult) .opener-art .xh--tl { left: -0.6rem; top: -0.6rem; } :where(.consult) .opener-art .xh--tr { left: calc(100% + 0.6rem); top: -0.6rem; }
+:where(.consult) .opener-art .xh--bl { left: -0.6rem; top: calc(100% + 0.6rem); } :where(.consult) .opener-art .xh--br { left: calc(100% + 0.6rem); top: calc(100% + 0.6rem); }
+:where(.consult) .c-ask--band { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-5); margin-top: var(--space-5); }
+:where(.consult) .c-ask--band .copy-status { flex-basis: 100%; order: 3; }
+:where(.consult) .c-end .c-close { max-width: 26em; margin-top: 0; font-size: clamp(1.375rem, 1.1rem + 1.2vw, 1.875rem); line-height: 1.25; }
+:where(.consult) .c-end .c-work { padding-top: 0; border-top: 0; }
+:where(.consult) .c-end .c-work + .c-close { margin-top: var(--space-7); }
+@media print {
+  :where(.consult) .c-field, :where(.consult) .c-band { margin: 0; background: none; }
+  :where(.consult) .c-field > .rim, :where(.consult) .c-band > .rim, :where(.consult) .field-leaf::before, :where(.consult) .field-spot::before { display: none; }
+}
 :where(.consult) .rh-title a { color: inherit; text-decoration-color: var(--rule); }
 :where(.consult) .rh-title a:hover { text-decoration-color: var(--spot-large); }
 /* The engravings sit on their dark plate in both editions; the street is
@@ -989,8 +1012,6 @@ main.consult { padding-bottom: var(--space-section); }
 :where(.consult) .c-text .c-h2 { margin-block: var(--space-6) var(--space-3); }
 :where(.consult) .c-text .c-h2:first-child { margin-top: 0; }
 :where(.consult) .c-close { max-width: 34em; margin-top: var(--space-6); font: italic var(--type-deck-weight) var(--type-deck-size) / var(--type-deck-line) var(--font-text); text-wrap: pretty; }
-:where(.consult) .c-on { margin-top: var(--space-5); }
-:where(.consult) .c-on .btn--text { margin-left: -0.25rem; }
 
 /* The other pages as teasers (the front page), each art crop on its plate. */
 :where(.consult) .c-more { padding-top: var(--space-5); border-top: var(--rule-double) var(--rule); }
@@ -1017,7 +1038,7 @@ main.consult { padding-bottom: var(--space-section); }
 :where(.consult) .c-toc a:hover .name { text-decoration: underline; text-decoration-color: var(--spot-large); text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
 :where(.consult) .c-toc a[aria-current="page"] .name::before { content: ""; display: inline-block; width: 0; height: 0; margin-right: 0.45em; border: 0.25em solid var(--spot-large); vertical-align: 0.12em; }
 @media print {
-  :where(.consult) .c-ask, :where(.consult) .c-more, :where(.consult) .c-contents, :where(.consult) .c-on { display: none; }
+  :where(.consult) .c-ask, :where(.consult) .c-more, :where(.consult) .c-contents { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

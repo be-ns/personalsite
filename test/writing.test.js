@@ -42,6 +42,7 @@ const sep = (s) => s.split(TITLE.from).join(TITLE.to);
 const date = (s) => s.split(DATE.from).join(DATE.to);
 
 const flat = (el) => textContent(el, (e) => e.tag === 'script' || e.tag === 'style').replace(/\s+/g, ' ').trim();
+const straight = (t) => t.replace(/\u2019/g, "'");
 const docs = new Map();
 const doc = (page) => {
   if (!docs.has(page)) docs.set(page, parseHtml(readPage(page)));
@@ -183,7 +184,8 @@ test('poems take no transforms, drop caps, hyphens or justification (site.css)',
 test('writings.html lists every piece in its three groups, with the words it had', () => {
   const was = fixture.index;
   assert.equal(flat(one(INDEX, (el) => el.tag === 'h1', 'h1')), was.h1);
-  assert.equal(flat(one(INDEX, (el) => hasClass(el, 'dept-intro'), 'intro')), was.intro);
+  // The same words; an apostrophe may be set as a typographer's one.
+  assert.equal(straight(flat(one(INDEX, (el) => hasClass(el, 'dept-intro'), 'intro'))), straight(was.intro));
   const shelves = all(INDEX, (el) => hasClass(el, 'shelf'));
   const got = shelves.map((shelf) => ({
     name: flat(findAll(shelf, (el) => el.tag === 'h2')[0]),
@@ -282,7 +284,7 @@ test('writings.html: no words on the index but its entries and the template\'s l
     }
   }
   want.push(FRAME.rights);
-  assert.deepEqual(leaves(one(INDEX, (el) => el.tag === 'main', '<main>'), () => false), want);
+  assert.deepEqual(leaves(one(INDEX, (el) => el.tag === 'main', '<main>'), () => false).map(straight), want.map(straight));
 });
 
 test('each piece links back to the index and to its neighbours, in the index\'s order', () => {

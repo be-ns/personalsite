@@ -7,7 +7,7 @@ kicker: Rates
 description: Ben Siverly's rate for strategy and operations work: $250 an hour, in US dollars. The first conversation is free.
 deck: One rate for every kind of work. What changes is the shape.
 teaser: One rate, four ways to work together. The first conversation is free.
-updated: 2026-10-28
+updated: 2026-10-29
 art: marigold 10 -14 140 175
 art_alt: Engraving of a single marigold
 rate: 250
@@ -37,6 +37,6 @@ lines:
 
 ## How the hours work
 
-One rate covers every shape, so the only question is which shape fits the work. By the hour suits a decision that needs a second pair of eyes, or a plan to pressure-test before anyone builds. A weekly block suits a team with product work and nobody to own it yet. An outcome suits a result you can name.
+By the hour suits a decision that needs a second pair of eyes, or a plan to pressure-test before anyone builds. A weekly block suits a team with product work and nobody to own it yet. An outcome suits a result you can name.
 
 Whichever it is, before the first paid hour we write down what good looks like and agree on it. If you can't tell which shape fits, that's what the first conversation is for.

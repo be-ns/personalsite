@@ -442,8 +442,12 @@
         return 'release';
       }
 
+      // A point's tag on the matrix: the area's initial, or two letters where
+      // two areas share one (Family and Financial, Relationships and Rest),
+      // so no two points carry the same tag.
+      const TAGS = { Family: 'Fa', Financial: 'Fi', Relationships: 'Re', Rest: 'Rs' };
       function getInitials(label) {
-        return label.split(' ').map(function(w) { return w[0]; }).join('').slice(0, 2).toUpperCase();
+        return TAGS[label] || label.split(' ').map(function(w) { return w[0]; }).join('').slice(0, 2).toUpperCase();
       }
 
       // "Health", "Health and Rest", "Health, Work and Rest"

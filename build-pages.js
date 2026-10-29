@@ -1147,10 +1147,12 @@ function fmText(value) {
 const ICO = '<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg>';
 const PUB = (site) => `${esc(site.name)} &middot; Issue ${esc(site.issue.number)} &middot; ${esc(site.issue.season)}`;
 
-function artFigure(art, cls) {
+const CORNERS = ['tl', 'tr', 'bl', 'br'].map((c) => `<span class="xh xh--${c}" aria-hidden="true"></span>`).join('');
+
+function artFigure(art, cls, { corners = false } = {}) {
   const [w, h] = artSize(art.name);
   const label = art.alt ? ` role="img" aria-label="${esc(art.alt)}"` : '';
-  return `<figure class="${cls}"${art.alt ? '' : ' aria-hidden="true"'}><div class="art"><svg viewBox="${art.box}" preserveAspectRatio="xMidYMid slice"${label}><use href="#art-${art.name}" width="${w}" height="${h}"/></svg></div></figure>`;
+  return `<figure class="${cls}"${art.alt ? '' : ' aria-hidden="true"'}><div class="art"><svg viewBox="${art.box}" preserveAspectRatio="xMidYMid slice"${label}><use href="#art-${art.name}" width="${w}" height="${h}"/></svg></div>${corners ? CORNERS : ''}</figure>`;
 }
 
 function copyButton(site, label, cls) {
@@ -1169,7 +1171,9 @@ function runningHead(model, site) {
 }
 
 // The opener: kicker with the reading time, the headline, the deck, the
-// front page's one orange button, and the engraving in its frame.
+// front page's ask, and the engraving in its frame with crosshair corners.
+// It sits on the field, so the ask is a Char button (brand.md: on a field,
+// buttons turn Char with a Newsprint label).
 function opener(model, site, { cta = null, art = true } = {}) {
   const d = model.data;
   const lines = [
@@ -1179,11 +1183,57 @@ function opener(model, site, { cta = null, art = true } = {}) {
     `    <h1 class="opener-title">${fmHtml(model, d.headline || d.title)}</h1>`,
   ];
   if (d.deck) lines.push(`    <p class="t-deck">${fmHtml(model, d.deck)}</p>`);
-  if (cta) lines.push('    <div class="c-ask">', ...copyButton(site, fmHtml(model, cta), 'btn--spot').map((l) => `      ${l}`), '    </div>');
+  if (cta) lines.push('    <div class="c-ask">', ...copyButton(site, fmHtml(model, cta), 'btn--inverse').map((l) => `      ${l}`), '    </div>');
   lines.push('  </div>');
-  if (art && model.art) lines.push(`  ${artFigure(model.art, 'opener-art')}`);
+  if (art && model.art) lines.push(`  ${artFigure(model.art, 'opener-art', { corners: true })}`);
   lines.push('</header>');
   return lines;
+}
+
+// Every Consulting page opens on the nudibranch (brand.md): a Goody
+// Gumdrop field with Char type, the running head and the opener on it, and
+// a ruffled rim where it meets the page, green ruffles edged in orange.
+function fieldOpener(model, site, options) {
+  return [
+    '<div class="c-field field-leaf">',
+    '  <div class="wrap">',
+    `    ${runningHead(model, site)}`,
+    ...indentLines(opener(model, site, options), 4),
+    '  </div>',
+    '  <span class="rim rim--bottom" aria-hidden="true"></span>',
+    '</div>',
+  ];
+}
+
+// Later in the page, one Toxic Orange band, its rims edged in green, so
+// orange touches green: how it starts on the front page, how the hours work
+// on the rate card, the close (and the selected work) on the others.
+function band(lines, { cls = '', tag = 'div', label = '' } = {}) {
+  const by = label ? ` aria-labelledby="${label}"` : '';
+  return [
+    `<${tag} class="c-band field-spot${cls ? ` ${cls}` : ''}"${by}>`,
+    '  <span class="rim rim--top" aria-hidden="true"></span>',
+    '  <div class="wrap">',
+    ...indentLines(lines, 4),
+    '  </div>',
+    '  <span class="rim rim--bottom" aria-hidden="true"></span>',
+    `</${tag}>`,
+  ];
+}
+
+// The close of the problems and the perspective, in their orange band: the
+// closing line with the end mark, the ask (the front page's words) and the
+// way to the rate card.
+function closingBand(model, all, site, before = []) {
+  const front = all.find((p) => p.page === site.consulting.page);
+  const card = all.find((p) => p.data.template === 'rate-card');
+  const ask = [
+    '<div class="c-ask c-ask--band">',
+    ...copyButton(site, fmHtml(front, front.data.cta), 'btn--inverse').map((l) => `  ${l}`),
+    ...(card && card !== model ? [`  <a class="btn btn--text c-to-card" href="${esc(card.page)}">${fmHtml(card, card.data.title)} ${ICO}</a>`] : []),
+    '</div>',
+  ];
+  return band([...before, closing(model), ...ask], { cls: 'c-end' });
 }
 
 // Under each page but the front: the department's pages, with dot leaders
@@ -1233,26 +1283,33 @@ const notesIn = (html) => [...html.matchAll(/href="#note-(\d+)"/g)].map((m) => N
 function frontMain(model, all, site) {
   const { intro, parts } = sections(model.doc.blocks);
   if (!intro.length || intro.some((b) => b.type !== 'p')) mdFail(model.file, model.bodyLine, 'the front page opens with its paragraphs, before any ##');
-  const body = [`<div class="c-text">`, ...intro.map((b, i) => `  <p${i ? '' : ' class="dropcap"'}>${b.html}</p>`), '</div>'];
+  const grid = [`<div class="c-text">`, ...intro.map((b, i) => `  <p${i ? '' : ' class="dropcap"'}>${b.html}</p>`), '</div>'];
+  let steps = [];
   for (const part of parts) {
     const id = slugify(part.head.text);
     const only = part.blocks.length === 1 ? part.blocks[0].type : null;
     if (only === 'dl') {
-      body.push(`<aside class="c-glance" aria-labelledby="${id}">`, `  <h2 class="t-kicker" id="${id}">${part.head.html}</h2>`, '  <dl>', ...part.blocks[0].items.map((it) => `    <div><dt class="t-folio">${it.term}</dt><dd>${it.html}</dd></div>`), '  </dl>', '</aside>');
+      grid.push(`<aside class="c-glance" aria-labelledby="${id}">`, `  <h2 class="t-kicker" id="${id}">${part.head.html}</h2>`, '  <dl>', ...part.blocks[0].items.map((it) => `    <div><dt class="t-folio">${it.term}</dt><dd>${it.html}</dd></div>`), '  </dl>', '</aside>');
     } else if (only === 'ol') {
-      body.push(`<section class="c-steps" aria-labelledby="${id}">`, `  <h2 class="c-h2" id="${id}">${part.head.html}</h2>`, '  <ol>', ...part.blocks[0].items.map((it, i) => `    <li><span class="n" aria-hidden="true">${String(i + 1).padStart(2, '0')}</span><p>${it.html}</p></li>`), '  </ol>', '</section>');
+      // How it starts: numbered, on the page's orange band.
+      if (steps.length) mdFail(model.file, part.head.line, 'the front page has one numbered list, how it starts');
+      steps = band([`<h2 class="c-h2" id="${id}">${part.head.html}</h2>`, '<ol>', ...part.blocks[0].items.map((it, i) => `  <li><span class="n" aria-hidden="true">${String(i + 1).padStart(2, '0')}</span><p>${it.html}</p></li>`), '</ol>'], { cls: 'c-steps', tag: 'section', label: id });
     } else {
-      body.push(`<section class="c-sec" aria-labelledby="${id}">`, `  <h2 class="c-h2" id="${id}">${part.head.html}</h2>`, ...indentLines(part.blocks.map(renderBlock), 2), '</section>');
+      grid.push(`<section class="c-sec" aria-labelledby="${id}">`, `  <h2 class="c-h2" id="${id}">${part.head.html}</h2>`, ...indentLines(part.blocks.map(renderBlock), 2), '</section>');
     }
   }
-  const html = withEndMark(body.join('\n'));
+  const body = withEndMark([
+    '<div class="wrap c-body c-body--front">',
+    ...indentLines(grid, 2),
+    '</div>',
+    ...steps,
+  ].join('\n'));
   return [
+    ...fieldOpener(model, site, { cta: model.data.cta }),
+    '<div id="consult-body">',
+    ...indentLines([body], 2),
+    '</div>',
     '<div class="wrap">',
-    `  ${runningHead(model, site)}`,
-    ...indentLines(opener(model, site, { cta: model.data.cta }), 2),
-    '  <div class="c-body c-body--front" id="consult-body">',
-    ...indentLines([html], 4),
-    '  </div>',
     ...indentLines(teasers(model, all), 2),
     '</div>',
   ];
@@ -1295,19 +1352,14 @@ function rateCardMain(model, all, site) {
   const below = [...intro.map(renderBlock)];
   for (const part of parts) below.push(`<h2 class="c-h2" id="${slugify(part.head.text)}">${part.head.html}</h2>`, ...part.blocks.map(renderBlock));
   return [
-    '<div class="wrap">',
-    `  ${runningHead(model, site)}`,
-    ...indentLines(opener(model, site, { art: false }), 2),
-    '</div>',
+    ...fieldOpener(model, site, { art: false }),
     '<div id="consult-body">',
     // The scallop the seal is cut from (the cover's, kit.html).
     '  <svg class="art-defs" width="0" height="0" aria-hidden="true" focusable="false"><defs><clipPath id="scallop" clipPathUnits="objectBoundingBox"><path d="M0.5 0 L0.56 0.07 L0.64 0.03 L0.69 0.11 L0.78 0.1 L0.8 0.19 L0.89 0.21 L0.88 0.3 L0.96 0.35 L0.92 0.43 L1 0.5 L0.92 0.57 L0.96 0.65 L0.88 0.7 L0.89 0.79 L0.8 0.81 L0.78 0.9 L0.69 0.89 L0.64 0.97 L0.56 0.93 L0.5 1 L0.44 0.93 L0.36 0.97 L0.31 0.89 L0.22 0.9 L0.2 0.81 L0.11 0.79 L0.12 0.7 L0.04 0.65 L0.08 0.57 L0 0.5 L0.08 0.43 L0.04 0.35 L0.12 0.3 L0.11 0.21 L0.2 0.19 L0.22 0.1 L0.31 0.11 L0.36 0.03 L0.44 0.07 Z"/></clipPath></defs></svg>',
     '  <div class="wrap rc-wrap">',
     ...indentLines(card, 4),
     '  </div>',
-    '  <div class="wrap c-text c-after">',
-    ...indentLines([withEndMark(below.join('\n'))], 4),
-    '  </div>',
+    ...indentLines(band(['<div class="c-text">', ...indentLines([withEndMark(below.join('\n'))], 2), '</div>'], { cls: 'c-after' }), 2),
     '</div>',
     '<div class="wrap">',
     ...indentLines(contentsBox(model, all, site), 2),
@@ -1321,7 +1373,8 @@ function numberedMain(model, all, site) {
   const entries = parts.map((part, i) => {
     const [scene, ...record] = part.blocks;
     if (!scene || scene.type !== 'p' || !record.some((b) => b.type === 'p')) mdFail(model.file, part.head.line, 'each entry is a scene paragraph, then the record');
-    const text = [`<p class="entry-scene">${scene.html}</p>`, '<div class="entry-record">', ...indentLines(record.map(renderBlock), 2), '</div>'];
+    // A pull quote stands on its own small green field.
+    const text = [`<p class="entry-scene">${scene.html}</p>`, '<div class="entry-record">', ...indentLines(record.map((b) => renderBlock(b).replace('<blockquote class="pull">', '<blockquote class="pull field-leaf">')), 2), '</div>'];
     const own = notesIn(text.join('\n'));
     const notes = model.doc.notes.filter((nt) => own.includes(nt.n));
     const n = String(i + 1).padStart(2, '0');
@@ -1337,17 +1390,18 @@ function numberedMain(model, all, site) {
     ];
   });
   return [
-    '<div class="wrap">',
-    `  ${runningHead(model, site)}`,
-    ...indentLines(opener(model, site), 2),
-    '  <div class="c-body" id="consult-body">',
+    ...fieldOpener(model, site),
+    '<div class="c-body" id="consult-body">',
+    '  <div class="wrap">',
     ...indentLines(intro.map(renderBlock), 4),
     '    <ol class="entries">',
     ...indentLines(entries.flat(), 6),
     '    </ol>',
-    `    ${closing(model)}`,
     '  </div>',
-    ...indentLines(wayOn(model, all, site), 2),
+    ...indentLines(closingBand(model, all, site), 2),
+    '</div>',
+    '<div class="wrap">',
+    ...indentLines(contentsBox(model, all, site), 2),
     '</div>',
   ];
 }
@@ -1355,13 +1409,6 @@ function numberedMain(model, all, site) {
 // The closing line, with the end mark.
 function closing(model) {
   return withEndMark(`<p class="c-close">${fmHtml(model, model.data.close)}</p>`);
-}
-
-// After the piece: a text button to the rate card, then the contents box.
-function wayOn(model, all, site) {
-  const card = all.find((p) => p.data.template === 'rate-card');
-  const button = card && card !== model ? [`<p class="c-on"><a class="btn btn--text" href="${esc(card.page)}">${fmHtml(card, card.data.title)} ${ICO}</a></p>`] : [];
-  return [...button, ...contentsBox(model, all, site)];
 }
 
 function essayMain(model, all, site) {
@@ -1394,17 +1441,18 @@ function essayMain(model, all, site) {
     }
   }
   return [
-    '<div class="wrap">',
-    `  ${runningHead(model, site)}`,
-    ...indentLines(opener(model, site), 2),
-    '  <div class="c-body" id="consult-body">',
+    ...fieldOpener(model, site),
+    '<div class="c-body" id="consult-body">',
+    '  <div class="wrap">',
     '    <div class="c-parts">',
     ...indentLines(parts.flat(), 6),
     '    </div>',
-    ...indentLines(after, 4),
-    `    ${closing(model)}`,
     '  </div>',
-    ...indentLines(wayOn(model, all, site), 2),
+    // The selected work and the close share the page's orange band.
+    ...indentLines(closingBand(model, all, site, after), 2),
+    '</div>',
+    '<div class="wrap">',
+    ...indentLines(contentsBox(model, all, site), 2),
     '</div>',
   ];
 }
@@ -1415,8 +1463,9 @@ const MAINS = { front: frontMain, 'rate-card': rateCardMain, numbered: numberedM
 // more of the pages share is in site.css (05 Consulting).
 const PAGE_CSS = {
   front: `
-/* The front page: the text, and beside it what was tried first; how it
-   starts, numbered; then the other three pages as teasers. */
+/* The front page: the text, and beside it where the tools were tried; how
+   it starts, numbered, on the orange band; then the other three pages as
+   teasers. */
 .c-body--front { display: grid; gap: var(--space-6); padding-block: var(--space-6) var(--space-7); }
 .c-glance dl { display: grid; margin-top: var(--space-2); border-top: 1px solid var(--ink-quiet); }
 .c-glance dl > div { display: grid; gap: 0.2rem; padding-block: var(--space-3); border-bottom: var(--rule-hairline) solid var(--rule); }
@@ -1436,7 +1485,6 @@ const PAGE_CSS = {
   .c-body--front { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--layout-column-gap); row-gap: var(--space-8); }
   .c-body--front .c-text { grid-column: 1 / span 7; }
   .c-glance { grid-column: 9 / span 4; align-self: start; padding-left: var(--layout-column-gap); border-left: var(--rule-hairline) solid var(--rule); }
-  .c-steps { grid-column: 1 / -1; }
 }
 `,
   'rate-card': `
@@ -1515,13 +1563,16 @@ const PAGE_CSS = {
   .rc-foot .btn { width: 100%; min-inline-size: 0; }
 }
 @media (max-width: 359px) { .rc-rate { font-size: 4.25rem; } }
+/* On a phone the seal sits in a little from the plate's corner, so the
+   corner's crosshair would poke out beside its rim: the seal stands for it. */
+@media screen and (max-width: 599px) { .rc-frame .xh--br { visibility: hidden; } }
 
 /* Print: the card alone, on one Letter page, in Day ink on paper. The
    button gives way to the page's address. */
 @media print {
   @page { size: Letter; margin: 0.6in; }
   main.consult { padding: 0; }
-  .consult--rate-card .rh, .consult--rate-card .c-opener, .c-after, .c-contents, .c-on, .rc-foot .c-ask { display: none !important; }
+  .consult--rate-card .c-field, .consult--rate-card .rh, .consult--rate-card .c-opener, .c-after, .c-contents, .rc-foot .c-ask { display: none !important; }
   .rc-wrap { width: auto; padding: 0; }
   .rate-card { max-width: none; padding: 0; break-inside: avoid; }
   .rc-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: 0.5in; }
@@ -1549,7 +1600,8 @@ const PAGE_CSS = {
 .entry-scene { font: italic var(--type-deck-weight) var(--type-deck-size) / var(--type-deck-line) var(--font-text); }
 .entry-record { display: grid; gap: 0.75em; }
 .entry-record strong { font-weight: 600; color: var(--spot); white-space: nowrap; }
-.entry .pull { margin: var(--space-2) 0 0; }
+/* The pull quote on its own small green field. */
+.entry .pull { margin: var(--space-2) 0 0; padding: var(--space-5) clamp(1.25rem, 3vw, 2rem); border: 0; }
 .entry .pull p { font-size: clamp(1.375rem, 2.2vw, 1.75rem); }
 .entry-notes { padding-top: var(--space-2); }
 .entry-notes .notes li { grid-template-columns: 1.6rem minmax(0, 1fr); }

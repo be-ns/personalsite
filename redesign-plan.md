@@ -159,7 +159,11 @@ accepts), which also writes their sitemap block and the `## Consulting`
 section of llms.txt. The colophon of every page that does not carry the
 department itself (the issue and the Consulting pages do) carries the
 consulting line; the masthead still names 01 to 04, and the menu sheet adds
-05 Consulting as a quieter fifth row (Release 1). The open
+05 Consulting as a quieter fifth row (Release 1). Also in Release 1, the
+colour came in as fields: each page opens on a Goody Gumdrop field with the
+orange rim (the trowel plate on the front page), one Toxic Orange band comes
+later, and the four share cards are the nudibranch, a green body with an
+orange rim on a dark edge. The open
 questions below use their defaults: up to an hour by video, an estimate with
 a cap, no weekly minimum stated, no town, the home page's Choctaw wording, no
 family line, the copy-email button.

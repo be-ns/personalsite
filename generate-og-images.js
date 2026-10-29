@@ -9,8 +9,9 @@
 //   - a bold colour field per department, in Ben's palette: Toxic Orange for
 //     the cover (the home page) and any piece that opens on an orange band,
 //     Goody Gumdrop for the Workshop tools, paper for Writing and the
-//     résumé, charcoal with a ruffled orange rim for Consulting (the
-//     nudibranch: dark ground, orange rim, a pale green line on it)
+//     résumé, and for Consulting the nudibranch: a Goody Gumdrop body
+//     with a ruffled orange rim on a dark edge, top and bottom, the
+//     charcoal only there and in the plate
 //   - a running head between hairlines: the issue and season in Instrument
 //     Sans folio caps in the left wing, the nameplate cut (drawn as paths,
 //     small) in the middle so every card says whose it is, and the
@@ -74,7 +75,7 @@ const DEPTS = {
   writing: { field: 'paper', edition: 'day', num: '04', name: 'Writing' },
   band: { field: 'field-spot', edition: 'night', num: '04', name: 'Writing' },
   proof: { field: 'paper', edition: 'day', num: '', name: 'Résumé' },
-  consulting: { field: 'charcoal', edition: 'night', num: '05', name: 'Consulting' },
+  consulting: { field: 'field-leaf', rim: true, edition: 'night', num: '05', name: 'Consulting' },
 };
 
 // What each engraving shows, for the alt text.
@@ -213,7 +214,7 @@ const CARDS = [
   {
     file: 'og-consulting-problems.png', page: 'consulting-problems.html', dept: 'consulting', style: 'light',
     kicker: 'Consulting · problems', title: 'What to call me about',
-    line: 'Seven problems I’ve worked on, where, and one fact for each.',
+    line: 'Seven problems I’ve worked on, where I met each one, and one fact for each.',
     art: ['street', '128 7 260 260'], artAlt: 'an apartment building with one window lit orange', what: 'a consulting page by Ben Siverly',
   },
   {
@@ -265,10 +266,9 @@ html, body { width: ${W}px; height: ${H}px; overflow: hidden; }
 body::after { content: none; }
 .og { position: absolute; inset: 0; display: grid; grid-template-rows: auto 1fr auto; padding: 30px 40px 26px; overflow: hidden; isolation: isolate; }
 .og.field-spot, .og.field-leaf { position: absolute; z-index: auto; }
-.og.paper, .og.charcoal { background: var(--ground); color: var(--ink); }
-.og.paper::after, .og.charcoal::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background-image: var(--texture-grain); background-size: var(--texture-grain-tile); opacity: var(--grain-opacity); mix-blend-mode: var(--grain-blend); }
+.og.paper { background: var(--ground); color: var(--ink); }
+.og.paper::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background-image: var(--texture-grain); background-size: var(--texture-grain-tile); opacity: var(--grain-opacity); mix-blend-mode: var(--grain-blend); }
 .og.paper::before { content: ""; position: absolute; inset: 0; z-index: -2; background: radial-gradient(60% 50% at 12% 0%, rgb(255 252 244 / 0.7), transparent 70%), radial-gradient(50% 60% at 100% 100%, rgb(160 120 90 / 0.12), transparent 70%); }
-.og.charcoal::before { content: ""; position: absolute; inset: 0; z-index: -2; background: radial-gradient(48% 60% at 92% 30%, var(--leak-orange), transparent 70%), radial-gradient(40% 50% at 8% 90%, var(--leak-green), transparent 70%); }
 
 /* Running head: folio caps in the wings, the nameplate in the middle, between hairlines. */
 .og-rh { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 24px; height: 48px; border-block: 1px solid currentColor; font: 600 17px / 1 var(--font-label); letter-spacing: 0.14em; text-transform: uppercase; font-stretch: 82%; white-space: nowrap; }
@@ -342,10 +342,12 @@ body::after { content: none; }
 .field-spot { --og-num: var(--palette-char); --og-kicker: var(--palette-char); --og-frame: var(--palette-char); }
 .field-leaf { --og-num: var(--palette-char); --og-kicker: var(--palette-moss); --og-frame: var(--palette-char); }
 .paper { --og-num: var(--spot); --og-kicker: var(--leaf); --og-frame: var(--ink); }
-.charcoal { --og-num: var(--palette-toxic-orange); --og-kicker: var(--palette-goody-gumdrop); --og-frame: var(--palette-newsprint); }
-.charcoal .rim { --rim-color: var(--palette-toxic-orange); --rim-fill: var(--palette-goody-gumdrop); height: 16px; }
-.charcoal .rim--edge-top { top: 0; }
-.charcoal .rim--edge-bottom { bottom: 0; transform: scaleY(-1); }
+/* The nudibranch (Consulting): the green body meets a dark edge at the top
+   and the foot through a ruffled orange rim. */
+.og.nudibranch { padding-block: 40px 34px; }
+.nudibranch .rim { --rim-color: var(--palette-toxic-orange); --rim-fill: var(--palette-gondola); height: 22px; }
+.nudibranch .rim--edge-top { top: 0; }
+.nudibranch .rim--edge-bottom { top: auto; bottom: 0; transform: scaleY(-1); }
 
 `;
 
@@ -353,7 +355,7 @@ function cardHtml(card, ctx) {
   const dept = DEPTS[card.dept];
   if (!dept) throw new Error(`${card.file}: unknown department ${card.dept}`);
   const { svg } = ctx.art([...new Set([card.art[0]])]);
-  const cls = ['og', `og--${card.dept}`, dept.field].join(' ');
+  const cls = ['og', `og--${card.dept}`, dept.field, ...(dept.rim ? ['nudibranch'] : [])].join(' ');
   const s = ctx.site;
   const folio = (num, name) => (num ? `<b>${esc(num)}</b>&ensp;${esc(name)}` : esc(name));
   // The running head: the issue, whose card it is, the department. The cover
@@ -390,7 +392,7 @@ function cardHtml(card, ctx) {
   const wing = inWing ? `<div class="og-wing og-wing--seal">${seal}</div>` : `<div class="og-wing" aria-hidden="true">${dept.num}</div>`;
   const line = card.style === 'italic' ? poemLines(card.line) : words(card.line);
   const rail = card.rail ? `<p class="og-rail" aria-hidden="true">${card.rail.map(esc).join('<span class="run"></span>')}</p>` : '';
-  const rims = dept.field === 'charcoal' ? '<div class="rim rim--edge-top"></div><div class="rim rim--edge-bottom"></div>' : '';
+  const rims = dept.rim ? '<div class="rim rim--edge-top"></div><div class="rim rim--edge-bottom"></div>' : '';
   return `<!DOCTYPE html>
 <html lang="en" data-edition="${dept.edition}">
 <head>

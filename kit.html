@@ -120,7 +120,7 @@
     .orn-rim .rim { --rim-fill: var(--ground); }
     .orn-cross { position: relative; height: 1px; background: var(--ink-quiet); margin-inline: 7px; color: var(--ink-quiet); }
     .orn-cross .xh { top: 0; } .orn-cross .xh:first-child { left: 0; } .orn-cross .xh:last-child { left: 100%; }
-    .orn-ticker { position: relative; height: calc(1.6rem + 2px); border-block: 1px solid currentColor; color: var(--spot-large); }
+    .orn-ticker { position: relative; height: calc(1.6rem + 2px); border-block: 1px solid currentColor; color: var(--spot); }
     .orn-ticker .ticker { top: 0; }
     .orn-fade { position: relative; height: 4.5rem; background: var(--spot-fill); }
     .orn-fade .fade { --fade-height: 4.5rem; top: 0; background: linear-gradient(to bottom, var(--ground), color-mix(in srgb, var(--ground) 50%, transparent) 46%, transparent); }
@@ -262,7 +262,7 @@
         <div class="cover">
           <div class="cover-in">
             <h1 class="nameplate"><span class="visually-hidden">Ben Siverly</span><svg viewBox="64 -1427 12274 1454" aria-hidden="true" focusable="false"><use href="#np-path"/></svg></h1>
-            <p class="issue-line"><span>Autumn 2026</span><span class="dash"></span><span>Product, data and AI</span><span class="dash"></span><span>Issue 01</span></p>
+            <p class="issue-line"><span>Autumn 2026</span><span class="dash"></span><span>How this issue is made</span><span class="dash"></span><span>Issue 01</span></p>
             <p class="cover-standfirst">Product manager, data scientist first. Rental applications and payments at AppFolio, data at Oracle and Lively. Now helping small companies put what&rsquo;s new to work.</p>
 
             <div class="cover-frame">
@@ -270,7 +270,7 @@
                 <svg viewBox="0 0 600 760" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Engraving: orange marigolds and long green amaranth hanging over the rim of a dark stoneware jar"><use href="#art-still-life" width="600" height="760"/></svg>
               </figure>
               <p class="rail rail--top" aria-hidden="true"><span class="run"></span></p>
-              <p class="rail rail--left"><span>The application nobody could finish</span><span class="dash"></span><span>44% to 70%</span><span class="run"></span></p>
+              <p class="rail rail--left"><span>The application nobody could finish</span><span class="dash"></span><span>Rebuilt end to end</span><span class="run"></span></p>
               <p class="rail rail--right"><span>Native Plant Finder</span><span class="dash"></span><span>Free tools your agent can run</span><span class="run"></span></p>
               <p class="rail rail--bottom"><span class="rail-wide">Applications and payments at AppFolio</span><span class="dash rail-wide"></span><span class="rail-wide">Data at Oracle and Lively</span><span class="run"></span></p>
               <span class="xh xh--tl" aria-hidden="true"></span><span class="xh xh--tr" aria-hidden="true"></span><span class="xh xh--bl" aria-hidden="true"></span><span class="xh xh--br" aria-hidden="true"></span>
@@ -350,9 +350,9 @@
             <p class="t-note src"><b>Source</b> AppFolio. Properties on the rebuilt application, against those still on offline workflows.</p>
           </li>
           <li class="brief">
-            <p class="fig">0<small class="w">failures</small></p>
-            <h3 class="t-folio">Change failures in the rollout</h3>
-            <p class="t-note src"><b>Source</b> AppFolio. Every deploy in the rental application rollout.</p>
+            <p class="fig">99.1<small>%</small></p>
+            <h3 class="t-folio">Application payments completed</h3>
+            <p class="t-note src"><b>Source</b> AppFolio. Application-fee checkout, with an assumed-success window and a recovery path for failed payments.</p>
           </li>
           <li class="brief">
             <p class="fig">$50M<small class="plus">+</small></p>
@@ -380,7 +380,7 @@
             <div class="band-grid">
               <p class="band-num" aria-hidden="true">01<small>Work</small></p>
               <div class="band-main">
-                <span class="t-kicker">AppFolio &middot; Rental applications and payments</span>
+                <span class="t-kicker">AppFolio &middot; 2023 to 2026</span>
                 <h2 id="work-heading">The application nobody could finish</h2>
                 <p class="t-deck">Submissions went from 44% to 70%, and vacancies filled 3.4 days faster. Here is what changed.</p>
                 <p class="t-byline">By Ben Siverly &middot; <span data-read="work">2</span> min read</p>
@@ -402,16 +402,15 @@
           <div class="story-grid">
             <div class="story-text">
               <p class="dropcap">The old rental application was stuck. Applicants couldn&rsquo;t save the form or come back to it. Property managers had no way to see what was working, and every applicant was anonymous.</p>
-              <p>I rebuilt the experience so it feels like a modern app, added accounts so applicants can finish later and we can measure what works, and built reporting so property managers can finally see what&rsquo;s happening with their applications.</p>
-              <p>The result: submission rates went from 44% to 70%<a class="ref" href="#note-1" aria-label="Note 1">1</a> with a zero change-failure rate,<a class="ref" href="#note-2" aria-label="Note 2">2</a> and properties on the new flow fill vacancies 3.4 days faster than offline workflows.<a class="ref" href="#note-3" aria-label="Note 3">3</a></p>
-              <p>We were early on AI features at AppFolio. The goal was to bring the same method, set out below in Method, to that work.<span class="end-mark" aria-hidden="true"></span></p>
+              <p>I rebuilt the experience so it felt like a modern app, added accounts so applicants could finish later and we could measure what worked, and built reporting so property managers could finally see what was happening with their applications.</p>
+              <p>The result: submission rates went from 44% to 70%<a class="ref" href="#note-1" aria-label="Note 1">1</a> with a zero change-failure rate,<a class="ref" href="#note-2" aria-label="Note 2">2</a> and properties on the new flow filled vacancies 3.4 days faster than offline workflows.<a class="ref" href="#note-3" aria-label="Note 3">3</a><span class="end-mark" aria-hidden="true"></span></p>
             </div>
 
             <aside class="margin-col" aria-label="Figures and notes">
               <div class="glance">
                 <p class="t-kicker">At a glance</p>
                 <dl>
-                  <div><dt class="t-folio">Company</dt><dd>AppFolio</dd></div>
+                  <div><dt class="t-folio">Company</dt><dd>AppFolio, Jan 2023 to Oct 2026</dd></div>
                   <div><dt class="t-folio">Role</dt><dd>Product manager, rental applications and payments</dd></div>
                   <div><dt class="t-folio">Shipped</dt><dd>Rebuilt application, applicant accounts, manager reporting</dd></div>
                 </dl>
@@ -449,7 +448,7 @@
                     <li><svg viewBox="0 0 8 8" aria-hidden="true"><rect width="8" height="8" style="fill: var(--spot-large)" mask="url(#art-m-d)"/></svg>26 more on the rebuilt flow</li>
                     <li><svg viewBox="0 0 8 8" aria-hidden="true"><rect x=".5" y=".5" width="7" height="7" style="fill: none; stroke: var(--spot-large); opacity: .55"/></svg>Started, not submitted</li>
                   </ul>
-                  <p class="takeaway"><b>26</b> more of every 100 started applications now get submitted.</p>
+                  <p class="takeaway"><b>26</b> more of every 100 started applications were submitted on the rebuilt flow.</p>
                 </div>
               </div>
               <figcaption class="t-caption fig-cap"><b>Fig. 1</b> Rental applications submitted for every 100 started, on the old form and on the rebuilt flow. Same figures as note 1.</figcaption>
@@ -459,7 +458,7 @@
               <article>
                 <span class="t-kicker">Brava &middot; Now</span>
                 <h3 class="t-title">Recruiting profiles for players far from the big clubs</h3>
-                <p class="t-small">College recruiters rarely see athletes who grow up far from the big metro clubs and showcases, no matter how good they are. My brother and I are building Brava for those players: women&rsquo;s soccer recruiting profiles with coach-verified stats, benchmark rankings and an AI-assisted production pipeline. I design and ship it end to end.</p>
+                <p class="t-small">College recruiters rarely see athletes who grow up far from the big metro clubs and showcases, no matter how good they are. My brother and I are building <a href="https://bravamade.com" rel="noopener">Brava</a> for those players: women&rsquo;s soccer recruiting profiles with coach-verified stats, benchmark rankings and an AI-assisted production pipeline. I design and ship it end to end, from the first research call to the brand on the page.</p>
               </article>
               <article>
                 <span class="t-kicker">Lively &middot; 2019 to 2022</span>
@@ -535,7 +534,7 @@
         </header>
         <ol class="tools">
           <li class="tool"><span class="n">01</span><h3 class="t-title">Native Plant Finder</h3><p class="t-small">Find native plants for your garden based on your location and sun conditions. Support local pollinators while reducing water and maintenance.</p><a class="btn btn--text" href="native-plant-finder.html">Open<span class="visually-hidden"> Native Plant Finder</span> <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
-          <li class="tool"><span class="n">02</span><h3 class="t-title">Life Strategy Matrix</h3><p class="t-small">Pick one area of your life, score it, and see where to invest next. Then print the matrix as a one-page guide.</p><a class="btn btn--text" href="life-strategy.html">Open<span class="visually-hidden"> Life Strategy Matrix</span> <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+          <li class="tool"><span class="n">02</span><h3 class="t-title">Life Strategy Matrix</h3><p class="t-small">Rate eight areas of your life and see which one to invest in next. Then print the matrix as a one-page guide.</p><a class="btn btn--text" href="life-strategy.html">Open<span class="visually-hidden"> Life Strategy Matrix</span> <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
           <li class="tool"><span class="n">03</span><h3 class="t-title">Decision Assist</h3><p class="t-small">Weigh your options with clarity. Score choices against what matters most.</p><a class="btn btn--text" href="decision-assist.html">Open<span class="visually-hidden"> Decision Assist</span> <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
           <li class="tool"><span class="n">04</span><h3 class="t-title">Memorial Pamphlet Creator</h3><p class="t-small">Create a simple, dignified pamphlet for a memorial service.</p><a class="btn btn--text" href="memorial-pamphlet.html">Open<span class="visually-hidden"> Memorial Pamphlet Creator</span> <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
           <li class="tool"><span class="n">05</span><h3 class="t-title">Service of Life Builder</h3><p class="t-small">Build a liturgy for a memorial or celebration of life.</p><a class="btn btn--text" href="service-of-life.html">Open<span class="visually-hidden"> Service of Life Builder</span> <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
@@ -578,7 +577,7 @@
               <li><a href="milk.html"><span class="t-title">milk</span><span class="t-folio">Poem, 2026</span><span class="t-note">The deal is three hours. She sleeps. I take the kids.</span></a></li>
               <li><a href="hot-pig-summer.html"><span class="t-title">hot pig summer</span><span class="t-folio">Poem, 2026</span><span class="t-note">Straw goes up fast.</span></a></li>
               <li><a href="the-room-love-needs-to-breathe.html"><span class="t-title">the room love needs to breathe</span><span class="t-folio">Poem, 2025</span><span class="t-note">listen, I am not naturally a person who leaves space.</span></a></li>
-              <li><a href="come-down.html"><span class="t-title">come down</span><span class="t-folio">Poem, 2025</span><span class="t-note">I was high for years. High-performer. High-potential.</span></a></li>
+              <li><a href="come-down.html"><span class="t-title">come down</span><span class="t-folio">Poem, 2025</span><span class="t-note">I was high for years<br>High-performer. High-potential.</span></a></li>
               <li><a href="serotiny.html"><span class="t-title">Serotiny</span><span class="t-folio">Story, draft</span><span class="t-note">A father loads a dying phone with everything he knows, for a daughter who is leaving.</span></a></li>
             </ol>
           </div>

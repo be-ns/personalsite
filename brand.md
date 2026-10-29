@@ -208,8 +208,9 @@ All free (SIL Open Font License) and self-hosted. Three families.
   trowel left in the dirt by a marigold seedling for Consulting (new tools,
   tried on real work first). The poppies, the balance and the candle go on
   their pages when those tools move to the tool template in Release 2. The
-  watering can and the trowel stay on the share cards only for now: Life
-  Strategy and the Consulting pages are finished without them. Coloured fills
+  trowel opens the Consulting front page, on its green field. The watering
+  can stays on the share card only for now: Life Strategy is finished
+  without it. Coloured fills
   under Char outlines, shade cut with the hatch masks, no ground of their own:
   the frame gives them the dark plate.
 
@@ -254,6 +255,14 @@ All free (SIL Open Font License) and self-hosted. Three families.
   takes the focus ring outside it, so focus shows on an orange point too.
   Points that would land on each other sit side by side, up to three; four or
   more share one point marked with how many (×4), and its label names them.
+- **Consulting:** each page opens on the nudibranch, a Goody Gumdrop field
+  with Char type: the running head, the opener (the ask a Char button, as on
+  any field) and the plate in a dark frame with crosshair corners, then a
+  ruffled rim where the field meets the page, green ruffles edged in
+  orange. One Toxic Orange band later in the page edges its rims in green:
+  how it starts on the front page, how the hours work on the rate card, the
+  selected work and the close (with the ask again) on the others. A pull
+  quote stands on a small green field. Charcoal is the dash between them.
 - **Tools:** a Workshop tool is a calm work surface on the plain ground: no
   fields, fades, rims or seals while you work. It opens like a department
   (kicker, a light headline, a deck, the one orange button, the marigold in a
@@ -362,8 +371,9 @@ All free (SIL Open Font License) and self-hosted. Three families.
   is the nameplate, and stands its seal in the left wing, big enough to read
   in a phone's feed. The field is the department's: Toxic Orange for the
   cover and any piece that opens on an orange band (Serotiny), Goody Gumdrop
-  for the Workshop tools, paper for Writing and the résumé, charcoal with a
-  ruffled orange rim on a pale green body for Consulting (the nudibranch).
+  for the Workshop tools, paper for Writing and the résumé, and for
+  Consulting the nudibranch: a Goody Gumdrop body with a ruffled orange rim
+  on a dark edge, top and bottom, the charcoal only there and in the plate.
   The words (a kicker, the title, one line a person can read on a phone)
   stay between x 300 and 900, so a square crop keeps all of them, and
   everything else sits wholly inside that crop or wholly outside it. Say it

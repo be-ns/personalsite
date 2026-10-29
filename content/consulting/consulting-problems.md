@@ -3,13 +3,13 @@ title: What to call me about
 template: numbered
 order: 3
 kicker: Problems
-description: Seven problems Ben Siverly has worked on, from forms people don't finish to money that has to be right, with where, and one fact from his résumé for each.
-deck: Seven problems I've worked on, where, and one fact for each, quoted from my résumé word for word.
-teaser: Seven problems I've worked on, where, and one fact for each.
+description: Seven problems Ben Siverly has worked on, from forms people don't finish to money that has to be right, where he met each, and one fact from his résumé.
+deck: Seven problems I've worked on, where I met each one, and one fact for each, quoted from my résumé word for word.
+teaser: Seven problems I've worked on, where I met each one, and one fact for each.
 updated: 2026-10-29
 art: street 128 7 260 260
 close: If one of these sounds like your week, write to me. The first conversation is free.
-llms: seven problems he has worked on (people who start and don't finish, payments that have to be right, measuring what a change did, AI plans, trying new tools, customers nobody has talked to, a first product person), each with where and one fact, quoted from his résumé.
+llms: seven problems he has worked on (people who start and don't finish, payments that have to be right, measuring what a change did, AI plans, trying new tools, customers nobody has talked to, a first product person), each with where he met it and one fact, quoted from his résumé.
 ---
 
 ## People start, and don't finish
@@ -48,7 +48,7 @@ I run them on my own work first. AbiertoClaw, a plugin I wrote, tests the free A
 
 The numbers say people do something odd, and nobody on the team has asked them why.
 
-At AppFolio I sized how much rent was paid offline, from accounting receipts, then asked renters why: irregular gig pay, no bank account and a drive of **15–30 minutes** for certified funds, and slow ACH.[^6] Leadership funded teams to build rent-split payments and a digital certified-funds partnership.
+At AppFolio I sized how much rent was paid offline, from accounting receipts, then asked renters why: irregular gig pay, no bank account, a **15–30 minute** drive for certified funds, and slow ACH.[^6] Leadership funded teams to build rent-split payments and a digital certified-funds partnership.
 
 ## You need a first product person, not a department
 
