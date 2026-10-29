@@ -5,13 +5,14 @@
     "Step 5, script: the copy-email part binds every [data-copy-email] button, not only the first, each reporting in the status line beside it, so the Consulting pages' own Ask for a first conversation button and the colophon's both work. The colophon's consulting line is a site.json switch and is taken out before fingerprinting, like the home colophon's own lines.",
     "Step 6, head: the new site icon. Beside favicon.svg the head now links a 32px PNG for browsers that take no SVG icon and apple-touch-icon.png for iOS, all drawn from favicon.svg by generate-icons.js.",
     "Release 1, top: the menu sheet gains a quieter fifth row, 05 Consulting, to consulting.html (marked on the Consulting pages), so a phone reaches the department without scrolling past the whole issue; the masthead still names 01 to 04. The Résumé pills carry aria-current on the résumé itself (taken out before fingerprinting, like every aria-current). The colophon's consulting line now stays off the pages that carry 05 Consulting themselves; it was already taken out before fingerprinting.",
-    "After Release 1, head: the icon links carry ?v= (VERSION in generate-icons.js) because Safari kept showing the old cobalt mark it had cached under the same favicon.svg address."
+    "After Release 1, head: the icon links carry ?v= (VERSION in generate-icons.js) because Safari kept showing the old cobalt mark it had cached under the same favicon.svg address.",
+    "After Release 1, colophon: the Elsewhere list's “Résumé, PDF” link points at Ben-Siverly-Resume-Proptech.pdf, the new public résumé (site.json), in place of the Payments PDF, which stays at ?version=payments."
   ],
   "pages": ["index.html", "kit.html", "404.html", "life-strategy.html"],
   "regions": {
     "head": "15d71e21e5b8c1485514cc8ca172ad25756d671673f9858b4171c33e06ab3d0a",
     "top": "10b874970556768c3dcd10364d4dfbaa272db0b44e1197ab7e2847a7fe9bd0af",
-    "colophon": "e47ee8206308a6564ebf02bd9c550dbf313ab04184fcedbda3bd9fb636d67274",
+    "colophon": "ca9d0aa09f6b618d4ab03e97dd9122bf7f47d2b0fe1cdb09d0e5c0a5641d83c7",
     "script": "19a64dcd6b9d1ea59e2950bd4dfc1f3316e25d9004173099cd011a09a9284a4a"
   }
 }

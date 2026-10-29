@@ -1577,10 +1577,11 @@
       "role"
     ],
     "versions": {
+      "proptech": "Ben-Siverly-Resume-Proptech.pdf",
       "payments": "Ben-Siverly-Resume-Payments.pdf",
       "ai-native": "Ben-Siverly-Resume-AI-Native.pdf",
       "general": "Ben-Siverly-Resume.pdf"
     },
-    "default": "payments"
+    "default": "proptech"
   }
 }

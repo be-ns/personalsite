@@ -109,7 +109,7 @@ const CARDS = [
   {
     file: 'og-resume.png', page: 'resume.html', dept: 'proof', style: 'name',
     kicker: 'Résumé · one page · PDF', title: 'Ben Siverly',
-    line: 'Product manager · Payments & money movement',
+    line: 'Product manager · Proptech, data platforms & AI',
     art: ['street', '150 30 230 240'], artAlt: 'an apartment building with one window lit orange',
     rail: ['AppFolio', 'Lively', 'Oracle'],
     what: 'Ben Siverly’s résumé',

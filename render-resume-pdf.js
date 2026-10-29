@@ -1,6 +1,7 @@
-// Prints resume.html to the three downloadable PDFs (npm run generate-resume-pdf).
+// Prints resume.html to the four downloadable PDFs (npm run generate-resume-pdf).
 //
-//   ?version=payments   Ben-Siverly-Resume-Payments.pdf   the public one (site.json)
+//   ?version=proptech   Ben-Siverly-Resume-Proptech.pdf   the public one (site.json)
+//   ?version=payments   Ben-Siverly-Resume-Payments.pdf
 //   ?version=ai-native  Ben-Siverly-Resume-AI-Native.pdf
 //   ?version=general    Ben-Siverly-Resume.pdf
 //
@@ -41,6 +42,7 @@ const ROOT = __dirname;
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.woff2': 'font/woff2', '.webmanifest': 'application/manifest+json', '.txt': 'text/plain; charset=utf-8', '.pdf': 'application/pdf' };
 
 const VERSIONS = [
+  { q: 'proptech', out: 'Ben-Siverly-Resume-Proptech.pdf' },
   { q: 'payments', out: 'Ben-Siverly-Resume-Payments.pdf' },
   { q: 'ai-native', out: 'Ben-Siverly-Resume-AI-Native.pdf' },
   { q: 'general', out: 'Ben-Siverly-Resume.pdf' },
