@@ -427,7 +427,7 @@ async function printCounts(browser, base) {
   // print dialog opens with Background graphics off, and the line markers
   // and end mark are drawn as backgrounds: printed with the box off, the
   // page must paint the same colours as with it on, marks included.
-  for (const version of ['payments', 'ai-native', 'general']) {
+  for (const version of Object.keys(JSON.parse(fs.readFileSync(path.join(ROOT, 'test', 'fixtures', 'resume-content.json'), 'utf8')).versions)) {
     for (const edition of ['night', 'day']) {
       const { page, close } = await open(browser, `${base}resume.html?version=${version}`, { edition });
       const plain = Buffer.from(await page.pdf({ printBackground: false, preferCSSPageSize: true }));
@@ -780,17 +780,20 @@ async function agentContract(browser, base) {
   }
 
   // The résumé's links: ?version= and its alias ?role= pick the title, the
-  // order of the AppFolio lines and the PDF on offer (test/fixtures/
-  // resume-content.json); no value, or one it does not know, gives the default.
+  // sheet, the AppFolio lines that show and their order, and the PDF on offer
+  // (test/fixtures/resume-content.json); no value, or one it does not know,
+  // gives the default.
   const resume = JSON.parse(fs.readFileSync(path.join(ROOT, 'test', 'fixtures', 'resume-content.json'), 'utf8'));
   const links = [['resume.html', resume.default], ['resume.html?version=nope', resume.default], ['resume.html?role=', resume.default]];
   for (const version of Object.keys(resume.versions)) links.push([`resume.html?version=${version}`, version], [`resume.html?role=${version}`, version]);
-  links.push(['resume.html?version=general&role=ai-native', 'general'], ['resume.html?version=nope&role=ai-native', 'payments'], ['resume.html?version=toString', 'payments']);
+  links.push(['resume.html?version=general&role=ai-native', 'general'], ['resume.html?version=nope&role=ai-native', resume.default], ['resume.html?version=toString', resume.default]);
   for (const [url, version] of links) {
     const { page, errors, close } = await open(browser, `${base}${url}`);
     const got = await page.evaluate(() => ({
       title: document.getElementById('roleTitle').textContent,
-      bulletOrder: [...document.querySelectorAll('#appfolioBullets [data-bullet]')].map((li) => li.dataset.bullet),
+      // The sheet whose lines are on screen: one, and only one, of the two.
+      sheet: [...new Set([...document.querySelectorAll('.resume-sheet [data-sheet]')].filter((el) => el.getClientRects().length).map((el) => el.dataset.sheet))].join(' + '),
+      bulletOrder: [...document.querySelectorAll('#appfolioBullets [data-bullet]')].filter((li) => li.getClientRects().length).map((li) => li.dataset.bullet),
       pdf: document.getElementById('dlLink').getAttribute('href'),
     }));
     const foot = await page.evaluate(() => document.getElementById('versionLink').getAttribute('href'));

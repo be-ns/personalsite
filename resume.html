@@ -4,24 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ben Siverly · Product Manager · Resume</title>
-  <meta name="description" content="Resume of Ben Siverly, Product Manager. Payments and money movement. Downloadable as a one-page PDF.">
+  <meta name="description" content="Resume of Ben Siverly, Product Manager. Proptech, data platforms and AI. Downloadable as a one-page PDF.">
 
   <!-- Open Graph -->
   <meta property="og:title" content="Ben Siverly · Product Manager · Resume">
-  <meta property="og:description" content="Resume of Ben Siverly, Product Manager. Payments and money movement. Downloadable as a one-page PDF.">
+  <meta property="og:description" content="Resume of Ben Siverly, Product Manager. Proptech, data platforms and AI. Downloadable as a one-page PDF.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://bensiverly.com/resume.html">
   <meta property="og:image" content="https://bensiverly.com/images/og-resume.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Ben Siverly’s résumé: Ben Siverly. Product manager · Payments &amp; money movement. Engraving of an apartment building with one window lit orange.">
+  <meta property="og:image:alt" content="Ben Siverly’s résumé: Ben Siverly. Product manager · Proptech, data platforms &amp; AI. Engraving of an apartment building with one window lit orange.">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Ben Siverly · Product Manager · Resume">
-  <meta name="twitter:description" content="Resume of Ben Siverly, Product Manager. Payments and money movement. Downloadable as a one-page PDF.">
+  <meta name="twitter:description" content="Resume of Ben Siverly, Product Manager. Proptech, data platforms and AI. Downloadable as a one-page PDF.">
   <meta name="twitter:image" content="https://bensiverly.com/images/og-resume.png">
-  <meta name="twitter:image:alt" content="Ben Siverly’s résumé: Ben Siverly. Product manager · Payments &amp; money movement. Engraving of an apartment building with one window lit orange.">
+  <meta name="twitter:image:alt" content="Ben Siverly’s résumé: Ben Siverly. Product manager · Proptech, data platforms &amp; AI. Engraving of an apartment building with one window lit orange.">
 
   <!-- Canonical -->
   <link rel="canonical" href="https://bensiverly.com/resume.html">
@@ -53,7 +53,7 @@
        data-edition="day" in the markup, so it is paper in either edition)
        on the plain ground. The sheet is set at its printed size in inches
        and points, so a wide screen shows the page the PDF prints, line for
-       line. render-resume-pdf.js prints it to the three PDFs. */
+       line. render-resume-pdf.js prints it to the four PDFs. */
     .resume-desk { padding-bottom: var(--space-8); }
 
     /* The tool bar: back to the site, then the PDF and the one orange button.
@@ -79,6 +79,15 @@
     .resume-sheet a { color: inherit; text-decoration-color: var(--rule); }
     .resume-sheet a:hover { text-decoration-color: var(--spot); }
     .resume-sheet strong { font-weight: 600; }
+    /* Two sheets share this one: Proptech (the default) and Payments, which
+       the Payments, AI-Native and General versions print. Lines that belong
+       to one carry data-sheet; the script hides the other's with [hidden],
+       and the markup ships with the default's showing. */
+    .resume-sheet [hidden] { display: none !important; }
+    .resume-summary { margin-top: 0.1in; }
+    /* A hyphenated word kept whole: broken at its hyphen, a PDF reader
+       joins the halves and the text reads "rentsplit". */
+    .nobreak { white-space: nowrap; }
 
     /* The head: the name in Fraunces, the version's title in Burnt Orange
        caps, the contact lines set right, all over a double rule. */
@@ -107,7 +116,7 @@
     .job-scope { color: var(--ink); }
     .bullets { list-style: none; margin-top: 0.04in; }
     .bullets li { position: relative; padding-left: 0.17in; }
-    .bullets li + li { margin-top: 0.03in; }
+    .bullets li:not([hidden]) ~ li { margin-top: 0.03in; }
     /* A small square in Burnt Orange marks each line: a drawing, not a
        character, so the PDF's text stays the words alone. The marks are
        painted as backgrounds, which browsers leave off a printout unless
@@ -117,11 +126,11 @@
     .bullets li::before { content: ""; position: absolute; left: 0.035in; top: 0.52em; width: 0.26em; height: 0.26em; background: var(--spot); }
 
     /* Selected work, skills and education */
-    .resume-row + .resume-row { margin-top: 0.05in; }
+    .resume-row:not([hidden]) ~ .resume-row { margin-top: 0.05in; }
     .lead-in { font: 600 1.1em / 1 var(--font-display); font-variation-settings: 'SOFT' 0; letter-spacing: -0.005em; }
     /* Skills run in after their label. Set as a column, the labels would
        read as one in the PDF's text: Product: Payments: Data: and so on. */
-    .skills .resume-row + .resume-row { margin-top: 0.02in; }
+    .skills .resume-row:not([hidden]) ~ .resume-row { margin-top: 0.02in; }
     .skills strong { font: 600 0.84em / 1 var(--font-label); font-stretch: 92%; letter-spacing: 0.02em; }
     /* The one Toxic Orange mark on the sheet closes it. */
     .resume-end { display: inline-block; width: 0.42em; height: 0.42em; margin-left: 0.35em; background: var(--spot-fill); vertical-align: 0.06em; }
@@ -248,7 +257,7 @@
       <div class="rh toolbar t-folio resume-bar">
         <a class="btn btn--text resume-back" href="index.html"><svg class="ico ico--back" aria-hidden="true"><use href="#i-arrow"/></svg>Back to site</a>
         <div class="resume-actions">
-          <a class="btn btn--outlined btn--sm" id="dlLink" href="Ben-Siverly-Resume-Payments.pdf" download>Download PDF</a>
+          <a class="btn btn--outlined btn--sm" id="dlLink" href="Ben-Siverly-Resume-Proptech.pdf" download>Download PDF</a>
           <button class="btn btn--spot btn--sm" type="button" id="printBtn">Print / Save as PDF</button>
         </div>
       </div>
@@ -257,30 +266,39 @@
         <header class="resume-head">
           <div>
             <h1 class="resume-name">Ben Siverly</h1>
-            <p class="resume-role" id="roleTitle">Product Manager · Payments &amp; Money Movement</p>
+            <p class="resume-role" id="roleTitle">Product Manager · Proptech, Data Platforms &amp; AI</p>
           </div>
           <ul class="resume-contact">
-            <li>San Francisco Bay Area</li>
+            <li data-sheet="proptech">San Mateo, CA</li>
+            <li data-sheet="payments" hidden>San Francisco Bay Area</li>
             <li><a href="mailto:benjaminsiverly@gmail.com">benjaminsiverly@gmail.com</a></li>
             <li><a href="https://www.linkedin.com/in/be-ns/">linkedin.com/in/be-ns</a></li>
             <li><a href="https://github.com/be-ns">github.com/be-ns</a> &middot; <a href="https://bensiverly.com">bensiverly.com</a></li>
           </ul>
         </header>
+        <p class="resume-summary" data-sheet="proptech">Data scientist turned PM. Nearly four years in proptech. I turn messy, regulated data into decisions people can trust, for parties who don’t fully trust each other and can’t afford to be wrong.</p>
 
         <section class="resume-section">
           <h2 class="resume-h" id="experience">Experience</h2>
 
           <div class="job">
             <div class="job-head">
-              <h3 class="job-company"><a href="https://www.appfolio.com" target="_blank" rel="noopener">AppFolio</a> &middot; <span class="job-role">Product Manager, Rental Applications &amp; Payments</span></h3>
+              <h3 class="job-company"><a href="https://www.appfolio.com" target="_blank" rel="noopener">AppFolio</a> &middot; <span class="job-role"><span data-sheet="proptech">Product Manager, Rental Applications</span><span data-sheet="payments" hidden>Product Manager, Rental Applications &amp; Payments</span></span></h3>
               <span class="job-meta">Jan 2023 – Oct 2026</span>
             </div>
-            <p class="job-desc">Property-management software for 23,000+ customers. <span class="job-scope">Sole PM for the rental application line, across two codebases.</span></p>
+            <p class="job-desc" data-sheet="proptech">Property-management software for 23,000+ customers.</p>
+            <p class="job-desc" data-sheet="payments" hidden>Property-management software for 23,000+ customers. <span class="job-scope">Sole PM for the rental application line, across two codebases.</span></p>
             <ul class="bullets" id="appfolioBullets">
-              <li data-bullet="payments"><strong>Owned checkout for $200M a year in application fees,</strong> built on AppFolio’s internal payments API. 70% of applications carry an embedded payment: the applicant pays, the property manager acts on it. Designed an assumed-success window and a tokenized failed-payment recovery path, reaching <strong>99.1% application-payment completion</strong>.</li>
-              <li data-bullet="payments-team">On the payments team, sized offline rent from accounting receipts and interviewed renters on why they pay offline: irregular gig pay, unbanked renters driving 15–30 minutes for certified funds, 2–3 day ACH. Presented to payments leadership, who <strong>funded teams</strong> to build <strong>rent-split payments with Flex</strong> and a <strong>digital certified-funds partnership</strong>.</li>
-              <li data-bullet="rebuild">Rebuilt the rental application end to end. Submission rates went from <strong>44% to 70%</strong>, and properties on the new flow fill vacancies <strong>3.4 days faster</strong> than offline workflows. Kept follow-up inside the authenticated app so every interaction stays auditable for screening compliance; customer satisfaction rose <strong>18%</strong>.</li>
-              <li data-bullet="zillow">Built a secure applicant-data API and launched it with Zillow. Reached 70% customer adoption, then <strong>pushed to wind it down</strong> when the frictionless path buried property managers in unqualified applicants.</li>
+              <li data-bullet="sole-pm">Sole PM for the rental application: <strong>9M+ application starts and $200M in fees</strong> processed a year, across two codebases. Led the rebuild: submission rose from <strong>44% to 70%</strong>, and vacancies filled <strong>3.4 days faster</strong> than offline workflows.</li>
+              <li data-bullet="compliance">Turned fair-housing and screening-compliance rules into product requirements. Kept applicant follow-up inside the authenticated app so every interaction is auditable; customer satisfaction rose <strong>18%</strong>.</li>
+              <li data-bullet="ai-review">Gated AI review of applicant ID uploads on an eval set of real and synthetic IDs. <strong>Releases shipped only when the model cleared quality bars</strong> on representative data.</li>
+              <li data-bullet="agent-tools">Shaped features as tools a workflow builder or a customer’s own agent can call, on data where AppFolio is the system of record.</li>
+              <li data-bullet="zillow-api">Launched a secure applicant-data API with Zillow (70% customer adoption), then <strong>pushed to wind it down</strong> when it flooded property managers with unqualified applicants. Adoption was not value.</li>
+              <li data-bullet="offline-rent">Sized offline rent from accounting-receipt data and renter interviews. Leadership <strong>funded two teams</strong> from the analysis: <span class="nobreak">rent-split</span> payments and a digital certified-funds partnership.</li>
+              <li hidden data-bullet="payments"><strong>Owned checkout for $200M a year in application fees,</strong> built on AppFolio’s internal payments API. 70% of applications carry an embedded payment: the applicant pays, the property manager acts on it. Designed an assumed-success window and a tokenized failed-payment recovery path, reaching <strong>99.1% application-payment completion</strong>.</li>
+              <li hidden data-bullet="payments-team">On the payments team, sized offline rent from accounting receipts and interviewed renters on why they pay offline: irregular gig pay, unbanked renters driving 15–30 minutes for certified funds, 2–3 day ACH. Presented to payments leadership, who <strong>funded teams</strong> to build <strong>rent-split payments with Flex</strong> and a <strong>digital certified-funds partnership</strong>.</li>
+              <li hidden data-bullet="rebuild">Rebuilt the rental application end to end. Submission rates went from <strong>44% to 70%</strong>, and properties on the new flow fill vacancies <strong>3.4 days faster</strong> than offline workflows. Kept follow-up inside the authenticated app so every interaction stays auditable for screening compliance; customer satisfaction rose <strong>18%</strong>.</li>
+              <li hidden data-bullet="zillow">Built a secure applicant-data API and launched it with Zillow. Reached 70% customer adoption, then <strong>pushed to wind it down</strong> when the frictionless path buried property managers in unqualified applicants.</li>
             </ul>
           </div>
 
@@ -289,8 +307,14 @@
               <h3 class="job-company"><a href="https://livelyme.com" target="_blank" rel="noopener">Lively</a> &middot; <span class="job-role">Data Scientist &rarr; Product Manager</span></h3>
               <span class="job-meta">Nov 2019 – Dec 2022</span>
             </div>
-            <p class="job-desc">HSA platform for tax-advantaged health spending, offered through financial-institution partners.</p>
-            <ul class="bullets">
+            <p class="job-desc" data-sheet="proptech">HSA platform offered through financial-institution partners. 45-person Series B.</p>
+            <p class="job-desc" data-sheet="payments" hidden>HSA platform for tax-advantaged health spending, offered through financial-institution partners.</p>
+            <ul class="bullets" data-sheet="proptech">
+              <li><strong>First data hire.</strong> Stood up the data platform end to end: ingestion, data modeling, BI, product analytics. Promoted to PM in 2021 when the platform became the roadmap.</li>
+              <li>Shipped partner APIs and migration pipelines that moved <strong>$50M+ in assets</strong> between financial institutions with <strong>zero data loss</strong>. Cut the work from two migration teams to one.</li>
+              <li>Designed the partner data model and ledgers behind bank and card-network transfers. Scoped multi-tenancy with our second partner bank’s executives, capturing <strong>~90 bps more yield on AUM</strong> as rates rose.</li>
+            </ul>
+            <ul class="bullets" data-sheet="payments" hidden>
               <li><strong>Built the money-movement platform:</strong> bank and card-network transfers, processor integrations, ledgers, and the partner data model. Financial-institution partners could offer compliant HSAs without building their own infrastructure.</li>
               <li>Scoped multi-tenancy with our second partner bank’s executives. The move captured <strong>~90 bps more yield on AUM</strong> as rates rose, and opened room for future partners.</li>
               <li>Built partner APIs and migration pipelines that moved <strong>$50M+ in HSA assets</strong> between financial institutions with <strong>zero data loss</strong>. Cut the work from two migration teams to one.</li>
@@ -303,24 +327,34 @@
               <h3 class="job-company"><a href="https://www.oracle.com" target="_blank" rel="noopener">Oracle</a> &middot; <span class="job-role">Data Scientist, Applied Research</span></h3>
               <span class="job-meta">Sep 2017 – Sep 2019</span>
             </div>
-            <ul class="bullets">
+            <ul class="bullets" data-sheet="proptech">
+              <li>Found and corrected a sampling skew that distorted model performance; rebuilt validation on a representative U.S. population sample. Automated a pipeline that took two analysts full-time.</li>
+            </ul>
+            <ul class="bullets" data-sheet="payments" hidden>
               <li>Rebuilt model validation on a representative U.S. population sample, correcting a skew that distorted model performance. Automated a data pipeline that had taken two analysts full-time.</li>
             </ul>
           </div>
         </section>
 
         <section class="resume-section">
-          <h2 class="resume-h" id="selected-work">Selected Work</h2>
-          <p class="resume-row"><span class="lead-in">Brava</span> (<a href="https://bravamade.com">bravamade.com</a>). Automated college-recruiting profiles for youth athletes, launching with women’s soccer outside major metros. Built with my brother. Sized the market across five sports, ran a COPPA and privacy review for minors’ data, and built the AI production pipeline: coach-verified stats, benchmark rankings, generated media. <strong>Payments on Stripe:</strong> a parent checkout flow built from scratch with AI coding agents.</p>
-          <p class="resume-row"><span class="lead-in">AbiertoClaw</span> (<a href="https://github.com/be-ns/AbiertoClaw">github.com/be-ns/AbiertoClaw</a>). Open-source plugin for the Hermes agent. Each day it finds the best free model that passes a real tool-call test and switches Hermes to it, with a local model as the fallback.</p>
+          <h2 class="resume-h" id="selected-work"><span data-sheet="proptech">Selected AI Product Work</span><span data-sheet="payments" hidden>Selected Work</span></h2>
+          <p class="resume-row" data-sheet="proptech"><span class="lead-in">Housing as an API call</span> (in progress). Side project: given capital and a target market, map parcels, use LLMs to extract buildable envelopes from city zoning codes, and estimate whether a project pencils.</p>
+          <p class="resume-row" data-sheet="proptech"><span class="lead-in">Brava</span> (<a href="https://bravamade.com">bravamade.com</a>). Recruiting profiles for youth athletes, built with my brother. AI pipeline: coach-verified stats in, benchmark rankings and generated media out. Ran a COPPA privacy review; built with AI coding agents.</p>
+          <p class="resume-row" data-sheet="proptech"><span class="lead-in">AbiertoClaw</span> (<a href="https://github.com/be-ns/AbiertoClaw">github.com/be-ns/AbiertoClaw</a>). Open-source Hermes Agent plugin that picks the best free model daily and falls back to a local model.</p>
+          <p class="resume-row" data-sheet="payments" hidden><span class="lead-in">Brava</span> (<a href="https://bravamade.com">bravamade.com</a>). Automated college-recruiting profiles for youth athletes, launching with women’s soccer outside major metros. Built with my brother. Sized the market across five sports, ran a COPPA and privacy review for minors’ data, and built the AI production pipeline: coach-verified stats, benchmark rankings, generated media. <strong>Payments on Stripe:</strong> a parent checkout flow built from scratch with AI coding agents.</p>
+          <p class="resume-row" data-sheet="payments" hidden><span class="lead-in">AbiertoClaw</span> (<a href="https://github.com/be-ns/AbiertoClaw">github.com/be-ns/AbiertoClaw</a>). Open-source plugin for the Hermes agent. Each day it finds the best free model that passes a real tool-call test and switches Hermes to it, with a local model as the fallback.</p>
         </section>
 
         <section class="resume-section skills">
           <h2 class="resume-h" id="skills">Skills</h2>
-          <p class="resume-row"><strong>Product:</strong>&nbsp;jobs-to-be-done (50–100 customer calls a year), spec-driven development, tests/evals as release gates, OOUX</p>
-          <p class="resume-row"><strong>Payments:</strong>&nbsp;checkout, failed-payment recovery, money movement, ledgers, processor integrations, partner APIs</p>
-          <p class="resume-row"><strong>Data:</strong>&nbsp;SQL, Python, experimentation, pipelines</p>
-          <p class="resume-row"><strong>AI:</strong>&nbsp;RAG, tool use, agents, evals</p>
+          <p class="resume-row" data-sheet="proptech"><strong>Domain:</strong>&nbsp;rental applications and screening, fair-housing compliance, property operations, regulated money movement</p>
+          <p class="resume-row" data-sheet="proptech"><strong>Product:</strong>&nbsp;jobs-to-be-done (50–100 customer calls a year), PRDs and spec-driven development, partner APIs, OOUX</p>
+          <p class="resume-row" data-sheet="proptech"><strong>Data:</strong>&nbsp;SQL, Python, pipelines, data modeling and schemas</p>
+          <p class="resume-row" data-sheet="proptech"><strong>AI:</strong>&nbsp;agents, tool use, RAG, evals as release gates</p>
+          <p class="resume-row" data-sheet="payments" hidden><strong>Product:</strong>&nbsp;jobs-to-be-done (50–100 customer calls a year), spec-driven development, tests/evals as release gates, OOUX</p>
+          <p class="resume-row" data-sheet="payments" hidden><strong>Payments:</strong>&nbsp;checkout, failed-payment recovery, money movement, ledgers, processor integrations, partner APIs</p>
+          <p class="resume-row" data-sheet="payments" hidden><strong>Data:</strong>&nbsp;SQL, Python, experimentation, pipelines</p>
+          <p class="resume-row" data-sheet="payments" hidden><strong>AI:</strong>&nbsp;RAG, tool use, agents, evals</p>
           <p class="resume-row"><strong>Writing:</strong>&nbsp;Published poet (<a href="https://opol.space">opol.space</a>, 2026)</p>
         </section>
 
@@ -332,7 +366,7 @@
 
       <nav class="versions" aria-label="Download the resume">
         <span class="t-folio">Download</span>
-        <a href="Ben-Siverly-Resume-Payments.pdf" id="versionLink" download>Payments</a>
+        <a href="Ben-Siverly-Resume-Proptech.pdf" id="versionLink" download>Proptech</a>
       </nav>
     </div>
   </main>
@@ -353,7 +387,7 @@
         <span class="copy-status t-note" aria-live="polite" aria-atomic="true"></span>
         <p class="t-small">For agents: <a href="llms.txt">llms.txt</a></p>
       </div>
-      <div><span class="t-folio">Elsewhere</span><ul class="t-small"><li><a href="https://www.linkedin.com/in/be-ns/" rel="noopener">LinkedIn</a></li><li><a href="https://github.com/be-ns" rel="noopener">GitHub</a></li><li><a href="Ben-Siverly-Resume-Payments.pdf">Résumé, PDF</a></li></ul></div>
+      <div><span class="t-folio">Elsewhere</span><ul class="t-small"><li><a href="https://www.linkedin.com/in/be-ns/" rel="noopener">LinkedIn</a></li><li><a href="https://github.com/be-ns" rel="noopener">GitHub</a></li><li><a href="Ben-Siverly-Resume-Proptech.pdf">Résumé, PDF</a></li></ul></div>
       <div><span class="t-folio">Also</span><ul class="t-small"><li><a href="index.html#work"><span class="num-o">01</span>Work</a></li><li><a href="index.html#method"><span class="num-o">02</span>Method</a></li><li><a href="index.html#workshop"><span class="num-o">03</span>Workshop</a></li><li><a href="index.html#writing"><span class="num-o">04</span>Writing</a></li><li><a href="kit.html">How this issue is made</a></li></ul></div>
     </div>
   </footer>
@@ -361,28 +395,40 @@
 
   <script>
     (function () {
-      const DEFAULT = 'payments';
+      const DEFAULT = 'proptech';
+      // Each version prints one of the two sheets (data-sheet) and lists its
+      // AppFolio lines in order; a line no list names stays hidden.
       const VERSIONS = {
+        'proptech': {
+          title: 'Product Manager · Proptech, Data Platforms & AI',
+          sheet: 'proptech',
+          bulletOrder: ['sole-pm', 'compliance', 'ai-review', 'agent-tools', 'zillow-api', 'offline-rent'],
+          pdf: 'Ben-Siverly-Resume-Proptech.pdf'
+        },
         'payments': {
           title: 'Product Manager · Payments & Money Movement',
+          sheet: 'payments',
           bulletOrder: ['payments', 'payments-team', 'rebuild', 'zillow'],
           pdf: 'Ben-Siverly-Resume-Payments.pdf'
         },
         'ai-native': {
           title: 'Senior Product Manager · AI-Native Products',
+          sheet: 'payments',
           bulletOrder: ['payments', 'rebuild', 'zillow', 'payments-team'],
           pdf: 'Ben-Siverly-Resume-AI-Native.pdf'
         },
         'general': {
           title: 'Senior Product Manager',
+          sheet: 'payments',
           bulletOrder: ['rebuild', 'payments', 'payments-team', 'zillow'],
           pdf: 'Ben-Siverly-Resume.pdf'
         }
       };
 
       // The download line under the sheet names the version it offers.
-      const LABELS = { 'payments': 'Payments', 'ai-native': 'AI-Native', 'general': 'General' };
+      const LABELS = { 'proptech': 'Proptech', 'payments': 'Payments', 'ai-native': 'AI-Native', 'general': 'General' };
 
+      const sheetEl = document.querySelector('.resume-sheet');
       const titleEl = document.getElementById('roleTitle');
       const listEl = document.getElementById('appfolioBullets');
       const dlEl = document.getElementById('dlLink');
@@ -392,6 +438,12 @@
         const key = Object.prototype.hasOwnProperty.call(VERSIONS, version) ? version : DEFAULT;
         const v = VERSIONS[key];
         titleEl.textContent = v.title;
+        sheetEl.querySelectorAll('[data-sheet]').forEach(function (el) {
+          el.hidden = el.getAttribute('data-sheet') !== v.sheet;
+        });
+        listEl.querySelectorAll('[data-bullet]').forEach(function (li) {
+          li.hidden = v.bulletOrder.indexOf(li.getAttribute('data-bullet')) < 0;
+        });
         v.bulletOrder.forEach(function (bullet) {
           const li = listEl.querySelector('[data-bullet="' + bullet + '"]');
           if (li) listEl.appendChild(li);

@@ -14,7 +14,7 @@
   "resume": {
     "$description": "The public résumé: the page and the one PDF it offers by default.",
     "page": "resume.html",
-    "pdf": "Ben-Siverly-Resume-Payments.pdf"
+    "pdf": "Ben-Siverly-Resume-Proptech.pdf"
   },
   "contact": {
     "$description": "The address stays base64-encoded in the markup, as on the home page, and is decoded only when someone presses Copy.",
