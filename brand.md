@@ -1,6 +1,6 @@
 # Ben Siverly - brand
 
-Draft 3.1, October 2026. Direction C: Monocle density, finished. The reasoning
+Draft 3.2, October 2026. Direction C: Monocle density, finished. The reasoning
 behind the theme. The values live in [`theme.json`](theme.json), compile to
 `tokens.css` (`npm run tokens`), and render on [`kit.html`](kit.html), which is
 set as an issue of a magazine. Copy rules live in [`my-voice.md`](my-voice.md).
@@ -49,10 +49,14 @@ On wide screens the cover and the contents page open as a spread, so the first
 screen holds the positioning, the proof and both buttons, with at least 24px of
 air above the fold at 1280x900.
 
-## Reader
+## Readers
 
-A hiring manager with about ten seconds, looking for four things. Each needs
-proof on the first screen, not a claim.
+Ben is independent: he left AppFolio in October 2026, builds Brava with his
+brother, and takes a few strategy and operations clients at a time. The site
+serves two readers.
+
+**A hiring manager** with about ten seconds, looking for four things. Each
+needs proof on the first screen, not a claim.
 
 | Signal | Proof |
 | --- | --- |
@@ -61,9 +65,10 @@ proof on the first screen, not a claim.
 | PM | AppFolio rental applications: submissions 44% → 70%, vacancies filled 3.4 days faster. |
 | AI | AI features at AppFolio. Agent-ready tools (llms.txt, WebMCP). AbiertoClaw. Brava's AI pipeline. |
 
-**Second reader: small and mid-size companies and startups** looking for
-strategy and operations help, the first call when something new (AI models,
-agents, a data question) might change how they run. They have 05 Consulting:
+**Small and mid-size companies and startups** looking for strategy and
+operations help, the first call when something new (AI models, agents, a data
+question) might change how they run. Product management is one way the work
+gets done, not the headline. They have 05 Consulting:
 a line on the contents page, a short department after Writing, a line in
 every colophon, and four pages of their own (consulting.html and its rate
 card, problems and perspective, made from Markdown in `content/consulting/`).
@@ -210,6 +215,14 @@ All free (SIL Open Font License) and self-hosted. Three families.
   among them. The amaranth hangs in long tapering tassels of clustered seed,
   knobbly at the edge, never a string of beads. Line work inks in Newsprint on charcoal and Char on paper. The mood
   images (the cow painting, the nudibranch) aren't ours to publish.
+- **Plates.** Small framed drawings in the same hand, one a page where a page
+  needs its own: California poppies for the Native Plant Finder, an orange
+  watering can over a seedling for Life Strategy, a bronze balance weighing a
+  marigold for Decision Assist, a lit candle with a marigold laid beside it for
+  the three memorial tools, and a trowel left in the dirt by a marigold
+  seedling for Consulting (new tools, tried on real work first). Coloured fills
+  under Char outlines, shade cut with the hatch masks, no ground of their own:
+  the frame gives them the dark plate.
 
 ## Layout grammar
 
@@ -344,6 +357,30 @@ All free (SIL Open Font License) and self-hosted. Three families.
   for spaces. The tool bar stays under the masthead where it fits on one
   line. The PDFs come from the page's own print CSS
   (`npm run generate-resume-pdf`), one Letter page each, Day ink on white.
+
+## Share cards and the site icon
+
+- **Share cards** (`npm run generate-og`, `generate-og-images.js`): the picture
+  a link shows on LinkedIn, Slack and the rest, 1200 by 630, one system for
+  every page. Each card is a page of the issue in miniature, set with
+  tokens.css and site.css through headless Chromium: a running head in folio
+  caps, the department's soft numeral in the left wing, the words in the
+  middle, a framed engraving with crosshair corners in the right wing, and the
+  address on a hairline foot. The field is the department's: Toxic Orange for
+  the cover and any piece that opens on an orange band (Serotiny), Goody
+  Gumdrop for the Workshop tools, paper for Writing and the résumé, charcoal
+  with a ruffled orange rim on a pale green body for Consulting (the
+  nudibranch). The words (a kicker, the title, one line a person can read on
+  a phone) stay between x 300 and 900, so a square crop keeps all of them.
+  The filenames are public and never change; the alt text is the card's own.
+- **Site icon:** "BS" from the nameplate's display cut, drawn as paths, Char
+  on a Toxic Orange square: the cover at 16 pixels. Chosen over a single B,
+  the letters on Gondola and a simplified marigold, side by side at 16, 32 and
+  180: the B alone read well but lost the name, Gondola vanished in a dark tab
+  strip, and the marigold was a blob at 16. `favicon.svg` is the source; the
+  Apple touch icon, the manifest's icons and the maskable one are drawn from it
+  (`npm run generate-icons`). The theme colour stays Gondola, and turns paper
+  with the Day edition.
 
 ## Motion
 

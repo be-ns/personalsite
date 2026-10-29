@@ -1,9 +1,10 @@
-# Redesign plan - step 3
+# Redesign plan
 
-October 2026. How the approved design in `kit.html` reaches every page, in what
-order, and what the new Consulting section looks like. Built from an inventory of
-every file, three competing architecture proposals, a consulting draft and a
-critic's review. Brand reasoning stays in [`brand.md`](brand.md).
+October 2026, written at step 3 of the brand work and kept current. How the
+approved design in `kit.html` reaches every page, in what order, and what the
+new Consulting section looks like. Built from an inventory of every file, three
+competing architecture proposals, a consulting draft and a critic's review.
+Brand reasoning stays in [`brand.md`](brand.md).
 
 ## Decided by Ben
 
@@ -85,27 +86,28 @@ the site still works from a plain checkout with no build step.
 | kit.html | Specimen, noindex | - | the reference for every template |
 
 Also touched: `llms.txt`, `sitemap.xml`, `site.webmanifest`, `favicon.svg` (new mark
-in the palette), `generate-og-images.js` and all 16 share cards (same filenames),
-README, CI. `styles.css` is deleted at the end.
+in the palette), `generate-og-images.js` and all 16 share cards (same filenames)
+plus the four Consulting cards, README, CI. `styles.css` is deleted at the end.
 
 ## Build order and releases
 
 GitHub Pages serves `main`, so a hiring manager's first three clicks must all be
-the new design before anything merges.
+the new design before anything merges. Status, end of October 2026: steps 0 to
+6 are done and Release 1 is the next merge. Release 2 is what remains.
 
-| Step | Work | Done when |
-| --- | --- | --- |
-| 0 | Foundation: `site.css`, `build-pages.js`, `site.json`, CSS insert flip, agent-contract fixture, `kit.html` and 404 as first consumers | tests green, `--check` clean |
-| 1 | Home page becomes the issue (AppFolio past tense, 05 Consulting department) | first screen holds positioning, proof and both buttons at 1280x900 |
-| 2 | Life Strategy (proves the tool chrome), then freeze chrome | agent contract unchanged, print view intact |
-| 3 | Résumé and its three PDFs | each PDF one Letter page, Day edition |
-| 4 | Writing: index, essays, poems, Serotiny | body text hashes match the originals |
-| 5 | Consulting: front page, rate card, problems, perspective | content approved by Ben |
-| **Release 1** | Merge to `main`: everything above | hiring manager and client paths fully new |
-| 6 | Decision Assist, Native Plant Finder | agent contract unchanged |
-| 7 | The three memorial tools; delete `styles.css` | printouts unchanged on paper |
-| 8 | Share cards, favicon, manifest, README, CI, cleanup | no reference to the old palette or fonts |
-| **Release 2** | Merge to `main` | whole site on the new design |
+| Step | Work | Done when | Status |
+| --- | --- | --- | --- |
+| 0 | Foundation: `site.css`, `build-pages.js`, `site.json`, CSS insert flip, agent-contract fixture, `kit.html` and 404 as first consumers | tests green, `--check` clean | done |
+| 1 | Home page becomes the issue (AppFolio past tense, 05 Consulting department) | first screen holds positioning, proof and both buttons at 1280x900 | done |
+| 2 | Life Strategy (proves the tool chrome), then freeze chrome | agent contract unchanged, print view intact | done |
+| 3 | Résumé and its three PDFs | each PDF one Letter page, Day edition | done |
+| 4 | Writing: index, essays, poems, Serotiny | body text hashes match the originals | done |
+| 5 | Consulting: front page, rate card, problems, perspective | content approved by Ben | done |
+| 6 | Share cards for every page (four new ones for Consulting) and new plates to go with them, the site icon, the manifest, the rate card's slogan cut, `brand.md` brought up to date | no old palette or fonts on any card; icon reads at 16, 32 and 180 pixels | done |
+| **Release 1** | Squash-merge to `main`: everything above | hiring manager and client paths fully new, and the links to them | next |
+| 7 | Decision Assist and Native Plant Finder on the tool template, each with its plate (the balance, the poppies) | agent contract unchanged | to do |
+| 8 | The three memorial tools (Memorial Pamphlet, Service of Life, Memorial Preferences) on the tool template, with the candle plate; `orale.html` takes the head; delete `styles.css` and the old fonts only it loads (Inter, JetBrains Mono, Zilla Slab) | printouts unchanged on paper; PENDING in `test/chrome.test.js` empty | to do |
+| **Release 2** | Merge to `main` | whole site on the new design | |
 
 ## Consulting
 
