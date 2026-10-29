@@ -225,6 +225,8 @@ const MARKER = /<!-- (\/?)chrome:([a-z]+)(?: (\{.*?\}))? -->/g;
 
 function head(ctx) {
   const { root, theme } = ctx;
+  // Icon links carry a version so browsers drop a cached old mark (generate-icons.js).
+  const { VERSION: ICON_VERSION } = require('./generate-icons');
   const { resolve } = require('./build-tokens');
   const night = resolve(theme, theme.editions[theme.meta.defaultEdition].ground.$value);
   const faces = theme.font.faces.$value;
@@ -235,9 +237,9 @@ function head(ctx) {
   });
   return [
     `<meta name="theme-color" content="${night}">`,
-    `<link rel="icon" type="image/png" sizes="32x32" href="${root}images/icon-32.png">`,
-    `<link rel="icon" type="image/svg+xml" href="${root}favicon.svg">`,
-    `<link rel="apple-touch-icon" href="${root}apple-touch-icon.png">`,
+    `<link rel="icon" type="image/png" sizes="32x32" href="${root}images/icon-32.png?v=${ICON_VERSION}">`,
+    `<link rel="icon" type="image/svg+xml" href="${root}favicon.svg?v=${ICON_VERSION}">`,
+    `<link rel="apple-touch-icon" href="${root}apple-touch-icon.png?v=${ICON_VERSION}">`,
     `<link rel="manifest" href="${root}site.webmanifest">`,
     '<script>',
     '  // Apply a saved edition before first paint. Night is the default on every device.',

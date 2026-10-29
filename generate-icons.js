@@ -14,6 +14,13 @@
 //   images/icon-maskable-512.png   512  the manifest's maskable icon: the
 //                                       mark drawn smaller, inside the central
 //                                       circle Android may crop the square to
+//   favicon.ico             16/32/48  for crawlers and older browsers that
+//                                       ask for /favicon.ico by name (PNGs
+//                                       packed in an ICO, unlinked)
+//
+// Browsers, Safari above all, cache a site icon by its address for a long
+// time, so every link to an icon carries ?v=VERSION. Bump VERSION whenever
+// favicon.svg changes, then run this script and node build-pages.js.
 //
 // The mark is paths, so sharp (a devDependency, librsvg underneath) draws it
 // the same everywhere. Run it after changing favicon.svg.
@@ -23,6 +30,10 @@ const path = require('path');
 
 const ROOT = __dirname;
 const SOURCE = path.join(ROOT, 'favicon.svg');
+
+const VERSION = '2';
+
+const ICO = { file: 'favicon.ico', sizes: [16, 32, 48] };
 
 const ICONS = [
   { file: 'apple-touch-icon.png', size: 180 },
@@ -43,6 +54,27 @@ function maskable(svg) {
   return out;
 }
 
+// An ICO holding PNG images: a 6-byte header, a 16-byte entry per image,
+// then the PNGs. Every browser since IE 11 reads PNG entries.
+function ico(pngs) {
+  const header = Buffer.alloc(6 + 16 * pngs.length);
+  header.writeUInt16LE(0, 0);
+  header.writeUInt16LE(1, 2);
+  header.writeUInt16LE(pngs.length, 4);
+  let offset = header.length;
+  pngs.forEach(({ size, data }, i) => {
+    const at = 6 + 16 * i;
+    header.writeUInt8(size >= 256 ? 0 : size, at);
+    header.writeUInt8(size >= 256 ? 0 : size, at + 1);
+    header.writeUInt16LE(1, at + 4);
+    header.writeUInt16LE(32, at + 6);
+    header.writeUInt32LE(data.length, at + 8);
+    header.writeUInt32LE(offset, at + 12);
+    offset += data.length;
+  });
+  return Buffer.concat([header, ...pngs.map((p) => p.data)]);
+}
+
 async function main() {
   const sharp = require('sharp');
   const svg = fs.readFileSync(SOURCE, 'utf8');
@@ -56,9 +88,20 @@ async function main() {
       .toFile(out);
     console.log(`  ${icon.file}  ${icon.size}x${icon.size}  ${(fs.statSync(out).size / 1024).toFixed(1)} KB`);
   }
+  const pngs = [];
+  for (const size of ICO.sizes) {
+    const data = await sharp(Buffer.from(svg), { density: Math.ceil((72 * size) / 100) * 2 })
+      .resize(size, size)
+      .flatten({ background: '#FE5F35' })
+      .png({ compressionLevel: 9 })
+      .toBuffer();
+    pngs.push({ size, data });
+  }
+  fs.writeFileSync(path.join(ROOT, ICO.file), ico(pngs));
+  console.log(`  ${ICO.file}  ${ICO.sizes.join('/')}  ${(fs.statSync(path.join(ROOT, ICO.file)).size / 1024).toFixed(1)} KB`);
 }
 
-module.exports = { ICONS, MASKABLE_SCALE };
+module.exports = { ICONS, ICO, VERSION, MASKABLE_SCALE };
 
 if (require.main === module) {
   main().catch((err) => { console.error(err); process.exit(1); });

@@ -9,7 +9,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { ROOT, htmlPages, readPage } = require('./helpers');
-const { ICONS } = require('../generate-icons');
+const { ICONS, ICO, VERSION } = require('../generate-icons');
 
 const tokens = fs.readFileSync(path.join(ROOT, 'tokens.css'), 'utf8');
 const palette = (name) => new RegExp(`--palette-${name}: (#[0-9A-F]{6});`, 'i').exec(tokens)[1].toUpperCase();
@@ -41,11 +41,12 @@ test('the manifest names the site in the new palette and lists real icons', () =
   assert.equal(m.background_color.toUpperCase(), palette('gondola'), 'the splash is the Night page too');
   assert.doesNotMatch(m.description, /—/, 'no em dashes (my-voice.md)');
   for (const icon of m.icons) {
-    const file = path.join(ROOT, icon.src.replace(/^\//, ''));
+    assert.ok(icon.src.endsWith(`?v=${VERSION}`), `${icon.src} carries the icon version, so a cached old mark is dropped`);
+    const file = path.join(ROOT, icon.src.replace(/^\//, '').split('?')[0]);
     assert.ok(fs.existsSync(file), `${icon.src} exists`);
     if (icon.type === 'image/png') assert.equal(pngSize(file).join('x'), icon.sizes, `${icon.src} is ${icon.sizes}`);
   }
-  assert.ok(m.icons.some((i) => i.src === '/favicon.svg'), 'the SVG mark');
+  assert.ok(m.icons.some((i) => i.src === `/favicon.svg?v=${VERSION}`), 'the SVG mark');
   assert.ok(m.icons.some((i) => i.sizes === '192x192' && i.purpose === 'any'), 'a 192 icon');
   assert.ok(m.icons.some((i) => i.sizes === '512x512' && i.purpose === 'any'), 'a 512 icon');
   assert.ok(m.icons.some((i) => i.sizes === '512x512' && i.purpose === 'maskable'), 'a maskable icon of its own');
@@ -55,13 +56,32 @@ test('every page links the icons and the manifest (the frozen case study aside)'
   for (const page of htmlPages()) {
     if (page === 'cmp-case-study.html') continue;
     const html = readPage(page);
-    const root = /href="\/favicon\.svg"/.test(html) ? '/' : '';
+    const root = /href="\/favicon\.svg/.test(html) ? '/' : '';
     for (const link of [
-      `<link rel="icon" type="image/svg+xml" href="${root}favicon.svg">`,
-      `<link rel="icon" type="image/png" sizes="32x32" href="${root}images/icon-32.png">`,
-      `<link rel="apple-touch-icon" href="${root}apple-touch-icon.png">`,
+      `<link rel="icon" type="image/svg+xml" href="${root}favicon.svg?v=${VERSION}">`,
+      `<link rel="icon" type="image/png" sizes="32x32" href="${root}images/icon-32.png?v=${VERSION}">`,
+      `<link rel="apple-touch-icon" href="${root}apple-touch-icon.png?v=${VERSION}">`,
       `<link rel="manifest" href="${root}site.webmanifest">`,
     ]) assert.ok(html.includes(link), `${page}: ${link}`);
     if (html.includes('<!-- chrome:head')) assert.ok(html.includes(`<meta name="theme-color" content="${palette('gondola')}">`), `${page}: theme-color is Gondola`);
   }
+});
+
+test('favicon.ico holds the mark at 16, 32 and 48 for anything that asks for it by name', () => {
+  const b = fs.readFileSync(path.join(ROOT, ICO.file));
+  assert.equal(b.readUInt16LE(0), 0, 'reserved');
+  assert.equal(b.readUInt16LE(2), 1, 'an icon, not a cursor');
+  const count = b.readUInt16LE(4);
+  const sizes = [];
+  for (let i = 0; i < count; i++) {
+    const at = 6 + 16 * i;
+    const size = b.readUInt8(at) || 256;
+    const length = b.readUInt32LE(at + 8);
+    const offset = b.readUInt32LE(at + 12);
+    assert.equal(b.toString('latin1', offset + 1, offset + 4), 'PNG', `entry ${size} is a PNG`);
+    assert.deepEqual([b.readUInt32BE(offset + 16), b.readUInt32BE(offset + 20)], [size, size], `entry ${size} is ${size}px`);
+    assert.ok(offset + length <= b.length, `entry ${size} fits in the file`);
+    sizes.push(size);
+  }
+  assert.deepEqual(sizes, ICO.sizes);
 });
