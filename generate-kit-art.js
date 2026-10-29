@@ -1,11 +1,13 @@
 // Kit art generator: the engraved and stippled illustrations in kit.html.
 //
-// Three drawings, each an SVG <symbol> the page reuses with <use>, cropped
-// with viewBox where it needs a detail: the cover still life (marigolds and
+// Each drawing is an SVG <symbol> the page reuses with <use>, cropped with
+// viewBox where it needs a detail: the cover still life (marigolds and
 // hanging amaranth in a stoneware jar, from Ben's palette photo), a street of
-// apartment buildings with one orange-lit window, and a single marigold. Every
-// drawing comes from a seeded random generator, so the output is the same on
-// every run and on every machine.
+// apartment buildings with one orange-lit window, a single marigold, and the
+// small plates (California poppies, a watering can, a balance, a candle, a
+// trowel) the Workshop tools and Consulting use on their share cards
+// (generate-og-images.js). Every drawing comes from a seeded random
+// generator, so the output is the same on every run and on every machine.
 //
 // This file is a library: build-pages.js stamps the symbols each page names
 // into that page's chrome:art region, so a page carries only the drawings it
@@ -536,6 +538,307 @@ function street() {
   return { W, H, body: inkBody(parts, dots, sky) };
 }
 
+// ======================= PLATES: one small drawing a page =======================
+// Small framed plates, drawn like the marigold: coloured fills under Char
+// outlines, shade cut with the hatch masks, no ground of their own (the frame
+// supplies it). One per Workshop tool and one for Consulting:
+//   poppy    California poppies, the native plant (Native Plant Finder)
+//   can      an orange watering can over a seedling (Life Strategy Matrix)
+//   balance  a bronze balance, a marigold against two weights (Decision Assist)
+//   candle   a taper in a stoneware holder, a marigold laid beside it
+//            (the three memorial tools)
+//   trowel   a trowel left in the dirt by a marigold seedling (Consulting)
+
+// A stroke with a Char edge: the dark line first, the colour over it.
+function inked(d, w, colour, extra = '') {
+  return `<path d="${d}" fill="none" stroke="${C.char}" stroke-width="${(w + 1.8).toFixed(1)}" stroke-linecap="round" stroke-linejoin="round"${extra}/>` +
+    `<path d="${d}" fill="none" stroke="${colour}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"${extra}/>`;
+}
+// A closed outline from absolute points, rounded to whole units.
+function poly(pts, close = true) {
+  return `M${pts.map(([x, y]) => `${i0(x)} ${i0(y)}`).join('L')}${close ? 'z' : ''}`;
+}
+// Rotate a point about an origin.
+function rot([x, y], [ox, oy], a) {
+  const c = Math.cos(a), s = Math.sin(a);
+  return [ox + (x - ox) * c - (y - oy) * s, oy + (x - ox) * s + (y - oy) * c];
+}
+// Stipple: n dots inside a test, as one path.
+function stipple(R, n, box, inside) {
+  const [x0, y0, w, h] = box;
+  const out = [];
+  let guard = 0;
+  while (out.length < n && guard++ < n * 30) {
+    const x = x0 + R() * w, y = y0 + R() * h;
+    if (inside(x, y)) out.push(dot(x, y));
+  }
+  return out.join('');
+}
+
+// California poppy leaves: cut three ways, and three ways again, into narrow
+// glaucous segments.
+function poppyLeaf(R, x, y, ang, len, depth, list) {
+  const ex = x + Math.cos(ang) * len, ey = y + Math.sin(ang) * len;
+  const bend = (R() - 0.5) * len * 0.3;
+  list.push(`M${i0(x)} ${i0(y)}Q${i0((x + ex) / 2 - Math.sin(ang) * bend)} ${i0((y + ey) / 2 + Math.cos(ang) * bend)} ${i0(ex)} ${i0(ey)}`);
+  if (depth > 0) for (const da of [-0.62, 0.02, 0.6]) poppyLeaf(R, ex, ey, ang + da + (R() - 0.5) * 0.35, len * (0.5 + R() * 0.18), depth - 1, list);
+}
+
+// One petal of the cup: a fan from its base, its top edge in two soft lobes.
+// Returns the outline and the vein lines.
+function poppyPetal(R, bx, by, ang, len, w) {
+  const at = (u, v) => rot([bx + u * w, by - v * len], [bx, by], ang);
+  const lobe = 0.06 + R() * 0.05;
+  const d = relPath(at(0, 0), [
+    ['c', at(-0.12, 0.2), at(-0.56, 0.5), at(-0.5, 0.86)],
+    ['q', at(-0.3, 1.04 + lobe), at(-0.02, 0.97)],
+    ['q', at(0.26, 1.04 + lobe * 0.6), at(0.5, 0.88)],
+    ['c', at(0.58, 0.5), at(0.12, 0.2), at(0, 0)],
+  ]);
+  const base = relPath(at(0, 0), [['c', at(-0.1, 0.1), at(-0.3, 0.28), at(-0.24, 0.42)], ['q', at(0, 0.5), at(0.24, 0.42)], ['c', at(0.3, 0.28), at(0.1, 0.1), at(0, 0)]]);
+  let veins = '';
+  for (let k = -3; k <= 3; k++) veins += relPath(at(k * 0.03, 0.08), [['q', at(k * 0.1, 0.5), at(k * 0.13 + (R() - 0.5) * 0.04, 0.8 + R() * 0.08)]], false);
+  return { d, base, veins };
+}
+
+// An open poppy: the back petal shows its inside, the side and front petals
+// their outsides, so the cup reads; stamens between, a green torus under it.
+function poppyCup(R, cx, cy, r, tilt) {
+  let o = `<g transform="rotate(${i0(tilt * 57.3)} ${i0(cx)} ${i0(cy)})" stroke="${C.char}" stroke-linejoin="round">`;
+  const petals = [
+    { a: 0, len: 1.08, w: 1.3, fill: C.o4, base: C.o1 },
+    { a: -0.58, len: 1.0, w: 1.12, fill: C.o2, base: C.o0, shade: true },
+    { a: 0.58, len: 1.0, w: 1.12, fill: C.o3, base: C.o1 },
+  ];
+  for (const p of petals) {
+    const { d, base, veins } = poppyPetal(R, cx, cy, p.a, r * p.len, r * p.w);
+    o += `<path d="${d}" fill="${p.fill}" stroke-width="1.6"/><path d="${base}" fill="${p.base}" stroke="none" opacity=".55"/>`;
+    o += `<path d="${veins}" fill="none" stroke-width=".7" opacity=".35"/>`;
+    if (p.shade) o += `<path d="${d}" fill="${C.char}" stroke="none" mask="url(#art-m-d)" opacity=".35"/>`;
+  }
+  // stamens, a crowded tuft of pale orange
+  const st = [];
+  for (let i = 0; i < 26; i++) { const a = R() * TAU, q = Math.sqrt(R()); st.push(dot(cx + Math.cos(a) * q * r * 0.3, cy - r * 0.42 + Math.sin(a) * q * r * 0.12)); }
+  o += `<path d="${st.join('')}" stroke="${C.char}" stroke-width="4.6" stroke-linecap="round"/><path d="${st.join('')}" stroke="#FFAD4C" stroke-width="3" stroke-linecap="round"/>`;
+  // the front petal, shorter, its rim dipped so the stamens show over it
+  const f = poppyPetal(R, cx, cy, 0, r * 0.66, r * 1.34);
+  o += `<path d="${f.d}" fill="${C.o2}" stroke-width="1.6"/><path d="${f.base}" fill="${C.o0}" stroke="none" opacity=".5"/><path d="${f.veins}" fill="none" stroke-width=".7" opacity=".35"/>`;
+  o += `<path d="${f.d}" fill="${C.char}" stroke="none" mask="url(#art-m-h)" opacity=".22"/>`;
+  // the torus: a flat green rim the petals stand on
+  o += `<ellipse cx="${i0(cx)}" cy="${i0(cy + 2)}" rx="${i0(r * 0.24)}" ry="${i0(r * 0.08 + 1)}" fill="${C.g3}" stroke-width="1.4"/>`;
+  return `${o}</g>`;
+}
+
+function poppy() {
+  const R = rng(1769);
+  const W = 200, H = 240;
+  const out = [];
+  // stems, smooth and blue-green, from one crown at the foot
+  const crown = [104, 236];
+  const heads = [[74, 92, 50, -0.2], [152, 124, 36, 0.32]];
+  let stems = '';
+  for (const [x, y] of heads) stems += `M${crown[0]} ${crown[1]}C${i0(crown[0] + (x - crown[0]) * 0.1)} ${i0(crown[1] - 60)} ${i0(x + (crown[0] - x) * 0.3)} ${i0(y + 60)} ${x} ${y + 4}`;
+  stems += `M${crown[0]} ${crown[1]}C108 190 130 90 124 46`; // the bud
+  stems += `M${crown[0]} ${crown[1]}C96 200 40 170 30 88`; // the seed pod's stem
+  out.push(inked(stems, 2.6, C.g2));
+  // basal leaves, cut fine
+  const a = [], b = [];
+  for (const [ang, len, x] of [[-2.7, 30, 100], [-2.25, 36, 102], [-1.85, 30, 104], [-1.25, 34, 106], [-0.8, 36, 106], [-0.4, 28, 108], [-1.55, 26, 104]]) poppyLeaf(R, x, 232, ang, len, 2, R() < 0.5 ? a : b);
+  // a leaf up each flower stem
+  poppyLeaf(R, 82, 150, -2.3, 22, 2, a);
+  poppyLeaf(R, 132, 168, -0.55, 20, 2, b);
+  for (const [list, col] of [[a, C.g2], [b, C.g1]]) out.push(inked(list.join(''), 2.1, col));
+  // the seed pod: long, thin, ribbed, pointing up
+  const pod = bez([30, 92], [26, 70], [24, 46], [30, 22]);
+  const L = [], Rt = [], ribs = [];
+  for (let i = 0; i <= 12; i++) {
+    const t = i / 12, [x, y] = pod(t), w = 3.2 * (1 - t * 0.7);
+    L.push([x - w, y]); Rt.push([x + w, y]);
+  }
+  out.push(`<path d="${poly([...L, ...Rt.reverse()])}" fill="${C.g1}" stroke="${C.char}" stroke-width="1.4" stroke-linejoin="round"/>`);
+  for (const f of [-1, 1]) ribs.push(poly(Array.from({ length: 10 }, (_, i) => { const [x, y] = pod(0.05 + i * 0.09); return [x + f * 1.2, y]; }), false));
+  out.push(`<path d="${ribs.join('')}" fill="none" stroke="${C.g0}" stroke-width=".9"/>`);
+  // the bud, its pointed cap lifting off a furled orange twist
+  out.push(`<g stroke="${C.char}" stroke-linejoin="round"><path d="M118 52c-4-8-2-18 5-24c6 6 8 16 4 24z" fill="${C.o2}" stroke-width="1.3"/><path d="M121 30l2 20M118 40c4-2 7 0 8 6" fill="none" stroke-width=".8" opacity=".6"/>` +
+    `<path d="M124 30c-2-10 0-20 8-28c5 9 4 19-1 27z" fill="${C.g2}" stroke-width="1.3" transform="rotate(18 128 28)"/><path d="M129 6l-1 22" fill="none" stroke="${C.g0}" stroke-width=".9" transform="rotate(18 128 28)"/>` +
+    `<ellipse cx="124" cy="53" rx="6" ry="2.4" fill="${C.g3}" stroke-width="1.2"/></g>`);
+  // the flowers
+  for (const [x, y, r, t] of heads) out.push(poppyCup(R, x, y, r, t));
+  return { W, H, body: out.join('') };
+}
+
+// A watering can, painted Toxic Orange, its rose over a seedling.
+function can() {
+  const R = rng(3301);
+  const W = 240, H = 200;
+  const o = [];
+  const G = 186;
+  // ground: a scuff of dirt
+  o.push(`<path d="${stipple(R, 140, [0, G - 2, W, 14], (x, y) => y > G + (R() ** 2) * 4 - 2)}" stroke="#7A6A5C" stroke-width="1.6" stroke-linecap="round"/>`);
+  o.push(`<path d="M8 ${G}H232" stroke="${C.news}" stroke-width="1" opacity=".5"/>`);
+  o.push(`<ellipse cx="108" cy="${G}" rx="60" ry="5" fill="${C.char}" opacity=".6"/>`);
+  // the back handle and the arched top handle, behind the body
+  o.push(inked('M58 86C34 90 30 140 58 150', 6, C.o1));
+  o.push(inked('M66 70C70 26 136 18 150 66', 6.4, C.o2));
+  // the spout: a tapering tube from low on the body up to the rose
+  const s0 = [146, 156], s1 = [206, 70];
+  const sp = (t, side) => { const x = s0[0] + (s1[0] - s0[0]) * t, y = s0[1] + (s1[1] - s0[1]) * t; const w = 7 - 3.6 * t; const n = [0.82, 0.57]; return [x + n[0] * w * side, y + n[1] * w * side]; };
+  const spout = [sp(0, -1), sp(1, -1), sp(1, 1), sp(0, 1)];
+  o.push(`<path d="${poly(spout)}" fill="${C.o2}" stroke="${C.char}" stroke-width="1.6" stroke-linejoin="round"/>`);
+  o.push(`<path d="${poly([sp(0, 0.1), sp(1, 0.1), sp(1, 1), sp(0, 1)])}" fill="${C.char}" mask="url(#art-m-d)" opacity=".35"/>`);
+  // the body: a drum with a domed shoulder
+  const body = 'M60 76C60 70 150 70 150 76V172C150 180 60 180 60 172Z';
+  o.push(`<path d="${body}" fill="${C.o2}" stroke="${C.char}" stroke-width="1.8" stroke-linejoin="round"/>`);
+  o.push(`<path d="M118 76V176C132 176 150 176 150 172V76C150 74 140 72 118 72z" fill="${C.char}" mask="url(#art-m-d)" opacity=".38"/>`);
+  o.push(`<path d="M134 74V178" stroke="${C.o0}" stroke-width="10" opacity=".5"/>`);
+  o.push(`<path d="M72 80V170" stroke="${C.o4}" stroke-width="7" opacity=".8"/><path d="M84 80V170" stroke="${C.o3}" stroke-width="4" opacity=".8"/>`);
+  // hoops and rivets
+  for (const y of [92, 160]) o.push(`<path d="M60 ${y}C80 ${y + 4} 130 ${y + 4} 150 ${y}" fill="none" stroke="${C.char}" stroke-width="1.6"/><path d="M60 ${y + 4}C80 ${y + 8} 130 ${y + 8} 150 ${y + 4}" fill="none" stroke="${C.char}" stroke-width="1"/>`);
+  let rv = '';
+  for (let x = 66; x < 148; x += 10) rv += dot(x, 98 + Math.sin((x - 60) / 90 * Math.PI) * 3.2);
+  o.push(`<path d="${rv}" stroke="${C.char}" stroke-width="2.2" stroke-linecap="round"/>`);
+  // the filler mouth on the shoulder
+  o.push(`<ellipse cx="105" cy="74" rx="44" ry="6" fill="${C.o1}" stroke="${C.char}" stroke-width="1.6"/><ellipse cx="96" cy="73" rx="18" ry="3" fill="${C.char}"/>`);
+  // the rose: a dished cap across the spout's end, pierced
+  const rc = [212, 64];
+  o.push(`<g transform="rotate(-55 ${rc[0]} ${rc[1]})"><path d="M${rc[0] - 14} ${rc[1]}q14-10 28 0z" fill="${C.o1}" stroke="${C.char}" stroke-width="1.4"/><ellipse cx="${rc[0]}" cy="${rc[1]}" rx="14" ry="4.5" fill="${C.o3}" stroke="${C.char}" stroke-width="1.4"/>` +
+    `<path d="M${rc[0] - 8} ${rc[1]}h0M${rc[0] - 3} ${rc[1] - 1}h0M${rc[0] + 3} ${rc[1] - 1}h0M${rc[0] + 8} ${rc[1]}h0M${rc[0]} ${rc[1] + 2}h0M${rc[0] - 5} ${rc[1] + 2}h0M${rc[0] + 5} ${rc[1] + 2}h0" stroke="${C.char}" stroke-width="1.6" stroke-linecap="round"/></g>`);
+  // water: short strokes falling from the rose
+  let rain = '';
+  for (let i = 0; i < 26; i++) {
+    const t = R(), x = 214 + (R() - 0.5) * 22 + t * 6, y = 74 + t * 96;
+    rain += `M${i0(x)} ${i0(y)}l1 ${i0(5 + R() * 6)}`;
+  }
+  o.push(`<path d="${rain}" stroke="${C.g4}" stroke-width="1.4" stroke-linecap="round" opacity=".85"/>`);
+  // the seedling the water is for
+  o.push(inked('M220 186C220 176 219 170 221 160', 2, C.g2));
+  o.push(`<g stroke="${C.char}" stroke-width="1.2" stroke-linejoin="round"><path d="M221 162c-4-8-14-10-20-6c4 8 14 10 20 6z" fill="${C.g3}"/><path d="M221 162c3-9 13-12 20-8c-3 8-13 11-20 8z" fill="${C.g2}"/></g>`);
+  return { W, H, body: o.join('') };
+}
+
+// A bronze balance: a marigold on the low pan, two weights on the high one.
+function balance() {
+  const R = rng(5150);
+  const W = 220, H = 220;
+  const o = [];
+  const P = [110, 62], tilt = -0.11, arm = 72;
+  const L = rot([P[0] - arm, P[1]], P, tilt), Rr = rot([P[0] + arm, P[1]], P, tilt);
+  const drop = 70;
+  // chains first, behind the pans and the beam
+  let ch = '';
+  for (const [hx, hy] of [L, Rr]) for (const dx of [-29, 0, 29]) ch += `M${i0(hx)} ${i0(hy + 4)}L${i0(hx + dx)} ${i0(hy + drop)}`;
+  o.push(`<path d="${ch}" stroke="${C.char}" stroke-width="2.6"/><path d="${ch}" stroke="${C.g3}" stroke-width="1" stroke-dasharray="2.5 1.5"/>`);
+  // plinth and column
+  o.push(`<path d="M56 214H164L156 204H64Z" fill="${C.g1}" stroke="${C.char}" stroke-width="1.6" stroke-linejoin="round"/><path d="M72 204H148L138 190H82Z" fill="${C.g2}" stroke="${C.char}" stroke-width="1.6" stroke-linejoin="round"/>`);
+  o.push(`<path d="M114 204H156L164 214H122ZM120 190H138L148 204H126Z" fill="${C.char}" mask="url(#art-m-d)" opacity=".4"/>`);
+  o.push(`<path d="M104 190V72H116V190Z" fill="${C.g2}" stroke="${C.char}" stroke-width="1.6"/><path d="M111 190V72H116V190Z" fill="${C.char}" mask="url(#art-m-v)" opacity=".45"/>`);
+  for (const y of [176, 132, 92]) o.push(`<rect x="99" y="${y}" width="22" height="7" rx="2" fill="${C.g1}" stroke="${C.char}" stroke-width="1.4"/>`);
+  // the beam, tipped toward the marigold
+  const b = [[-arm - 4, -3.4], [arm + 4, -3.4], [arm + 4, 3.4], [-arm - 4, 3.4]].map(([x, y]) => rot([P[0] + x, P[1] + y], P, tilt));
+  o.push(`<path d="${poly(b)}" fill="${C.g2}" stroke="${C.char}" stroke-width="1.6" stroke-linejoin="round"/>`);
+  o.push(`<path d="${poly([b[0], b[1], b[2], b[3]].map((p, i) => (i < 2 ? rot([p[0], p[1] + 3.4], P, 0) : p)))}" fill="${C.char}" mask="url(#art-m-h)" opacity=".35"/>`);
+  for (const [hx, hy] of [L, Rr]) o.push(`<circle cx="${i0(hx)}" cy="${i0(hy)}" r="4.5" fill="${C.g1}" stroke="${C.char}" stroke-width="1.4"/>`);
+  // the pointer and the pivot
+  const tip = rot([P[0], P[1] - 34], P, tilt);
+  o.push(`<path d="M${P[0] - 3} ${P[1]}L${i0(tip[0])} ${i0(tip[1])}L${P[0] + 3} ${P[1]}z" fill="${C.g3}" stroke="${C.char}" stroke-width="1.2" stroke-linejoin="round"/><circle cx="${P[0]}" cy="${P[1]}" r="6" fill="${C.g1}" stroke="${C.char}" stroke-width="1.6"/><circle cx="${P[0]}" cy="${P[1]}" r="1.8" fill="${C.char}"/>`);
+  // the pans
+  const pan = (cx, cy) => `<path d="M${i0(cx - 32)} ${i0(cy)}C${i0(cx - 27)} ${i0(cy + 15)} ${i0(cx + 27)} ${i0(cy + 15)} ${i0(cx + 32)} ${i0(cy)}z" fill="${C.g1}" stroke="${C.char}" stroke-width="1.6" stroke-linejoin="round"/>` +
+    `<path d="M${i0(cx)} ${i0(cy)}H${i0(cx + 32)}C${i0(cx + 27)} ${i0(cy + 15)} ${i0(cx + 8)} ${i0(cy + 12)} ${i0(cx)} ${i0(cy + 11)}z" fill="${C.char}" mask="url(#art-m-d)" opacity=".4"/>` +
+    `<ellipse cx="${i0(cx)}" cy="${i0(cy)}" rx="32" ry="5.5" fill="${C.g2}" stroke="${C.char}" stroke-width="1.4"/>`;
+  const lp = [L[0], L[1] + drop], rp = [Rr[0], Rr[1] + drop];
+  o.push(pan(...rp));
+  // two weights, the larger under the smaller
+  for (const [w, h, y, x] of [[22, 14, rp[1] - 2, rp[0] - 6], [14, 10, rp[1] - 16, rp[0] - 6]]) {
+    o.push(`<path d="M${i0(x - w / 2)} ${i0(y)}V${i0(y - h)}H${i0(x + w / 2)}V${i0(y)}C${i0(x + w / 2)} ${i0(y + 3)} ${i0(x - w / 2)} ${i0(y + 3)} ${i0(x - w / 2)} ${i0(y)}z" fill="${C.g1}" stroke="${C.char}" stroke-width="1.3" stroke-linejoin="round"/>` +
+      `<ellipse cx="${i0(x)}" cy="${i0(y - h)}" rx="${i0(w / 2)}" ry="2.6" fill="${C.g3}" stroke="${C.char}" stroke-width="1.2"/><path d="M${i0(x + w / 6)} ${i0(y - h + 2)}V${i0(y + 1)}" stroke="${C.char}" stroke-width="${i0(w / 3)}" mask="url(#art-m-v)" opacity=".45"/>`);
+  }
+  o.push(pan(...lp));
+  o.push(marigold(R, lp[0] + 2, lp[1] - 16, 22, 0.5, -0.2, HEADS.toxic, 70));
+  return { W, H, body: o.join('') };
+}
+
+// A taper in a stoneware holder, lit; a marigold laid beside it.
+function candle() {
+  const R = rng(1102);
+  const W = 160, H = 240;
+  const o = [];
+  const fx = 80, fy = 46;
+  // the halo: an engraver's rays round the flame
+  let rays = '';
+  for (let i = 0; i < 36; i++) {
+    const a = (i / 36) * TAU, r0 = 22 + (i % 2) * 6, r1 = r0 + 10 + (i % 3) * 7 + R() * 4;
+    rays += `M${i0(fx + Math.cos(a) * r0)} ${i0(fy + Math.sin(a) * r0 * 1.15)}L${i0(fx + Math.cos(a) * r1)} ${i0(fy + Math.sin(a) * r1 * 1.15)}`;
+  }
+  o.push(`<circle cx="${fx}" cy="${fy}" r="46" fill="${C.o2}" opacity=".08"/><circle cx="${fx}" cy="${fy}" r="28" fill="${C.o3}" opacity=".1"/><path d="${rays}" stroke="${C.o3}" stroke-width=".9" opacity=".45"/>`);
+  // the table
+  o.push(`<rect y="222" width="${W}" height="18" fill="${C.news}" mask="url(#art-m-h3)" opacity=".18"/><path d="M0 222H${W}" stroke="${C.news}" stroke-width="1.2" opacity=".4"/>`);
+  // the holder: a stoneware dish with a ring handle and a socket
+  o.push(`<path d="M134 206c16-2 20 14 4 16" fill="none" stroke="${C.char}" stroke-width="6"/><path d="M134 206c16-2 20 14 4 16" fill="none" stroke="#3A3330" stroke-width="3"/>`);
+  o.push(`<path d="M26 206C28 222 132 222 134 206Z" fill="#221E1D" stroke="${C.char}" stroke-width="1.6"/>`);
+  o.push(`<ellipse cx="80" cy="206" rx="54" ry="10" fill="#2E2826" stroke="${C.news}" stroke-opacity=".5" stroke-width="1.2"/>`);
+  let glaze = '';
+  for (let x = 34; x < 128; x += 8) glaze += dot(x, 212 + Math.sin((x - 26) / 108 * Math.PI) * 5);
+  o.push(`<path d="${glaze}" stroke="${C.o2}" stroke-width="3.4" stroke-linecap="round"/>`);
+  o.push(`<path d="M64 206V194C64 190 96 190 96 194V206C96 210 64 210 64 206Z" fill="#221E1D" stroke="${C.char}" stroke-width="1.4"/><path d="M66 200q14 4 28 0" fill="none" stroke="${C.news}" stroke-width=".8" opacity=".45"/>`);
+  // the taper, wax run down one side
+  o.push(`<path d="M68 194V76C68 72 92 72 92 76V194Z" fill="${C.news}" stroke="${C.char}" stroke-width="1.6"/>`);
+  o.push(`<path d="M82 76V194H92V76C92 74 88 73 82 73Z" fill="${C.char}" mask="url(#art-m-v)" opacity=".35"/>`);
+  o.push(`<path d="M68 80c0 6 2 18-1 26c-2 4 3 6 4 0c1-8-1-18 2-24z" fill="${C.news}" stroke="${C.char}" stroke-width="1.2" stroke-linejoin="round"/><path d="M86 78c2 4 1 10 3 12c2 2 3-2 2-6z" fill="${C.news}" stroke="${C.char}" stroke-width="1" stroke-linejoin="round"/>`);
+  o.push(`<ellipse cx="80" cy="76" rx="12" ry="3.4" fill="#E2D8C6" stroke="${C.char}" stroke-width="1.2"/>`);
+  // wick and flame
+  o.push(`<path d="M80 76l1-12" stroke="${C.char}" stroke-width="2" stroke-linecap="round"/>`);
+  o.push(`<path d="M81 66C72 62 72 46 79 28C88 46 90 62 81 66Z" fill="${C.o2}" stroke="${C.char}" stroke-width="1.3" stroke-linejoin="round"/><path d="M81 63C76 60 76 50 80 40C85 50 86 60 81 63Z" fill="#FFAD4C"/><path d="M81 62C79 60 79 55 81 50C83 55 83 60 81 62Z" fill="${C.news}"/>`);
+  // a marigold laid on the table, in profile, its calyx toward the dish
+  o.push(marigold(R, 128, 214, 20, 1.2, 1.45, HEADS.gold, 60));
+  return { W, H, body: o.join('') };
+}
+
+// A trowel left standing in turned dirt, beside a marigold seedling in bud.
+function trowel() {
+  const R = rng(7707);
+  const W = 220, H = 220;
+  const o = [];
+  const G = 196;
+  const mound = (x) => G - 46 * Math.exp(-(((x - 96) / 70) ** 2));
+  // the back of the mound
+  let m = `M0 ${G}`;
+  for (let x = 0; x <= W; x += 10) m += `L${x} ${i0(mound(x))}`;
+  o.push(`<path d="${m}L${W} ${H}H0Z" fill="#2A2422" stroke="${C.char}" stroke-width="1.4"/>`);
+  // the seedling: a stem, cut leaves, one bud splitting orange
+  o.push(inked('M172 176C172 154 168 122 175 90', 2.4, C.g1));
+  o.push(`<g transform="translate(172 148) scale(.5)">${fern(R, 0, 0, -0.55, 90)}</g><g transform="translate(171 166) scale(.46)">${fern(R, 0, 0, -2.55, 84)}</g><g transform="translate(173 120) scale(.4)">${fern(R, 0, 0, -2.25, 72)}</g><g transform="translate(174 104) scale(.34)">${fern(R, 0, 0, -0.75, 60)}</g>`);
+  o.push(bud(R, 175, 86, 11, 0.15, 1));
+  // the trowel: handle up and right, the blade driven into the dirt
+  const a = -1.0, base = [80, 176], k = 1.22;
+  const T = (u, v) => rot([base[0] + v * k, base[1] - u * k], base, a + Math.PI / 2);
+  // blade: a pointed spade with a ridge, its tip buried
+  const blade = relPath(T(-34, 0), [['c', T(-20, -18), T(10, -22), T(30, -16)], ['l', T(34, -6)], ['l', T(34, 6)], ['l', T(30, 16)], ['c', T(10, 22), T(-20, 18), T(-34, 0)]]);
+  o.push(`<path d="${blade}" fill="#D9D0C2" stroke="${C.char}" stroke-width="1.6" stroke-linejoin="round"/>`);
+  o.push(`<path d="${relPath(T(-34, 0), [['l', T(34, 0)], ['l', T(30, 16)], ['c', T(10, 22), T(-20, 18), T(-34, 0)]])}" fill="${C.char}" mask="url(#art-m-h)" opacity=".4"/>`);
+  o.push(`<path d="${relPath(T(-28, 0), [['l', T(34, 0)]], false)}" stroke="${C.char}" stroke-width="1.2"/>`);
+  // neck and ferrule
+  o.push(`<path d="${relPath(T(34, -3), [['l', T(52, -3)], ['l', T(52, 3)], ['l', T(34, 3)]])}" fill="#BFB4A4" stroke="${C.char}" stroke-width="1.4" stroke-linejoin="round"/>`);
+  o.push(`<path d="${relPath(T(52, -8), [['l', T(64, -8)], ['l', T(64, 8)], ['l', T(52, 8)]])}" fill="#D9D0C2" stroke="${C.char}" stroke-width="1.4" stroke-linejoin="round"/><path d="${relPath(T(56, -8), [['l', T(56, 8)]], false)}${relPath(T(60, -8), [['l', T(60, 8)]], false)}" stroke="${C.char}" stroke-width="1"/>`);
+  // the handle, painted orange, worn pale where the hand goes
+  const handle = relPath(T(64, -8), [['c', T(80, -10), T(110, -10), T(124, -7)], ['c', T(132, -6), T(132, 6), T(124, 7)], ['c', T(110, 10), T(80, 10), T(64, 8)]]);
+  o.push(`<path d="${handle}" fill="${C.o2}" stroke="${C.char}" stroke-width="1.6" stroke-linejoin="round"/>`);
+  o.push(`<path d="${relPath(T(64, 1), [['c', T(80, 2), T(110, 2), T(126, 1)], ['c', T(130, 5), T(124, 7), T(124, 7)], ['c', T(110, 10), T(80, 10), T(64, 8)]])}" fill="${C.char}" mask="url(#art-m-d)" opacity=".4"/>`);
+  o.push(`<path d="${relPath(T(72, -5), [['c', T(90, -6), T(108, -6), T(118, -4)]], false)}" fill="none" stroke="${C.o4}" stroke-width="2.4" stroke-linecap="round"/>`);
+  const hole = T(118, 0);
+  o.push(`<ellipse cx="${i0(hole[0])}" cy="${i0(hole[1])}" rx="2.6" ry="1.8" fill="${C.char}" transform="rotate(${i0(a * 57.3)} ${i0(hole[0])} ${i0(hole[1])})"/>`);
+  // the front lip of dirt over the buried tip, clods and specks
+  const lipY = (x) => G + 6 - 30 * Math.exp(-(((x - 64) / 46) ** 2));
+  let lip = `M0 ${G + 6}`;
+  for (let x = 0; x <= 170; x += 8) lip += `L${x} ${i0(lipY(x) + (R() - 0.5) * 3)}`;
+  o.push(`<path d="${lip}L170 ${H}H0Z" fill="#332B28" stroke="${C.char}" stroke-width="1.4" stroke-linejoin="round"/>`);
+  let clods = '';
+  for (let i = 0; i < 14; i++) { const x = 20 + R() * 180, y = mound(x) + 4 + R() * (G - mound(x)); clods += `<ellipse cx="${i0(x)}" cy="${i0(y)}" rx="${(2 + R() * 3).toFixed(1)}" ry="${(1.4 + R() * 1.6).toFixed(1)}" fill="#40362F" stroke="${C.char}" stroke-width=".9"/>`; }
+  o.push(clods);
+  o.push(`<path d="${stipple(R, 420, [0, 140, W, 80], (x, y) => y > mound(x) + 2)}" stroke="#7A6A5C" stroke-width="1.5" stroke-linecap="round" opacity=".7"/>`);
+  o.push(`<path d="M0 ${G + 14}H${W}" stroke="${C.news}" stroke-width="1" opacity=".3"/>`);
+  return { W, H, body: o.join('') };
+}
+
 
 function single() {
   const R = rng(55);
@@ -544,7 +847,7 @@ function single() {
 
 // The drawings by short name. A page names the ones it uses in its art region
 // ({"art": ["marigold"]}); each becomes a <symbol id="art-NAME">.
-const DRAWINGS = { 'still-life': stillLife, street, marigold: single };
+const DRAWINGS = { 'still-life': stillLife, street, marigold: single, poppy, can, balance, candle, trowel };
 const NAMES = Object.keys(DRAWINGS);
 
 // Hatch masks and the murky ground the drawings share. Always stamped with any

@@ -84,8 +84,11 @@ for (const page of PAGES) {
     const html = readPage(page);
     assert.equal(flat(one(page, (el) => el.tag === 'title', '<title>')), sep(was.title));
     for (const [key, content] of Object.entries(was.meta)) {
+      // The share card was redrawn in step 6; its alt text is the card's own
+      // now, and test/og.test.js holds it to generate-og-images.js.
+      if (key === 'og:image:alt') continue;
       const tag = one(page, (el) => el.tag === 'meta' && (el.attrs.property === key || el.attrs.name === key), `meta ${key}`);
-      const want = ['og:title', 'twitter:title', 'og:image:alt'].includes(key) ? sep(content) : content;
+      const want = ['og:title', 'twitter:title'].includes(key) ? sep(content) : content;
       assert.equal(tag.attrs.content, want, `${key}`);
     }
     assert.ok(html.includes(`<link rel="canonical" href="${was.canonical}">`), 'the canonical URL');

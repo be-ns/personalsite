@@ -1601,6 +1601,15 @@ function jsonLd(model, all, site) {
   return JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }, null, 2).split('\n');
 }
 
+// The page's share card, from generate-og-images.js (npm run generate-og).
+// Every consulting page has one; its alt text is the card's own.
+function shareCard(model) {
+  const { CARDS, ALT, W, H } = require('./generate-og-images');
+  const card = CARDS.find((c) => c.page === model.page);
+  if (!card) mdFail(model.file, 0, `${model.page} has no share card; add one to CARDS in generate-og-images.js and run npm run generate-og`);
+  return { url: `${SITE_URL}images/${card.file}`, width: W, height: H, alt: ALT(card) };
+}
+
 function pageTitle(model, site) {
   const title = fmText(model.data.title);
   return model.page === site.consulting.page ? `${title} · ${site.name}` : `${title} · ${site.consulting.name} · ${site.name}`;
@@ -1614,6 +1623,7 @@ function renderPage(model, all, site) {
   const art = [...new Set([model.art && model.art.name, ...(d.template === 'front' ? all.filter((p) => p !== model && p.art).map((p) => p.art.name) : [])].filter(Boolean))];
   const css = PAGE_CSS[d.template].trim().split('\n');
   const main = MAINS[d.template](model, all, site);
+  const card = shareCard(model);
   return [
     '<!DOCTYPE html>',
     '<html lang="en">',
@@ -1630,11 +1640,16 @@ function renderPage(model, all, site) {
     `  <meta property="og:description" content="${description}">`,
     '  <meta property="og:type" content="website">',
     `  <meta property="og:url" content="${model.url}">`,
+    `  <meta property="og:image" content="${card.url}">`,
+    `  <meta property="og:image:width" content="${card.width}">`,
+    `  <meta property="og:image:height" content="${card.height}">`,
+    `  <meta property="og:image:alt" content="${esc(card.alt)}">`,
     '',
     '  <!-- Twitter Card -->',
-    '  <meta name="twitter:card" content="summary">',
+    '  <meta name="twitter:card" content="summary_large_image">',
     `  <meta name="twitter:title" content="${title}">`,
     `  <meta name="twitter:description" content="${description}">`,
+    `  <meta name="twitter:image" content="${card.url}">`,
     '',
     `  <link rel="canonical" href="${model.url}">`,
     `  <link rel="alternate" type="text/markdown" href="content/consulting/${model.name}">`,

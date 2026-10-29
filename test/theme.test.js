@@ -86,8 +86,12 @@ test('kit.html copy has no em dashes (my-voice.md)', () => {
 
 test('the art generator draws the same symbols every run', () => {
   const { symbols, NAMES } = require('../generate-kit-art');
-  assert.deepEqual(NAMES, ['still-life', 'street', 'marigold']);
-  assert.equal(symbols(['marigold']).svg, symbols(['marigold']).svg);
+  assert.deepEqual(NAMES, ['still-life', 'street', 'marigold', 'poppy', 'can', 'balance', 'candle', 'trowel']);
+  for (const name of NAMES) assert.equal(symbols([name]).svg, symbols([name]).svg, name);
+  // Seeded, not random: a fresh process draws the same plates.
+  const { execFileSync } = require('child_process');
+  const again = execFileSync(process.execPath, ['-e', "process.stdout.write(require('./generate-kit-art').symbols(['poppy', 'can', 'balance', 'candle', 'trowel']).svg)"], { cwd: ROOT, maxBuffer: 1 << 26 }).toString();
+  assert.equal(again, symbols(['poppy', 'can', 'balance', 'candle', 'trowel']).svg);
 });
 
 test('kit.html and site.css only read custom properties that tokens.css or they define', () => {
