@@ -1,0 +1,1818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Housing as an API call · Ben Siverly</title>
+  <meta name="description" content="One address in. What the law allows, what it looks like, and whether the money works, out. A case study on a 1953 duplex in San Mateo, California, worked with an AI research agent.">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Housing as an API call · Ben Siverly">
+  <meta property="og:description" content="One address in. What the law allows, what it looks like, and whether the money works, out.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://bensiverly.com/housing-as-an-api-call.html">
+  <meta property="og:image" content="https://bensiverly.com/images/og-housing-as-an-api-call.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="A case study by Ben Siverly: Housing as an API call. One address in. What the law allows, what it looks like, and whether the money works. Engraving of a gabled house between a tree and an apartment building, with a seal reading 2 to 5 homes by right.">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Housing as an API call · Ben Siverly">
+  <meta name="twitter:description" content="One address in. What the law allows, what it looks like, and whether the money works, out.">
+  <meta name="twitter:image" content="https://bensiverly.com/images/og-housing-as-an-api-call.png">
+  <meta name="twitter:image:alt" content="A case study by Ben Siverly: Housing as an API call. One address in. What the law allows, what it looks like, and whether the money works. Engraving of a gabled house between a tree and an apartment building, with a seal reading 2 to 5 homes by right.">
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://bensiverly.com/housing-as-an-api-call.html">
+  <!-- chrome:head -->
+  <meta name="theme-color" content="#34302F">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/icon-32.png?v=2">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
+  <link rel="manifest" href="site.webmanifest">
+  <script>
+    // Apply a saved edition before first paint. Night is the default on every device.
+    (function () {
+      document.documentElement.classList.add('js');
+      try {
+        const saved = localStorage.getItem('edition');
+        if (saved === 'day' || saved === 'night') document.documentElement.dataset.edition = saved;
+      } catch (err) { /* storage blocked: stay on Night */ }
+    })();
+  </script>
+  <link rel="preload" href="assets/fonts/fraunces-roman.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/newsreader-roman.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="site.css">
+  <!-- /chrome:head -->
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "@id": "https://bensiverly.com/housing-as-an-api-call.html#article",
+    "headline": "Housing as an API call",
+    "description": "One address in. What the law allows, what it looks like, and whether the money works, out. A case study on a 1953 duplex in San Mateo, California, worked with an AI research agent.",
+    "url": "https://bensiverly.com/housing-as-an-api-call.html",
+    "image": "https://bensiverly.com/images/og-housing-as-an-api-call.png",
+    "datePublished": "2026-11-03",
+    "inLanguage": "en",
+    "author": { "@id": "https://bensiverly.com/#ben" },
+    "isPartOf": { "@id": "https://bensiverly.com/#website" },
+    "contentLocation": { "@type": "Place", "name": "San Mateo, California" },
+    "about": ["Housing development", "Accessory dwelling units", "Real estate underwriting", "AI research agents"]
+  }
+  </script>
+
+  <style>
+    /* The case study: an API reference for one parcel, set as a feature in
+       01 Work. The request and the response open the piece; each response
+       field is a section with its JSON on a code plate beside the prose. The
+       opener is the home page's 01 Work band, rebuilt here because those
+       rules are scoped to the issue. Only this page uses these rules. */
+
+    :root {
+      /* Code only: the one face outside the three, never downloaded. */
+      --cs-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      /* The massing model's inks. The renderer mixes each face from these
+         with black, so the drawing follows the edition and prints in Day. */
+      --m-existing: #CFC6B8; --m-existing-roof: #8F877D;
+      --m-conv: #CAD576;
+      --m-new: #FE5F35; --m-new-roof: #B4452A;
+      --m-ground: #2A2625; --m-board: #1F1B1A; --m-lot: #45403C; --m-paved: #554E49;
+      --m-street: #221E1D; --m-walk: #3B3634;
+      --m-glass: #1F1B1A; --m-door: #EFE8DC; --m-edge: #1F1B1A; --m-line: #FE5F35;
+      --cs-band-wash: color-mix(in srgb, var(--ink) 9%, transparent);
+    }
+    [data-edition="day"] {
+      --m-existing: #A0978C; --m-existing-roof: #776E65;
+      --m-ground: #ECE5D9; --m-board: #B5AB9B; --m-lot: #E0D7C7; --m-paved: #D2C8B8;
+      --m-street: #BFB5A6; --m-walk: #D9D0C2;
+      --m-glass: #34302F; --m-door: #F4EFE6; --m-line: #B63A14;
+    }
+    @media print {
+      :root, [data-edition] {
+        --m-existing: #A0978C; --m-existing-roof: #776E65;
+        --m-ground: #ECE5D9; --m-board: #B5AB9B; --m-lot: #E0D7C7; --m-paved: #D2C8B8;
+        --m-street: #BFB5A6; --m-walk: #D9D0C2;
+        --m-glass: #34302F; --m-door: #F4EFE6; --m-line: #B63A14;
+      }
+    }
+
+    /* ---------- The opener: a Toxic Orange band, as on the home page ---------- */
+    .cs-band { padding-block: clamp(0.75rem, 2vw, 1.25rem) clamp(1.5rem, 3.5vw, 2.5rem); }
+    .cs-band > .wrap { position: relative; z-index: 1; }
+    .cs-band > .rim { --rim-fill: var(--ground); }
+    .cs-band .rh { margin-bottom: var(--space-4); }
+    .cs-band .checker { margin-bottom: var(--space-4); }
+    .cs-band .cs-frame + .checker { margin: var(--space-4) 0 0; }
+    .cs-frame { position: relative; border: 1px solid currentColor; padding: calc(1.6rem + clamp(1.25rem, 4vw, 3rem)) clamp(1rem, 4vw, 3rem); }
+    .cs-frame::before { content: ""; position: absolute; inset: 1.6rem 0; border-block: 1px solid currentColor; pointer-events: none; }
+    /* Running border: whole phrases, justified so a line always ends on a word. */
+    .cs-ticker { position: absolute; left: 0; right: 0; height: 1.6rem; overflow: hidden; padding-inline: 0.75rem; font: 600 0.6875rem / 1.6rem var(--font-label); letter-spacing: 0.18em; text-transform: uppercase; font-stretch: 80%; text-align: justify; text-align-last: justify; }
+    .cs-ticker--top { top: 0; }
+    .cs-ticker--bottom { bottom: 0; }
+    .cs-ticker span { white-space: nowrap; }
+    @media (max-width: 599px) { .cs-ticker { text-align: center; text-align-last: center; } }
+    .cs-band-grid { display: grid; gap: var(--space-4); }
+    .cs-band-num { font: 300 clamp(5rem, 14vw, 11rem) / 0.78 var(--font-display); font-variation-settings: 'SOFT' 100; letter-spacing: -0.06em; }
+    .cs-band-num small { display: block; margin-top: 0.6rem; font: 600 0.75rem / 1 var(--font-label); letter-spacing: 0.16em; text-transform: uppercase; font-stretch: 80%; }
+    .cs-band h1 { margin-block: var(--space-3); font-family: var(--type-display-family); font-size: var(--type-display-size); font-weight: var(--type-display-weight); line-height: var(--type-display-line); letter-spacing: var(--type-display-tracking); text-transform: var(--type-display-case); font-variation-settings: var(--type-display-axes); text-wrap: balance; }
+    .cs-band .t-deck { max-width: 30em; }
+    .cs-band .t-byline { margin-top: var(--space-3); color: inherit; }
+    .cs-band-aside { display: none; }
+    .cs-band-aside .art { aspect-ratio: 1; border: 1px solid currentColor; background: var(--art-ground); }
+    .cs-band-aside .art svg { width: 100%; height: 100%; }
+    .cs-band-aside use { color: var(--palette-newsprint); }
+    .cs-band-aside figcaption { margin-top: var(--space-2); font: italic 460 0.9375rem / 1.35 var(--font-text); }
+    @media (min-width: 1024px) {
+      .cs-band-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--layout-column-gap); align-items: end; }
+      .cs-band-num { grid-column: 1 / span 2; align-self: start; }
+      .cs-band-main { grid-column: 3 / span 8; }
+      .cs-band-aside { display: block; grid-column: 11 / span 2; }
+    }
+
+    /* ---------- The request, the response and the contents ---------- */
+    .cs-intro { padding-block: calc(var(--space-7) + 0.5rem) var(--space-7); }
+    .cs-intro-grid { display: grid; gap: var(--space-6); }
+    .cs-intro-text p { max-width: var(--layout-measure); hyphens: auto; -webkit-hyphens: auto; text-wrap: pretty; }
+    .cs-intro-text p + p { margin-top: 0.75em; }
+    .cs-calls { display: grid; gap: var(--space-4); align-content: start; min-width: 0; }
+    @media (min-width: 1024px) {
+      .cs-intro-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--layout-column-gap); }
+      .cs-intro-text { grid-column: 1 / span 6; }
+      .cs-calls { grid-column: 7 / span 6; padding-left: var(--layout-column-gap); border-left: var(--rule-hairline) solid var(--rule); }
+    }
+
+    .cs-toc { max-width: var(--layout-measure); margin-top: var(--space-6); }
+    .cs-toc ol { list-style: none; margin-top: var(--space-2); border-top: 1px solid var(--ink-quiet); }
+    .cs-toc a { display: flex; align-items: baseline; gap: var(--space-2); min-height: 2.75rem; padding-block: 0.6rem; border-bottom: var(--rule-hairline) solid var(--rule); text-decoration: none; }
+    .cs-toc code { font: 500 0.8125rem / 1.3 var(--cs-mono); color: var(--spot); }
+    .cs-toc .cs-leader { flex: 1 1 auto; min-width: 1rem; border-bottom: 2px dotted var(--rule); translate: 0 -0.3em; }
+    .cs-toc-name { font: 480 1.0625rem / 1.2 var(--font-display); font-variation-settings: 'SOFT' 30; text-align: right; text-wrap: balance; }
+    .cs-toc a:hover .cs-toc-name { text-decoration: underline; text-decoration-color: var(--spot-large); text-underline-offset: 0.2em; }
+
+    /* ---------- Code plates ---------- */
+    .cs-code { min-width: 0; overflow: hidden; border-radius: var(--shape-xs); background: var(--sunk); box-shadow: inset 0 0 0 1px var(--rule); }
+    .cs-code-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-height: 2.75rem; padding: 0.375rem 0.5rem 0.375rem 0.875rem; border-bottom: 1px solid var(--rule); color: var(--ink-quiet); font: 600 0.6875rem / 1.3 var(--font-label); letter-spacing: 0.14em; text-transform: uppercase; font-stretch: 85%; }
+    .cs-code-bar h3, .cs-code-path { font: 500 0.8125rem / 1.3 var(--cs-mono); letter-spacing: 0; text-transform: none; color: var(--ink); }
+    .cs-code-path { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; min-width: 0; }
+    .cs-pill { display: inline-block; padding: 0.3rem 0.4rem; border-radius: 3px; font: 700 0.6875rem / 1 var(--font-label); letter-spacing: 0.08em; text-transform: uppercase; font-stretch: 88%; }
+    .cs-pill--post { background: var(--spot-fill); color: var(--on-spot-fill); }
+    .cs-pill--ok { background: var(--leaf-fill); color: var(--on-leaf-fill); }
+    .cs-pill--ok.is-pending { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--outline); }
+    .cs-code pre { margin: 0; padding: 0.875rem 1rem 1rem; overflow-x: auto; color: var(--ink); font: 400 0.8125rem / 1.6 var(--cs-mono); tab-size: 2; }
+    .cs-code pre:focus-visible { outline-offset: -3px; }
+    .tk { color: var(--ink); }
+    .ts { color: var(--leaf); }
+    .tn { color: var(--spot); }
+    .tb { color: var(--spot); font-style: italic; }
+    .tp { color: var(--ink-quiet); }
+    /* Phones: each plate closes into a row (the site's [data-fold]). */
+    @media (max-width: 599px) {
+      .cs-code[data-fold] > .fold-head { min-height: 3rem; padding-block: 0.5rem; padding-right: 2.75rem; }
+      .cs-code .fold-btn::before, .cs-code .fold-btn::after { inset: 0; }
+      .cs-code .fold-btn .fold-chev { right: 0.6rem; }
+      .cs-code.is-closed .cs-code-bar { border-bottom: 0; }
+    }
+
+    /* ---------- Sections: one response field each ---------- */
+    .cs-sec { padding-block: var(--space-7); border-top: var(--rule-hairline) solid var(--rule); }
+    .cs-grid { display: grid; gap: var(--space-6); }
+    .cs-main { min-width: 0; }
+    .cs-main > p { max-width: var(--layout-measure); text-wrap: pretty; }
+    .cs-main > p + p { margin-top: 0.75em; }
+    .cs-main > .cs-lead { max-width: 32em; }
+    .cs-after-fig { margin-top: var(--space-5); }
+    .cs-head { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0 var(--space-4); align-items: end; margin-bottom: var(--space-4); }
+    .cs-n { font: 300 clamp(3.25rem, 7vw, 5rem) / 0.8 var(--font-display); font-variation-settings: 'SOFT' 100; letter-spacing: -0.05em; color: var(--spot-large); }
+    .cs-key { margin-bottom: var(--space-2); color: var(--spot); font: 500 0.8125rem / 1.3 var(--cs-mono); overflow-wrap: anywhere; }
+    .cs-h2 { font-family: var(--type-headline-family); font-size: var(--type-headline-size); font-weight: var(--type-headline-weight); line-height: var(--type-headline-line); letter-spacing: var(--type-headline-tracking); font-variation-settings: var(--type-headline-axes); text-wrap: balance; }
+    .cs-lead { max-width: 32em; margin-bottom: var(--space-5); }
+    .cs-h3 { margin: var(--space-6) 0 var(--space-3); }
+    .cs-after { max-width: var(--layout-measure); margin-top: var(--space-3); }
+    @media (min-width: 1024px) {
+      .cs-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--layout-column-gap); }
+      .cs-main { grid-column: 1 / span 7; }
+      .cs-side { grid-column: 8 / span 5; padding-left: var(--layout-column-gap); border-left: var(--rule-hairline) solid var(--rule); }
+      .cs-side pre { font-size: 0.75rem; }
+      .cs-side > .cs-code { position: sticky; top: 5rem; }
+    }
+
+    /* The parcel's spec sheet */
+    .cs-spec { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 12.5rem), 1fr)); column-gap: var(--space-5); border-top: 1px solid var(--ink-quiet); }
+    .cs-spec > div { display: grid; align-content: start; gap: 0.15rem; min-width: 0; padding-block: 0.55rem; border-bottom: var(--rule-hairline) solid var(--rule); }
+    .cs-spec dd { font: var(--text-weight) 1.0625rem / 1.35 var(--font-text); font-variant-numeric: lining-nums tabular-nums; }
+
+    /* Rules as tests, and the verdict */
+    .cs-badge { display: inline-flex; align-items: center; justify-content: center; width: 100%; height: 1.5rem; padding-inline: 0.4rem; border-radius: var(--shape-full); font: 700 0.625rem / 1 var(--font-label); letter-spacing: 0.14em; text-transform: uppercase; font-stretch: 88%; white-space: nowrap; }
+    .cs-badge.is-pass { background: var(--leaf-fill); color: var(--on-leaf-fill); }
+    .cs-badge.is-review { color: var(--ink); box-shadow: inset 0 0 0 1px var(--outline); }
+    .cs-badge.is-fail { background: var(--spot-fill); color: var(--on-spot-fill); }
+    .cs-tests-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-1) var(--space-4); padding-block: var(--space-2); border-top: 1px solid var(--ink-quiet); }
+    .cs-tests-head code { font: 500 0.8125rem / 1.3 var(--cs-mono); letter-spacing: 0; text-transform: none; color: var(--ink); }
+    .cs-tests ol { list-style: none; border-top: var(--rule-hairline) solid var(--rule); }
+    .cs-t { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: 0.2rem var(--space-4); padding-block: 0.8rem; border-bottom: var(--rule-hairline) solid var(--rule); }
+    .cs-t .cs-badge { grid-row: span 3; align-self: start; margin-top: 0.05rem; }
+    .cs-rid { font: 600 0.8125rem / 1.4 var(--cs-mono); color: var(--ink); overflow-wrap: anywhere; }
+    .cs-res { font-size: 1rem; line-height: 1.45; text-wrap: pretty; }
+
+    .cs-counts { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-3) clamp(0.75rem, 3vw, 1.75rem); margin-top: var(--space-6); }
+    .cs-counts > div { display: grid; justify-items: start; }
+    .cs-counts b { font: 300 clamp(4rem, 9vw, 6rem) / 0.82 var(--font-display); font-variation-settings: 'SOFT' 0; letter-spacing: -0.04em; font-feature-settings: 'lnum' 1; }
+    .cs-counts .t-folio { margin-top: var(--space-2); }
+    .cs-counts .ico { width: 1.75rem; height: 1rem; margin-bottom: 2rem; color: var(--ink-quiet); }
+    .cs-counts .is-hot b { color: var(--spot-large); }
+    .cs-counts + .t-note { max-width: var(--layout-measure); margin-top: var(--space-4); }
+
+    .cs-verdict { list-style: none; border-top: 1px solid var(--ink-quiet); }
+    .cs-v { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: 0.3rem var(--space-4); padding-block: var(--space-4); border-bottom: var(--rule-hairline) solid var(--rule); }
+    .cs-v .cs-badge { grid-row: span 2; margin-top: 0.15rem; }
+    .cs-v h3 { font: 480 1.3125rem / 1.2 var(--font-display); font-variation-settings: 'SOFT' 30; letter-spacing: -0.01em; }
+    .cs-v p { max-width: var(--layout-measure); color: var(--ink); text-wrap: pretty; }
+    .cs-close { max-width: 30em; margin-top: var(--space-6); font: italic var(--type-deck-weight) var(--type-deck-size) / var(--type-deck-line) var(--font-text); text-wrap: pretty; }
+
+    /* ---------- Figures: one spot colour, a thin frame, a caption ---------- */
+    .cs-fig { margin-top: var(--space-6); }
+    .cs-fig .plate { min-width: 0; }
+    .cs-fig .plate-title { flex-wrap: wrap; }
+    .cs-fig .plate-title span + span { color: var(--ink-quiet); }
+    .cs-fig .legend { margin-top: var(--space-3); }
+    .cs-foot { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-3) var(--space-6); margin-top: var(--space-4); }
+    .cs-foot .legend { margin-top: 0; }
+    .cs-sw { width: 0.75rem; height: 0.75rem; flex: none; box-shadow: inset 0 0 0 1px var(--m-edge); }
+    .cs-sw.ex { background: var(--m-existing); }
+    .cs-sw.cv { background: var(--m-conv); }
+    .cs-sw.nw { background: var(--m-new); }
+    .cs-sw.lot { box-shadow: inset 0 0 0 2px var(--m-line); }
+    .cs-sw.dot-q { border-radius: 50%; background: var(--ink-quiet); box-shadow: none; }
+    .cs-sw.dot-o { border-radius: 50%; background: var(--spot-large); box-shadow: none; }
+    .cs-sw.band { background: var(--cs-band-wash); box-shadow: inset 0 0 0 1px var(--rule); }
+    @media (max-width: 599px) { .cs-fig .plate { padding: var(--space-3) var(--space-3) var(--space-4); } }
+
+    /* The massing model */
+    .cs-stage-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3) var(--space-5); margin-block: var(--space-4) var(--space-2); }
+    .cs-stage-bar .segmented b { font-weight: 700; font-feature-settings: 'tnum' 1; }
+    .cs-turn { display: flex; align-items: center; gap: var(--space-3); flex: 1 1 11rem; max-width: 17rem; }
+    .cs-turn .slider { flex: 1 1 auto; --slider-height: 2.5rem; --slider-handle-height: 1.75rem; }
+    @media (max-width: 479px) {
+      .cs-stage-bar .segmented { display: flex; width: 100%; }
+      .cs-stage-bar .segmented button { flex: 1 1 0; justify-content: center; padding-inline: 0.4rem; }
+      .cs-stage-bar .segmented .pip { display: none; }
+      .cs-turn { max-width: none; }
+    }
+    .cs-axo { position: relative; aspect-ratio: 1000 / 680; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; background-image: radial-gradient(var(--rule) 1px, transparent 1.2px); background-size: 18px 18px; }
+    .cs-axo.is-drag { cursor: grabbing; }
+    .cs-axo svg { width: 100%; height: 100%; }
+    .cs-pins { position: absolute; inset: 0; pointer-events: none; }
+    .cs-pin { position: absolute; left: 0; top: 0; translate: -50% -50%; display: grid; place-items: center; width: 1.625rem; height: 1.625rem; border-radius: 50%; background: var(--ground); color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); font: 700 0.75rem / 1 var(--font-label); font-feature-settings: 'tnum' 1; transition: opacity var(--motion-duration-short); }
+    .cs-pin.is-new { background: var(--spot-fill); color: var(--on-spot-fill); box-shadow: none; }
+    .cs-lbl { position: absolute; left: 0; top: 0; translate: -50% -50%; padding: 0.15rem 0.3rem; background: color-mix(in srgb, var(--ground) 82%, transparent); color: var(--spot); font: 700 0.6875rem / 1 var(--font-label); letter-spacing: 0.06em; font-feature-settings: 'tnum' 1; white-space: nowrap; }
+    .cs-lbl.is-street { background: none; color: var(--ink-quiet); font-size: 0.625rem; letter-spacing: 0.2em; text-transform: uppercase; }
+    .cs-lbl.is-tag { background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 1px var(--rule); letter-spacing: 0.04em; }
+    @media (max-width: 479px) { .cs-pin { width: 1.375rem; height: 1.375rem; font-size: 0.6875rem; } .cs-lbl { font-size: 0.625rem; } }
+
+    /* The site plan */
+    .cs-plan { margin-top: var(--space-3); padding: var(--space-2); background: var(--sunk); box-shadow: inset 0 0 0 1px var(--rule); }
+    .cs-plan svg { width: 100%; height: auto; }
+    /* On a phone the plan stands upright; cap it so it never outruns the screen. */
+    @media (max-width: 559px) { .cs-plan svg { max-height: 78vh; } }
+    .p-street { fill: var(--m-street); } .p-walk { fill: var(--m-walk); } .p-lot { fill: var(--m-lot); } .p-paved { fill: var(--m-paved); }
+    .p-ex { fill: var(--m-existing); } .p-cv { fill: var(--m-conv); } .p-nw { fill: var(--m-new); }
+    .p-bld { stroke: var(--m-edge); stroke-width: 0.45; }
+    .p-lotline { fill: none; stroke: var(--m-line); stroke-width: 0.9; }
+    .p-set { fill: none; stroke: var(--ink-quiet); stroke-width: 0.35; stroke-dasharray: 1.6 1.2; }
+    .p-aduset { fill: none; stroke: var(--m-line); stroke-width: 0.4; stroke-dasharray: 1.6 1.2; }
+    .p-dim { stroke: var(--spot); stroke-width: 0.35; }
+    .p-t { fill: var(--ink-quiet); font-family: var(--font-label); font-weight: 600; letter-spacing: 0.08em; }
+    .p-tf { fill: var(--spot); font-family: var(--font-label); font-weight: 700; }
+    .p-pin { fill: var(--ground); stroke: var(--ink); stroke-width: 0.45; }
+    .p-pin.is-new { fill: var(--spot-fill); stroke: none; }
+    .p-pnum { fill: var(--ink); font-family: var(--font-label); font-weight: 700; }
+    .p-pnum.is-new { fill: var(--on-spot-fill); }
+    .p-hatch { stroke: var(--m-edge); stroke-width: 0.45; opacity: 0.55; }
+    .p-upper { fill: url(#cs-hatch); stroke: var(--m-edge); stroke-width: 0.45; stroke-dasharray: 1.4 1; }
+
+    /* Tables: the homes, the ledgers, the prices */
+    .cs-table { width: 100%; border-collapse: collapse; font-variant-numeric: lining-nums tabular-nums; }
+    .cs-table caption { padding-bottom: var(--space-2); text-align: left; }
+    .cs-table th { padding: 0 var(--space-3) var(--space-2) 0; border-bottom: 1px solid var(--ink-quiet); text-align: left; vertical-align: bottom; }
+    .cs-table td { padding: 0.55rem var(--space-3) 0.55rem 0; border-bottom: var(--rule-hairline) solid var(--rule); font: var(--text-weight) 1rem / 1.35 var(--font-text); vertical-align: middle; }
+    .cs-table th.n { padding-right: 0; text-align: right; }
+    .cs-table td.n, .cs-prices td:first-child { font: 600 0.9375rem / 1.2 var(--font-label); font-feature-settings: 'tnum' 1; white-space: nowrap; }
+    .cs-table td.n { padding-right: 0; text-align: right; }
+    .cs-table tr.is-off td { opacity: 0.38; }
+    .cs-table tr.is-neg td.n { color: var(--ink-quiet); font-weight: 500; }
+    .cs-table tr.is-sum td { border-top: var(--rule-heavy) solid var(--ink); border-bottom: 0; font-weight: 600; }
+    .cs-table tr.is-base td { color: var(--spot); font-weight: 600; }
+    .cs-homes { margin-top: var(--space-5); }
+    .cs-pinnum { display: inline-grid; place-items: center; width: 1.5rem; height: 1.5rem; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--ink); font: 700 0.6875rem / 1 var(--font-label); }
+    .cs-pinnum.is-new { background: var(--spot-fill); color: var(--on-spot-fill); box-shadow: none; }
+    .cs-ledgers { display: grid; gap: var(--space-6); align-items: start; }
+    @media (min-width: 720px) { .cs-ledgers { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .cs-prices { margin-top: var(--space-5); }
+
+    /* Figures in the In brief manner: a light figure, a small orange unit, a label */
+    .cs-figs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); gap: var(--space-5); margin-block: var(--space-6); list-style: none; }
+    .cs-figs li { min-width: 0; padding-top: var(--space-2); border-top: 1px solid var(--ink-quiet); }
+    .cs-figs b { display: flex; align-items: baseline; font: 300 clamp(2.25rem, 4.2vw, 3rem) / 0.95 var(--font-display); font-variation-settings: 'SOFT' 0; letter-spacing: -0.04em; font-feature-settings: 'lnum' 1; white-space: nowrap; }
+    .cs-figs b small { margin-left: 0.06em; color: var(--spot); font: 600 0.9375rem / 1 var(--font-label); letter-spacing: 0.02em; }
+    .cs-figs b small.is-gone { display: none; }
+    .cs-figs .t-folio { display: block; margin-top: var(--space-2); }
+    .cs-figs .is-hot b { color: var(--spot-large); }
+
+    /* Dot charts: the rent ladder and the yield spread */
+    .cs-dots { display: grid; margin-top: var(--space-4); }
+    .cs-drow, .cs-daxis { display: grid; grid-template-columns: minmax(0, 11rem) minmax(0, 1fr) 4.5rem; gap: var(--space-3); align-items: center; }
+    .cs-dl { color: var(--ink-quiet); font: var(--text-weight) 0.9375rem / 1.25 var(--font-text); }
+    .cs-dt { position: relative; height: 2rem; background: linear-gradient(to right, transparent var(--a), var(--cs-band-wash) var(--a), var(--cs-band-wash) var(--b), transparent var(--b)), linear-gradient(var(--rule), var(--rule)) center / 100% 1px no-repeat; }
+    .cs-dt i { position: absolute; top: 50%; width: 0.75rem; height: 0.75rem; border-radius: 50%; translate: -50% -50%; background: var(--ink-quiet); }
+    .cs-dt b { position: absolute; top: 0.6rem; bottom: 0.6rem; border-radius: 2px; background: var(--ink-quiet); }
+    .cs-drow.is-ours i { width: 0.875rem; height: 0.875rem; background: var(--spot-large); }
+    .cs-drow.is-soft i { background: var(--ground); box-shadow: inset 0 0 0 2px var(--spot-large); }
+    .cs-drow.is-warn i { box-shadow: 0 0 0 0.3rem var(--spot-wash); }
+    .cs-drow.is-ours .cs-dl, .cs-drow.is-ours .cs-dv { color: var(--ink); font-weight: 600; }
+    .cs-dv { text-align: right; font: 600 0.875rem / 1 var(--font-label); font-feature-settings: 'tnum' 1; white-space: nowrap; }
+    .cs-daxis .cs-dt { height: 1.25rem; background: none; }
+    .cs-daxis .cs-dt span { position: absolute; top: 0.2rem; translate: -50% 0; color: var(--ink-quiet); font: 500 0.75rem / 1 var(--font-label); font-feature-settings: 'tnum' 1; white-space: nowrap; }
+    .cs-dgap { height: 0.75rem; }
+    @media (max-width: 559px) {
+      .cs-drow, .cs-daxis { grid-template-columns: minmax(0, 6.5rem) minmax(0, 1fr) 3.75rem; gap: var(--space-2); }
+      .cs-dl { font-size: 0.8125rem; }
+      .cs-dv { font-size: 0.8125rem; }
+    }
+    @media (max-width: 379px) {
+      .cs-drow, .cs-daxis { grid-template-columns: minmax(0, 5.25rem) minmax(0, 1fr) 3.5rem; }
+      .cs-dl { font-size: 0.75rem; }
+      .cs-daxis .cs-dt span { font-size: 0.6875rem; }
+    }
+
+    /* The capital stack */
+    .cs-stack { display: flex; height: 2.75rem; margin-top: var(--space-4); }
+    .cs-stack > div { display: flex; align-items: center; overflow: hidden; padding-inline: 0.625rem; font: 700 0.75rem / 1 var(--font-label); letter-spacing: 0.04em; font-feature-settings: 'tnum' 1; white-space: nowrap; }
+    .cs-stack .is-debt { background: var(--ink); color: var(--ground); }
+    .cs-stack .is-lp { background: var(--spot-wash); color: var(--ink); box-shadow: inset 0 0 0 1px var(--spot-large); }
+    .cs-stack .is-gp { padding: 0; background: var(--spot-fill); }
+    .cs-stack-key { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: var(--space-3) var(--space-5); margin-top: var(--space-4); font: var(--text-weight) 0.9375rem / 1.4 var(--font-text); color: var(--ink-quiet); }
+    .cs-stack-key b { display: block; margin-bottom: 0.15rem; color: var(--ink); font: 300 1.75rem / 1 var(--font-display); font-variation-settings: 'SOFT' 0; letter-spacing: -0.03em; font-feature-settings: 'lnum' 1; }
+
+    /* LP return by purchase price */
+    .cs-prow, .cs-paxis { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr) 4rem; gap: var(--space-3); align-items: center; }
+    .cs-price-chart { display: grid; gap: 2px; margin-top: var(--space-4); }
+    .cs-pl, .cs-pv { font: 600 0.875rem / 1 var(--font-label); font-feature-settings: 'tnum' 1; white-space: nowrap; }
+    .cs-pv { text-align: right; }
+    .cs-pt { position: relative; height: 1.625rem; }
+    .cs-pt .zero, .cs-pt .hurdle { position: absolute; top: -2px; bottom: -2px; width: 0; }
+    .cs-pt .zero { border-left: 1px solid var(--ink-quiet); }
+    .cs-pt .hurdle { border-left: 2px dashed var(--spot); }
+    .cs-pt i { position: absolute; top: 0.375rem; bottom: 0.375rem; border-radius: 2px; background: var(--ink-quiet); }
+    .cs-pt i.is-clear { background: var(--leaf); }
+    .cs-pt i.is-neg { background: repeating-linear-gradient(135deg, var(--ink-quiet) 0 1.5px, transparent 1.5px 5px); box-shadow: inset 0 0 0 1px var(--ink-quiet); }
+    .cs-prow.is-base .cs-pl, .cs-prow.is-base .cs-pv { color: var(--spot); }
+    .cs-paxis .cs-pt { height: 1.25rem; }
+    .cs-paxis .cs-pt span { position: absolute; top: 0.2rem; translate: -50% 0; color: var(--ink-quiet); font: 500 0.75rem / 1 var(--font-label); white-space: nowrap; }
+    .cs-sw.bar-q { background: var(--ink-quiet); box-shadow: none; }
+    .cs-sw.bar-g { background: var(--leaf); box-shadow: none; }
+    .cs-sw.bar-h { background: repeating-linear-gradient(135deg, var(--ink-quiet) 0 1.5px, transparent 1.5px 5px); box-shadow: inset 0 0 0 1px var(--ink-quiet); }
+    .cs-sw.line-h { width: 0; height: 0.875rem; box-shadow: none; border-left: 2px dashed var(--spot); }
+    @media (max-width: 559px) { .cs-prow, .cs-paxis { grid-template-columns: 4rem minmax(0, 1fr) 3.5rem; gap: var(--space-2); } }
+
+    .cs-list { display: grid; gap: var(--space-2); max-width: var(--layout-measure); padding-left: 1.1rem; }
+    .cs-list li::marker { color: var(--spot); }
+
+    /* ---------- The playground ---------- */
+    .cs-pg { display: grid; gap: var(--space-6); margin-top: var(--space-5); }
+    .cs-pg-in, .cs-pg-out { min-width: 0; }
+    @media (min-width: 1024px) {
+      .cs-pg { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--layout-column-gap); align-items: start; }
+      .cs-pg-in { grid-column: 1 / span 6; }
+      .cs-pg-out { grid-column: 7 / span 6; position: sticky; top: 5rem; }
+    }
+    .cs-ctl { padding-block: var(--space-3) var(--space-2); border-bottom: var(--rule-hairline) solid var(--rule); }
+    .cs-ctl:first-child { border-top: 1px solid var(--ink-quiet); }
+    .cs-ctl-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--space-1) var(--space-3); }
+    .cs-ctl output { font: 300 1.75rem / 1 var(--font-display); font-variation-settings: 'SOFT' 0; letter-spacing: -0.02em; font-feature-settings: 'lnum' 1, 'tnum' 1; }
+    .cs-ctl .slider { margin-top: var(--space-1); }
+    .cs-reset { margin-top: var(--space-4); }
+    .cs-pg .cs-figs { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-block: var(--space-5) 0; }
+
+    /* ---------- The trace ---------- */
+    .cs-trace { list-style: none; counter-reset: step; border-top: 1px solid var(--ink-quiet); }
+    .cs-trace li { counter-increment: step; display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); gap: 0.15rem var(--space-3); padding-block: var(--space-3); border-bottom: var(--rule-hairline) solid var(--rule); break-inside: avoid; }
+    .cs-trace li::before { content: counter(step, decimal-leading-zero); grid-row: span 3; color: var(--spot-large); font: 300 1.75rem / 1 var(--font-display); font-variation-settings: 'SOFT' 100; letter-spacing: -0.03em; }
+    .cs-trace code { color: var(--spot); font: 600 0.8125rem / 1.4 var(--cs-mono); }
+    .cs-trace .r { font-size: 1rem; line-height: 1.45; text-wrap: pretty; }
+    @media (min-width: 840px) { .cs-trace { columns: 2; column-gap: var(--layout-text-columns-gap); } }
+
+    /* ---------- The close ---------- */
+    .cs-end { display: grid; gap: var(--space-6); padding-block: var(--space-7) var(--space-5); border-top: var(--rule-double) var(--rule); }
+    @media (min-width: 840px) { .cs-end { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-7); } }
+    .cs-end h2 { margin-bottom: var(--space-3); }
+    .cs-end ul { display: grid; gap: var(--space-2); padding-left: 1.1rem; font-size: 0.9375rem; line-height: 1.45; }
+    .cs-end li::marker { color: var(--spot); }
+    .cs-fine { grid-column: 1 / -1; max-width: 46em; }
+    .cs-way { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-5); padding-block: var(--space-2) var(--space-5); }
+    .cs-way .btn--text { margin-left: -0.25rem; }
+    .cs-frieze { margin-top: var(--space-2); color: var(--art-ink); opacity: 0.88; }
+    .cs-frieze svg { width: 100%; height: clamp(8.5rem, 22vw, 17.5rem); }
+
+    /* ---------- Edges ---------- */
+    @media (prefers-reduced-motion: reduce) { .cs-pin { transition: none; } }
+    @media (forced-colors: active) {
+      .cs-badge, .cs-pill, .cs-pin, .cs-pinnum, .cs-stack > div { border: 1px solid CanvasText; }
+      .cs-dt i, .cs-dt b, .cs-pt i, .cs-sw { forced-color-adjust: none; }
+    }
+    @media print {
+      .cs-band { padding-block: 0 var(--space-5); background: none; color: var(--ink); }
+      .cs-band::before, .cs-band::after, .cs-band > .rim, .cs-band .checker, .cs-ticker, .cs-band-aside, .cs-band .rh { display: none; }
+      .cs-frame { border: 0; padding: 0; }
+      .cs-frame::before { display: none; }
+      #send, .cs-turn, #playground, .cs-way, .cs-frieze, .cs-toc { display: none !important; }
+      .cs-side > .cs-code, .cs-pg-out { position: static; }
+      .cs-fig, .cs-code, .cs-t, .cs-v, .cs-trace li, .cs-table tr { break-inside: avoid; }
+      .cs-sec { padding-block: var(--space-5); }
+    }
+  </style>
+</head>
+<body>
+  <!-- chrome:top {"dept":"work"} -->
+  <a class="skip-link" href="#main">Skip to content</a>
+  <svg class="art-defs" width="0" height="0" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="i-arrow" viewBox="0 0 18 10"><path d="M0 5h16.5M12.5 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.2"/></symbol>
+      <symbol id="i-menu" viewBox="0 0 22 22"><path d="M3 7h16M3 11h16M3 15h10" fill="none" stroke="currentColor" stroke-width="1.3"/></symbol>
+      <symbol id="i-close" viewBox="0 0 22 22"><path d="M5 5l12 12M17 5L5 17" fill="none" stroke="currentColor" stroke-width="1.3"/></symbol>
+      <symbol id="i-chev" viewBox="0 0 22 22"><path d="M6 9l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+    </defs>
+  </svg>
+  <header class="masthead">
+    <div class="wrap masthead-row">
+      <a class="wordmark" href="index.html"><span class="visually-hidden">Ben Siverly</span><b aria-hidden="true">Ben Siverly</b><span class="t-folio">Issue 01<span class="folio-season"> &middot; Autumn 2026</span></span></a>
+      <nav class="masthead-nav" aria-label="Departments">
+        <ol>
+          <li><a href="index.html#work" aria-current="true"><span>01</span>Work</a></li>
+          <li><a href="index.html#method"><span>02</span>Method</a></li>
+          <li><a href="index.html#workshop"><span>03</span>Workshop</a></li>
+          <li><a href="index.html#writing"><span>04</span>Writing</a></li>
+        </ol>
+      </nav>
+      <div class="masthead-actions">
+        <div class="edition-words" role="group" aria-label="Edition">
+          <button type="button" data-edition-choice="night" aria-pressed="true">Night</button><span aria-hidden="true">/</span><button type="button" data-edition-choice="day" aria-pressed="false">Day</button>
+        </div>
+        <a class="btn btn--outlined btn--sm" href="resume.html">Résumé</a>
+        <button class="btn menu-btn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="menu" data-menu-open><svg aria-hidden="true"><use href="#i-menu"/></svg>Menu</button>
+      </div>
+    </div>
+  </header>
+  <dialog class="menu-sheet" id="menu" aria-label="Menu">
+    <div class="sheet-handle" aria-hidden="true"></div>
+    <div class="sheet-head">
+      <span class="t-folio">In this issue</span>
+      <button class="icon-btn" type="button" aria-label="Close menu" data-menu-close><svg aria-hidden="true"><use href="#i-close"/></svg></button>
+    </div>
+    <nav aria-label="In this issue">
+      <ol class="sheet-list">
+        <li><a href="index.html#work" aria-current="true"><span class="n">01</span><span class="name">Work</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+        <li><a href="index.html#method"><span class="n">02</span><span class="name">Method</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+        <li><a href="index.html#workshop"><span class="n">03</span><span class="name">Workshop</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+        <li><a href="index.html#writing"><span class="n">04</span><span class="name">Writing</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+        <li class="sheet-more"><a href="consulting.html"><span class="n">05</span><span class="name">Consulting</span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+      </ol>
+    </nav>
+    <div class="sheet-foot">
+      <div class="sheet-edition">
+        <span class="t-folio" aria-hidden="true">Edition</span>
+        <div class="edition-words" role="group" aria-label="Edition">
+          <button type="button" data-edition-choice="night" aria-pressed="true">Night</button><span aria-hidden="true">/</span><button type="button" data-edition-choice="day" aria-pressed="false">Day</button>
+        </div>
+      </div>
+      <a class="btn btn--filled" href="resume.html">Résumé</a>
+    </div>
+  </dialog>
+  <!-- /chrome:top -->
+  <!-- chrome:art {"art":["street"]} -->
+  <svg class="art-defs" width="0" height="0" aria-hidden="true" focusable="false"><defs><radialGradient id="art-murk" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#4C423B"/><stop offset=".5" stop-color="#342D2A"/><stop offset="1" stop-color="#1F1B1A"/></radialGradient><pattern id="art-p-h" width="4" height="2" patternUnits="userSpaceOnUse"><path d="M0 1h4" stroke="#fff" stroke-width="0.8"/></pattern><mask id="art-m-h" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="900"><rect width="1200" height="900" fill="url(#art-p-h)"/></mask><pattern id="art-p-h3" width="4" height="3.2" patternUnits="userSpaceOnUse"><path d="M0 1.6h4" stroke="#fff" stroke-width="0.7"/></pattern><mask id="art-m-h3" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="900"><rect width="1200" height="900" fill="url(#art-p-h3)"/></mask><pattern id="art-p-v" width="2" height="4" patternUnits="userSpaceOnUse"><path d="M1 0v4" stroke="#fff" stroke-width="0.7"/></pattern><mask id="art-m-v" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="900"><rect width="1200" height="900" fill="url(#art-p-v)"/></mask><pattern id="art-p-d" width="3" height="3" patternUnits="userSpaceOnUse"><path d="M-1 1l2-2M0 3l3-3M2 4l2-2" stroke="#fff" stroke-width="0.65"/></pattern><mask id="art-m-d" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="900"><rect width="1200" height="900" fill="url(#art-p-d)"/></mask></defs>
+  <symbol id="art-street" viewBox="0 0 1200 280"><path d="M776 12h74M141 19h141M792 26h101M574 33h130M576 40h144M145 47h164M241 54h56M687 61h98M454 68h40M505 75h158M182 82h140M760 89h147M71 96h121M112 103h104" stroke="currentColor" stroke-width=".7" opacity=".6"/><path d="M148 112l12 -6V256l-12 6zM322 50l12 -6V256l-12 6zM524 150l12 -6V256l-12 6zM758 16l12 -6V256l-12 6zM982 92l12 -6V256l-12 6zM1130 142l12 -6V256l-12 6z" fill="currentColor" mask="url(#art-m-v)"/><path d="M414 152L472 106L530 152zM1004 144L1070 92L1136 144z" fill="currentColor" mask="url(#art-m-d)"/><path d="M9 120h31V262h-31zM126 120h22V262h-22zM421 158h23V262h-23zM507 158h17V262h-17zM549 24h46V262h-46zM724 24h34V262h-34z" fill="currentColor" mask="url(#art-m-h3)" opacity=".7"/><path d="M20 133h13v23h-13zM46 133h13v23h-13zM123 133h13v23h-13zM20 173h13v23h-13zM46 173h13v23h-13zM20 213h13v23h-13zM97 213h13v23h-13zM183 70h13v21h-13zM206 70h13v21h-13zM252 70h13v21h-13zM275 70h13v21h-13zM229 106h13v21h-13zM252 106h13v21h-13zM183 143h13v21h-13zM206 143h13v21h-13zM229 143h13v21h-13zM275 143h13v21h-13zM298 143h13v21h-13zM275 179h13v21h-13zM298 179h13v21h-13zM435 171h13v24h-13zM496 171h13v24h-13zM435 212h13v24h-13zM496 212h13v24h-13zM581 34h12v18h-12zM603 34h12v18h-12zM647 34h12v18h-12zM691 34h12v18h-12zM735 34h12v18h-12zM559 65h12v18h-12zM625 65h12v18h-12zM669 65h12v18h-12zM735 65h12v18h-12zM581 96h12v18h-12zM603 96h12v18h-12zM625 96h12v18h-12zM713 96h12v18h-12zM647 127h12v18h-12zM691 127h12v18h-12zM559 158h12v18h-12zM581 158h12v18h-12zM603 158h12v18h-12zM647 158h12v18h-12zM735 158h12v18h-12zM559 189h12v18h-12zM603 189h12v18h-12zM647 189h12v18h-12zM669 189h12v18h-12zM581 220h12v18h-12zM603 220h12v18h-12zM862 112h13v20h-13zM886 112h13v20h-13zM934 112h13v20h-13zM886 147h13v20h-13zM958 147h13v20h-13zM934 182h13v20h-13zM862 217h13v20h-13zM886 217h13v20h-13zM1100 164h13v26h-13zM1028 209h13v26h-13zM1100 209h13v26h-13z" fill="currentColor" mask="url(#art-m-h)"/><path d="M97 133h13v23h-13zM72 173h13v23h-13zM46 213h13v23h-13zM70 213h17V262h-17zM123 213h13v23h-13zM183 106h13v21h-13zM206 106h13v21h-13zM252 179h13v21h-13zM250 215h17V262h-17zM275 215h13v21h-13zM298 215h13v21h-13zM464 212h17V262h-17zM625 34h12v18h-12zM669 34h12v18h-12zM581 65h12v18h-12zM603 65h12v18h-12zM691 65h12v18h-12zM559 96h12v18h-12zM647 96h12v18h-12zM691 96h12v18h-12zM735 96h12v18h-12zM559 127h12v18h-12zM581 127h12v18h-12zM603 127h12v18h-12zM713 127h12v18h-12zM669 158h12v18h-12zM713 158h12v18h-12zM581 189h12v18h-12zM735 189h12v18h-12zM559 220h12v18h-12zM625 220h12v18h-12zM645 220h16V262h-16zM691 220h12v18h-12zM958 112h13v20h-13zM862 147h13v20h-13zM934 147h13v20h-13zM958 182h13v20h-13zM908 217h17V262h-17zM934 217h13v20h-13zM1062 209h17V262h-17z" fill="currentColor" mask="url(#art-m-d)"/><path d="M8 117h140M172 55h150M180 90h19v4h-19zM203 90h19v4h-19zM226 90h19v4h-19zM249 90h19v4h-19zM272 90h19v4h-19zM295 90h19v4h-19zM180 126h19v4h-19zM203 126h19v4h-19zM226 126h19v4h-19zM249 126h19v4h-19zM272 126h19v4h-19zM295 126h19v4h-19zM180 163h19v4h-19zM203 163h19v4h-19zM226 163h19v4h-19zM272 163h19v4h-19zM295 163h19v4h-19zM180 199h19v4h-19zM203 199h19v4h-19zM226 199h19v4h-19zM249 199h19v4h-19zM272 199h19v4h-19zM295 199h19v4h-19zM548 21h210M556 51h18v4h-18zM578 51h18v4h-18zM600 51h18v4h-18zM622 51h18v4h-18zM644 51h18v4h-18zM666 51h18v4h-18zM688 51h18v4h-18zM710 51h18v4h-18zM732 51h18v4h-18zM556 82h18v4h-18zM578 82h18v4h-18zM600 82h18v4h-18zM622 82h18v4h-18zM644 82h18v4h-18zM666 82h18v4h-18zM688 82h18v4h-18zM710 82h18v4h-18zM732 82h18v4h-18zM556 113h18v4h-18zM578 113h18v4h-18zM600 113h18v4h-18zM622 113h18v4h-18zM644 113h18v4h-18zM666 113h18v4h-18zM688 113h18v4h-18zM710 113h18v4h-18zM732 113h18v4h-18zM556 144h18v4h-18zM578 144h18v4h-18zM600 144h18v4h-18zM622 144h18v4h-18zM644 144h18v4h-18zM666 144h18v4h-18zM688 144h18v4h-18zM710 144h18v4h-18zM732 144h18v4h-18zM556 175h18v4h-18zM578 175h18v4h-18zM600 175h18v4h-18zM622 175h18v4h-18zM644 175h18v4h-18zM666 175h18v4h-18zM688 175h18v4h-18zM710 175h18v4h-18zM732 175h18v4h-18zM556 206h18v4h-18zM578 206h18v4h-18zM600 206h18v4h-18zM622 206h18v4h-18zM644 206h18v4h-18zM666 206h18v4h-18zM688 206h18v4h-18zM710 206h18v4h-18zM732 206h18v4h-18zM850 97h132" fill="currentColor" mask="url(#art-m-v)"/><path d="M8 262V112H148V262M5 112h146M5 117h146M20 133h13v23h-13zM46 133h13v23h-13zM72 133h13v23h-13zM97 133h13v23h-13zM123 133h13v23h-13zM20 173h13v23h-13zM46 173h13v23h-13zM72 173h13v23h-13zM97 173h13v23h-13zM123 173h13v23h-13zM20 213h13v23h-13zM46 213h13v23h-13zM70 262V213h17V262M97 213h13v23h-13zM123 213h13v23h-13zM172 262V50H322V262M169 50h156M169 55h156M183 70h13v21h-13zM180 94h19M206 70h13v21h-13zM203 94h19M229 70h13v21h-13zM226 94h19M252 70h13v21h-13zM249 94h19M275 70h13v21h-13zM272 94h19M298 70h13v21h-13zM295 94h19M183 106h13v21h-13zM180 130h19M206 106h13v21h-13zM203 130h19M229 106h13v21h-13zM226 130h19M252 106h13v21h-13zM249 130h19M275 106h13v21h-13zM272 130h19M298 106h13v21h-13zM295 130h19M183 143h13v21h-13zM180 167h19M206 143h13v21h-13zM203 167h19M229 143h13v21h-13zM226 167h19M252 143h13v21h-13zM275 143h13v21h-13zM272 167h19M298 143h13v21h-13zM295 167h19M183 179h13v21h-13zM180 203h19M206 179h13v21h-13zM203 203h19M229 179h13v21h-13zM226 203h19M252 179h13v21h-13zM249 203h19M275 179h13v21h-13zM272 203h19M298 179h13v21h-13zM295 203h19M183 215h13v21h-13zM206 215h13v21h-13zM229 215h13v21h-13zM250 262V215h17V262M275 215h13v21h-13zM298 215h13v21h-13zM420 262V150H524V262M414 152L472 106L530 152M493 129v-22h10v14M435 171h13v24h-13zM466 171h13v24h-13zM496 171h13v24h-13zM435 212h13v24h-13zM464 262V212h17V262M496 212h13v24h-13zM548 262V16H758V262M545 16h216M545 21h216M559 34h12v18h-12zM556 55h18M581 34h12v18h-12zM578 55h18M603 34h12v18h-12zM600 55h18M625 34h12v18h-12zM622 55h18M647 34h12v18h-12zM644 55h18M669 34h12v18h-12zM666 55h18M691 34h12v18h-12zM688 55h18M713 34h12v18h-12zM710 55h18M735 34h12v18h-12zM732 55h18M559 65h12v18h-12zM556 86h18M581 65h12v18h-12zM578 86h18M603 65h12v18h-12zM600 86h18M625 65h12v18h-12zM622 86h18M647 65h12v18h-12zM644 86h18M669 65h12v18h-12zM666 86h18M691 65h12v18h-12zM688 86h18M713 65h12v18h-12zM710 86h18M735 65h12v18h-12zM732 86h18M559 96h12v18h-12zM556 117h18M581 96h12v18h-12zM578 117h18M603 96h12v18h-12zM600 117h18M625 96h12v18h-12zM622 117h18M647 96h12v18h-12zM644 117h18M669 96h12v18h-12zM666 117h18M691 96h12v18h-12zM688 117h18M713 96h12v18h-12zM710 117h18M735 96h12v18h-12zM732 117h18M559 127h12v18h-12zM556 148h18M581 127h12v18h-12zM578 148h18M603 127h12v18h-12zM600 148h18M625 127h12v18h-12zM622 148h18M647 127h12v18h-12zM644 148h18M669 127h12v18h-12zM666 148h18M691 127h12v18h-12zM688 148h18M713 127h12v18h-12zM710 148h18M735 127h12v18h-12zM732 148h18M559 158h12v18h-12zM556 179h18M581 158h12v18h-12zM578 179h18M603 158h12v18h-12zM600 179h18M625 158h12v18h-12zM622 179h18M647 158h12v18h-12zM644 179h18M669 158h12v18h-12zM666 179h18M691 158h12v18h-12zM688 179h18M713 158h12v18h-12zM710 179h18M735 158h12v18h-12zM732 179h18M559 189h12v18h-12zM556 210h18M581 189h12v18h-12zM578 210h18M603 189h12v18h-12zM600 210h18M625 189h12v18h-12zM622 210h18M647 189h12v18h-12zM644 210h18M669 189h12v18h-12zM666 210h18M691 189h12v18h-12zM688 210h18M713 189h12v18h-12zM710 210h18M735 189h12v18h-12zM732 210h18M559 220h12v18h-12zM581 220h12v18h-12zM603 220h12v18h-12zM625 220h12v18h-12zM645 262V220h16V262M669 220h12v18h-12zM691 220h12v18h-12zM713 220h12v18h-12zM735 220h12v18h-12zM850 262V92H982V262M847 92h138M847 97h138M862 112h13v20h-13zM886 112h13v20h-13zM910 112h13v20h-13zM934 112h13v20h-13zM958 112h13v20h-13zM862 147h13v20h-13zM886 147h13v20h-13zM910 147h13v20h-13zM934 147h13v20h-13zM958 147h13v20h-13zM862 182h13v20h-13zM886 182h13v20h-13zM910 182h13v20h-13zM934 182h13v20h-13zM958 182h13v20h-13zM862 217h13v20h-13zM886 217h13v20h-13zM908 262V217h17V262M934 217h13v20h-13zM958 217h13v20h-13zM1010 262V142H1130V262M1004 144L1070 92L1136 144M1094 118v-22h10v12M1028 164h13v26h-13zM1064 164h13v26h-13zM1100 164h13v26h-13zM1028 209h13v26h-13zM1062 262V209h17V262M1100 209h13v26h-13zM363 262C364 224 362 176 359 166M367 262C367 224 369 176 373 162M798 262C799 230 797 191 794 182M802 262C802 230 804 191 808 178M988 262C989 238 987 209 984 202M992 262C992 238 994 209 998 198M1164 262C1165 232 1163 196 1160 188M1168 262C1168 232 1170 196 1174 184M0 262H1200" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M354 177h0M389 176h0M381 170h0M367 160h0M370 202h0M371 176h0M379 201h0M357 195h0M377 166h0M390 186h0M370 164h0M363 154h0M383 161h0M358 147h0M351 187h0M368 189h0M357 190h0M384 184h0M364 187h0M366 197h0M360 145h0M360 188h0M375 188h0M360 193h0M346 183h0M391 183h0M363 147h0M385 169h0M353 190h0M370 183h0M354 193h0M376 152h0M357 193h0M395 171h0M365 177h0M360 153h0M385 166h0M389 188h0M381 184h0M385 197h0M391 171h0M368 175h0M389 161h0M382 192h0M353 158h0M348 162h0M362 197h0M359 162h0M387 173h0M345 189h0M353 191h0M363 167h0M382 194h0M347 160h0M349 163h0M383 195h0M385 193h0M376 175h0M342 151h0M352 145h0M381 181h0M349 162h0M384 171h0M363 184h0M366 187h0M379 186h0M381 175h0M366 178h0M359 183h0M363 199h0M381 192h0M385 160h0M339 187h0M357 195h0M368 191h0M344 173h0M369 202h0M351 182h0M367 199h0M352 189h0M380 183h0M339 181h0M361 160h0M384 196h0M363 158h0M388 160h0M385 182h0M393 170h0M345 189h0M338 184h0M353 167h0M388 183h0M372 170h0M394 166h0M347 146h0M343 188h0M357 174h0M383 172h0M365 162h0M352 150h0M362 194h0M380 174h0M387 196h0M389 176h0M342 178h0M360 171h0M359 169h0M387 186h0M381 160h0M360 144h0M371 150h0M373 199h0M334 168h0M377 149h0M376 197h0M363 160h0M377 169h0M375 184h0M385 195h0M341 177h0M369 180h0M350 191h0M359 161h0M363 189h0M337 186h0M358 180h0M342 174h0M356 150h0M339 178h0M394 168h0M370 163h0M348 188h0M382 168h0M384 170h0M385 159h0M353 195h0M378 175h0M376 199h0M396 183h0M365 160h0M338 164h0M354 145h0M379 194h0M367 159h0M375 163h0M342 148h0M384 187h0M387 186h0M386 188h0M360 184h0M336 164h0M351 183h0M357 181h0M379 156h0M346 158h0M382 166h0M374 191h0M374 181h0M343 153h0M394 184h0M391 178h0M375 156h0M379 200h0M357 190h0M383 185h0M375 157h0M353 167h0M361 172h0M363 167h0M355 167h0M356 166h0M359 152h0M348 172h0M376 201h0M356 150h0M387 169h0M365 190h0M347 177h0M373 183h0M362 190h0M363 160h0M383 161h0M381 192h0M372 188h0M341 172h0M383 197h0M379 156h0M356 189h0M386 162h0M384 180h0M365 172h0M385 164h0M386 176h0M392 182h0M373 194h0M375 178h0M385 190h0M365 194h0M385 158h0M370 152h0M362 195h0M390 188h0M380 198h0M373 187h0M374 197h0M382 176h0M382 199h0M392 191h0M366 194h0M393 177h0M379 191h0M367 158h0M374 168h0M365 173h0M346 182h0M349 165h0M373 191h0M356 183h0M376 193h0M345 180h0M395 183h0M377 184h0M338 184h0M346 189h0M390 188h0M360 195h0M352 190h0M337 156h0M368 196h0M382 187h0M369 191h0M390 193h0M375 173h0M345 184h0M389 164h0M383 196h0M380 171h0M350 188h0M371 195h0M393 183h0M395 168h0M387 180h0M365 167h0M365 193h0M353 178h0M387 191h0M358 185h0M358 191h0M389 186h0M346 181h0M370 189h0M378 182h0M386 172h0M374 187h0M376 168h0M372 161h0M388 170h0M382 185h0M357 173h0M338 171h0M361 158h0M357 172h0M385 194h0M355 195h0M386 173h0M372 186h0M361 153h0M379 198h0M368 197h0M352 175h0M391 164h0M335 180h0M361 156h0M377 176h0M384 177h0M375 171h0M378 153h0M355 186h0M361 184h0M345 166h0M379 186h0M383 172h0M394 172h0M354 176h0M365 171h0M366 199h0M362 158h0M340 166h0M382 160h0M342 184h0M391 176h0M390 163h0M368 153h0M392 176h0M353 183h0M373 169h0M386 180h0M366 201h0M366 198h0M372 177h0M375 196h0M381 166h0M388 160h0M379 198h0M383 166h0M391 174h0M384 160h0M350 192h0M342 187h0M358 184h0M355 172h0M394 167h0M381 194h0M352 190h0M391 185h0M363 146h0M349 160h0M338 177h0M369 178h0M376 185h0M363 195h0M370 179h0M361 169h0M356 155h0M390 183h0M334 166h0M358 180h0M371 175h0M360 182h0M381 188h0M356 168h0M348 173h0M386 196h0M343 158h0M395 171h0M365 169h0M349 169h0M363 145h0M366 201h0M392 182h0M388 171h0M369 171h0M348 161h0M356 166h0M348 190h0M340 177h0M351 193h0M385 175h0M382 195h0M337 184h0M393 191h0M340 157h0M388 195h0M373 169h0M381 171h0M348 155h0M382 193h0M389 173h0M385 198h0M395 174h0M352 152h0M375 160h0M335 177h0M354 176h0M381 199h0M379 197h0M353 183h0M375 168h0M363 180h0M357 166h0M359 169h0M366 186h0M350 189h0M378 157h0M375 158h0M375 154h0M377 196h0M380 152h0M385 175h0M360 183h0M362 169h0M395 182h0M355 146h0M344 152h0M386 180h0M385 167h0M383 195h0M372 195h0M338 187h0M378 198h0M363 151h0M387 175h0M373 177h0M393 185h0M386 178h0M385 194h0M381 195h0M362 196h0M383 171h0M377 196h0M388 193h0M376 192h0M365 192h0M382 194h0M354 195h0M378 194h0M338 180h0M390 189h0M360 170h0M386 162h0M351 147h0M384 197h0M367 154h0M344 185h0M378 186h0M361 156h0M342 185h0M380 184h0M374 153h0M394 188h0M376 150h0M380 175h0M395 172h0M338 178h0M356 174h0M366 177h0M357 178h0M338 184h0M370 191h0M348 181h0M346 185h0M362 173h0M367 171h0M388 176h0M355 192h0M372 190h0M383 160h0M377 198h0M355 189h0M338 186h0M387 171h0M374 153h0M382 194h0M358 185h0M370 194h0M352 166h0M343 191h0M379 196h0M349 153h0M378 157h0M362 200h0M391 179h0M376 171h0M370 174h0M353 172h0M362 182h0M382 172h0M366 186h0M377 194h0M344 181h0M345 175h0M375 154h0M383 156h0M367 154h0M360 196h0M385 157h0M388 178h0M366 192h0M364 170h0M347 167h0M376 162h0M364 195h0M386 192h0M394 180h0M374 195h0M380 166h0M380 192h0M387 166h0M368 159h0M357 192h0M369 195h0M377 161h0M386 192h0M378 199h0M371 199h0M351 187h0M392 162h0M394 172h0M339 170h0M376 169h0M361 144h0M391 167h0M352 187h0M350 191h0M355 193h0M345 165h0M381 189h0M350 185h0M350 186h0M361 150h0M359 153h0M365 177h0M369 147h0M360 157h0M343 192h0M349 193h0M377 188h0M370 191h0M368 195h0M372 184h0M382 192h0M396 174h0M384 183h0M364 162h0M335 179h0M392 164h0M365 147h0M374 175h0M374 192h0M380 179h0M791 197h0M813 191h0M791 159h0M808 178h0M829 166h0M827 198h0M831 196h0M824 162h0M811 187h0M828 189h0M788 185h0M794 206h0M793 198h0M792 191h0M811 204h0M815 167h0M771 200h0M814 176h0M829 167h0M806 205h0M834 176h0M820 171h0M779 169h0M832 182h0M810 195h0M819 203h0M770 193h0M782 182h0M808 205h0M799 191h0M816 170h0M795 181h0M792 192h0M818 171h0M826 197h0M770 176h0M773 182h0M804 197h0M814 200h0M817 193h0M818 205h0M776 183h0M809 198h0M832 174h0M784 154h0M822 193h0M820 153h0M827 190h0M784 190h0M814 191h0M778 201h0M808 199h0M808 154h0M815 183h0M798 190h0M820 202h0M819 200h0M823 183h0M812 185h0M819 186h0M783 185h0M812 196h0M829 165h0M782 191h0M837 173h0M809 170h0M821 205h0M837 183h0M773 198h0M832 190h0M819 182h0M784 167h0M804 156h0M812 166h0M808 208h0M821 194h0M803 193h0M778 197h0M794 202h0M815 158h0M812 199h0M802 174h0M793 205h0M788 196h0M822 187h0M826 176h0M828 187h0M823 190h0M809 173h0M790 197h0M813 201h0M812 158h0M825 179h0M826 175h0M782 183h0M774 179h0M782 190h0M792 194h0M767 184h0M829 187h0M824 176h0M768 196h0M808 164h0M835 167h0M830 182h0M809 153h0M825 167h0M807 176h0M772 175h0M783 177h0M767 181h0M820 190h0M830 167h0M809 199h0M813 182h0M827 190h0M822 157h0M773 198h0M791 194h0M789 205h0M793 165h0M789 203h0M813 206h0M816 203h0M788 201h0M812 210h0M782 206h0M798 200h0M816 203h0M802 164h0M832 171h0M778 198h0M800 198h0M837 185h0M814 179h0M778 185h0M831 163h0M823 175h0M775 199h0M808 188h0M829 186h0M804 205h0M832 166h0M790 156h0M821 162h0M828 183h0M789 205h0M797 162h0M816 198h0M821 171h0M810 161h0M788 155h0M827 176h0M830 177h0M774 177h0M837 175h0M790 165h0M791 184h0M818 204h0M789 167h0M801 172h0M813 178h0M778 183h0M821 198h0M826 180h0M803 205h0M826 168h0M828 161h0M800 199h0M827 156h0M830 193h0M765 192h0M826 185h0M791 170h0M808 202h0M807 189h0M816 175h0M780 175h0M824 170h0M797 207h0M831 194h0M807 190h0M804 192h0M826 186h0M812 199h0M792 158h0M821 181h0M831 189h0M780 156h0M830 172h0M780 193h0M779 197h0M838 179h0M794 195h0M785 208h0M806 189h0M833 178h0M764 181h0M805 200h0M781 187h0M791 185h0M825 167h0M814 197h0M774 200h0M815 168h0M792 188h0M805 178h0M825 188h0M775 194h0M766 178h0M817 195h0M819 188h0M817 179h0M789 180h0M816 210h0M808 197h0M812 199h0M802 200h0M835 175h0M828 201h0M766 172h0M810 159h0M819 164h0M816 194h0M820 169h0M801 195h0M771 202h0M808 202h0M809 190h0M805 196h0M764 177h0M781 196h0M807 198h0M829 194h0M827 175h0M815 195h0M799 183h0M787 207h0M825 200h0M783 189h0M769 200h0M792 187h0M830 158h0M821 192h0M812 192h0M793 195h0M809 201h0M784 184h0M768 197h0M778 205h0M810 173h0M790 201h0M820 183h0M784 208h0M775 180h0M801 184h0M771 181h0M813 194h0M825 183h0M813 182h0M771 171h0M792 207h0M812 200h0M804 155h0M825 155h0M835 180h0M815 189h0M797 175h0M814 192h0M823 161h0M822 208h0M803 207h0M785 160h0M770 185h0M766 178h0M783 174h0M823 173h0M834 177h0M771 192h0M806 163h0M834 174h0M809 202h0M826 172h0M798 181h0M795 206h0M795 197h0M820 205h0M812 172h0M828 191h0M783 176h0M810 199h0M778 202h0M831 164h0M789 156h0M785 192h0M830 162h0M797 180h0M815 177h0M811 175h0M821 204h0M769 191h0M831 165h0M837 182h0M832 162h0M779 201h0M776 190h0M812 209h0M794 175h0M778 160h0M769 192h0M784 202h0M828 178h0M820 178h0M798 164h0M814 155h0M815 168h0M812 208h0M827 176h0M812 209h0M796 186h0M813 164h0M812 159h0M813 210h0M836 183h0M796 163h0M827 186h0M767 178h0M785 198h0M827 201h0M782 208h0M810 156h0M826 200h0M788 194h0M824 179h0M811 200h0M825 205h0M837 175h0M825 155h0M793 202h0M827 157h0M787 209h0M823 181h0M815 163h0M805 209h0M813 191h0M773 198h0M828 181h0M791 200h0M795 201h0M827 191h0M803 179h0M810 205h0M792 198h0M820 172h0M810 197h0M766 183h0M828 171h0M773 179h0M830 183h0M794 209h0M802 155h0M798 187h0M809 177h0M823 179h0M788 185h0M821 160h0M834 170h0M827 157h0M808 184h0M815 158h0M782 202h0M806 176h0M809 196h0M797 205h0M805 187h0M820 205h0M813 165h0M831 197h0M834 189h0M828 202h0M774 191h0M828 198h0M825 203h0M833 184h0M829 177h0M825 191h0M828 186h0M817 162h0M834 180h0M820 164h0M782 195h0M807 176h0M771 167h0M766 192h0M793 158h0M829 196h0M772 179h0M780 198h0M802 197h0M833 187h0M809 177h0M805 155h0M821 191h0M817 156h0M800 177h0M783 200h0M792 177h0M777 201h0M802 169h0M831 178h0M813 171h0M783 206h0M822 207h0M826 155h0M773 196h0M800 182h0M807 188h0M817 192h0M824 155h0M788 192h0M1012 195h0M994 198h0M997 191h0M986 203h0M1002 217h0M1005 210h0M1003 191h0M995 219h0M1002 191h0M998 188h0M1010 204h0M977 216h0M991 195h0M1009 213h0M972 205h0M984 214h0M989 204h0M994 203h0M1010 209h0M995 219h0M996 201h0M1001 185h0M988 210h0M1011 209h0M1001 209h0M981 206h0M987 203h0M1004 193h0M1011 206h0M1004 187h0M982 208h0M987 208h0M987 194h0M994 194h0M972 212h0M988 188h0M988 193h0M998 197h0M1001 200h0M982 217h0M975 214h0M1014 201h0M972 205h0M977 202h0M1007 211h0M995 185h0M974 204h0M986 220h0M1005 211h0M1014 205h0M998 211h0M998 208h0M996 213h0M1006 195h0M987 198h0M977 202h0M991 185h0M1002 196h0M1006 193h0M991 203h0M1003 217h0M986 202h0M1004 208h0M1008 202h0M990 208h0M999 216h0M979 204h0M1003 215h0M979 195h0M989 209h0M976 195h0M1006 191h0M985 214h0M1002 191h0M990 207h0M1004 200h0M992 216h0M969 207h0M979 195h0M985 213h0M971 208h0M977 211h0M975 198h0M1001 203h0M979 211h0M1006 207h0M994 194h0M1007 192h0M989 202h0M999 193h0M1006 207h0M989 213h0M1006 207h0M1001 199h0M994 213h0M985 204h0M1012 210h0M977 215h0M994 213h0M980 218h0M1004 206h0M1011 212h0M979 216h0M995 193h0M975 199h0M1009 199h0M997 185h0M994 201h0M1003 202h0M1006 210h0M1007 201h0M1012 211h0M996 205h0M983 207h0M992 218h0M1005 202h0M997 213h0M972 212h0M1002 216h0M1012 211h0M1000 200h0M1004 195h0M999 190h0M1005 216h0M1000 197h0M993 200h0M1000 202h0M991 207h0M984 212h0M1005 217h0M1009 209h0M993 216h0M984 216h0M1000 196h0M996 205h0M998 218h0M1007 202h0M984 202h0M1008 192h0M997 211h0M1006 214h0M1005 214h0M998 210h0M979 213h0M988 207h0M979 214h0M1013 200h0M1001 205h0M978 216h0M980 208h0M989 219h0M1009 195h0M1006 207h0M972 207h0M997 210h0M1005 217h0M1000 187h0M1001 216h0M1011 212h0M970 203h0M988 199h0M1005 209h0M974 210h0M986 205h0M990 199h0M997 198h0M1008 206h0M1014 200h0M994 212h0M1001 193h0M996 194h0M998 219h0M1008 191h0M983 196h0M978 212h0M993 212h0M1010 214h0M994 211h0M976 203h0M983 217h0M1005 215h0M1009 207h0M980 197h0M972 209h0M992 207h0M1004 188h0M1002 213h0M986 213h0M996 186h0M997 202h0M988 202h0M1011 204h0M994 213h0M997 198h0M976 214h0M1002 210h0M984 202h0M999 188h0M988 190h0M984 191h0M1002 211h0M983 217h0M990 215h0M1013 208h0M992 195h0M1009 214h0M991 210h0M986 219h0M988 209h0M1008 191h0M1004 192h0M982 210h0M1008 211h0M995 202h0M973 197h0M997 213h0M986 218h0M987 188h0M988 208h0M1002 213h0M1183 198h0M1200 182h0M1151 187h0M1188 200h0M1167 186h0M1165 193h0M1167 204h0M1152 196h0M1160 201h0M1192 202h0M1192 173h0M1179 178h0M1171 175h0M1157 198h0M1166 208h0M1175 195h0M1132 182h0M1199 178h0M1195 184h0M1178 169h0M1177 205h0M1166 210h0M1176 184h0M1158 202h0M1161 205h0M1195 169h0M1192 196h0M1196 185h0M1153 207h0M1185 175h0M1168 174h0M1150 203h0M1167 184h0M1173 185h0M1190 188h0M1181 186h0M1140 196h0M1165 182h0M1194 182h0M1150 200h0M1191 177h0M1152 181h0M1163 186h0M1166 165h0M1179 184h0M1187 195h0M1156 202h0M1153 209h0M1153 202h0M1199 178h0M1155 212h0M1147 168h0M1172 195h0M1149 195h0M1188 191h0M1157 168h0M1147 204h0M1149 205h0M1168 185h0M1166 202h0M1144 204h0M1158 197h0M1143 203h0M1183 182h0M1148 198h0M1181 196h0M1161 201h0M1168 207h0M1158 206h0M1195 179h0M1149 171h0M1180 196h0M1200 188h0M1163 203h0M1184 179h0M1182 197h0M1177 182h0M1172 207h0M1186 187h0M1166 186h0M1157 176h0M1172 180h0M1178 191h0M1139 192h0M1154 188h0M1137 165h0M1196 184h0M1196 176h0M1161 196h0M1192 183h0M1143 199h0M1170 164h0M1180 205h0M1146 184h0M1182 188h0M1156 178h0M1186 205h0M1179 191h0M1185 195h0M1159 198h0M1164 206h0M1194 181h0M1191 187h0M1168 203h0M1168 205h0M1184 181h0M1178 201h0M1166 178h0M1183 163h0M1176 187h0M1185 201h0M1164 208h0M1194 176h0M1168 187h0M1180 190h0M1188 167h0M1149 208h0M1187 197h0M1195 190h0M1148 163h0M1150 190h0M1171 195h0M1195 184h0M1184 205h0M1180 191h0M1181 189h0M1185 176h0M1140 188h0M1161 194h0M1168 198h0M1154 174h0M1177 193h0M1158 199h0M1198 186h0M1157 206h0M1159 203h0M1185 188h0M1155 187h0M1158 205h0M1176 171h0M1161 209h0M1191 196h0M1146 191h0M1178 182h0M1178 198h0M1141 164h0M1196 194h0M1149 163h0M1180 188h0M1142 203h0M1161 200h0M1174 196h0M1165 204h0M1199 176h0M1185 196h0M1132 187h0M1147 175h0M1169 179h0M1193 171h0M1165 184h0M1190 193h0M1189 189h0M1160 190h0M1150 165h0M1198 183h0M1172 174h0M1159 166h0M1181 188h0M1200 177h0M1170 205h0M1197 193h0M1190 200h0M1177 163h0M1194 199h0M1186 195h0M1145 206h0M1144 161h0M1181 179h0M1184 171h0M1190 189h0M1169 208h0M1145 181h0M1195 175h0M1144 193h0M1154 170h0M1193 174h0M1193 190h0M1160 167h0M1183 166h0M1147 176h0M1164 182h0M1156 208h0M1169 180h0M1188 203h0M1139 196h0M1159 209h0M1143 194h0M1179 162h0M1200 191h0M1162 166h0M1160 174h0M1194 185h0M1157 159h0M1192 184h0M1160 202h0M1198 194h0M1181 206h0M1159 182h0M1151 168h0M1178 168h0M1176 176h0M1172 180h0M1132 185h0M1154 206h0M1178 178h0M1164 199h0M1193 196h0M1193 187h0M1158 191h0M1154 158h0M1162 181h0M1161 173h0M1149 191h0M1168 209h0M1156 158h0M1169 180h0M1133 184h0M1154 179h0M1166 209h0M1189 183h0M1146 181h0M1161 165h0M1172 183h0M1192 176h0M1194 191h0M1185 204h0M1153 200h0M1159 208h0M1190 197h0M1186 188h0M1158 182h0M1145 202h0M1174 172h0M1156 213h0M1167 209h0M1175 191h0M1157 187h0M1196 199h0M1196 180h0M1170 183h0M1196 173h0M1169 198h0M1171 196h0M1193 175h0M1182 184h0M1167 210h0M1163 159h0M1200 178h0M1192 172h0M1181 175h0M1137 168h0M1190 199h0M1170 182h0M1196 177h0M1189 181h0M1150 204h0M1157 205h0M1146 163h0M1169 189h0M1179 191h0M1189 203h0M1158 209h0M1191 194h0M1189 171h0M1168 169h0M1186 185h0M1164 186h0M1153 186h0M1179 181h0M1193 177h0M1185 172h0M1185 191h0M1186 175h0M1174 196h0M1156 180h0M1201 184h0M1145 171h0M1178 181h0M1184 188h0M1191 184h0M1195 187h0M1158 203h0M1198 195h0M1191 184h0M1186 200h0M1184 202h0M1189 187h0M1171 199h0M1145 191h0M1192 179h0M1150 211h0M1185 185h0M1197 187h0M1162 199h0M1191 195h0M1144 206h0M1197 189h0M1154 196h0M1188 177h0M1181 204h0M1162 207h0M1148 183h0M1158 181h0M1180 190h0M1148 163h0M1153 170h0M1175 169h0M1170 202h0M1186 202h0M1154 187h0M97 271h0M636 276h0M1140 265h0M854 275h0M854 273h0M851 265h0M99 267h0M127 272h0M85 274h0M512 267h0M927 266h0M612 272h0M821 274h0M416 265h0M80 266h0M409 268h0M806 270h0M633 274h0M562 267h0M162 266h0M509 266h0M255 273h0M67 273h0M580 269h0M729 270h0M431 275h0M967 267h0M803 265h0M717 275h0M103 268h0M1029 277h0M4 272h0M396 276h0M881 265h0M424 279h0M785 274h0M563 265h0M951 275h0M891 268h0M709 265h0M100 267h0M164 276h0M1047 266h0M253 279h0M1064 266h0M708 277h0M523 274h0M270 279h0M174 267h0M1041 272h0M126 277h0M1190 277h0M511 274h0M79 275h0M91 267h0M715 265h0M332 279h0M789 266h0M1103 278h0M45 268h0M915 267h0M627 275h0M183 277h0M230 267h0M318 266h0M135 266h0M197 268h0M882 267h0M281 271h0M228 266h0M480 279h0M177 273h0M24 272h0M638 265h0M645 273h0M936 268h0M681 276h0M1015 270h0M802 265h0M316 270h0M732 270h0M801 265h0M396 267h0M694 271h0M760 265h0M930 267h0M5 269h0M98 266h0M259 272h0M265 265h0M435 266h0M516 276h0M664 267h0M583 272h0M795 267h0M298 268h0M1037 267h0M304 267h0M888 271h0M68 269h0M852 276h0M1120 266h0M1135 265h0M107 265h0M451 278h0M938 266h0M1097 270h0M369 271h0M23 267h0M33 278h0M423 265h0M756 272h0M1067 270h0M607 272h0M861 273h0M464 269h0M548 269h0M473 273h0M1040 265h0M173 266h0M1004 270h0M487 269h0M1125 267h0M610 268h0M649 280h0M271 275h0M686 265h0M175 278h0M34 271h0M257 266h0M448 274h0M594 274h0M283 271h0M851 265h0M246 276h0M114 271h0M1187 267h0M599 276h0M488 279h0M580 277h0M955 274h0M952 268h0M756 265h0M792 266h0M401 279h0M679 266h0M868 265h0M653 273h0M441 274h0M698 267h0M1169 265h0M859 279h0M1000 275h0M294 273h0M762 265h0M1079 274h0M206 270h0M962 265h0M879 273h0M1063 265h0M1191 274h0M16 272h0M668 269h0M550 279h0M1113 279h0M899 268h0M1034 269h0M479 265h0M453 267h0M122 266h0M356 265h0M1048 271h0M176 278h0M199 266h0M738 269h0M542 268h0M396 266h0M879 267h0M13 274h0M273 271h0M1198 270h0M74 276h0M804 265h0M240 277h0M625 280h0M658 280h0M429 265h0M805 272h0M949 274h0M183 265h0M827 271h0M913 274h0M76 267h0M3 267h0M937 271h0M1154 275h0M773 272h0M97 268h0M752 265h0M149 276h0M103 265h0M590 278h0M373 273h0M781 265h0M158 266h0M650 273h0M834 270h0M596 280h0M475 270h0M102 265h0M1127 266h0M931 265h0M880 277h0M405 269h0M687 265h0M325 271h0M346 267h0M145 273h0M35 266h0M680 265h0M209 271h0M386 279h0M760 266h0M1154 268h0M664 278h0M885 273h0M979 271h0M109 279h0M835 270h0M139 280h0M1177 273h0M869 265h0M124 266h0M355 272h0M241 267h0M336 267h0M578 265h0M1049 270h0M754 267h0M361 270h0M641 270h0M509 266h0M755 267h0M1067 265h0M851 266h0M303 272h0M548 266h0M817 271h0M779 268h0M692 265h0M807 277h0M694 273h0M229 273h0M978 269h0M702 279h0M934 265h0M982 274h0M731 266h0M799 275h0M575 265h0M174 269h0M860 275h0M487 277h0M77 269h0M524 275h0M448 276h0M876 267h0M1118 267h0M828 265h0M852 270h0M962 280h0M438 266h0M342 269h0M762 265h0M33 278h0M1119 266h0M472 269h0M191 268h0M674 280h0M813 274h0M66 275h0M1089 275h0M1063 266h0M1156 265h0M829 279h0M598 266h0M1005 276h0M683 273h0M699 266h0M400 278h0M1198 266h0M113 272h0M704 278h0M649 274h0M270 265h0M992 269h0M332 271h0M559 273h0M174 269h0M366 274h0M1160 269h0M466 270h0M897 265h0M1093 267h0M1042 275h0M443 279h0M1008 271h0M712 278h0M602 279h0M100 267h0M979 270h0M779 265h0M427 266h0M936 265h0M658 275h0M234 265h0M9 268h0M757 280h0M594 274h0M1002 270h0M493 278h0M9 268h0M1081 268h0M717 268h0M970 267h0M168 277h0M777 273h0M81 275h0M358 271h0M399 270h0M363 266h0M1098 266h0M1141 276h0M80 266h0M11 268h0M437 265h0M586 273h0M289 272h0M1053 267h0M460 269h0M386 266h0M1087 274h0M432 273h0M520 267h0M95 267h0M181 269h0M214 272h0M538 270h0M380 268h0M195 267h0M693 274h0M1177 265h0M215 279h0M1018 267h0M679 270h0M842 265h0M250 272h0M726 269h0M44 279h0M604 269h0M447 265h0M290 278h0M1002 266h0M705 268h0M4 274h0M405 269h0M261 265h0M825 268h0M137 266h0M499 270h0M1038 279h0M606 271h0M670 277h0M841 274h0M971 278h0M55 276h0M47 268h0M420 279h0M1153 274h0M72 274h0M554 266h0M353 276h0M535 266h0M650 265h0M988 265h0M285 279h0M211 268h0M580 276h0M1049 267h0M242 277h0M671 267h0M976 267h0M927 278h0M350 266h0M915 276h0M257 267h0M267 268h0M195 273h0M233 274h0M763 279h0M286 270h0M521 279h0M930 270h0M873 270h0M618 269h0M728 274h0M713 269h0M414 266h0M1154 270h0M1127 269h0M812 276h0M874 266h0M903 269h0M404 278h0M579 271h0M237 272h0M219 266h0M277 278h0M94 266h0M879 271h0M259 270h0M291 265h0M487 275h0M578 269h0M500 276h0M481 274h0M302 278h0M197 267h0M255 271h0M1148 278h0M170 273h0M505 265h0M195 266h0M1011 278h0M883 267h0M877 269h0M776 267h0M978 280h0M292 269h0M490 267h0M434 274h0M619 275h0M677 274h0M420 278h0M449 268h0M168 266h0M576 267h0M1040 274h0M474 277h0M720 266h0M978 267h0M117 268h0M276 276h0M442 265h0M840 277h0M881 265h0M475 272h0M906 273h0M682 273h0M374 268h0M1126 276h0M1184 277h0M616 268h0M671 277h0M509 267h0M226 271h0M1168 273h0M351 278h0M556 278h0M152 268h0M1195 266h0M402 265h0M343 271h0M1199 277h0M92 270h0M770 270h0M1059 270h0M703 268h0M5 278h0M832 266h0M327 266h0M394 266h0M726 271h0M1147 268h0M1001 272h0M38 278h0M1138 271h0M474 268h0M489 265h0M223 279h0M576 270h0M1194 268h0M201 266h0M536 275h0M800 271h0M116 279h0M1193 266h0M691 265h0M214 268h0M477 267h0M377 270h0M212 278h0M936 270h0M195 271h0M683 268h0M459 268h0M484 275h0M620 279h0M920 267h0M717 271h0M641 272h0M1166 265h0M533 266h0M1053 278h0M431 265h0M699 266h0M568 265h0M405 276h0M186 278h0M235 272h0" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/><path class="art-spot" d="M253 144h11v19h-11z"/></symbol>
+  </svg>
+  <!-- /chrome:art -->
+
+  <main id="main" class="case">
+    <header class="cs-band field-spot">
+      <div class="wrap">
+        <div class="rh rh--verso t-folio"><span class="rh-pg">01</span><span class="rh-title">Work &middot; Case study</span><span class="rh-pub">Ben Siverly &middot; Issue 01 &middot; Autumn 2026</span></div>
+        <div class="checker" aria-hidden="true"></div>
+        <div class="cs-frame">
+          <p class="cs-ticker cs-ticker--top" aria-hidden="true"><span>Ben&#8197;Siverly</span> &middot;&nbsp;<span>Product,&#8197;data&#8197;and&#8197;AI</span> &middot;&nbsp;<span>Issue&#8197;01</span> &middot;&nbsp;<span>Work</span> &middot;&nbsp;<span>Ben&#8197;Siverly</span> &middot;&nbsp;<span>Product,&#8197;data&#8197;and&#8197;AI</span> &middot;&nbsp;<span>Issue&#8197;01</span> &middot;&nbsp;<span>Work</span> &middot;&nbsp;<span>Ben&#8197;Siverly</span> &middot;&nbsp;<span>Product,&#8197;data&#8197;and&#8197;AI</span> &middot;&nbsp;<span>Issue&#8197;01</span> &middot;&nbsp;<span>Work</span> &middot;&nbsp;<span>Ben&#8197;Siverly</span> &middot;&nbsp;<span>Product,&#8197;data&#8197;and&#8197;AI</span> &middot;&nbsp;<span>Issue&#8197;01</span> &middot;&nbsp;<span>Work</span></p>
+          <p class="cs-ticker cs-ticker--bottom" aria-hidden="true"><span>San&#8197;Mateo</span> &middot;&nbsp;<span>2&#8197;homes&#8197;today</span> &middot;&nbsp;<span>5&#8197;by&#8197;right</span> &middot;&nbsp;<span>6&#8197;at&#8197;most</span> &middot;&nbsp;<span>San&#8197;Mateo</span> &middot;&nbsp;<span>2&#8197;homes&#8197;today</span> &middot;&nbsp;<span>5&#8197;by&#8197;right</span> &middot;&nbsp;<span>6&#8197;at&#8197;most</span> &middot;&nbsp;<span>San&#8197;Mateo</span> &middot;&nbsp;<span>2&#8197;homes&#8197;today</span> &middot;&nbsp;<span>5&#8197;by&#8197;right</span> &middot;&nbsp;<span>6&#8197;at&#8197;most</span> &middot;&nbsp;<span>San&#8197;Mateo</span> &middot;&nbsp;<span>2&#8197;homes&#8197;today</span> &middot;&nbsp;<span>5&#8197;by&#8197;right</span> &middot;&nbsp;<span>6&#8197;at&#8197;most</span></p>
+          <div class="cs-band-grid">
+            <p class="cs-band-num" aria-hidden="true">01<small>Work</small></p>
+            <div class="cs-band-main">
+              <p class="t-kicker">Case study &middot; San Mateo, California</p>
+              <h1>Housing as an API call</h1>
+              <p class="t-deck">One address in. What the law allows, what it looks like, and whether the money works, out.</p>
+              <p class="t-byline">By Ben Siverly &middot; November 2026 &middot; <span data-read="cs-body">9</span> min read</p>
+            </div>
+            <figure class="cs-band-aside">
+              <div class="art"><svg viewBox="330 40 240 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#art-street" width="1200" height="280"/></svg></div>
+              <figcaption>One roof, two homes, on land zoned for more.</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="checker" aria-hidden="true"></div>
+      </div>
+      <span class="rim rim--bottom" aria-hidden="true"></span>
+    </header>
+
+    <div id="cs-body">
+      <div class="cs-intro wrap">
+        <div class="cs-intro-grid">
+          <div class="cs-intro-text">
+            <p class="dropcap">The house at 1xx Hobart Ave is a 1953 duplex in San Mateo. Two 2-bed units sit at the ends of one long roof, with two 2-car garages between them. The lot is 8,750 sq ft and zoned for apartments.</p>
+            <p>California now lets an owner add homes to a lot like this without a public hearing. Most owners never learn how many, because the answer takes a zoning read, a site plan, rent comps, a cost estimate, and a pro forma. On a project that adds three homes, nobody pays for that work.</p>
+            <p>So I treated it as an API call. I gave an AI research agent the address and worked the problem with it in one long conversation. Here is the request. The response follows, one field at a time.</p>
+            <nav class="cs-toc" aria-labelledby="cs-toc-h">
+              <p class="t-folio" id="cs-toc-h">In this response</p>
+              <ol>
+                <li><a href="#parcel"><code>parcel</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">The parcel</span></a></li>
+                <li><a href="#entitlements"><code>entitlements</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">What the law allows</span></a></li>
+                <li><a href="#renders"><code>renders</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">What it looks like</span></a></li>
+                <li><a href="#market"><code>market</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">What it rents for</span></a></li>
+                <li><a href="#underwriting"><code>underwriting</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">The math for five homes</span></a></li>
+                <li><a href="#capital"><code>capital</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">If I raised it</span></a></li>
+                <li><a href="#verdict"><code>verdict</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">The answer</span></a></li>
+                <li><a href="#playground"><code>underwrite</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">Run your own numbers</span></a></li>
+                <li><a href="#trace"><code>trace</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">How the call ran</span></a></li>
+              </ol>
+            </nav>
+          </div>
+          <div class="cs-calls">
+            <div class="cs-code">
+              <div class="cs-code-bar"><span class="cs-code-path"><b class="cs-pill cs-pill--post">POST</b>/v1/sites</span><button class="btn btn--spot btn--sm" type="button" id="send">Send request</button></div>
+<pre tabindex="0" aria-label="The request, as JSON"><code class="json">{
+  "address": "1xx Hobart Ave, San Mateo, CA 94402",
+  "goal": "max_homes",
+  "prefer": "by_right",
+  "rents": "upper_third",
+  "exit": "sell_month_24"
+}</code></pre>
+            </div>
+            <div class="cs-code">
+              <div class="cs-code-bar"><span class="cs-code-path"><b class="cs-pill cs-pill--ok" id="status">200 OK</b><span id="statusText">application/json</span></span></div>
+<pre tabindex="0" aria-label="The response, as JSON"><code class="json" id="heroRes">{
+  "apn": "034-382-xxx",
+  "zoning": "R3",
+  "homes": { "today": 2, "by_right": 5, "max": 6 },
+  "yield_on_cost": 0.064,
+  "value_created": 865686,
+  "lp_irr": 0.146,
+  "verdict": "pencils_as_home"
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- response.parcel -->
+      <section class="cs-sec" id="parcel" aria-labelledby="parcel-h">
+        <div class="wrap cs-grid">
+          <div class="cs-main">
+            <header class="cs-head"><span class="cs-n" aria-hidden="true">01</span><div><p class="cs-key">response.parcel</p><h2 class="cs-h2" id="parcel-h">The parcel</h2></div></header>
+            <p class="t-deck cs-lead">One story, stucco, built in 1953, on a deep lot zoned for apartments. Each unit has its own meters.</p>
+            <dl class="cs-spec">
+              <div><dt class="t-folio">APN</dt><dd>034-382-xxx</dd></div>
+              <div><dt class="t-folio">Lot</dt><dd>8,750 sq ft, level</dd></div>
+              <div><dt class="t-folio">Lot shape</dt><dd>About 50 × 175 ft</dd></div>
+              <div><dt class="t-folio">Zoning</dt><dd>R3, multifamily</dd></div>
+              <div><dt class="t-folio">Built</dt><dd>1953</dd></div>
+              <div><dt class="t-folio">Homes</dt><dd>2 units, 2 bd / 1.5 ba each</dd></div>
+              <div><dt class="t-folio">Living area</dt><dd>About 2,400 sq ft</dd></div>
+              <div><dt class="t-folio">Garages</dt><dd>Two 2-car, attached</dd></div>
+              <div><dt class="t-folio">Last sale</dt><dd>$920,000 in 2009</dd></div>
+              <div><dt class="t-folio">Assessed, 2025</dt><dd>$1,211,292</dd></div>
+              <div><dt class="t-folio">Property tax, 2025</dt><dd>$15,327</dd></div>
+              <div><dt class="t-folio">Estimate</dt><dd>$1.98M ($1.88M to $2.28M)</dd></div>
+            </dl>
+            <p class="t-note cs-after">The county records 3,370 sq ft. The listing says 2,400 living. The difference is about the size of two 2-car garages. The lot shape comes from an aerial photo, so it is an estimate. Flood and fire risk are minimal.</p>
+          </div>
+          <aside class="cs-side" aria-label="The parcel, as JSON">
+            <div class="cs-code" data-fold>
+              <div class="cs-code-bar fold-head"><h3>response.parcel</h3><span aria-hidden="true">JSON</span></div>
+<pre tabindex="0" data-fold-body><code class="json">"parcel": {
+  "apn": "034-382-xxx",
+  "lot_sq_ft": 8750,
+  "lot_dims_ft": [50, 175],
+  "lot_dims_source": "aerial_trace",
+  "zoning": "R3",
+  "year_built": 1953,
+  "units": 2,
+  "garages": 2,
+  "living_sq_ft": 2400,
+  "assessed_2025": 1211292,
+  "tax_2025": 15327,
+  "last_sale": { "year": 2009, "price": 920000 },
+  "estimate": {
+    "low": 1880000, "mid": 1980000, "high": 2280000
+  }
+}</code></pre>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- response.entitlements -->
+      <section class="cs-sec" id="entitlements" aria-labelledby="entitlements-h">
+        <div class="wrap cs-grid">
+          <div class="cs-main">
+            <header class="cs-head"><span class="cs-n" aria-hidden="true">02</span><div><p class="cs-key">response.entitlements</p><h2 class="cs-h2" id="entitlements-h">What the law allows</h2></div></header>
+            <p class="t-deck cs-lead">Each rule runs like a test. Five pass, one needs review, and two fail. The failures shape the answer as much as the passes.</p>
+            <div class="cs-tests">
+              <p class="cs-tests-head t-folio"><code>rules.run(parcel)</code><span>5 pass &middot; 1 review &middot; 2 fail</span></p>
+              <ol>
+                <li class="cs-t"><span class="cs-badge is-pass">Pass</span><code class="cs-rid">density.r3</code><span class="cs-res">1 home per 2,500 sq ft on a 50-ft lot. 8,750 ÷ 2,500 = 3.5, so 3 primary homes.</span><span class="cs-src t-note">San Mateo Code 27.22.040</span></li>
+                <li class="cs-t"><span class="cs-badge is-pass">Pass</span><code class="cs-rid">adu.conversion</code><span class="cs-res">At least 1 ADU inside non-living space. Both garages become one home.</span><span class="cs-src t-note">Gov. Code 66323</span></li>
+                <li class="cs-t"><span class="cs-badge is-pass">Pass</span><code class="cs-rid">adu.detached</code><span class="cs-res">1 detached ADU per existing unit, so 2.</span><span class="cs-src t-note">SB 1211</span></li>
+                <li class="cs-t"><span class="cs-badge is-pass">Pass</span><code class="cs-rid">adu.height</code><span class="cs-res">18 ft to the top plate, 24 ft to the peak. Each ADU gets 2 stories.</span><span class="cs-src t-note">San Mateo Code 27.19, 2026 update</span></li>
+                <li class="cs-t"><span class="cs-badge is-pass">Pass</span><code class="cs-rid">adu.parking</code><span class="cs-res">No replacement parking for a converted garage.</span><span class="cs-src t-note">Gov. Code 66322</span></li>
+                <li class="cs-t"><span class="cs-badge is-review">Review</span><code class="cs-rid">primary.third</code><span class="cs-res">A third primary home fits under the density cap. It needs normal zoning review, including parking.</span><span class="cs-src t-note">San Mateo Code 27.22</span></li>
+                <li class="cs-t"><span class="cs-badge is-fail">Fail</span><code class="cs-rid">sb684.small_lot</code><span class="cs-res">Up to 10 homes on a small multifamily lot, but not where tenants lived in the last 5 years.</span><span class="cs-src t-note">SB 684</span></li>
+                <li class="cs-t"><span class="cs-badge is-fail">Fail</span><code class="cs-rid">adu.detached.third</code><span class="cs-res">Legal once there are 3 primary homes. It does not fit inside the 4-ft setbacks.</span><span class="cs-src t-note">Site fit</span></li>
+              </ol>
+            </div>
+            <div class="cs-counts" role="img" aria-label="Homes on the lot: 2 today, 5 by right, 6 at most">
+              <div><b>2</b><span class="t-folio">Today</span></div>
+              <svg class="ico" viewBox="0 0 18 10" aria-hidden="true"><use href="#i-arrow"/></svg>
+              <div><b>5</b><span class="t-folio">By right</span></div>
+              <svg class="ico" viewBox="0 0 18 10" aria-hidden="true"><use href="#i-arrow"/></svg>
+              <div class="is-hot"><b>6</b><span class="t-folio">At most</span></div>
+            </div>
+            <p class="t-note">By right means city staff approve it with no hearing. The sixth home is the only one that goes through normal review.</p>
+          </div>
+          <aside class="cs-side" aria-label="What the law allows, as JSON">
+            <div class="cs-code" data-fold>
+              <div class="cs-code-bar fold-head"><h3>response.entitlements</h3><span aria-hidden="true">JSON</span></div>
+<pre tabindex="0" data-fold-body><code class="json">"entitlements": {
+  "primary_units_allowed": 3,
+  "conversion_adus": 1,
+  "detached_adus": 2,
+  "adu_height_ft": { "plate": 18, "peak": 24 },
+  "replacement_parking": false,
+  "needs_review": ["third_primary_unit"],
+  "blocked": ["sb684_small_lot", "third_detached_adu"],
+  "homes": { "today": 2, "by_right": 5, "max": 6 }
+}</code></pre>
+            </div>
+          </aside>
+        </div>
+      </section>
+      <!-- response.renders -->
+      <section class="cs-sec" id="renders" aria-labelledby="renders-h">
+        <div class="wrap cs-grid">
+          <div class="cs-main">
+            <header class="cs-head"><span class="cs-n" aria-hidden="true">03</span><div><p class="cs-key">response.renders</p><h2 class="cs-h2" id="renders-h">What it looks like</h2></div></header>
+            <p class="t-deck cs-lead">Rough massing, traced from an aerial photo and the county&rsquo;s square footage. Drag the model to turn it.</p>
+            <figure class="cs-fig">
+              <div class="plate">
+                <p class="plate-title"><span>Massing by scenario</span><span>Lot 50 &times; 175 ft</span></p>
+                <div class="cs-stage-bar">
+                  <div class="segmented" role="group" aria-label="Scenario">
+                    <button type="button" data-scen="today" aria-pressed="false"><span class="pip" aria-hidden="true"></span>Today <b>2</b></button>
+                    <button type="button" data-scen="by_right" aria-pressed="false"><span class="pip" aria-hidden="true"></span>By right <b>5</b></button>
+                    <button type="button" data-scen="max" aria-pressed="true"><span class="pip" aria-hidden="true"></span>Max <b>6</b></button>
+                  </div>
+                  <label class="cs-turn" for="turn"><span class="t-folio">Turn</span><span class="slider" id="turnSlider" style="--p: 0.233"><input type="range" id="turn" min="-60" max="60" step="1" value="-32"></span></label>
+                </div>
+                <div class="cs-axo" id="axoWrap">
+                  <svg id="axo" viewBox="0 0 1000 680" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Massing model of the lot at its most: 6 homes"></svg>
+                  <div class="cs-pins" id="axoPins" aria-hidden="true"></div>
+                </div>
+                <noscript><p class="t-note">The model, the site plan and the playground need JavaScript. Everything else on this page reads without it.</p></noscript>
+                <ul class="legend">
+                  <li><span class="cs-sw ex"></span>Existing</li>
+                  <li><span class="cs-sw cv"></span>Converted</li>
+                  <li><span class="cs-sw nw"></span>New</li>
+                  <li><span class="cs-sw lot"></span>Lot line</li>
+                </ul>
+              </div>
+              <figcaption class="t-caption fig-cap"><b>Fig. 1</b> Heights: the existing homes 16 ft, the upper unit 23 ft, the rear ADUs 24 ft to the peak.</figcaption>
+            </figure>
+            <figure class="cs-fig">
+              <div class="cs-plan" id="planWrap"><svg id="plan" role="img" aria-label="Site plan of the lot"></svg></div>
+              <figcaption class="t-caption fig-cap"><b>Fig. 2</b> <span id="planCap">Site plan. Gray dashes: 15-ft front setback. Orange dashes: 4-ft ADU setback.</span></figcaption>
+            </figure>
+            <table class="cs-table cs-homes" id="homes">
+              <caption class="t-kicker">The homes</caption>
+              <thead><tr><th scope="col" class="t-folio">#</th><th scope="col" class="t-folio">Home</th><th scope="col" class="t-folio">Type</th><th scope="col" class="t-folio n">Sq ft</th></tr></thead>
+              <tbody>
+                <tr data-in="today by_right max"><td><span class="cs-pinnum">1</span></td><td>Front unit</td><td>Existing</td><td class="n">1,088</td></tr>
+                <tr data-in="today by_right max"><td><span class="cs-pinnum">2</span></td><td>Back unit</td><td>Existing</td><td class="n">1,280</td></tr>
+                <tr data-in="by_right max"><td><span class="cs-pinnum is-new">3</span></td><td>Garage ADU</td><td>Conversion</td><td class="n">1,008</td></tr>
+                <tr data-in="by_right max"><td><span class="cs-pinnum is-new">4</span></td><td>Rear ADU, left</td><td>New, 2 stories</td><td class="n">1,008</td></tr>
+                <tr data-in="by_right max"><td><span class="cs-pinnum is-new">5</span></td><td>Rear ADU, right</td><td>New, 2 stories</td><td class="n">1,008</td></tr>
+                <tr data-in="max"><td><span class="cs-pinnum is-new">6</span></td><td>Upper unit</td><td>New primary home</td><td class="n">1,008</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <aside class="cs-side" aria-label="What it looks like, as JSON">
+            <div class="cs-code" data-fold>
+              <div class="cs-code-bar fold-head"><h3>response.renders</h3><span aria-hidden="true">JSON</span></div>
+<pre tabindex="0" data-fold-body><code class="json">"renders": {
+  "style": "axonometric_massing",
+  "scenarios": ["today", "by_right", "max"],
+  "homes": [
+    { "id": 1, "type": "existing", "sq_ft": 1088 },
+    { "id": 2, "type": "existing", "sq_ft": 1280 },
+    { "id": 3, "type": "conversion", "sq_ft": 1008 },
+    { "id": 4, "type": "detached", "stories": 2, "sq_ft": 1008 },
+    { "id": 5, "type": "detached", "stories": 2, "sq_ft": 1008 },
+    { "id": 6, "type": "primary", "only_in": "max", "sq_ft": 1008 }
+  ],
+  "heights_ft": {
+    "existing": 16, "upper_unit": 23, "rear_adus": 24
+  }
+}</code></pre>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- response.market -->
+      <section class="cs-sec" id="market" aria-labelledby="market-h">
+        <div class="wrap cs-grid">
+          <div class="cs-main">
+            <header class="cs-head"><span class="cs-n" aria-hidden="true">04</span><div><p class="cs-key">response.market</p><h2 class="cs-h2" id="market-h">What it rents for</h2></div></header>
+            <p class="t-deck cs-lead">Every home is priced at the upper third of San Mateo rents, $4.50 per sq ft a month. The city average was $4.26 in July 2026.</p>
+            <figure class="cs-fig">
+              <div class="plate">
+                <p class="plate-title"><span>Monthly rent, 2-bed homes</span><span>San Mateo</span></p>
+                <div class="cs-dots" style="--a: 7.5%; --b: 60.1%" role="img" aria-label="Monthly rents. San Mateo 2-bed rents run from $3,225 at the 25th percentile to $4,802 at the 75th. The ADUs rent for $4,536, unit 1 for $4,896, and unit 2 for $5,760.">
+                  <div class="cs-daxis"><span></span><span class="cs-dt"><span style="left: 0%">$3k</span><span style="left: 33.3%">$4k</span><span style="left: 66.7%">$5k</span><span style="left: 100%">$6k</span></span><span></span></div>
+                  <div class="cs-drow"><span class="cs-dl">2-bed, 25th percentile</span><span class="cs-dt"><i style="left: 7.5%"></i></span><span class="cs-dv">$3,225</span></div>
+                  <div class="cs-drow"><span class="cs-dl">2-bed, median</span><span class="cs-dt"><i style="left: 24.4%"></i></span><span class="cs-dv">$3,732</span></div>
+                  <div class="cs-drow"><span class="cs-dl">2-bed, upper third (est.)</span><span class="cs-dt"><i style="left: 47.7%"></i></span><span class="cs-dv">$4,430</span></div>
+                  <div class="cs-drow"><span class="cs-dl">2-bed, 75th percentile</span><span class="cs-dt"><i style="left: 60.1%"></i></span><span class="cs-dv">$4,802</span></div>
+                  <div class="cs-drow"><span class="cs-dl">2-bed house, 75th</span><span class="cs-dt"><i style="left: 66.7%"></i></span><span class="cs-dv">$5,000</span></div>
+                  <div class="cs-dgap"></div>
+                  <div class="cs-drow is-ours"><span class="cs-dl">ADUs 3, 4, 5</span><span class="cs-dt"><i style="left: 51.2%"></i></span><span class="cs-dv">$4,536</span></div>
+                  <div class="cs-drow is-ours"><span class="cs-dl">Unit 1</span><span class="cs-dt"><i style="left: 63.2%"></i></span><span class="cs-dv">$4,896</span></div>
+                  <div class="cs-drow is-ours is-warn"><span class="cs-dl">Unit 2</span><span class="cs-dt"><i style="left: 92%"></i></span><span class="cs-dv">$5,760</span></div>
+                </div>
+                <div class="cs-foot">
+                  <ul class="legend">
+                    <li><span class="cs-sw dot-q"></span>The market</li>
+                    <li><span class="cs-sw dot-o"></span>These homes</li>
+                    <li><span class="cs-sw band"></span>Middle half of 2-bed rents</li>
+                  </ul>
+                  <p class="takeaway"><b>$5,760</b> for unit 2, above the 75th percentile for any 2-bed in the city.</p>
+                </div>
+              </div>
+              <figcaption class="t-caption fig-cap"><b>Fig. 3</b> San Mateo 2-bed rents, January 2026. The upper-third figure is interpolated.</figcaption>
+            </figure>
+            <p class="cs-after-fig">Unit 2 is the weak point. Cap it at $5,000 and the yield falls from 6.4% to 6.1%.</p>
+            <p>Small apartment buildings in San Mateo trade at roughly 4% to 5.5% cap rates. A similar duplex on the same block listed at $2.6M in June 2026.</p>
+          </div>
+          <aside class="cs-side" aria-label="What it rents for, as JSON">
+            <div class="cs-code" data-fold>
+              <div class="cs-code-bar fold-head"><h3>response.market</h3><span aria-hidden="true">JSON</span></div>
+<pre tabindex="0" data-fold-body><code class="json">"market": {
+  "rent_basis": "upper_third",
+  "rent_psf_month": 4.50,
+  "city_avg_psf": 4.26,
+  "two_bed": { "p25": 3225, "median": 3732, "p75": 4802 },
+  "unit_rents": [4896, 5760, 4536, 4536, 4536],
+  "cap_rate_range": [0.04, 0.055],
+  "block_comp_ask": 2600000
+}</code></pre>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- response.underwriting -->
+      <section class="cs-sec" id="underwriting" aria-labelledby="underwriting-h">
+        <div class="wrap cs-grid">
+          <div class="cs-main">
+            <header class="cs-head"><span class="cs-n" aria-hidden="true">05</span><div><p class="cs-key">response.underwriting</p><h2 class="cs-h2" id="underwriting-h">The math for five homes</h2></div></header>
+            <p class="t-deck cs-lead">Buy at $1.58M, build three homes by right, rent all five.</p>
+            <div class="cs-ledgers">
+              <table class="cs-table">
+                <caption class="t-kicker">Income, per year</caption>
+                <tbody>
+                  <tr><td>Gross rent</td><td class="n">$291,168</td></tr>
+                  <tr class="is-neg"><td>Vacancy, 5%</td><td class="n">&minus;$14,558</td></tr>
+                  <tr><td>Effective income</td><td class="n">$276,610</td></tr>
+                  <tr class="is-neg"><td>Property tax, 1.27%</td><td class="n">&minus;$38,435</td></tr>
+                  <tr class="is-neg"><td>Insurance</td><td class="n">&minus;$10,000</td></tr>
+                  <tr class="is-neg"><td>Repairs</td><td class="n">&minus;$9,000</td></tr>
+                  <tr class="is-neg"><td>Water, sewer, trash</td><td class="n">&minus;$7,500</td></tr>
+                  <tr class="is-neg"><td>Reserves</td><td class="n">&minus;$1,500</td></tr>
+                  <tr class="is-neg"><td>Management, 5%</td><td class="n">&minus;$13,830</td></tr>
+                  <tr class="is-sum"><td>Net operating income</td><td class="n">$196,344</td></tr>
+                </tbody>
+              </table>
+              <table class="cs-table">
+                <caption class="t-kicker">Cost, all in</caption>
+                <tbody>
+                  <tr><td>Purchase</td><td class="n">$1,580,000</td></tr>
+                  <tr><td>Closing, 1.5%</td><td class="n">$23,700</td></tr>
+                  <tr><td>Garage ADU</td><td class="n">$275,000</td></tr>
+                  <tr><td>Two 2-story ADUs</td><td class="n">$950,000</td></tr>
+                  <tr><td>Refresh units 1 and 2</td><td class="n">$100,000</td></tr>
+                  <tr><td>Contingency, 10%</td><td class="n">$132,500</td></tr>
+                  <tr class="is-sum"><td>All-in cost</td><td class="n">$3,061,200</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <ul class="cs-figs">
+              <li class="is-hot"><b>6.4<small>%</small></b><span class="t-folio">Yield on cost</span></li>
+              <li><b>$3.93<small>M</small></b><span class="t-folio">Value at a 5% cap</span></li>
+              <li><b>$866<small>k</small></b><span class="t-folio">Value created</span></li>
+            </ul>
+            <figure class="cs-fig">
+              <div class="plate">
+                <p class="plate-title"><span>Yield on cost against the market and the money</span></p>
+                <div class="cs-dots" style="--a: 15.4%; --b: 38.5%" role="img" aria-label="Yield on cost of 6.4% sits above San Mateo cap rates of 4 to 5.5%, below a 6.75% loan rate and a 7.5% target.">
+                  <div class="cs-daxis"><span></span><span class="cs-dt"><span style="left: 0%">3%</span><span style="left: 30.8%">5%</span><span style="left: 61.5%">7%</span><span style="left: 92.3%">9%</span></span><span></span></div>
+                  <div class="cs-drow"><span class="cs-dl">Cap rates, San Mateo</span><span class="cs-dt"><b style="left: 15.4%; width: 23.1%"></b></span><span class="cs-dv">4 to 5.5%</span></div>
+                  <div class="cs-drow is-ours"><span class="cs-dl">Yield on cost</span><span class="cs-dt"><i style="left: 52.5%"></i></span><span class="cs-dv">6.4%</span></div>
+                  <div class="cs-drow is-soft"><span class="cs-dl">With fees and interest</span><span class="cs-dt"><i style="left: 40.6%"></i></span><span class="cs-dv">5.6%</span></div>
+                  <div class="cs-drow"><span class="cs-dl">Permanent loan rate</span><span class="cs-dt"><i style="left: 57.7%"></i></span><span class="cs-dv">6.75%</span></div>
+                  <div class="cs-drow"><span class="cs-dl">Target yield</span><span class="cs-dt"><i style="left: 69.2%"></i></span><span class="cs-dv">7.5%</span></div>
+                  <div class="cs-drow"><span class="cs-dl">Construction loan</span><span class="cs-dt"><i style="left: 92.3%"></i></span><span class="cs-dv">9.0%</span></div>
+                </div>
+                <div class="cs-foot">
+                  <p class="takeaway">The yield clears the cap rate, so the build creates value. It does not clear the cost of a loan, so debt adds no return.</p>
+                </div>
+              </div>
+              <figcaption class="t-caption fig-cap"><b>Fig. 4</b> Yield on cost is a year of net operating income over the all-in cost. Shaded: the cap rates small San Mateo apartment buildings trade at.</figcaption>
+            </figure>
+            <p class="cs-after-fig">A 7.5% yield needs a purchase price near $1.21M. Above about $2.26M, the build creates no value at all.</p>
+            <table class="cs-table cs-prices">
+              <caption class="t-kicker">What the price does</caption>
+              <thead><tr><th scope="col" class="t-folio">Purchase price</th><th scope="col" class="t-folio n">All-in</th><th scope="col" class="t-folio n">NOI</th><th scope="col" class="t-folio n">Yield</th></tr></thead>
+              <tbody>
+                <tr class="is-base"><td>$1.58M</td><td class="n">$3.06M</td><td class="n">$196k</td><td class="n">6.4%</td></tr>
+                <tr><td>$1.98M</td><td class="n">$3.47M</td><td class="n">$191k</td><td class="n">5.5%</td></tr>
+                <tr><td>$2.50M</td><td class="n">$4.00M</td><td class="n">$185k</td><td class="n">4.6%</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <aside class="cs-side" aria-label="The math for five homes, as JSON">
+            <div class="cs-code" data-fold>
+              <div class="cs-code-bar fold-head"><h3>response.underwriting</h3><span aria-hidden="true">JSON</span></div>
+<pre tabindex="0" data-fold-body><code class="json">"underwriting": {
+  "scenario": "by_right",
+  "homes": 5,
+  "gross_rent": 291168,
+  "opex_ratio": 0.29,
+  "noi": 196344,
+  "all_in_cost": 3061200,
+  "yield_on_cost": 0.0641,
+  "value_at_5_cap": 3926886,
+  "value_created": 865686,
+  "price_for_7_5_yield": 1205521,
+  "price_for_zero_value": 2262681
+}</code></pre>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- response.capital -->
+      <section class="cs-sec" id="capital" aria-labelledby="capital-h">
+        <div class="wrap cs-grid">
+          <div class="cs-main">
+            <header class="cs-head"><span class="cs-n" aria-hidden="true">06</span><div><p class="cs-key">response.capital</p><h2 class="cs-h2" id="capital-h">If I raised it</h2></div></header>
+            <p class="t-deck cs-lead">Same deal with outside money. A construction loan at 65% of cost and 9%. Investors get an 8% preferred return, then profit splits 70/30. Sell at month 24.</p>
+            <figure class="cs-fig">
+              <div class="plate">
+                <p class="plate-title"><span>Capital stack</span><span>Month 0 to 24</span></p>
+                <div class="cs-stack" role="img" aria-label="Capital stack: loan $2.26M, investor equity $1.10M, sponsor equity $122k, total $3.48M">
+                  <div class="is-debt" style="width: 65%">Loan $2.26M</div>
+                  <div class="is-lp" style="width: 31.5%">LPs $1.10M</div>
+                  <div class="is-gp" style="width: 3.5%"></div>
+                </div>
+                <div class="cs-stack-key">
+                  <p><b>$3.48M</b>Total project, with a 4% developer fee, $40k of legal and setup, and $224k of interest</p>
+                  <p><b>$1.22M</b>Equity: $1.10M from LPs, $122k from the GP</p>
+                </div>
+              </div>
+              <figcaption class="t-caption fig-cap"><b>Fig. 5</b> LPs are the outside investors. The GP, the general partner, runs the deal and puts in the last sliver, in orange.</figcaption>
+            </figure>
+            <ul class="cs-figs">
+              <li><b>$457<small>k</small></b><span class="t-folio">Profit at sale</span></li>
+              <li><b>17.2<small>%</small></b><span class="t-folio">Deal IRR</span></li>
+              <li class="is-hot"><b>14.6<small>%</small></b><span class="t-folio">LP net IRR, 1.31x</span></li>
+              <li><b>$237<small>k</small></b><span class="t-folio">GP take</span></li>
+            </ul>
+            <p>The GP take is a $122k developer fee, a $76k promote, and $38k earned on the GP&rsquo;s own $122k. About half of it is fee.</p>
+
+            <h3 class="t-kicker cs-h3">Minimum in for the GP</h3>
+            <ul class="cs-list">
+              <li>Co-invest: about $120k, which is 10% of the equity.</li>
+              <li>Cash at risk before LPs fund: $100k to $150k for the deposit, offering documents, design, and survey.</li>
+              <li>Lender test: a guarantor with net worth of 0.75 to 1.0 times the loan, and cash near 10% of it.</li>
+            </ul>
+
+            <h3 class="t-kicker cs-h3">Where it breaks</h3>
+            <ul class="cs-list">
+              <li>A 5.5% exit cap drops the deal IRR to 4.6%.</li>
+              <li>Median rents, $4.00 per sq ft, turn the profit into a loss.</li>
+              <li>Hold and refinance: the bank lends about $2.02M against a $2.10M construction payoff. The GP adds $79k, and LPs earn about 3% cash.</li>
+            </ul>
+
+            <figure class="cs-fig">
+              <div class="plate">
+                <p class="plate-title"><span>LP net IRR by purchase price</span></p>
+                <div class="cs-price-chart" id="priceChart" role="img" aria-label="LP net IRR by purchase price, with a 15% hurdle line: 31.1% at $1.20M, 22.1% at $1.40M, 14.6% at $1.58M, and below zero from $1.98M"></div>
+                <div class="cs-foot">
+                  <ul class="legend">
+                    <li><span class="cs-sw bar-g"></span>Clears 15%</li>
+                    <li><span class="cs-sw bar-q"></span>Under 15%</li>
+                    <li><span class="cs-sw bar-h"></span>A loss</li>
+                    <li><span class="cs-sw line-h"></span>15% hurdle</li>
+                  </ul>
+                  <p class="takeaway"><b>$1.50M</b> or less, and LPs clear the 15% bar.</p>
+                </div>
+              </div>
+              <figcaption class="t-caption fig-cap"><b>Fig. 6</b> Same model at each price. The dashed line is a 15% net return, a common bar for small ground-up deals.</figcaption>
+            </figure>
+          </div>
+          <aside class="cs-side" aria-label="If I raised it, as JSON">
+            <div class="cs-code" data-fold>
+              <div class="cs-code-bar fold-head"><h3>response.capital</h3><span aria-hidden="true">JSON</span></div>
+<pre tabindex="0" data-fold-body><code class="json">"capital": {
+  "total_project": 3481377,
+  "loan": { "ltc": 0.65, "rate": 0.09, "amount": 2262895 },
+  "equity": { "lp": 1096634, "gp": 121848 },
+  "pref": 0.08,
+  "split": { "lp": 0.70, "gp": 0.30 },
+  "exit": { "month": 24, "cap": 0.05 },
+  "deal_irr": 0.172,
+  "lp_irr": 0.146,
+  "lp_multiple": 1.31,
+  "gp_take": 236640,
+  "refi_gap": -78524
+}</code></pre>
+            </div>
+          </aside>
+        </div>
+      </section>
+      <!-- response.verdict -->
+      <section class="cs-sec" id="verdict" aria-labelledby="verdict-h">
+        <div class="wrap cs-grid">
+          <div class="cs-main">
+            <header class="cs-head"><span class="cs-n" aria-hidden="true">07</span><div><p class="cs-key">response.verdict</p><h2 class="cs-h2" id="verdict-h">The answer</h2></div></header>
+            <ol class="cs-verdict">
+              <li class="cs-v"><span class="cs-badge is-pass">Pass</span><h3>As a home</h3><p>Live in one unit and rent four. Net housing cost is about $6,100 a month at $1.58M.</p></li>
+              <li class="cs-v"><span class="cs-badge is-review">Thin</span><h3>As a sale</h3><p>17% deal IRR at $1.58M. Half a point on the exit cap erases most of it.</p></li>
+              <li class="cs-v"><span class="cs-badge is-pass">Pass</span><h3>For outside capital, at $1.40M or less</h3><p>LPs net about 22% at $1.40M, and the refinance returns cash.</p></li>
+              <li class="cs-v"><span class="cs-badge is-fail">Fail</span><h3>As a hold</h3><p>At today&rsquo;s rates the refinance returns no capital, and investors earn about 3% cash.</p></li>
+            </ol>
+            <p class="cs-close">The law already allows five homes here. The purchase price decides whether they get built. Next, the same call runs on every R3 lot in San Mateo, ranked by the price each one needs.<span class="end-mark" aria-hidden="true"></span></p>
+          </div>
+          <aside class="cs-side" aria-label="The answer, as JSON">
+            <div class="cs-code" data-fold>
+              <div class="cs-code-bar fold-head"><h3>response.verdict</h3><span aria-hidden="true">JSON</span></div>
+<pre tabindex="0" data-fold-body><code class="json">"verdict": {
+  "as_home": "pass",
+  "as_sale": "thin",
+  "outside_capital": "pass_at_or_below_1400000",
+  "hold_and_refi": "fail",
+  "owner_occupant_monthly": 6138,
+  "max_price": { "home": 1580000, "raise": 1400000 }
+}</code></pre>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- POST /v1/sites/underwrite -->
+      <section class="cs-sec" id="playground" aria-labelledby="playground-h">
+        <div class="wrap">
+          <header class="cs-head"><span class="cs-n" aria-hidden="true">08</span><div><p class="cs-key">POST /v1/sites/underwrite</p><h2 class="cs-h2" id="playground-h">Run your own numbers</h2></div></header>
+          <p class="t-deck cs-lead">Move the inputs and the response updates. It is the same model as above, for the five-home plan.</p>
+          <div class="cs-pg">
+            <div class="cs-pg-in">
+              <div class="cs-ctl">
+                <div class="cs-ctl-head"><label class="t-folio" for="inPrice">Purchase price</label><output id="oPrice" for="inPrice">$1,580,000</output></div>
+                <div class="slider" style="--p: 0.271"><input id="inPrice" type="range" min="1200000" max="2600000" step="10000" value="1580000"><div class="slider-scale" aria-hidden="true"><span>$1.2M</span><span>$2.6M</span></div></div>
+              </div>
+              <div class="cs-ctl">
+                <div class="cs-ctl-head"><label class="t-folio" for="inRent">Rent per sq ft, monthly</label><output id="oRent" for="inRent">$4.50</output></div>
+                <div class="slider" style="--p: 0.5"><input id="inRent" type="range" min="3.75" max="5.25" step="0.05" value="4.5"><div class="slider-scale" aria-hidden="true"><span>$3.75</span><span>$5.25</span></div></div>
+              </div>
+              <div class="cs-ctl">
+                <div class="cs-ctl-head"><label class="t-folio" for="inCap">Exit cap rate</label><output id="oCap" for="inCap">5.00%</output></div>
+                <div class="slider" style="--p: 0.5"><input id="inCap" type="range" min="4" max="6" step="0.05" value="5"><div class="slider-scale" aria-hidden="true"><span>4%</span><span>6%</span></div></div>
+              </div>
+              <div class="cs-ctl">
+                <div class="cs-ctl-head"><label class="t-folio" for="inCost">Build cost vs. estimate</label><output id="oCost" for="inCost">100%</output></div>
+                <div class="slider" style="--p: 0.455"><input id="inCost" type="range" min="75" max="130" step="5" value="100"><div class="slider-scale" aria-hidden="true"><span>75%</span><span>130%</span></div></div>
+              </div>
+              <button class="btn btn--outlined btn--sm cs-reset" type="button" id="pgReset">Reset to the case</button>
+              <ul class="cs-figs">
+                <li class="is-hot"><b><span id="tYoc">6.4</span><small>%</small></b><span class="t-folio">Yield on cost</span></li>
+                <li><b><span id="tCreated">$866</span><small>k</small></b><span class="t-folio">Value created</span></li>
+                <li><b><span id="tLp">14.6</span><small id="tLpUnit">%</small></b><span class="t-folio">LP net IRR</span></li>
+                <li><b><span id="tOwner">$6,138</span></b><span class="t-folio">Owner-occupant, monthly</span></li>
+              </ul>
+              <p class="visually-hidden" id="pgSay" aria-live="polite" aria-atomic="true"></p>
+            </div>
+            <div class="cs-pg-out">
+              <div class="cs-code">
+                <div class="cs-code-bar"><span class="cs-code-path"><b class="cs-pill cs-pill--ok">200 OK</b>underwrite</span><span aria-hidden="true">JSON</span></div>
+<pre tabindex="0" aria-label="The underwrite response, as JSON"><code class="json" id="pgOut">{
+  "inputs": {
+    "price": 1580000,
+    "rent_psf": 4.5,
+    "exit_cap": 0.05,
+    "build_cost": 1457500
+  },
+  "noi": 196344,
+  "all_in_cost": 3061200,
+  "yield_on_cost": 0.0641,
+  "value_created": 865686,
+  "raise": {
+    "deal_irr": 0.1725,
+    "lp_irr": 0.1455,
+    "gp_take": 236640,
+    "refi_gap": -78524
+  },
+  "owner_occupant_monthly": 6138,
+  "verdict": "pencils_as_home"
+}</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- response.trace -->
+      <section class="cs-sec" id="trace" aria-labelledby="trace-h">
+        <div class="wrap">
+          <header class="cs-head"><span class="cs-n" aria-hidden="true">09</span><div><p class="cs-key">response.trace</p><h2 class="cs-h2" id="trace-h">How the call ran</h2></div></header>
+          <p class="t-deck cs-lead">Ten steps, in order. Each one has a source you can check.</p>
+          <ol class="cs-trace">
+            <li><code>parcel.lookup</code><span class="r">APN 034-382-xxx, 8,750 sq ft, R3, built 1953.</span><span class="s t-note">County records</span></li>
+            <li><code>zoning.resolve</code><span class="r">1 home per 2,500 sq ft on a 50-ft lot, so 3 primary homes.</span><span class="s t-note"><a href="https://law.cityofsanmateo.org/us/ca/cities/san-mateo/code/27.22.040">San Mateo Code 27.22.040</a></span></li>
+            <li><code>law.overlay</code><span class="r">One garage ADU, two detached ADUs, 18-ft plate. SB 684 blocked by recent tenancy.</span><span class="s t-note"><a href="https://law.cityofsanmateo.org/us/ca/cities/san-mateo/code/27.19.070">San Mateo Code 27.19.070</a> &middot; <a href="https://www.smcgov.org/planning/sb-684sb-1123-small-lot-subdivision-and-housing-development">San Mateo County on SB 684</a></span></li>
+            <li><code>site.fit</code><span class="r">Footprint traced from an aerial photo. A seventh home fails the 4-ft setbacks.</span><span class="s t-note">Aerial photo, county square footage</span></li>
+            <li><code>massing.render</code><span class="r">Three scenarios, drawn as axonometric massing and a site plan.</span><span class="s t-note">Generated on this page</span></li>
+            <li><code>market.rents</code><span class="r">$4.50 per sq ft for the upper third. Cap rates of 4% to 5.5%.</span><span class="s t-note"><a href="https://www.zumper.com/rent-research/near-college-of-san-mateo-ca">Zumper</a> &middot; <a href="https://assets.rentometer.com/average-rent-in/ca/san-mateo-ca">Rentometer</a> &middot; <a href="https://rzadvisors.com/blog/rates-cap-rates-and-pricing-how-lower-borrowing-costs-can-reprice-bay-area-apartments">RZ Advisors</a></span></li>
+            <li><code>cost.estimate</code><span class="r">$1.46M to build: garage ADU $275k, two 2-story ADUs at $475k each, $100k of refresh, 10% contingency.</span><span class="s t-note"><a href="https://rhinobuilders1989.com/adu-construction-cost-in-bay-area-2026-what-homeowners-should-expect/">Rhino Builders, Bay Area ADU costs 2026</a></span></li>
+            <li><code>underwrite.noi</code><span class="r">NOI of $196k on $3.06M all in, a 6.4% yield on cost.</span><span class="s t-note">Model on this page</span></li>
+            <li><code>capital.structure</code><span class="r">65% loan to cost at 9%, 8% preferred return, 70/30 split, sale at month 24.</span><span class="s t-note"><a href="https://angelinvestorsnetwork.com/real-estate/real-estate-syndication-structure-gp-lp-returns">Angel Investors Network</a> &middot; <a href="https://c-loans.com/net-worth-to-loan-size-ratio">C-Loans</a></span></li>
+            <li><code>verdict</code><span class="r">Works as a home at $1.58M. Works for outside capital at $1.40M or less.</span><span class="s t-note">See response.verdict</span></li>
+          </ol>
+        </div>
+      </section>
+
+      <div class="wrap">
+        <footer class="cs-end">
+          <div>
+            <h2 class="t-kicker">Limits</h2>
+            <ul>
+              <li>The lot size and footprint come from an aerial photo, not a survey.</li>
+              <li>Rents, costs, and cap rates are estimates from public sources as of mid 2026.</li>
+              <li>San Mateo Planning would need to confirm ADU heights, tree limits, and parking for the third primary home.</li>
+              <li>The renders are rough massing, not a design.</li>
+              <li>The street number and the end of the parcel number are withheld. The owner and tenants did not ask to be in a case study.</li>
+            </ul>
+          </div>
+          <div>
+            <h2 class="t-kicker">Sources</h2>
+            <ul>
+              <li><a href="https://law.cityofsanmateo.org/us/ca/cities/san-mateo/code/27.22.040">San Mateo Code 27.22.040, R3 density</a></li>
+              <li><a href="https://law.cityofsanmateo.org/us/ca/cities/san-mateo/code/27.19.070">San Mateo Code 27.19.070, multifamily ADUs</a></li>
+              <li><a href="https://www.smcgov.org/planning/sb-684sb-1123-small-lot-subdivision-and-housing-development">San Mateo County, SB 684 and SB 1123</a></li>
+              <li><a href="https://www.zumper.com/rent-research/near-college-of-san-mateo-ca">Zumper, San Mateo rents</a></li>
+              <li><a href="https://assets.rentometer.com/average-rent-in/ca/san-mateo-ca">Rentometer, San Mateo rents by bedroom</a></li>
+              <li><a href="https://rzadvisors.com/blog/rates-cap-rates-and-pricing-how-lower-borrowing-costs-can-reprice-bay-area-apartments">RZ Advisors, Bay Area cap rates</a></li>
+              <li><a href="https://rhinobuilders1989.com/adu-construction-cost-in-bay-area-2026-what-homeowners-should-expect/">Rhino Builders, Bay Area ADU costs</a></li>
+              <li><a href="https://angelinvestorsnetwork.com/real-estate/real-estate-syndication-structure-gp-lp-returns">Angel Investors Network, syndication terms</a></li>
+              <li><a href="https://c-loans.com/net-worth-to-loan-size-ratio">C-Loans, net worth to loan size</a></li>
+            </ul>
+          </div>
+          <p class="t-note cs-fine">A case study built with an AI research agent. The figures are estimates. This page is not an offer to sell securities or a solicitation to invest.</p>
+        </footer>
+        <nav class="cs-way" aria-label="More in 01 Work">
+          <a class="btn btn--text" href="index.html#work">Read the cover story <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          <a class="btn btn--text" href="resume.html">The one-page résumé <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        </nav>
+        <div class="cs-frieze" aria-hidden="true"><svg viewBox="0 0 1200 280" preserveAspectRatio="xMidYMax slice"><use href="#art-street" width="1200" height="280"/></svg></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- chrome:colophon -->
+  <footer class="colophon">
+    <div class="checker" aria-hidden="true"></div>
+    <div class="wrap colophon-grid">
+      <div>
+        <h2>Ben Siverly</h2>
+        <p class="t-small t-quiet">Issue 01 &middot; Autumn 2026. Set in Fraunces, Newsreader and Instrument Sans.</p>
+        <p class="t-small colophon-consulting">Consulting: <a href="consulting.html">strategy and operations for small and mid-size companies and startups</a>.</p>
+      </div>
+      <div class="write">
+        <span class="t-folio">Write to me</span>
+        <button class="btn btn--outlined btn--sm" type="button" data-email="YmVuamFtaW5zaXZlcmx5QGdtYWlsLmNvbQ==" data-copy-email><span data-copy-label>Copy my email</span></button>
+        <a class="nojs-only btn btn--outlined btn--sm" href="https://www.linkedin.com/in/be-ns/" rel="noopener">Message me on LinkedIn</a>
+        <span class="copy-status t-note" aria-live="polite" aria-atomic="true"></span>
+        <p class="t-small">For agents: <a href="llms.txt">llms.txt</a></p>
+      </div>
+      <div><span class="t-folio">Elsewhere</span><ul class="t-small"><li><a href="https://www.linkedin.com/in/be-ns/" rel="noopener">LinkedIn</a></li><li><a href="https://github.com/be-ns" rel="noopener">GitHub</a></li><li><a href="Ben-Siverly-Resume-Proptech.pdf">Résumé, PDF</a></li></ul></div>
+      <div><span class="t-folio">Also</span><ul class="t-small"><li><a href="index.html#work" aria-current="true"><span class="num-o">01</span>Work</a></li><li><a href="index.html#method"><span class="num-o">02</span>Method</a></li><li><a href="index.html#workshop"><span class="num-o">03</span>Workshop</a></li><li><a href="index.html#writing"><span class="num-o">04</span>Writing</a></li><li><a href="kit.html">How this issue is made</a></li></ul></div>
+    </div>
+  </footer>
+  <!-- /chrome:colophon -->
+  <script>
+    // The case study's own script: the replayed call, the massing model and
+    // site plan, the LP chart and the playground. The deal math sits between
+    // MODEL START and MODEL END, and every figure on the page comes from it
+    // (test/case-study.test.js runs it and checks the page against it).
+    (() => {
+      'use strict';
+
+      const $ = (s, r = document) => r.querySelector(s);
+      const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const MINUS = '−';
+      const usd = (n) => (n < 0 ? MINUS : '') + '$' + Math.round(Math.abs(n)).toLocaleString('en-US');
+      const pct = (x, d = 1) => (isFinite(x) ? (x < 0 ? MINUS : '') + Math.abs(x * 100).toFixed(d) + '%' : 'n/a');
+      const num1 = (x) => (isFinite(x) ? (x < 0 ? MINUS : '') + Math.abs(x * 100).toFixed(1) : 'n/a');
+      const r4 = (x) => (isFinite(x) ? Math.round(x * 10000) / 10000 : null);
+
+      /* MODEL START: the deal math behind every number on this page */
+      const SF = [1088, 1280, 1008, 1008, 1008];        // homes 1 to 5
+      const SF_TOTAL = SF.reduce((a, b) => a + b, 0);
+      const TAX_RATE = 15327 / 1211292;                  // 2025 bill / 2025 assessed value
+      const BUILD = 1325000;                             // garage ADU 275k + two ADUs 950k + refresh 100k
+
+      function pmt(principal, rate, months = 360) {
+        const i = rate / 12;
+        return principal * i / (1 - Math.pow(1 + i, -months));
+      }
+      function opex(price, egi, buildAll, mgmt) {
+        return TAX_RATE * (price + buildAll) + 10000 + 9000 + 7500 + 1500 + (mgmt ? 0.05 * egi : 0);
+      }
+      function underwrite(p) {
+        const build = BUILD * p.cost, buildAll = build * 1.1;
+        const egi = SF_TOTAL * p.rent * 12 * 0.95;
+        const noi = egi - opex(p.price, egi, buildAll, true);
+        const allIn = p.price * 1.015 + buildAll;
+        return { egi, noi, allIn, buildAll, yoc: noi / allIn, value: noi / p.cap, created: noi / p.cap - allIn };
+      }
+      function ownerNet(p) {
+        const buildAll = BUILD * p.cost * 1.1;
+        const egi = (SF_TOTAL - SF[1]) * p.rent * 12 * 0.95;   // owner lives in home 2
+        return pmt(0.8 * p.price, 0.065) + pmt(buildAll, 0.075) + opex(p.price, egi, buildAll, false) / 12 - egi / 12;
+      }
+      function irr(flows) {
+        const f = r => flows.reduce((s, c, t) => s + c / Math.pow(1 + r, t), 0);
+        let lo = -0.99, hi = 2;
+        if (f(lo) * f(hi) > 0) return NaN;
+        for (let k = 0; k < 200; k++) {
+          const mid = (lo + hi) / 2;
+          if (f(lo) * f(mid) <= 0) hi = mid; else lo = mid;
+        }
+        return Math.pow(1 + (lo + hi) / 2, 12) - 1;
+      }
+      function raiseModel(p) {
+        const EXIT = 24, LTC = 0.65, RATE = 0.09, FEE = 0.04, PREF = 0.08, SPLIT = 0.30, GPC = 0.10;
+        const noi = underwrite(p).noi;
+        const build = BUILD * p.cost, cont = 0.1 * build;
+        const base = p.price * 1.015 + build + cont, fee = FEE * base, org = 40000;
+        let ig = 0, commit = LTC * (base + fee + org), uses, eqf, bal, usesSum;
+        for (let it = 0; it < 60; it++) {
+          uses = new Array(EXIT + 1).fill(0);
+          uses[0] += p.price * 1.015 + org + 0.015 * commit + 0.25 * fee;
+          for (let m = 7; m < 19; m++) uses[m] += (build + cont) / 12 + 0.75 * fee / 12;
+          const ops = new Array(EXIT + 1).fill(0);
+          for (let m = 1; m < 19; m++) ops[m] = (96000 - (TAX_RATE * p.price + 13000)) / 12;  // two existing units rented during the build
+          for (let m = 19; m < 22; m++) ops[m] = 0.5 * noi / 12;                                 // lease-up
+          for (let m = 22; m <= EXIT; m++) ops[m] = noi / 12;
+          usesSum = uses.reduce((a, b) => a + b, 0);
+          let eqLeft = usesSum + ig - commit, inte = 0;
+          bal = 0; eqf = new Array(EXIT + 1).fill(0);
+          for (let m = 0; m <= EXIT; m++) {
+            const i = bal * RATE / 12; inte += i;
+            const pay = Math.min(i, Math.max(ops[m], 0));
+            let need = uses[m] + (i - pay), left = ops[m] - pay;
+            if (m < 22) { need -= left; left = 0; }
+            const fromEq = Math.min(Math.max(need, 0), eqLeft);
+            eqLeft -= fromEq; eqf[m] -= fromEq; bal += need - fromEq;
+            if (m >= 22) eqf[m] += left;
+          }
+          if (Math.abs(inte - ig) < 1) break;
+          ig = inte; commit = LTC * (usesSum + ig);
+        }
+        const value = noi / p.cap;
+        eqf[EXIT] += value * 0.96 - bal;                  // sale, 4% costs, repay the loan
+        const contrib = eqf.map(x => Math.max(-x, 0)), dist = eqf.map(x => Math.max(x, 0));
+        const pr = Math.pow(1 + PREF, 1 / 12) - 1;
+        const lp = new Array(EXIT + 1).fill(0), gp = new Array(EXIT + 1).fill(0);
+        let owed = 0;
+        for (let m = 0; m <= EXIT; m++) {
+          owed *= 1 + pr; owed += contrib[m];
+          lp[m] -= contrib[m] * (1 - GPC); gp[m] -= contrib[m] * GPC;
+          let d = dist[m];
+          const t1 = Math.min(d, owed); owed -= t1; d -= t1;
+          lp[m] += t1 * (1 - GPC) + d * (1 - SPLIT) * (1 - GPC);
+          gp[m] += t1 * GPC + d * (1 - SPLIT) * GPC + d * SPLIT;
+        }
+        const sum = a => a.reduce((s, x) => s + x, 0);
+        const equity = sum(contrib);
+        const k = pmt(1, 0.0675) * 12;
+        const perm = Math.min(noi / 1.25 / k, 0.7 * value);
+        return {
+          total: usesSum + ig, commit, loan: bal, equity, fee, profit: sum(eqf),
+          dealIrr: irr(eqf), lpIrr: irr(lp),
+          lpMult: sum(lp.filter(x => x > 0)) / -sum(lp.filter(x => x < 0)),
+          gpProfit: sum(gp), gpTake: sum(gp) + fee, perm, refiGap: perm - bal
+        };
+      }
+      /* MODEL END */
+
+      /* JSON highlighting, in the issue's inks */
+      const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      function highlight(src) {
+        return esc(src).replace(/("(?:[^"\\\n]|\\.)*")(\s*:)?|(-?\b\d+(?:\.\d+)?(?:[eE][+-]?\d+)?\b)|\b(true|false|null)\b|([{}[\],])/g,
+          (m, str, colon, num, lit, punc) => {
+            if (str) return colon ? '<span class="tk">' + str + '</span>' + colon : '<span class="ts">' + str + '</span>';
+            if (num) return '<span class="tn">' + num + '</span>';
+            if (lit) return '<span class="tb">' + lit + '</span>';
+            return '<span class="tp">' + punc + '</span>';
+          });
+      }
+
+      /* The opener: replay the call */
+      function wireSend() {
+        const btn = $('#send'), out = $('#heroRes'), status = $('#status'), statusText = $('#statusText');
+        const lines = out.innerHTML.split('\n');
+        const steps = ['parcel.lookup', 'zoning.resolve', 'law.overlay', 'site.fit', 'massing.render', 'market.rents', 'cost.estimate', 'underwrite.noi', 'capital.structure', 'verdict'];
+        let running = false;
+        btn.addEventListener('click', () => {
+          if (running) return;
+          if (reduceMotion) { out.innerHTML = lines.join('\n'); return; }
+          running = true;
+          btn.setAttribute('aria-disabled', 'true');
+          out.innerHTML = '';
+          status.textContent = '…';
+          status.classList.add('is-pending');
+          let i = 0;
+          const tick = setInterval(() => {
+            statusText.textContent = steps[i] + '…';
+            i++;
+            if (i >= steps.length) {
+              clearInterval(tick);
+              let k = 0;
+              const stream = setInterval(() => {
+                k++;
+                out.innerHTML = lines.slice(0, k).join('\n');
+                if (k >= lines.length) {
+                  clearInterval(stream);
+                  status.textContent = '200 OK';
+                  status.classList.remove('is-pending');
+                  statusText.textContent = 'application/json';
+                  btn.removeAttribute('aria-disabled');
+                  running = false;
+                }
+              }, 70);
+            }
+          }, 180);
+        });
+      }
+
+      /* The massing model: plain SVG, inked from the page's --m-* tokens, so
+         it follows the edition and prints in Day without a redraw. */
+      const AXW = 1000, AXH = 680;
+      const ALL = ['today', 'by_right', 'max'];
+      const NEWB = ['by_right', 'max'];
+      const BASE = { x0: -8, x1: 58, y0: -30, y1: 183, z0: -3 };
+      const LIGHT = (() => { const v = [0.42, 0.55, -0.72], m = Math.hypot(...v); return v.map((x) => x / m); })();
+      const shade = (n) => 0.62 + 0.38 * Math.max(0, -(n[0] * LIGHT[0] + n[1] * LIGHT[1] + n[2] * LIGHT[2]));
+      const MAT = { existing: ['--m-existing', '--m-existing-roof'], conv: ['--m-conv', '--m-existing-roof'], new: ['--m-new', '--m-new-roof'] };
+      // A token darkened toward black by how little light the face catches.
+      const ink = (tok, f = 1) => (f >= 0.999 ? 'var(' + tok + ')' : 'color-mix(in srgb, var(' + tok + ') ' + (f * 100).toFixed(1) + '%, #000)');
+      // World units are feet. X runs across the lot (0 = left side seen from the street), Y runs back from the street, Z is up.
+      const BLOCKS = [
+        { id: 'front', x0: 5, x1: 37, y0: 20, y1: 54, z0: 0, h: 10, rh: 6, mat: 'existing', in: ALL, open: [
+          { f: 'y-', a: [8, 14], z: [3, 7] }, { f: 'y-', a: [18.5, 21.5], z: [0, 7], k: 'door' }, { f: 'y-', a: [26, 34], z: [3, 7] },
+          { f: 'x+', a: [25, 31], z: [3.5, 7] }, { f: 'x+', a: [41, 49], z: [3.5, 7] },
+          { f: 'x-', a: [28, 34], z: [3.5, 7] }, { f: 'x-', a: [42, 46], z: [4, 7] }] },
+        { id: 'garage', x0: 5, x1: 29, y0: 54, y1: 96, z0: 0, h: 9, rh: 5, roofIn: ['today', 'by_right'], mat: (s) => (s === 'today' ? 'existing' : 'conv'), in: ALL, open: [
+          { f: 'x+', a: [56.5, 72.5], z: [0, 7], k: 'gdoor', in: ['today'] }, { f: 'x+', a: [77.5, 93.5], z: [0, 7], k: 'gdoor', in: ['today'] },
+          { f: 'x+', a: [57, 63], z: [3, 6.5], in: NEWB }, { f: 'x+', a: [66, 69.5], z: [0, 7], k: 'door', in: NEWB },
+          { f: 'x+', a: [74, 82], z: [3, 6.5], in: NEWB }, { f: 'x+', a: [86, 92], z: [3, 6.5], in: NEWB }] },
+        { id: 'back', x0: 5, x1: 37, y0: 96, y1: 136, z0: 0, h: 10, rh: 6, mat: 'existing', in: ALL, open: [
+          { f: 'x+', a: [99, 105], z: [3.5, 7] }, { f: 'x+', a: [108, 111.5], z: [0, 7], k: 'door' }, { f: 'x+', a: [116, 124], z: [3, 7] }, { f: 'x+', a: [128, 133], z: [3.5, 7] },
+          { f: 'y+', a: [9, 17], z: [3, 7] }, { f: 'y+', a: [23, 32], z: [0, 7] },
+          { f: 'x-', a: [104, 110], z: [3.5, 7] }, { f: 'x-', a: [122, 128], z: [3.5, 7] }] },
+        { id: 'upper', x0: 5, x1: 29, y0: 54, y1: 96, z0: 9, h: 9, rh: 5, mat: 'new', in: ['max'], open: [
+          { f: 'x+', a: [57, 63], z: [3, 6.5] }, { f: 'x+', a: [67, 73], z: [3, 6.5] }, { f: 'x+', a: [77, 83], z: [3, 6.5] }, { f: 'x+', a: [87, 93], z: [3, 6.5] },
+          { f: 'x-', a: [62, 68], z: [3, 6.5] }, { f: 'x-', a: [80, 86], z: [3, 6.5] },
+          { f: 'y-', a: [10, 16], z: [3, 6.5] }, { f: 'y-', a: [19, 25], z: [3, 6.5] }] },
+        { id: 'aduL', x0: 4, x1: 22, y0: 143, y1: 171, z0: 0, h: 18, rh: 6, mat: 'new', in: NEWB, open: [
+          { f: 'y-', a: [6, 9.5], z: [0, 7], k: 'door' }, { f: 'y-', a: [12, 19], z: [3, 6.5] }, { f: 'y-', a: [6, 11], z: [11.5, 15] }, { f: 'y-', a: [14, 20], z: [11.5, 15] },
+          { f: 'x-', a: [150, 156], z: [3, 6.5] }, { f: 'x-', a: [160, 166], z: [11.5, 15] },
+          { f: 'x+', a: [148, 154], z: [3, 6.5] }, { f: 'x+', a: [158, 166], z: [11.5, 15] }] },
+        { id: 'aduR', x0: 28, x1: 46, y0: 143, y1: 171, z0: 0, h: 18, rh: 6, mat: 'new', in: NEWB, open: [
+          { f: 'y-', a: [30, 33.5], z: [0, 7], k: 'door' }, { f: 'y-', a: [36, 43], z: [3, 6.5] }, { f: 'y-', a: [30, 35], z: [11.5, 15] }, { f: 'y-', a: [38, 44], z: [11.5, 15] },
+          { f: 'x+', a: [150, 156], z: [3, 6.5] }, { f: 'x+', a: [160, 166], z: [11.5, 15] },
+          { f: 'x-', a: [148, 154], z: [3, 6.5] }, { f: 'x-', a: [158, 166], z: [11.5, 15] }] },
+      ];
+      const PINS = [
+        { unit: 1, at: [21, 37, 18], in: ALL },
+        { unit: 2, at: [21, 116, 18], in: ALL },
+        { tag: 'Garages', at: [33, 75, 4], in: ['today'] },
+        { unit: 3, at: [33, 75, 4.5], in: NEWB, add: true, block: 'garage' },
+        { unit: 4, at: [13, 157, 26], in: NEWB, add: true, block: 'aduL' },
+        { unit: 5, at: [37, 157, 26], in: NEWB, add: true, block: 'aduR' },
+        { unit: 6, at: [17, 75, 25], in: ['max'], add: true, block: 'upper' },
+        { lbl: '50 ft', at: [25, -4.5, 0], in: ALL },
+        { lbl: '175 ft', at: [55, 118, 0], in: ALL },
+        { street: 'Hobart Ave', at: [25, -18, 0], in: ALL },
+      ];
+      const SCENES = { today: 'today: 2 homes', by_right: 'by right: 5 homes', max: 'at its most: 6 homes' };
+      const axo = { th: -32, ph: 34, scen: 'max', grow: {} };
+      let pinEls = [];
+
+      function hull(points) {
+        const P = points.map((p) => [p[0], p[1]]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+        const cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+        const lo = [], up = [];
+        for (const p of P) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], p) <= 0) lo.pop(); lo.push(p); }
+        for (let i = P.length - 1; i >= 0; i--) { const p = P[i]; while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], p) <= 0) up.pop(); up.push(p); }
+        up.pop(); lo.pop();
+        return lo.concat(up);
+      }
+      function outward(p, c) {
+        const a = p[0], b = p[1], d = p[2];
+        const u = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], v = [d[0] - a[0], d[1] - a[1], d[2] - a[2]];
+        let n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
+        const m = Math.hypot(n[0], n[1], n[2]) || 1;
+        n = n.map((x) => x / m);
+        const cen = [0, 1, 2].map((i) => p.reduce((s, q) => s + q[i], 0) / p.length);
+        if ((cen[0] - c[0]) * n[0] + (cen[1] - c[1]) * n[1] + (cen[2] - c[2]) * n[2] < 0) n = n.map((x) => -x);
+        return n;
+      }
+      function boxFaces(x0, x1, y0, y1, z0, z1, top) {
+        const F = [
+          { f: 'y-', n: [0, -1, 0], p: [[x0, y0, z0], [x1, y0, z0], [x1, y0, z1], [x0, y0, z1]] },
+          { f: 'y+', n: [0, 1, 0], p: [[x1, y1, z0], [x0, y1, z0], [x0, y1, z1], [x1, y1, z1]] },
+          { f: 'x-', n: [-1, 0, 0], p: [[x0, y1, z0], [x0, y0, z0], [x0, y0, z1], [x0, y1, z1]] },
+          { f: 'x+', n: [1, 0, 0], p: [[x1, y0, z0], [x1, y1, z0], [x1, y1, z1], [x1, y0, z1]] },
+        ];
+        if (top) F.push({ f: 'top', n: [0, 0, 1], p: [[x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]] });
+        return F;
+      }
+      function ridge(x0, x1, y0, y1, zr) {
+        const W = x1 - x0, D = y1 - y0, xc = (x0 + x1) / 2, yc = (y0 + y1) / 2;
+        return D >= W ? [[xc, y0 + W / 2, zr], [xc, y1 - W / 2, zr]] : [[x0 + D / 2, yc, zr], [x1 - D / 2, yc, zr]];
+      }
+      function hipFaces(x0, x1, y0, y1, z, h) {
+        const o = 0.8; x0 -= o; x1 += o; y0 -= o; y1 += o;
+        const [r0, r1] = ridge(x0, x1, y0, y1, z + h);
+        const c = [(x0 + x1) / 2, (y0 + y1) / 2, z];
+        const faces = (y1 - y0) >= (x1 - x0)
+          ? [[[x0, y0, z], [x1, y0, z], r0], [[x1, y1, z], [x0, y1, z], r1], [[x1, y0, z], [x1, y1, z], r1, r0], [[x0, y1, z], [x0, y0, z], r0, r1]]
+          : [[[x0, y1, z], [x0, y0, z], r0], [[x1, y0, z], [x1, y1, z], r1], [[x0, y0, z], [x1, y0, z], r1, r0], [[x1, y1, z], [x0, y1, z], r0, r1]];
+        return faces.map((p) => ({ p, n: outward(p, c), roof: true }));
+      }
+      const roofOn = (B) => B.rh && (!B.roofIn || B.roofIn.includes(axo.scen));
+
+      function renderAxo() {
+        const th = axo.th * Math.PI / 180, ph = axo.ph * Math.PI / 180;
+        const ct = Math.cos(th), st = Math.sin(th), sp = Math.sin(ph), cp = Math.cos(ph);
+        const proj = (X, Y, Z) => {
+          const x = X - 25, y = Y - 87.5, xr = x * ct - y * st, yr = x * st + y * ct;
+          return [xr, -(yr * sp + Z * cp), yr * cp - Z * sp];
+        };
+        const visible = (n) => (n[0] * st + n[1] * ct) * cp - n[2] * sp < -1e-6;
+
+        // Fit the full max scenario so switching scenarios never rescales the view.
+        let mnx = Infinity, mxx = -Infinity, mny = Infinity, mxy = -Infinity;
+        const grow = (p) => { mnx = Math.min(mnx, p[0]); mxx = Math.max(mxx, p[0]); mny = Math.min(mny, p[1]); mxy = Math.max(mxy, p[1]); };
+        [BASE.x0, BASE.x1].forEach((X) => [BASE.y0, BASE.y1].forEach((Y) => { grow(proj(X, Y, 0)); grow(proj(X, Y, BASE.z0)); }));
+        BLOCKS.forEach((B) => [B.x0, B.x1].forEach((X) => [B.y0, B.y1].forEach((Y) => grow(proj(X, Y, B.z0 + B.h + B.rh)))));
+        const K = Math.min((AXW - 70) / (mxx - mnx), (AXH - 64) / (mxy - mny));
+        const OX = AXW / 2 - K * (mnx + mxx) / 2, OY = AXH / 2 - K * (mny + mxy) / 2;
+        const S = (X, Y, Z) => { const p = proj(X, Y, Z); return [OX + p[0] * K, OY + p[1] * K, p[2]]; };
+        const pts = (arr) => arr.map((p) => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+        const out = [];
+        const poly = (P3, fill, stroke = true) => out.push('<polygon points="' + pts(P3.map((q) => S(q[0], q[1], q[2]))) + '" style="fill:' + fill +
+          (stroke ? ';stroke:var(--m-edge);stroke-opacity:.5;stroke-width:1;stroke-linejoin:round' : '') + '"/>');
+        const flat = (x0, x1, y0, y1, fill, stroke) => poly([[x0, y0, 0], [x1, y0, 0], [x1, y1, 0], [x0, y1, 0]], fill, !!stroke);
+        const depth = (P3) => P3.reduce((s, q) => s + proj(q[0], q[1], q[2])[2], 0) / P3.length;
+
+        // Model base, street, lot
+        boxFaces(BASE.x0, BASE.x1, BASE.y0, BASE.y1, BASE.z0, 0, false).forEach((F) => { if (visible(F.n)) poly(F.p, ink('--m-board', shade(F.n))); });
+        flat(BASE.x0, BASE.x1, BASE.y0, BASE.y1, ink('--m-ground'), true);
+        flat(BASE.x0, BASE.x1, -27, -9, ink('--m-street'));
+        flat(BASE.x0, BASE.x1, -9, 0, ink('--m-walk'));
+        flat(0, 50, 0, 175, ink('--m-lot'));
+        const paved = ink('--m-paved');
+        flat(37, 50, 0, 96, paved); flat(29, 37, 54, 96, paved); flat(18, 22, 0, 20, paved);
+        if (axo.scen !== 'today') flat(41, 45, 96, 143, paved);
+
+        const present = BLOCKS.filter((B) => B.in.includes(axo.scen) && (axo.grow[B.id] ?? 1) > 0.002);
+
+        // Shadows on the ground
+        const sx = LIGHT[0] / -LIGHT[2], sy = LIGHT[1] / -LIGHT[2];
+        present.forEach((B) => {
+          const t = axo.grow[B.id] ?? 1, zt = B.z0 + B.h * t, g = [];
+          [B.x0, B.x1].forEach((X) => [B.y0, B.y1].forEach((Y) => { g.push(S(X + B.z0 * sx, Y + B.z0 * sy, 0)); g.push(S(X + zt * sx, Y + zt * sy, 0)); }));
+          if (roofOn(B)) ridge(B.x0, B.x1, B.y0, B.y1, zt + B.rh * t).forEach((r) => g.push(S(r[0] + r[2] * sx, r[1] + r[2] * sy, 0)));
+          out.push('<polygon points="' + pts(hull(g)) + '" style="fill:var(--m-edge);fill-opacity:.15"/>');
+        });
+
+        // Lot line
+        out.push('<polygon points="' + pts([[0, 0, 0], [50, 0, 0], [50, 175, 0], [0, 175, 0]].map((q) => S(q[0], q[1], q[2]))) +
+          '" style="fill:none;stroke:var(--m-line);stroke-width:2.6;stroke-linejoin:round"/>');
+
+        // Buildings, far to near
+        const drawOpening = (B, o, t) => {
+          const z0 = B.z0 + o.z[0] * t, z1 = B.z0 + o.z[1] * t, e = 0.12;
+          let q, n;
+          if (o.f === 'x+') { q = [[B.x1 + e, o.a[0], z0], [B.x1 + e, o.a[1], z0], [B.x1 + e, o.a[1], z1], [B.x1 + e, o.a[0], z1]]; n = [1, 0, 0]; }
+          else if (o.f === 'x-') { q = [[B.x0 - e, o.a[0], z0], [B.x0 - e, o.a[1], z0], [B.x0 - e, o.a[1], z1], [B.x0 - e, o.a[0], z1]]; n = [-1, 0, 0]; }
+          else if (o.f === 'y-') { q = [[o.a[0], B.y0 - e, z0], [o.a[1], B.y0 - e, z0], [o.a[1], B.y0 - e, z1], [o.a[0], B.y0 - e, z1]]; n = [0, -1, 0]; }
+          else { q = [[o.a[0], B.y1 + e, z0], [o.a[1], B.y1 + e, z0], [o.a[1], B.y1 + e, z1], [o.a[0], B.y1 + e, z1]]; n = [0, 1, 0]; }
+          const k = o.k || 'glass';
+          poly(q, k === 'glass' ? ink('--m-glass') : ink('--m-door', shade(n)));
+          if (k === 'gdoor') {
+            [0.25, 0.5, 0.75].forEach((fr) => {
+              const zz = z0 + (z1 - z0) * fr, a = S(q[0][0], q[0][1], zz), b = S(q[1][0], q[1][1], zz);
+              out.push('<line x1="' + a[0].toFixed(1) + '" y1="' + a[1].toFixed(1) + '" x2="' + b[0].toFixed(1) + '" y2="' + b[1].toFixed(1) + '" style="stroke:var(--m-edge);stroke-opacity:.35;stroke-width:1"/>');
+            });
+          }
+        };
+        present
+          .map((B) => ({ B, d: proj((B.x0 + B.x1) / 2, (B.y0 + B.y1) / 2, B.z0 + B.h / 2)[2] }))
+          .sort((a, b) => b.d - a.d)
+          .forEach(({ B }) => {
+            const t = axo.grow[B.id] ?? 1, z1 = B.z0 + B.h * t;
+            const [wTok, rTok] = MAT[typeof B.mat === 'function' ? B.mat(axo.scen) : B.mat];
+            const hasRoof = roofOn(B);
+            let faces = boxFaces(B.x0, B.x1, B.y0, B.y1, B.z0, z1, !hasRoof).map((F) => Object.assign(F, { tok: F.f === 'top' ? rTok : wTok }));
+            if (hasRoof) faces = faces.concat(hipFaces(B.x0, B.x1, B.y0, B.y1, z1, B.rh * t).map((F) => Object.assign(F, { tok: rTok })));
+            faces.filter((F) => visible(F.n)).map((F) => Object.assign(F, { d: depth(F.p) })).sort((a, b) => b.d - a.d).forEach((F) => {
+              poly(F.p, ink(F.tok, shade(F.n)));
+              if (F.f && F.f !== 'top' && B.open) B.open.filter((o) => o.f === F.f && (!o.in || o.in.includes(axo.scen))).forEach((o) => drawOpening(B, o, t));
+            });
+          });
+
+        $('#axo').innerHTML = out.join('');
+
+        // HTML labels keep a readable size at any screen width.
+        pinEls.forEach(({ p, el }) => {
+          const on = p.in.includes(axo.scen);
+          el.hidden = !on;
+          if (!on) return;
+          const s = S(p.at[0], p.at[1], p.at[2]);
+          el.style.left = (s[0] / AXW * 100).toFixed(2) + '%';
+          el.style.top = (s[1] / AXH * 100).toFixed(2) + '%';
+          el.style.opacity = p.block && (axo.grow[p.block] ?? 1) < 1 ? '0' : '1';
+        });
+      }
+
+      /* The site plan: the street at the left on wide screens, at the foot on phones. */
+      function renderPlan() {
+        const wrap = $('#planWrap'), svg = $('#plan'), s = axo.scen;
+        const land = wrap.clientWidth >= 560;
+        const T = land ? (X, Y) => [Y + 36, X + 13] : (X, Y) => [X + 13, 175 - Y + 13];
+        const fs = land ? 4.2 : 3.6, pr = land ? 4.4 : 3.8;
+        const f2 = (n) => n.toFixed(2);
+        const o = [];
+        const R = (x0, x1, y0, y1, cls) => {
+          const a = T(x0, y0), b = T(x1, y1);
+          o.push('<rect x="' + f2(Math.min(a[0], b[0])) + '" y="' + f2(Math.min(a[1], b[1])) + '" width="' + f2(Math.abs(a[0] - b[0])) + '" height="' + f2(Math.abs(a[1] - b[1])) + '" class="' + cls + '"/>');
+        };
+        const L = (P, cls) => o.push('<polyline points="' + P.map((p) => T(p[0], p[1]).map(f2).join(',')).join(' ') + '" class="' + cls + '"/>');
+        const text = (X, Y, str, cls, rot, size) => {
+          const [u, v] = T(X, Y);
+          o.push('<text x="' + f2(u) + '" y="' + f2(v) + '" class="' + cls + '" font-size="' + (size || fs) + '" text-anchor="middle" dominant-baseline="central"' +
+            (rot ? ' transform="rotate(' + rot + ' ' + f2(u) + ' ' + f2(v) + ')"' : '') + '>' + str + '</text>');
+        };
+        const pin = (X, Y, n, add) => {
+          const [u, v] = T(X, Y);
+          o.push('<circle cx="' + f2(u) + '" cy="' + f2(v) + '" r="' + pr + '" class="p-pin' + (add ? ' is-new' : '') + '"/>');
+          o.push('<text x="' + f2(u) + '" y="' + f2(v) + '" class="p-pnum' + (add ? ' is-new' : '') + '" font-size="' + fs + '" text-anchor="middle" dominant-baseline="central">' + n + '</text>');
+        };
+        const dimLine = (a, b, label, tx, ty, rot) => {
+          L([a, b], 'p-dim');
+          const A = T(a[0], a[1]), B = T(b[0], b[1]);
+          const horizontal = Math.abs(A[1] - B[1]) < 0.01;
+          [A, B].forEach((P) => o.push(horizontal
+            ? '<line x1="' + f2(P[0]) + '" y1="' + f2(P[1] - 1.6) + '" x2="' + f2(P[0]) + '" y2="' + f2(P[1] + 1.6) + '" class="p-dim"/>'
+            : '<line x1="' + f2(P[0] - 1.6) + '" y1="' + f2(P[1]) + '" x2="' + f2(P[0] + 1.6) + '" y2="' + f2(P[1]) + '" class="p-dim"/>'));
+          text(tx, ty, label, 'p-tf', rot);
+        };
+
+        o.push('<defs><pattern id="cs-hatch" width="2.2" height="2.2" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="2.2" class="p-hatch"/></pattern></defs>');
+        R(-13, 63, -30, -9, 'p-street');
+        R(-13, 63, -9, 0, 'p-walk');
+        R(0, 50, 0, 175, 'p-lot');
+        R(37, 50, 0, 96, 'p-paved'); R(29, 37, 54, 96, 'p-paved'); R(18, 22, 0, 20, 'p-paved');
+        if (s !== 'today') R(41, 45, 96, 143, 'p-paved');
+        L([[0, 15], [50, 15]], 'p-set');
+        if (s !== 'today') L([[4, 136], [4, 171], [46, 171], [46, 136]], 'p-aduset');
+        R(5, 37, 20, 54, 'p-ex p-bld');
+        R(5, 29, 54, 96, (s === 'today' ? 'p-ex' : 'p-cv') + ' p-bld');
+        R(5, 37, 96, 136, 'p-ex p-bld');
+        if (s === 'max') R(5, 29, 54, 96, 'p-upper');
+        if (s !== 'today') { R(4, 22, 143, 171, 'p-nw p-bld'); R(28, 46, 143, 171, 'p-nw p-bld'); }
+        R(0, 50, 0, 175, 'p-lotline');
+        pin(21, 37, 1); pin(21, 116, 2);
+        if (s === 'today') text(17, 75, 'garages', 'p-t', land ? 0 : -90);
+        else pin(17, s === 'max' ? 66 : 75, 3, true);
+        if (s === 'max') pin(17, 86, 6, true);
+        if (s !== 'today') { pin(13, 157, 4, true); pin(37, 157, 5, true); }
+        text(25, -19.5, 'HOBART AVE', 'p-t', land ? -90 : 0);
+        dimLine([55, 0], [55, 175], '175 ft', 59, 87.5, land ? 0 : -90);
+        dimLine([0, 180], [50, 180], '50 ft', 25, 184, land ? -90 : 0);
+
+        svg.setAttribute('viewBox', land ? '0 0 226 76' : '0 0 76 226');
+        svg.innerHTML = o.join('');
+        svg.setAttribute('aria-label', 'Site plan of the lot, ' + SCENES[s]);
+        $('#planCap').textContent = 'Site plan, street at ' + (land ? 'left' : 'bottom') + '. Gray dashes: 15-ft front setback.' + (s === 'today' ? '' : ' Orange dashes: 4-ft ADU setback.') + (s === 'max' ? ' Hatching: the upper unit over the garage ADU.' : '');
+      }
+
+      function setScenario(s, animate) {
+        const prev = axo.scen;
+        axo.scen = s;
+        $$('[data-scen]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.scen === s)));
+        $$('#homes tbody tr').forEach((tr) => tr.classList.toggle('is-off', !tr.dataset.in.split(' ').includes(s)));
+        $('#axo').setAttribute('aria-label', 'Massing model of the lot ' + SCENES[s]);
+        renderPlan();
+        const fresh = BLOCKS.filter((B) => B.in.includes(s) && !B.in.includes(prev));
+        if (!animate || reduceMotion || !fresh.length) { axo.grow = {}; renderAxo(); return; }
+        const t0 = performance.now();
+        fresh.forEach((B) => { axo.grow[B.id] = 0; });
+        const step = (now) => {
+          if (axo.scen !== s) return;
+          let done = true;
+          fresh.forEach((B, i) => {
+            const k = Math.min(1, Math.max(0, (now - t0 - i * 160) / 650));
+            axo.grow[B.id] = 1 - Math.pow(1 - k, 3);
+            if (k < 1) done = false;
+          });
+          if (done) axo.grow = {};
+          renderAxo();
+          if (!done) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      }
+
+      function wireRenders() {
+        const overlay = $('#axoPins');
+        pinEls = PINS.map((p) => {
+          const el = document.createElement('span');
+          if (p.unit) { el.className = 'cs-pin' + (p.add ? ' is-new' : ''); el.textContent = p.unit; }
+          else if (p.tag) { el.className = 'cs-lbl is-tag'; el.textContent = p.tag; }
+          else if (p.street) { el.className = 'cs-lbl is-street'; el.textContent = p.street; }
+          else { el.className = 'cs-lbl'; el.textContent = p.lbl; }
+          overlay.appendChild(el);
+          return { p, el };
+        });
+        $$('[data-scen]').forEach((b) => b.addEventListener('click', () => { if (b.dataset.scen !== axo.scen) setScenario(b.dataset.scen, true); }));
+        const turn = $('#turn'), slider = $('#turnSlider'), wrap = $('#axoWrap');
+        const setTurn = (deg) => {
+          axo.th = Math.max(-60, Math.min(60, deg));
+          slider.style.setProperty('--p', ((axo.th + 60) / 120).toFixed(4));
+          renderAxo();
+        };
+        turn.addEventListener('input', () => setTurn(+turn.value));
+        let drag = null;
+        wrap.addEventListener('pointerdown', (e) => {
+          if (e.button !== 0) return;
+          drag = { x: e.clientX, th: axo.th };
+          try { wrap.setPointerCapture(e.pointerId); } catch (err) { /* older browsers */ }
+          wrap.classList.add('is-drag');
+        });
+        wrap.addEventListener('pointermove', (e) => {
+          if (!drag) return;
+          setTurn(drag.th + (e.clientX - drag.x) / wrap.clientWidth * 120);
+          turn.value = Math.round(axo.th);
+        });
+        const end = () => { drag = null; wrap.classList.remove('is-drag'); };
+        wrap.addEventListener('pointerup', end);
+        wrap.addEventListener('pointercancel', end);
+        let lastLand = null;
+        const onResize = () => { const land = $('#planWrap').clientWidth >= 560; if (land !== lastLand) { lastLand = land; renderPlan(); } };
+        if (window.ResizeObserver) new ResizeObserver(onResize).observe($('#planWrap'));
+        else window.addEventListener('resize', onResize);
+      }
+
+      /* LP return by purchase price, from the same model */
+      function buildPriceChart() {
+        const prices = [1200000, 1300000, 1400000, 1500000, 1580000, 1700000, 1800000, 1980000];
+        const rows = prices.map((price) => ({ price, v: raiseModel({ price, rent: 4.5, cap: 0.05, cost: 1 }).lpIrr }));
+        const lo = -0.1, hi = Math.max(0.4, Math.ceil((Math.max(...rows.map((r) => r.v)) + 0.03) * 20) / 20);
+        const X = (v) => ((v - lo) / (hi - lo) * 100).toFixed(2);
+        let h = '<div class="cs-paxis"><span></span><span class="cs-pt">' +
+          [[-0.1, MINUS + '10%'], [0, '0%'], [0.15, '15%'], [0.3, '30%']].map(([v, t]) => '<span style="left:' + X(v) + '%">' + t + '</span>').join('') +
+          '</span><span></span></div>';
+        rows.forEach((r) => {
+          const a = +X(Math.min(0, r.v)), b = +X(Math.max(0, r.v));
+          const cls = r.v < 0 ? 'is-neg' : r.v >= 0.15 ? 'is-clear' : '';
+          h += '<div class="cs-prow' + (r.price === 1580000 ? ' is-base' : '') + '"><span class="cs-pl">$' + (r.price / 1e6).toFixed(2) + 'M</span>' +
+            '<span class="cs-pt"><b class="zero" style="left:' + X(0) + '%"></b><b class="hurdle" style="left:' + X(0.15) + '%"></b>' +
+            '<i class="' + cls + '" style="left:' + a + '%;width:' + Math.max(0.6, b - a).toFixed(2) + '%"></i></span>' +
+            '<span class="cs-pv">' + pct(r.v) + '</span></div>';
+        });
+        $('#priceChart').innerHTML = h;
+      }
+
+      /* The playground: the same model, live */
+      function wirePlayground() {
+        const ins = { price: $('#inPrice'), rent: $('#inRent'), cap: $('#inCap'), cost: $('#inCost') };
+        const setP = (el) => el.parentElement.style.setProperty('--p', ((el.value - el.min) / (el.max - el.min)).toFixed(4));
+        let queued = false, sayTimer = 0;
+        const run = (announce) => {
+          queued = false;
+          Object.values(ins).forEach(setP);
+          const p = { price: +ins.price.value, rent: +ins.rent.value, cap: +ins.cap.value / 100, cost: +ins.cost.value / 100 };
+          $('#oPrice').textContent = usd(p.price);
+          $('#oRent').textContent = '$' + p.rent.toFixed(2);
+          $('#oCap').textContent = (p.cap * 100).toFixed(2) + '%';
+          $('#oCost').textContent = ins.cost.value + '%';
+          const u = underwrite(p), r = raiseModel(p), own = ownerNet(p);
+          const verdict = r.lpIrr >= 0.15 ? 'raise_ready' : u.created > 0 ? 'pencils_as_home' : 'does_not_pencil';
+          const out = {
+            inputs: { price: p.price, rent_psf: p.rent, exit_cap: r4(p.cap), build_cost: Math.round(u.buildAll) },
+            noi: Math.round(u.noi),
+            all_in_cost: Math.round(u.allIn),
+            yield_on_cost: r4(u.yoc),
+            value_created: Math.round(u.created),
+            raise: { deal_irr: r4(r.dealIrr), lp_irr: r4(r.lpIrr), gp_take: Math.round(r.gpTake), refi_gap: Math.round(r.refiGap) },
+            owner_occupant_monthly: Math.round(own),
+            verdict,
+          };
+          $('#pgOut').innerHTML = highlight(JSON.stringify(out, null, 2));
+          const created = (u.created < 0 ? MINUS : '') + '$' + Math.round(Math.abs(u.created) / 1000).toLocaleString('en-US');
+          $('#tYoc').textContent = num1(u.yoc);
+          $('#tCreated').textContent = created;
+          $('#tLp').textContent = num1(r.lpIrr);
+          $('#tLpUnit').classList.toggle('is-gone', !isFinite(r.lpIrr));
+          $('#tOwner').textContent = usd(own);
+          if (!announce) return;
+          clearTimeout(sayTimer);
+          sayTimer = setTimeout(() => {
+            $('#pgSay').textContent = 'Yield on cost ' + pct(u.yoc) + '. Value created ' + created + 'k. LP net IRR ' + pct(r.lpIrr) +
+              '. Owner-occupant ' + usd(own) + ' a month. Verdict: ' + verdict.replace(/_/g, ' ') + '.';
+          }, 700);
+        };
+        const schedule = () => { if (!queued) { queued = true; requestAnimationFrame(() => run(true)); } };
+        Object.values(ins).forEach((el) => el.addEventListener('input', schedule));
+        $('#pgReset').addEventListener('click', () => { ins.price.value = 1580000; ins.rent.value = 4.5; ins.cap.value = 5; ins.cost.value = 100; run(true); });
+        run(false);
+      }
+
+      /* Boot */
+      $$('code.json').forEach((el) => { el.innerHTML = highlight(el.textContent); });
+      wireSend();
+      wireRenders();
+      setScenario('max', false);
+      buildPriceChart();
+      wirePlayground();
+    })();
+  </script>
+  <!-- chrome:script -->
+  <script>
+    // Chrome: the Night and Day words, the menu sheet, the phone disclosures,
+    // the copy-email button and the masthead wordmark. Stamped by build-pages.js.
+    (function () {
+      const root = document.documentElement;
+
+      // Edition. Paper inserts turn charcoal in Day through tokens.css, not here.
+      const choices = document.querySelectorAll('[data-edition-choice]');
+      const themeColor = document.querySelector('meta[name="theme-color"]');
+      const apply = (edition) => {
+        root.dataset.edition = edition;
+        choices.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.editionChoice === edition)));
+        const ground = getComputedStyle(root).getPropertyValue('--ground').trim();
+        if (themeColor && ground) themeColor.setAttribute('content', ground);
+      };
+      apply(root.dataset.edition === 'day' ? 'day' : 'night');
+      choices.forEach((b) => b.addEventListener('click', () => {
+        apply(b.dataset.editionChoice);
+        try { localStorage.setItem('edition', b.dataset.editionChoice); } catch (err) { /* storage blocked */ }
+      }));
+
+      // Menu sheet: a native modal dialog. Escape, the close button and a tap on
+      // the scrim close it, and focus goes back to Menu. A link closes it too;
+      // when the link is to a section of this page, focus moves to that section
+      // once the sheet has closed, so the next Tab carries on from there.
+      const sheet = document.getElementById('menu');
+      const opener = document.querySelector('[data-menu-open]');
+      if (sheet && opener && typeof sheet.showModal === 'function') {
+        let target = null;
+        opener.addEventListener('click', () => { sheet.showModal(); opener.setAttribute('aria-expanded', 'true'); });
+        sheet.addEventListener('close', () => {
+          opener.setAttribute('aria-expanded', 'false');
+          const to = target;
+          target = null;
+          if (to) {
+            // Focusable for this one visit, without a ring around the section.
+            if (!to.hasAttribute('tabindex')) {
+              to.setAttribute('tabindex', '-1');
+              to.setAttribute('data-sheet-target', '');
+              to.addEventListener('blur', () => { to.removeAttribute('tabindex'); to.removeAttribute('data-sheet-target'); }, { once: true });
+            }
+            to.focus({ preventScroll: true });
+            return;
+          }
+          if (document.activeElement === document.body || sheet.contains(document.activeElement)) opener.focus({ preventScroll: true });
+        });
+        // A tap on the sheet's own padding lands on the dialog too, so test the point.
+        sheet.addEventListener('click', (e) => {
+          const r = sheet.getBoundingClientRect();
+          const outside = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+          const link = e.target.closest('a');
+          if (link && !e.defaultPrevented && (link.getAttribute('href') || '').startsWith('#')) target = document.getElementById(decodeURIComponent(link.hash.slice(1)));
+          if ((e.target === sheet && outside) || link || e.target.closest('[data-menu-close]')) sheet.close();
+        });
+      }
+
+      // Phones: each [data-fold] block closes into a list row. Its title gets a
+      // disclosure button; from 600px up the button is taken out again.
+      const phone = window.matchMedia('(max-width: 599px)');
+      const folds = [...document.querySelectorAll('[data-fold]')];
+      const setOpen = (block, open) => {
+        block.querySelector('.fold-btn').setAttribute('aria-expanded', String(open));
+        block.classList.toggle('is-closed', !open);
+        block.querySelector('[data-fold-body]').hidden = !open;
+      };
+      const fold = () => folds.forEach((block, i) => {
+        const title = block.querySelector('.fold-head h3');
+        const body = block.querySelector('[data-fold-body]');
+        if (!title || !body) return;
+        let button = title.querySelector('.fold-btn');
+        if (phone.matches && !button) {
+          if (!body.id) body.id = `fold-${i + 1}`;
+          button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'fold-btn';
+          button.setAttribute('aria-controls', body.id);
+          button.append(...title.childNodes);
+          button.insertAdjacentHTML('beforeend', '<svg class="fold-chev" aria-hidden="true"><use href="#i-chev"/></svg>');
+          button.addEventListener('click', () => setOpen(block, button.getAttribute('aria-expanded') !== 'true'));
+          title.append(button);
+          setOpen(block, false);
+        } else if (!phone.matches && button) {
+          button.querySelector('.fold-chev').remove();
+          title.append(...button.childNodes);
+          button.remove();
+          block.classList.remove('is-closed');
+          body.hidden = false;
+        }
+      });
+      fold();
+      phone.addEventListener('change', fold);
+
+      // Copy email: the address sits base64-encoded in data-email. A page can
+      // carry more than one button (the colophon's, a page's own ask); each
+      // reports in the status line beside it.
+      document.querySelectorAll('[data-copy-email]').forEach((copyButton) => {
+        const label = copyButton.querySelector('[data-copy-label]');
+        const original = label.textContent;
+        const status = copyButton.parentElement.querySelector('.copy-status');
+        const say = (message) => { if (status) status.textContent = message; };
+        let reset = 0;
+        const copied = (email) => {
+          clearTimeout(reset);
+          label.textContent = 'Copied';
+          reset = setTimeout(() => { label.textContent = original; }, 2000);
+          say(`${email} is ready to paste.`);
+        };
+        copyButton.addEventListener('click', () => {
+          let email = '';
+          try { email = atob(copyButton.dataset.email || ''); } catch (err) { email = ''; }
+          if (!email) { say('Couldn\u2019t find the email address.'); return; }
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(email).then(() => copied(email), () => say(`Copy didn\u2019t work. The address is ${email}.`));
+            return;
+          }
+          say(`The address is ${email}.`);
+        });
+      });
+
+      // On a page with a cover, the masthead wordmark waits for the nameplate
+      // to scroll away.
+      const masthead = document.querySelector('.masthead');
+      const nameplate = document.querySelector('.nameplate');
+      if (masthead && nameplate && 'IntersectionObserver' in window) {
+        new IntersectionObserver(([entry]) => {
+          masthead.toggleAttribute('data-cover-gone', !entry.isIntersecting);
+        }, { rootMargin: '-56px 0px 0px 0px' }).observe(nameplate);
+      }
+    })();
+  </script>
+  <!-- /chrome:script -->
+</body>
+</html>

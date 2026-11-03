@@ -71,6 +71,7 @@ const SITE_URL = 'https://bensiverly.com';
 // Departments: the field, its edition and its numeral.
 const DEPTS = {
   cover: { field: 'field-spot', edition: 'night', num: '', name: 'The issue' },
+  work: { field: 'field-spot', edition: 'night', num: '01', name: 'Work' },
   workshop: { field: 'field-leaf', edition: 'night', num: '03', name: 'Workshop' },
   writing: { field: 'paper', edition: 'day', num: '04', name: 'Writing' },
   band: { field: 'field-spot', edition: 'night', num: '04', name: 'Writing' },
@@ -113,6 +114,14 @@ const CARDS = [
     art: ['street', '150 30 230 240'], artAlt: 'an apartment building with one window lit orange',
     rail: ['AppFolio', 'Lively', 'Oracle'],
     what: 'Ben Siverly’s résumé',
+  },
+  {
+    file: 'og-housing-as-an-api-call.png', page: 'housing-as-an-api-call.html', dept: 'work', style: 'display',
+    kicker: 'Case study · San Mateo', title: 'Housing as an API call',
+    line: 'One address in. What the law allows, what it looks like, and whether the money works.',
+    art: ['street', '336 0 244 280'], artAlt: 'a gabled house between a tree and an apartment building',
+    seal: ['2', '5', 'Homes by right'], sealAt: 'right: -24px; top: -40px',
+    what: 'a case study by Ben Siverly',
   },
   {
     file: 'og-native-plant-finder.png', page: 'native-plant-finder.html', dept: 'workshop', style: 'display',

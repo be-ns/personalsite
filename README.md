@@ -85,6 +85,7 @@ service-of-life.html
 memorial-preferences.html
 decision-assist.html
 writings.html              Poetry and prose
+housing-as-an-api-call.html A case study in 01 Work: one parcel from zoning to a capital stack, the model running in the page
 resume.html                One-page resume on proof stock, with its four PDFs
 render-resume-pdf.js       Prints the four resume PDFs and checks them: one Letter page, the site's fonts, reading order
 assets/native-plants/      Static JSON datasets: plants, regions, nurseries, ZIP index

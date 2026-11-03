@@ -145,7 +145,8 @@ WebMCP tools:
 
 ## About
 
-- [Home](https://bensiverly.com/): set as an issue of a magazine. The cover and contents, In brief (five numbers, each with its source), then 01 Work (rental applications and payments at AppFolio, 2023 to 2026; Brava, Lively, Oracle), 02 Method (how he works), 03 Workshop (the tools above), 04 Writing and 05 Consulting (the pages below).
+- [Home](https://bensiverly.com/): set as an issue of a magazine. The cover and contents, In brief (five numbers, each with its source), then 01 Work (rental applications and payments at AppFolio, 2023 to 2026; the housing case study below; Brava, Lively, Oracle), 02 Method (how he works), 03 Workshop (the tools above), 04 Writing and 05 Consulting (the pages below).
+- [Housing as an API call](https://bensiverly.com/housing-as-an-api-call.html): a case study in 01 Work, worked with an AI research agent. One address in: a 1953 duplex in San Mateo, California, with the street number withheld. Out: what the law allows (2 homes today, 5 by right, 6 at most), massing drawings, rents, a pro forma, a capital stack and a verdict. The underwriting model runs in the page, and a playground re-runs it on a new purchase price, rent, exit cap rate and build cost.
 - [Résumé](https://bensiverly.com/resume.html): one page, with PDF downloads.
 - [Writings](https://bensiverly.com/writings.html): poetry and prose. Written content is © Ben Siverly, all rights reserved, and is not covered by the code's MIT license.
 

@@ -255,6 +255,15 @@ All free (SIL Open Font License) and self-hosted. Three families.
   takes the focus ring outside it, so focus shows on an orange point too.
   Points that would land on each other sit side by side, up to three; four or
   more share one point marked with how many (×4), and its label names them.
+- **Case study:** a feature in 01 Work, set as an API reference for one
+  parcel: the request, then the response one field at a time. It opens on a
+  Toxic Orange band built like the Work band: checkered rules, a running
+  border, the soft 01 numeral and the street engraving. Each response field
+  is a section with a running head, its JSON beside the prose on a code
+  plate: the sunk ground, a hairline frame and a system monospace, the only
+  face outside the three, used for code alone. Charts follow the chart
+  rules. The massing model is inked from the tokens through `color-mix`, so
+  it follows the edition. One orange button: Send request.
 - **Consulting:** each page opens on the nudibranch, a Goody Gumdrop field
   with Char type: the running head, the opener (the ask a Char button, as on
   any field) and the plate in a dark frame with crosshair corners, then a
