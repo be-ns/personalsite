@@ -1580,7 +1580,8 @@
       "proptech": "Ben-Siverly-Resume-Proptech.pdf",
       "payments": "Ben-Siverly-Resume-Payments.pdf",
       "ai-native": "Ben-Siverly-Resume-AI-Native.pdf",
-      "general": "Ben-Siverly-Resume.pdf"
+      "general": "Ben-Siverly-Resume.pdf",
+      "clipboard": "Ben-Siverly-Resume-Clipboard.pdf"
     },
     "default": "proptech"
   }

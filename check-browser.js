@@ -791,8 +791,9 @@ async function agentContract(browser, base) {
     const { page, errors, close } = await open(browser, `${base}${url}`);
     const got = await page.evaluate(() => ({
       title: document.getElementById('roleTitle').textContent,
-      // The sheet whose lines are on screen: one, and only one, of the two.
-      sheet: [...new Set([...document.querySelectorAll('.resume-sheet [data-sheet]')].filter((el) => el.getClientRects().length).map((el) => el.dataset.sheet))].join(' + '),
+      // The sheet whose lines are on screen: the one every line showing names
+      // (data-sheet lists a line's sheets, with spaces between).
+      sheet: ((named) => (named[0] || []).filter((s) => named.every((n) => n.includes(s))).join(' + '))([...document.querySelectorAll('.resume-sheet [data-sheet]')].filter((el) => el.getClientRects().length).map((el) => el.dataset.sheet.split(' '))),
       bulletOrder: [...document.querySelectorAll('#appfolioBullets [data-bullet]')].filter((li) => li.getClientRects().length).map((li) => li.dataset.bullet),
       pdf: document.getElementById('dlLink').getAttribute('href'),
     }));

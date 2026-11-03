@@ -53,7 +53,7 @@
        data-edition="day" in the markup, so it is paper in either edition)
        on the plain ground. The sheet is set at its printed size in inches
        and points, so a wide screen shows the page the PDF prints, line for
-       line. render-resume-pdf.js prints it to the four PDFs. */
+       line. render-resume-pdf.js prints it to the five PDFs. */
     .resume-desk { padding-bottom: var(--space-8); }
 
     /* The tool bar: back to the site, then the PDF and the one orange button.
@@ -79,10 +79,11 @@
     .resume-sheet a { color: inherit; text-decoration-color: var(--rule); }
     .resume-sheet a:hover { text-decoration-color: var(--spot); }
     .resume-sheet strong { font-weight: 600; }
-    /* Two sheets share this one: Proptech (the default) and Payments, which
-       the Payments, AI-Native and General versions print. Lines that belong
-       to one carry data-sheet; the script hides the other's with [hidden],
-       and the markup ships with the default's showing. */
+    /* Three sheets share this one: Proptech (the default), Payments, which
+       the Payments, AI-Native and General versions print, and Clipboard.
+       Lines that belong to some carry data-sheet, naming them with spaces
+       between; the script hides the rest with [hidden], and the markup
+       ships with the default's showing. */
     .resume-sheet [hidden] { display: none !important; }
     .resume-summary { margin-top: 0.1in; }
     /* A hyphenated word kept whole: broken at its hyphen, a PDF reader
@@ -94,6 +95,8 @@
     .resume-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 0.25in; padding-bottom: 0.11in; border-bottom: var(--rule-double) var(--ink); }
     .resume-name { font: 360 3.1em / 0.9 var(--font-display); font-variation-settings: 'SOFT' 50; letter-spacing: -0.03em; }
     .resume-role { margin-top: 0.85em; font: 600 0.8em / 1.2 var(--font-label); letter-spacing: 0.08em; text-transform: uppercase; font-stretch: 88%; color: var(--spot); }
+    /* A version's dek under its title, in the text face's italic. */
+    .resume-tagline { margin-top: 0.4em; font: italic 400 0.92em / 1.2 var(--font-text); color: var(--ink-quiet); }
     .resume-contact { list-style: none; flex: none; font: 400 0.8em / 1.5 var(--font-label); font-stretch: 92%; letter-spacing: 0.01em; color: var(--ink-quiet); text-align: right; white-space: nowrap; }
     .resume-contact a { color: var(--ink); text-decoration: none; }
     .resume-contact a:hover { text-decoration: underline; text-decoration-color: var(--spot); }
@@ -114,6 +117,8 @@
     .job-meta { flex: none; font: 500 0.8em / 1.2 var(--font-label); font-stretch: 88%; letter-spacing: 0.04em; font-feature-settings: 'tnum' 1, 'lnum' 1; color: var(--ink-quiet); white-space: nowrap; }
     .job-desc { margin-top: 0.02in; font-size: 0.94em; line-height: 1.3; color: var(--ink-quiet); }
     .job-scope { color: var(--ink); }
+    .resume-earlier { margin-top: 0.08in; }
+    .resume-earlier strong { color: var(--ink); }
     .bullets { list-style: none; margin-top: 0.04in; }
     .bullets li { position: relative; padding-left: 0.17in; }
     .bullets li:not([hidden]) ~ li { margin-top: 0.03in; }
@@ -267,9 +272,10 @@
           <div>
             <h1 class="resume-name">Ben Siverly</h1>
             <p class="resume-role" id="roleTitle">Product Manager · Proptech, Data Platforms &amp; AI</p>
+            <p class="resume-tagline" data-sheet="clipboard" hidden>Technical PM · Recovering Data Scientist · Decisions in writing</p>
           </div>
           <ul class="resume-contact">
-            <li data-sheet="proptech">San Mateo, CA</li>
+            <li data-sheet="proptech clipboard">San Mateo, CA</li>
             <li data-sheet="payments" hidden>San Francisco Bay Area</li>
             <li><a href="mailto:benjaminsiverly@gmail.com">benjaminsiverly@gmail.com</a></li>
             <li><a href="https://www.linkedin.com/in/be-ns/">linkedin.com/in/be-ns</a></li>
@@ -283,12 +289,13 @@
 
           <div class="job">
             <div class="job-head">
-              <h3 class="job-company"><a href="https://www.appfolio.com" target="_blank" rel="noopener">AppFolio</a> &middot; <span class="job-role"><span data-sheet="proptech">Product Manager, Rental Applications</span><span data-sheet="payments" hidden>Product Manager, Rental Applications &amp; Payments</span></span></h3>
+              <h3 class="job-company"><a href="https://www.appfolio.com" target="_blank" rel="noopener">AppFolio</a> &middot; <span class="job-role"><span data-sheet="proptech clipboard">Product Manager, Rental Applications</span><span data-sheet="payments" hidden>Product Manager, Rental Applications &amp; Payments</span></span></h3>
               <span class="job-meta">Jan 2023 – Oct 2026</span>
             </div>
             <p class="job-desc" data-sheet="proptech">Property-management software for 23,000+ customers.</p>
             <p class="job-desc" data-sheet="payments" hidden>Property-management software for 23,000+ customers. <span class="job-scope">Sole PM for the rental application line, across two codebases.</span></p>
-            <ul class="bullets" id="appfolioBullets">
+            <p class="job-desc" data-sheet="clipboard" hidden>Property-management software. The rental application is where both sides meet: 9M+ applicants a year, 23,000+ property management companies, and $200M+ in application fees between them.</p>
+            <ul class="bullets" id="appfolioBullets" data-sheet="proptech payments">
               <li data-bullet="sole-pm">Sole PM for the rental application: <strong>9M+ application starts and $200M in fees</strong> processed a year, across two codebases. Led the rebuild: submission rose from <strong>44% to 70%</strong>, and vacancies filled <strong>3.4 days faster</strong> than offline workflows.</li>
               <li data-bullet="compliance">Turned fair-housing and screening-compliance rules into product requirements. Kept applicant follow-up inside the authenticated app so every interaction is auditable; customer satisfaction rose <strong>18%</strong>.</li>
               <li data-bullet="ai-review">Gated AI review of applicant ID uploads on an eval set of real and synthetic IDs. <strong>Releases shipped only when the model cleared quality bars</strong> on representative data.</li>
@@ -300,6 +307,15 @@
               <li hidden data-bullet="rebuild">Rebuilt the rental application end to end. Submission rates went from <strong>44% to 70%</strong>, and properties on the new flow fill vacancies <strong>3.4 days faster</strong> than offline workflows. Kept follow-up inside the authenticated app so every interaction stays auditable for screening compliance; customer satisfaction rose <strong>18%</strong>.</li>
               <li hidden data-bullet="zillow">Built a secure applicant-data API and launched it with Zillow. Reached 70% customer adoption, then <strong>pushed to wind it down</strong> when the frictionless path buried property managers in unqualified applicants.</li>
             </ul>
+            <ul class="bullets" data-sheet="clipboard" hidden>
+              <li><strong>Sole PM for the application line:</strong> strategy and roadmap for applicants and property managers across two codebases that ship together. The payer and the user are different people, and the product has to serve both. Every customer runs its own configuration, so each change had to hold across thousands of setups.</li>
+              <li>Rebuilt the rental application end to end. Submission rate went from <strong>44% to 70%</strong> with a <strong>zero change-failure rate</strong>, and units on the new flow fill <strong>3.4 days faster</strong> than offline workflows.</li>
+              <li>Redesigned the payment step, built on AppFolio’s internal payments API, around how callbacks actually arrive. Modeled the latency tail, moved the wait from 8 to 12 seconds, and sent the long tail to an authenticated recovery link instead of a longer spinner. Timeouts fell from <strong>~8% to ~4%</strong>; payment completion reached <strong>about 99%</strong>.</li>
+              <li>Built an API that moves applicant PII between platforms to pre-fill applications. Launched with Zillow and reached 70% customer adoption, then <strong>pushed to wind it down</strong>: volume went up, and property managers got buried in unqualified applicants. More applicants did not mean better matches.</li>
+              <li>Built a verified jobs-to-be-done map from <strong>50–100 customer calls a year</strong>: one shared model of what renters and property managers need, later the corpus for an internal RAG tool. Every product bet traces back to it.</li>
+              <li>Shipped follow-up for incomplete applications inside the authenticated app, not over email or text, so every interaction stays auditable for fair-housing compliance. Customer satisfaction on rental applications rose <strong>18%</strong>.</li>
+              <li>Moved my team to spec-driven work: behavior written and pressure-tested before code, every release gated on tests and evals.</li>
+            </ul>
           </div>
 
           <div class="job">
@@ -309,6 +325,7 @@
             </div>
             <p class="job-desc" data-sheet="proptech">HSA platform offered through financial-institution partners. 45-person Series B.</p>
             <p class="job-desc" data-sheet="payments" hidden>HSA platform for tax-advantaged health spending, offered through financial-institution partners.</p>
+            <p class="job-desc" data-sheet="clipboard" hidden>HSA platform. Partners on one side, account holders on the other, money moving between banks underneath.</p>
             <ul class="bullets" data-sheet="proptech">
               <li><strong>First data hire.</strong> Stood up the data platform end to end: ingestion, data modeling, BI, product analytics. Promoted to PM in 2021 when the platform became the roadmap.</li>
               <li>Shipped partner APIs and migration pipelines that moved <strong>$50M+ in assets</strong> between financial institutions with <strong>zero data loss</strong>. Cut the work from two migration teams to one.</li>
@@ -319,6 +336,11 @@
               <li>Scoped multi-tenancy with our second partner bank’s executives. The move captured <strong>~90 bps more yield on AUM</strong> as rates rose, and opened room for future partners.</li>
               <li>Built partner APIs and migration pipelines that moved <strong>$50M+ in HSA assets</strong> between financial institutions with <strong>zero data loss</strong>. Cut the work from two migration teams to one.</li>
               <li>Stood up the company’s first data-science function and data-services platform; promoted to PM in 2021 as the work became the roadmap.</li>
+            </ul>
+            <ul class="bullets" data-sheet="clipboard" hidden>
+              <li>Built the partner APIs and migration pipelines that moved <strong>$50M+ in HSA assets</strong> across financial institutions with <strong>zero data loss</strong>, cutting the work from two migration teams to one.</li>
+              <li><strong>Built the platform under it:</strong> money movement across banks and card networks, processor integrations, ledgers, and the data model partners built on, so they could offer compliant HSA accounts without building the infrastructure themselves.</li>
+              <li>Stood up the first data-science function and data platform; promoted to PM in 2021 as the work became the roadmap.</li>
             </ul>
           </div>
 
@@ -333,16 +355,23 @@
             <ul class="bullets" data-sheet="payments" hidden>
               <li>Rebuilt model validation on a representative U.S. population sample, correcting a skew that distorted model performance. Automated a data pipeline that had taken two analysts full-time.</li>
             </ul>
+            <ul class="bullets" data-sheet="clipboard" hidden>
+              <li>Rebuilt the model-validation methodology on a representative U.S. population sample, correcting a data skew that had distorted how we measured model performance.</li>
+              <li>Automated the ad-viewability pipeline (Python, JIRA API), replacing extraction and cleaning that took two analysts full-time.</li>
+            </ul>
           </div>
+          <p class="job-desc resume-earlier" data-sheet="clipboard" hidden><strong>Earlier.</strong> Second hire at Olivers Apparel, a DTC menswear startup: textile R&amp;D and fabric cost modeling.</p>
         </section>
 
         <section class="resume-section">
-          <h2 class="resume-h" id="selected-work"><span data-sheet="proptech">Selected AI Product Work</span><span data-sheet="payments" hidden>Selected Work</span></h2>
+          <h2 class="resume-h" id="selected-work"><span data-sheet="proptech">Selected AI Product Work</span><span data-sheet="payments clipboard" hidden>Selected Work</span></h2>
           <p class="resume-row" data-sheet="proptech"><span class="lead-in">Housing as an API call</span> (in progress). Side project: given capital and a target market, map parcels, use LLMs to extract buildable envelopes from city zoning codes, and estimate whether a project pencils.</p>
           <p class="resume-row" data-sheet="proptech"><span class="lead-in">Brava</span> (<a href="https://bravamade.com">bravamade.com</a>). Recruiting profiles for youth athletes, built with my brother. AI pipeline: coach-verified stats in, benchmark rankings and generated media out. Ran a COPPA privacy review; built with AI coding agents.</p>
           <p class="resume-row" data-sheet="proptech"><span class="lead-in">AbiertoClaw</span> (<a href="https://github.com/be-ns/AbiertoClaw">github.com/be-ns/AbiertoClaw</a>). Open-source Hermes Agent plugin that picks the best free model daily and falls back to a local model.</p>
           <p class="resume-row" data-sheet="payments" hidden><span class="lead-in">Brava</span> (<a href="https://bravamade.com">bravamade.com</a>). Automated college-recruiting profiles for youth athletes, launching with women’s soccer outside major metros. Built with my brother. Sized the market across five sports, ran a COPPA and privacy review for minors’ data, and built the AI production pipeline: coach-verified stats, benchmark rankings, generated media. <strong>Payments on Stripe:</strong> a parent checkout flow built from scratch with AI coding agents.</p>
           <p class="resume-row" data-sheet="payments" hidden><span class="lead-in">AbiertoClaw</span> (<a href="https://github.com/be-ns/AbiertoClaw">github.com/be-ns/AbiertoClaw</a>). Open-source plugin for the Hermes agent. Each day it finds the best free model that passes a real tool-call test and switches Hermes to it, with a local model as the fallback.</p>
+          <p class="resume-row" data-sheet="clipboard" hidden><span class="lead-in">Brava</span> (<a href="https://bravamade.com">bravamade.com</a>). Recruiting profiles that help women’s soccer athletes outside the major metros get seen by college coaches. Built with my brother and live with customers. Coach-verified stats, benchmark rankings, an AI-assisted production pipeline. Designed and shipped it myself, from the first research call to the brand on the page.</p>
+          <p class="resume-row" data-sheet="clipboard" hidden><span class="lead-in">AbiertoClaw</span> (<a href="https://github.com/be-ns/AbiertoClaw">github.com/be-ns/AbiertoClaw</a>). Open-source AI agent that runs our family calendar over iMessage. A complexity router and a daily best-free-model picker keep it free by default.</p>
         </section>
 
         <section class="resume-section skills">
@@ -355,7 +384,8 @@
           <p class="resume-row" data-sheet="payments" hidden><strong>Payments:</strong>&nbsp;checkout, failed-payment recovery, money movement, ledgers, processor integrations, partner APIs</p>
           <p class="resume-row" data-sheet="payments" hidden><strong>Data:</strong>&nbsp;SQL, Python, experimentation, pipelines</p>
           <p class="resume-row" data-sheet="payments" hidden><strong>AI:</strong>&nbsp;RAG, tool use, agents, evals</p>
-          <p class="resume-row"><strong>Writing:</strong>&nbsp;Published poet (<a href="https://opol.space">opol.space</a>, 2026)</p>
+          <p class="resume-row" data-sheet="clipboard" hidden>SQL · Python · Experimentation · Metric design · Payments &amp; money movement · Pipelines &amp; APIs · AI agents &amp; RAG · OOUX</p>
+          <p class="resume-row" data-sheet="proptech payments"><strong>Writing:</strong>&nbsp;Published poet (<a href="https://opol.space">opol.space</a>, 2026)</p>
         </section>
 
         <section class="resume-section">
@@ -396,7 +426,7 @@
   <script>
     (function () {
       const DEFAULT = 'proptech';
-      // Each version prints one of the two sheets (data-sheet) and lists its
+      // Each version prints one of the three sheets (data-sheet) and lists its
       // AppFolio lines in order; a line no list names stays hidden.
       const VERSIONS = {
         'proptech': {
@@ -422,11 +452,17 @@
           sheet: 'payments',
           bulletOrder: ['rebuild', 'payments', 'payments-team', 'zillow'],
           pdf: 'Ben-Siverly-Resume.pdf'
+        },
+        'clipboard': {
+          title: 'Product Manager · Two-Sided Products, Payments & Data',
+          sheet: 'clipboard',
+          bulletOrder: [],
+          pdf: 'Ben-Siverly-Resume-Clipboard.pdf'
         }
       };
 
       // The download line under the sheet names the version it offers.
-      const LABELS = { 'proptech': 'Proptech', 'payments': 'Payments', 'ai-native': 'AI-Native', 'general': 'General' };
+      const LABELS = { 'proptech': 'Proptech', 'payments': 'Payments', 'ai-native': 'AI-Native', 'general': 'General', 'clipboard': 'Clipboard' };
 
       const sheetEl = document.querySelector('.resume-sheet');
       const titleEl = document.getElementById('roleTitle');
@@ -439,7 +475,7 @@
         const v = VERSIONS[key];
         titleEl.textContent = v.title;
         sheetEl.querySelectorAll('[data-sheet]').forEach(function (el) {
-          el.hidden = el.getAttribute('data-sheet') !== v.sheet;
+          el.hidden = el.getAttribute('data-sheet').split(' ').indexOf(v.sheet) < 0;
         });
         listEl.querySelectorAll('[data-bullet]').forEach(function (li) {
           li.hidden = v.bulletOrder.indexOf(li.getAttribute('data-bullet')) < 0;

@@ -3,10 +3,11 @@
 // The résumé on proof stock (redesign-plan.md, step 3). The redesign
 // retypeset it and changed none of its words: test/fixtures/resume-content.json
 // holds the text, links, emphasis, AppFolio lines and versions captured from
-// the page before the move, plus the Proptech sheet added since, and this
-// file holds the page to them. Two sheets share the markup: Proptech, the
-// default, and Payments, which the Payments, AI-Native and General versions
-// print. The four PDFs are checked as files here (one Letter page, the site's faces only);
+// the page before the move, plus the Proptech and Clipboard sheets added
+// since, and this file holds the page to them. Three sheets share the
+// markup: Proptech, the default, Payments, which the Payments, AI-Native and
+// General versions print, and Clipboard. An element's data-sheet names the
+// sheets it belongs to, with spaces between. The five PDFs are checked as files here (one Letter page, the site's faces only);
 // render-resume-pdf.js checks them again as it writes them, with their
 // reading order, and check-browser.js prints every version.
 
@@ -39,11 +40,11 @@ function script() {
   return { versions: JSON.parse(JSON.stringify(vm.runInNewContext(`(${literal[1]})`))), default: /const DEFAULT = '([a-z-]+)'/.exec(js)[1], js };
 }
 
-// Whether an element prints in a version: no ancestor (or itself) belongs to
-// the other sheet, and an AppFolio line is one the version lists.
+// Whether an element prints in a version: every ancestor (and itself) that
+// names sheets names this one, and an AppFolio line is one the version lists.
 function shows(el, v) {
   for (let e = el; e; e = e.parent) {
-    if (e.attrs && 'data-sheet' in e.attrs && e.attrs['data-sheet'] !== v.sheet) return false;
+    if (e.attrs && 'data-sheet' in e.attrs && !e.attrs['data-sheet'].split(' ').includes(v.sheet)) return false;
     if (e.attrs && 'data-bullet' in e.attrs && !v.bulletOrder.includes(e.attrs['data-bullet'])) return false;
   }
   return true;
@@ -77,7 +78,7 @@ test('the versions did not change: titles, line orders, PDFs and the default', (
   assert.deepEqual(versions, fixture.versions);
   assert.equal(fallback, fixture.default);
   assert.equal(fallback, contract.default);
-  const sheetNames = [...new Set(findAll(sheet, (el) => 'data-sheet' in el.attrs).map((el) => el.attrs['data-sheet']))].sort();
+  const sheetNames = [...new Set(findAll(sheet, (el) => 'data-sheet' in el.attrs).flatMap((el) => el.attrs['data-sheet'].split(' ')))].sort();
   for (const [key, v] of Object.entries(versions)) {
     assert.equal(v.pdf, contract.versions[key], `${key} offers the contract's PDF`);
     assert.ok(sheetNames.includes(v.sheet), `${key} prints a sheet the markup has (${v.sheet})`);
@@ -92,7 +93,7 @@ test('the versions did not change: titles, line orders, PDFs and the default', (
   const order = findAll(sheet, (el) => 'data-bullet' in el.attrs && !('hidden' in el.attrs)).map((li) => li.attrs['data-bullet']);
   assert.deepEqual(order, versions[fallback].bulletOrder, 'without script the default’s lines show, in its order');
   const wrong = findAll(sheet, (el) => ('data-sheet' in el.attrs || 'data-bullet' in el.attrs) && hiddenInMarkup(el) === shows(el, versions[fallback]));
-  assert.deepEqual(wrong.map((el) => flat(el).slice(0, 40)), [], 'without script the default’s sheet shows and the other is [hidden]');
+  assert.deepEqual(wrong.map((el) => flat(el).slice(0, 40)), [], 'without script the default’s sheet shows and the others are [hidden]');
 });
 
 test('the public résumé is the default version, Proptech, and the page offers it', () => {
