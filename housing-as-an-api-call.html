@@ -454,7 +454,7 @@
     .cs-to-toc .ico { rotate: -90deg; }
     .js .cs-to-toc:not(.is-shown) { opacity: 0; visibility: hidden; }
     html { scroll-padding-bottom: 5rem; }   /* Tab scrolls a focused control clear of the pill */
-    html:has(.cs-to-toc .btn:focus) { scroll-padding-bottom: 0; }   /* but not the pill itself, which sits inside that margin */
+    .cs-to-toc .btn { scroll-margin-top: 5rem; scroll-margin-bottom: -5rem; }   /* but not the pill itself, which sits inside that margin: its scroll box sits 5rem higher */
     .cs-nw { white-space: nowrap; }
     /* One column from 1024 to 1279: the two drawings and the homes table, their key, keep about their two-column size, so each drawing fits a screen with its controls. */
     @media (min-width: 1024px) and (max-width: 1279px) { #renders .cs-main { max-width: 46rem; } }
@@ -491,6 +491,8 @@
       .cs-sec { padding-block: var(--space-5); }
       /* Fig. 6's rows a little tighter, so on a Letter page the chart fits under the capital lists. */
       #priceFig .cs-prow .cs-pt { height: 1.375rem; }
+      /* Limits and Sources each print whole, so no sheet ends on a lone source or a stranded heading. */
+      .cs-end > div { break-inside: avoid; }
     }
   </style>
 </head>
@@ -1214,14 +1216,20 @@
       const SF = [1088, 1280, 1008, 1008, 1008];        // homes 1 to 5
       const SF_TOTAL = SF.reduce((a, b) => a + b, 0);
       const TAX_RATE = 15327 / 1211292;                  // 2025 bill / 2025 assessed value
-      const BUILD = 1325000;                             // garage ADU 275k + two ADUs 950k + refresh 100k
+      const FIXED = { insurance: 10000, repairs: 9000, utilities: 7500, reserves: 1500 };   // a year
+      const BUILDS = { garage: 275000, adus: 950000, refresh: 100000 };                       // garage ADU, two 2-story ADUs, refresh units 1 and 2
+      const BUILD = BUILDS.garage + BUILDS.adus + BUILDS.refresh;
+      const LTC = 0.65, LOAN_RATE = 0.09;                // construction loan: share of cost, rate
+      const PERM_RATE = 0.0675;                          // permanent loan, on a refinance
+      const DEV_FEE = 0.04, PREF = 0.08, SPLIT = 0.30;   // developer fee, LPs' preferred return, GP's promote after it
+      const GPC = 0.10, EXIT = 24;                       // GP's share of the equity, month of sale
 
       function pmt(principal, rate, months = 360) {
         const i = rate / 12;
         return principal * i / (1 - Math.pow(1 + i, -months));
       }
       function opex(price, egi, buildAll, mgmt) {
-        return TAX_RATE * (price + buildAll) + 10000 + 9000 + 7500 + 1500 + (mgmt ? 0.05 * egi : 0);
+        return TAX_RATE * (price + buildAll) + FIXED.insurance + FIXED.repairs + FIXED.utilities + FIXED.reserves + (mgmt ? 0.05 * egi : 0);
       }
       function underwrite(p) {
         const build = BUILD * p.cost, buildAll = build * 1.1;
@@ -1246,10 +1254,9 @@
         return Math.pow(1 + (lo + hi) / 2, 12) - 1;
       }
       function raiseModel(p) {
-        const EXIT = 24, LTC = 0.65, RATE = 0.09, FEE = 0.04, PREF = 0.08, SPLIT = 0.30, GPC = 0.10;
         const noi = underwrite(p).noi;
         const build = BUILD * p.cost, cont = 0.1 * build;
-        const base = p.price * 1.015 + build + cont, fee = FEE * base, org = 40000;
+        const base = p.price * 1.015 + build + cont, fee = DEV_FEE * base, org = 40000;
         let ig = 0, commit = LTC * (base + fee + org), uses, eqf, bal, usesSum;
         for (let it = 0; it < 60; it++) {
           uses = new Array(EXIT + 1).fill(0);
@@ -1263,7 +1270,7 @@
           let eqLeft = usesSum + ig - commit, inte = 0;
           bal = 0; eqf = new Array(EXIT + 1).fill(0);
           for (let m = 0; m <= EXIT; m++) {
-            const i = bal * RATE / 12; inte += i;
+            const i = bal * LOAN_RATE / 12; inte += i;
             const pay = Math.min(i, Math.max(ops[m], 0));
             let need = uses[m] + (i - pay), left = ops[m] - pay;
             if (m < 22) { need -= left; left = 0; }
@@ -1291,7 +1298,7 @@
         }
         const sum = a => a.reduce((s, x) => s + x, 0);
         const equity = sum(contrib);
-        const k = pmt(1, 0.0675) * 12;
+        const k = pmt(1, PERM_RATE) * 12;
         const perm = Math.min(noi / 1.25 / k, 0.7 * value);
         return {
           total: usesSum + ig, commit, loan: bal, equity, fee, profit: sum(eqf),
