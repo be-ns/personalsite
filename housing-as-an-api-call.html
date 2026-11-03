@@ -107,6 +107,7 @@
     .cs-band > .wrap { position: relative; z-index: 1; }
     .cs-band > .rim { --rim-fill: var(--ground); }
     .cs-band .rh { margin-bottom: var(--space-4); }
+    .cs-band .rh-title { overflow: clip; overflow-clip-margin: 0.5em; }
     .cs-band .rh-title a { color: inherit; text-decoration-color: var(--rule); }
     .cs-band .rh-title a:hover { text-decoration-color: var(--spot-large); }
     .cs-band .checker { margin-bottom: var(--space-4); }
@@ -337,13 +338,16 @@
     .cs-figs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5) var(--space-4); margin-block: var(--space-6); list-style: none; }
     #capital .cs-figs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     @media (max-width: 599px) { #capital .cs-figs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-    @media (max-width: 379px) { .cs-figs { column-gap: var(--space-3); } .cs-figs b { font-size: 2rem; } }
     .cs-figs li { min-width: 0; padding-top: var(--space-2); border-top: 1px solid var(--ink-quiet); }
     .cs-figs b { display: flex; align-items: baseline; font: 300 clamp(2.25rem, 4.2vw, 3rem) / 0.95 var(--font-display); font-variation-settings: 'SOFT' 0; letter-spacing: -0.04em; font-feature-settings: 'lnum' 1; white-space: nowrap; }
     .cs-figs b small { margin-left: 0.06em; color: var(--spot); font: 600 0.9375rem / 1 var(--font-label); letter-spacing: 0.02em; }
     .cs-figs b small.is-gone { display: none; }
     .cs-figs .t-folio { display: block; margin-top: var(--space-2); }
     .cs-figs .is-hot b { color: var(--spot-large); }
+    @media (max-width: 379px) { .cs-figs { column-gap: var(--space-3); } .cs-figs b { font-size: 2rem; } }
+    /* The underwriting strip sizes to its figures, so wider letter and word spacing wraps a tile instead of overprinting the next. */
+    #underwriting .cs-figs { display: flex; flex-wrap: wrap; }
+    #underwriting .cs-figs li { flex: 1 1 0; min-width: min-content; }
 
     /* Dot charts: the rent ladder and the yield spread */
     .cs-dots { display: grid; margin-top: var(--space-4); }
@@ -445,11 +449,14 @@
     .cs-frieze { margin-top: var(--space-2); color: var(--art-ink); opacity: 0.88; }
     /* Once the contents have scrolled away, a Contents link waits at the foot of
        the screen, as Serotiny's Chapters link does. Without script it is always there. */
-    .cs-to-toc { position: sticky; bottom: var(--space-4); z-index: 2; display: flex; justify-content: flex-end; margin-top: calc(-1 * var(--touch-target)); pointer-events: none; transition: opacity var(--motion-duration-short), visibility var(--motion-duration-short); }
+    .cs-to-toc { position: sticky; bottom: var(--space-4); z-index: 2; display: flex; justify-content: flex-end; margin-block: calc(var(--space-3) - var(--space-7)) var(--space-3); pointer-events: none; transition: opacity var(--motion-duration-short), visibility var(--motion-duration-short); }
     .cs-to-toc .btn { gap: 0.5em; background: var(--ground); pointer-events: auto; }
     .cs-to-toc .ico { rotate: -90deg; }
     .js .cs-to-toc:not(.is-shown) { opacity: 0; visibility: hidden; }
+    html { scroll-padding-bottom: 5rem; }   /* Tab scrolls a focused control clear of the pill */
     .cs-nw { white-space: nowrap; }
+    /* One column from 1024 to 1279: the two drawings keep about their two-column size, so each fits a screen with its controls. */
+    @media (min-width: 1024px) and (max-width: 1279px) { #renders .cs-fig { max-width: 46rem; } }
     .cs-frieze svg { width: 100%; height: clamp(8.5rem, 22vw, 17.5rem); }
 
     /* ---------- Edges ---------- */
@@ -465,6 +472,7 @@
       .cs-pt i.is-neg, .cs-sw.bar-h { background: repeating-linear-gradient(135deg, CanvasText 0 1.5px, transparent 1.5px 5px); box-shadow: inset 0 0 0 1px CanvasText; }
       .cs-sw.line-h { border-left-color: CanvasText; }
       .legend li:has(> .cs-sw.band) { display: none; }
+      .cs-counts .ico { color: CanvasText; }
     }
     /* Without JavaScript (the head script sets .js): no dead controls, no empty frames. */
     :root:not(.js) :is(#send, .cs-stage-bar, .cs-axo, .cs-axo ~ .legend, #planFig, #priceFig, #playground, .cs-toc li:has(> a[href="#playground"])) { display: none; }
@@ -559,7 +567,7 @@
             <div class="cs-band-main">
               <p class="t-kicker">Case study &middot; San Mateo, California</p>
               <h1>Housing as an API call</h1>
-              <p class="t-deck">One address in. Out: room for five homes where two stand today, and the purchase price that decides whether they get built. I ran the call with an AI research agent, from the zoning code to the capital stack.</p>
+              <p class="t-deck">One address in. Out: five homes by right where two stand today, and the most the lot can cost before building them stops paying. I ran the call with an AI research agent, from the zoning code to the capital stack.</p>
               <p class="t-byline">By Ben Siverly &middot; November 2026 &middot; <span data-read="cs-body">9</span> min read</p>
             </div>
             <figure class="cs-band-aside">
@@ -751,7 +759,7 @@
                 <p class="plate-title"><span>Site plan</span><span id="planScen">Max, 6 homes</span></p>
                 <div class="cs-plan" id="planWrap"><svg id="plan" role="img" aria-label="Site plan of the lot"></svg></div>
               </div>
-              <figcaption class="t-caption fig-cap"><b>Fig. 2</b> <span id="planCap">Site plan. Gray dashes: 15-ft front setback. Orange dashes: 4-ft ADU setback.</span></figcaption>
+              <figcaption class="t-caption fig-cap"><b>Fig. 2</b> <span id="planCap">Gray dashes: 15-ft front setback. Orange dashes: 4-ft ADU setback.</span></figcaption>
             </figure>
             <table class="cs-table cs-homes" id="homes">
               <caption class="t-kicker">The homes</caption>
@@ -951,7 +959,7 @@
                   <p><b>$1.22M</b>Equity: $1.10M from LPs, $122k from the GP</p>
                 </div>
               </div>
-              <figcaption class="t-caption fig-cap"><b>Fig. 5</b> LPs are the outside investors. The GP, the general partner, puts in the thin orange sliver, 10% of the equity, alongside them.</figcaption>
+              <figcaption class="t-caption fig-cap"><b>Fig. 5</b> LPs are the outside investors. The GP, the general partner, puts in the thin orange sliver alongside them.</figcaption>
             </figure>
             <ul class="cs-figs">
               <li><b>$457<small>k</small></b><span class="t-folio">Profit at sale</span></li>
@@ -959,11 +967,11 @@
               <li class="is-hot"><b>14.6<small>%</small></b><span class="t-folio">LP net IRR, 1.31&times;</span></li>
               <li><b>$237<small>k</small></b><span class="t-folio">GP take</span></li>
             </ul>
-            <p>IRR is the return per year. The LPs&rsquo; figure is after the GP&rsquo;s fee and promote, and 1.31&times; means they get $1.31 back for every $1 they put in. The GP take, $236,640, is a $122k developer fee, a $76k promote (the GP&rsquo;s 30% of the profit), and $38k earned on its own $122k. About half of it is fee.</p>
+            <p>IRR is the return per year. The LPs&rsquo; figure is after the GP&rsquo;s fee and promote, and 1.31&times; means they get $1.31 back for every $1 they put in. The GP take, $236,640, is a $122k developer fee, a $76k promote (the GP&rsquo;s 30% of the profit after the preferred return), and $38k earned on its own $122k. About half of it is fee.</p>
 
             <h3 class="t-kicker cs-h3">Minimum in for the GP</h3>
             <ul class="cs-list">
-              <li>Co-invest: about $120k, which is 10% of the equity.</li>
+              <li>Co-invest: $122k, which is 10% of the equity.</li>
               <li>Cash at risk before LPs fund: $100k to $150k for the deposit, offering documents, design, and survey.</li>
               <li>Lender test: a guarantor with net worth of 0.75 to 1.0 times the loan, and cash near 10% of it.</li>
             </ul>
@@ -1601,7 +1609,7 @@
         svg.innerHTML = o.join('');
         svg.setAttribute('aria-label', 'Site plan of the lot, ' + SCENES[s]);
         $('#planScen').textContent = { today: 'Today, 2 homes', by_right: 'By right, 5 homes', max: 'Max, 6 homes' }[s];
-        $('#planCap').textContent = 'Site plan, street at ' + (land ? 'left' : 'bottom') + '. Gray dashes: 15-ft front setback.' + (s === 'today' ? '' : ' Orange dashes: 4-ft ADU setback.') + (s === 'max' ? ' Hatching: the upper unit over the garage ADU.' : '');
+        $('#planCap').textContent = 'Street at ' + (land ? 'left' : 'bottom') + '. Gray dashes: 15-ft front setback.' + (s === 'today' ? '' : ' Orange dashes: 4-ft ADU setback.') + (s === 'max' ? ' Hatching: the upper unit over the garage ADU.' : '');
       }
 
       function setScenario(s, animate) {

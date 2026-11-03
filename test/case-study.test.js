@@ -23,7 +23,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 const { ROOT, readPage, inlineScripts } = require('./helpers');
-const { parseHtml, findAll, textContent } = require('../build-pages');
+const { parseHtml, decodeEntities, findAll, textContent } = require('../build-pages');
 
 const PAGE = 'housing-as-an-api-call.html';
 const TITLE = 'Housing as an API call';
@@ -98,7 +98,7 @@ function model() {
   const to = script.indexOf('/* MODEL END */', from);
   assert.ok(to > from, 'the model closes with /* MODEL END */');
   const sandbox = { module: { exports: {} } };
-  vm.runInNewContext(`'use strict';\n${script.slice(from, to)}\nmodule.exports = { underwrite, ownerNet, raiseModel };\n`, sandbox, { filename: `${PAGE} (model)` });
+  vm.runInNewContext(`'use strict';\n${script.slice(from, to)}\nmodule.exports = { underwrite, ownerNet, raiseModel, SF };\n`, sandbox, { filename: `${PAGE} (model)` });
   return sandbox.module.exports;
 }
 
@@ -118,19 +118,42 @@ function solve(f, lo = 500000, hi = 4000000) {
   return (lo + hi) / 2;
 }
 
-// Everything the tests read from the model, on the case.
+// Everything the tests read from the model, on the case. The solves are slow, so it runs once.
+let cached;
 function figures() {
-  const { underwrite, ownerNet, raiseModel } = model();
+  if (!cached) cached = compute();
+  return cached;
+}
+function compute() {
+  const { underwrite, ownerNet, raiseModel, SF } = model();
   const u = underwrite(CASE);
+  const r = raiseModel(CASE);
+  const sfTotal = SF.reduce((a, b) => a + b, 0);
+  // The GP's 30% of what is left after the 8% pref, from the model's own
+  // split: 10% of the equity is the GP's, so its take beyond its 10% share
+  // of the profit is the promote less the GP's 10% of it.
+  const promote = (r.gpProfit - 0.1 * r.profit) / 0.9;
   return {
     u,
-    r: raiseModel(CASE),
+    r,
     own: ownerNet(CASE),
     yield75: solve((price) => underwrite({ ...CASE, price }).yoc - 0.075),
     zero: solve((price) => underwrite({ ...CASE, price }).created),
+    // The prices where the LPs fall under 15%, and where a refinance stops returning cash.
+    lp15: solve((price) => raiseModel({ ...CASE, price }).lpIrr - 0.15, 1.4e6, 1.7e6),
+    refi0: solve((price) => raiseModel({ ...CASE, price }).refiGap, 1.3e6, 1.6e6),
+    loanFee: 0.015 * r.commit,
+    interest: r.total - (CASE.price * 1.015 + u.buildAll + r.fee + 40000 + 0.015 * r.commit),
+    promote,
+    coEarned: r.gpProfit - promote,
+    // Unit 2 held to $5,000 a month, its loss spread over the rent per sq ft.
+    unit2At5k: underwrite({ ...CASE, rent: CASE.rent - (SF[1] * CASE.rent - 5000) / sfTotal }).yoc,
     raiseModel,
   };
 }
+
+// The highest $10k step at or under a price.
+const step = (n) => Math.floor(n / 1e4) * 1e4;
 
 // The page's own formats.
 const commas = (n) => String(Math.round(Math.abs(n))).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -165,6 +188,13 @@ test('the page\'s model gives the case\'s figures', () => {
   assert.equal(pct(raiseModel({ ...CASE, cap: 0.055 }).dealIrr), '4.6%', 'deal IRR at a 5.5% exit cap');
   assert.ok(raiseModel({ ...CASE, rent: 4 }).profit < 0, '$4.00 rents turn the profit into a loss');
   assert.equal(Math.round(raiseModel({ ...CASE, price: 1400000 }).lpIrr * 100), 22, 'LP net IRR at $1.40M');
+  // Where the capital and verdict sections draw their lines.
+  const { lp15, refi0, loanFee, interest, promote, coEarned, unit2At5k } = figures();
+  assert.ok(raiseModel({ ...CASE, price: step(lp15) }).lpIrr >= 0.15 && raiseModel({ ...CASE, price: step(lp15) + 1e4 }).lpIrr < 0.15, 'LPs clear 15% up to the $10k step under the crossing');
+  assert.ok(raiseModel({ ...CASE, price: step(refi0) }).refiGap > 0 && raiseModel({ ...CASE, price: step(refi0) + 1e4 }).refiGap < 0, 'a refinance returns cash up to the $10k step under the crossing');
+  assert.equal(Math.round(promote + coEarned + r.fee), Math.round(r.gpTake), 'fee, promote and co-invest earnings add to the GP take');
+  assert.ok(Math.abs(loanFee + interest + r.fee + 40000 + u.allIn - r.total) < 1, 'the total project is the all-in cost plus fees and interest');
+  assert.ok(unit2At5k < u.yoc, 'holding unit 2 to $5,000 lowers the yield');
 });
 
 test('the page prints the model\'s figures', () => {
@@ -185,6 +215,43 @@ test('the page prints the model\'s figures', () => {
   for (const [what, made, want] of printed) {
     assert.equal(made, want, `the model gives ${what} as ${made}`);
     assert.ok(text.includes(want), `the page prints ${what} as ${want}`);
+  }
+  // The same figures inside the sentences that carry them.
+  const { lp15, refi0, loanFee, interest, promote, coEarned, unit2At5k } = figures();
+  const said = [
+    ['the 15% line', usdM(step(lp15)), '$1.56M', `${usdM(step(lp15))} or less, and LPs clear the 15% bar`],
+    ['the 15% line, in the verdict', usdM(step(lp15)), '$1.56M', `They clear 15% up to about ${usdM(step(lp15))}`],
+    ['the refinance line', usdM(step(refi0)), '$1.49M', `past about ${usdM(step(refi0))} a refinance returns nothing`],
+    ['the refinance shortfall', usdK(-r.refiGap), '$79k', `the new loan falls ${usdK(-r.refiGap)} short`],
+    ['the GP adds at a refinance', usdK(-r.refiGap), '$79k', `The GP adds ${usdK(-r.refiGap)}`],
+    ['the loan fee', usdK(loanFee), '$34k', `a ${usdK(loanFee)} loan fee, and ${usdK(interest)} of interest`],
+    ['the interest', usdK(interest), '$224k', `and ${usdK(interest)} of interest`],
+    ['the developer fee', usdK(r.fee), '$122k', `is a ${usdK(r.fee)} developer fee`],
+    ['the promote', usdK(promote), '$76k', `a ${usdK(promote)} promote (the GP’s 30% of the profit after the preferred return)`],
+    ['the GP\'s co-invest earnings', usdK(coEarned), '$38k', `and ${usdK(coEarned)} earned on its own ${usdK(r.equity * 0.1)}`],
+    ['the GP\'s co-invest', usdK(r.equity * 0.1), '$122k', `Co-invest: ${usdK(r.equity * 0.1)}, which is 10% of the equity`],
+    ['the yield over the top cap rate', ((u.yoc - 0.055) * 100).toFixed(1), '0.9', `${((u.yoc - 0.055) * 100).toFixed(1)} points over the top cap rate`],
+    ['the yield with fees and interest', pct(u.noi / r.total), '5.6%', `With fees and interest${pct(u.noi / r.total)}`],
+    ['unit 2 held to $5,000', pct(unit2At5k), '6.1%', `the project earns ${pct(unit2At5k)} a year on its cost instead of ${pct(u.yoc)}`],
+  ];
+  for (const [what, made, want, sentence] of said) {
+    assert.equal(made, want, `the model gives ${what} as ${made}`);
+    assert.ok(text.includes(sentence), `the page says ${what}: "${sentence}"`);
+  }
+});
+
+test('Fig. 6\'s label gives the model\'s LP return at each price it names', () => {
+  const { raiseModel } = figures();
+  const fig = findAll(parseHtml(page()), (el) => el.attrs.id === 'priceFig')[0];
+  assert.ok(fig, `${PAGE} has #priceFig`);
+  const img = findAll(fig, (el) => el.attrs.role === 'img')[0];
+  assert.ok(img && img.attrs['aria-label'], 'Fig. 6 has a labelled image');
+  const label = decodeEntities(img.attrs['aria-label']);
+  const bars = [...label.matchAll(/(−?\d+\.\d)% at \$(\d\.\d\d)M/g)];
+  assert.equal(bars.length, 8, `the label names eight prices: ${label}`);
+  for (const [, got, price] of bars) {
+    const want = pct(raiseModel({ ...CASE, price: Number(price) * 1e6 }).lpIrr).replace('-', '−');
+    assert.equal(`${got}%`, want, `LP net IRR at $${price}M`);
   }
 });
 
