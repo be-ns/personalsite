@@ -259,12 +259,16 @@ All free (SIL Open Font License) and self-hosted. Three families.
   parcel: the request, then the response one field at a time. It opens on a
   Toxic Orange band built like the Work band: checkered rules, a running
   border, the soft 01 numeral and the street engraving. Each response field
-  is a numbered section (a soft numeral, the field key in code type, a light
+  is a numbered section (a chapter numeral as in Serotiny, never a
+  department's 01 to 05; the field key in code type as its kicker; a light
   headline), its JSON beside the prose on a code plate: the sunk ground, a
   hairline frame and a system monospace, the only face outside the three,
-  used for code alone. On phones each plate folds into a row. Charts follow
-  the chart rules. The massing model is inked from the tokens through `color-mix`, so
-  it follows the edition. One orange button: Send request.
+  used for code alone. Plates sit in the margin from 1280px, where every
+  line fits; below that they follow the prose, and on phones each folds into
+  a row. The counts and the close stand on small green fields. Charts follow
+  the chart rules. The massing model is inked from the tokens, so it follows
+  the edition: neutrals shade through `color-mix`, the brand inks stay flat
+  with their shade cut by a Char hatch. One orange button: Send request.
 - **Consulting:** each page opens on the nudibranch, a Goody Gumdrop field
   with Char type: the running head, the opener (the ask a Char button, as on
   any field) and the plate in a dark frame with crosshair corners, then a
