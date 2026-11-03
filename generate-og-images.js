@@ -118,7 +118,7 @@ const CARDS = [
   {
     file: 'og-housing-as-an-api-call.png', page: 'housing-as-an-api-call.html', dept: 'work', style: 'display',
     kicker: 'Case study · San Mateo', title: 'Housing as an API call',
-    line: 'One address in. What the law allows, what it looks like, and whether the money works.',
+    line: 'One address, run through an AI research agent. Out: what the law allows and whether the money works.',
     art: ['street', '336 0 244 280'], artAlt: 'a gabled house between a tree and an apartment building',
     seal: ['2', '5', 'Homes by right'], sealAt: 'right: -24px; top: -40px',
     what: 'a case study by Ben Siverly',

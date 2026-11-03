@@ -4,24 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Housing as an API call · Ben Siverly</title>
-  <meta name="description" content="One address in. What the law allows, what it looks like, and whether the money works, out. A case study on a 1953 duplex in San Mateo, California, worked with an AI research agent.">
+  <meta name="description" content="One address, run through an AI research agent. Out: what the law allows, what it looks like, and whether the money works, on a 1953 San Mateo duplex.">
 
   <!-- Open Graph -->
   <meta property="og:title" content="Housing as an API call · Ben Siverly">
-  <meta property="og:description" content="One address in. What the law allows, what it looks like, and whether the money works, out.">
+  <meta property="og:description" content="One address, run through an AI research agent. Out: what the law allows, what it looks like, and whether the money works.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://bensiverly.com/housing-as-an-api-call.html">
   <meta property="og:image" content="https://bensiverly.com/images/og-housing-as-an-api-call.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="A case study by Ben Siverly: Housing as an API call. One address in. What the law allows, what it looks like, and whether the money works. Engraving of a gabled house between a tree and an apartment building, with a seal reading 2 to 5 homes by right.">
+  <meta property="og:image:alt" content="A case study by Ben Siverly: Housing as an API call. One address, run through an AI research agent. Out: what the law allows and whether the money works. Engraving of a gabled house between a tree and an apartment building, with a seal reading 2 to 5 homes by right.">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Housing as an API call · Ben Siverly">
-  <meta name="twitter:description" content="One address in. What the law allows, what it looks like, and whether the money works, out.">
+  <meta name="twitter:description" content="One address, run through an AI research agent. Out: what the law allows, what it looks like, and whether the money works.">
   <meta name="twitter:image" content="https://bensiverly.com/images/og-housing-as-an-api-call.png">
-  <meta name="twitter:image:alt" content="A case study by Ben Siverly: Housing as an API call. One address in. What the law allows, what it looks like, and whether the money works. Engraving of a gabled house between a tree and an apartment building, with a seal reading 2 to 5 homes by right.">
+  <meta name="twitter:image:alt" content="A case study by Ben Siverly: Housing as an API call. One address, run through an AI research agent. Out: what the law allows and whether the money works. Engraving of a gabled house between a tree and an apartment building, with a seal reading 2 to 5 homes by right.">
 
   <!-- Canonical -->
   <link rel="canonical" href="https://bensiverly.com/housing-as-an-api-call.html">
@@ -55,7 +55,7 @@
     "@type": "Article",
     "@id": "https://bensiverly.com/housing-as-an-api-call.html#article",
     "headline": "Housing as an API call",
-    "description": "One address in. What the law allows, what it looks like, and whether the money works, out. A case study on a 1953 duplex in San Mateo, California, worked with an AI research agent.",
+    "description": "One address, run through an AI research agent. Out: what the law allows, what it looks like, and whether the money works, on a 1953 San Mateo duplex.",
     "url": "https://bensiverly.com/housing-as-an-api-call.html",
     "image": "https://bensiverly.com/images/og-housing-as-an-api-call.png",
     "datePublished": "2026-11-03",
@@ -107,6 +107,8 @@
     .cs-band > .wrap { position: relative; z-index: 1; }
     .cs-band > .rim { --rim-fill: var(--ground); }
     .cs-band .rh { margin-bottom: var(--space-4); }
+    .cs-band .rh-title a { color: inherit; text-decoration-color: var(--rule); }
+    .cs-band .rh-title a:hover { text-decoration-color: var(--spot-large); }
     .cs-band .checker { margin-bottom: var(--space-4); }
     .cs-band .cs-frame + .checker { margin: var(--space-4) 0 0; }
     .cs-frame { position: relative; border: 1px solid currentColor; padding: calc(1.6rem + clamp(1.25rem, 4vw, 3rem)) clamp(1rem, 4vw, 3rem); }
@@ -127,7 +129,7 @@
     .cs-band-aside .art { aspect-ratio: 1; border: 1px solid currentColor; background: var(--art-ground); }
     .cs-band-aside .art svg { width: 100%; height: 100%; }
     .cs-band-aside use { color: var(--palette-newsprint); }
-    .cs-band-aside figcaption { margin-top: var(--space-2); font: italic 460 0.9375rem / 1.35 var(--font-text); }
+    .cs-band-aside figcaption { margin-top: var(--space-2); font: italic 460 0.9375rem / 1.35 var(--font-text); text-wrap: balance; }
     @media (min-width: 1024px) {
       .cs-band-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--layout-column-gap); align-items: end; }
       .cs-band-num { grid-column: 1 / span 2; align-self: start; }
@@ -142,15 +144,21 @@
     .cs-intro-text p + p { margin-top: 0.75em; }
     .cs-calls { display: grid; gap: var(--space-4); align-content: start; min-width: 0; }
     @media (min-width: 1024px) {
-      .cs-intro-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--layout-column-gap); }
-      .cs-intro-text { grid-column: 1 / span 6; }
-      .cs-calls { grid-column: 7 / span 6; padding-left: var(--layout-column-gap); border-left: var(--rule-hairline) solid var(--rule); }
+      .cs-intro-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); grid-template-rows: auto 1fr; column-gap: var(--layout-column-gap); }
+      .cs-intro-text { grid-column: 1 / span 6; grid-row: 1; }
+      .cs-toc { grid-column: 1 / span 6; grid-row: 2; }
+      .cs-calls { grid-column: 7 / span 6; grid-row: 1 / span 2; padding-left: var(--layout-column-gap); border-left: var(--rule-hairline) solid var(--rule); }
+    }
+    @media (min-width: 1280px) {
+      .cs-intro-text, .cs-toc { grid-column: 1 / span 7; }
+      .cs-calls { grid-column: 8 / span 5; }
+      .cs-calls pre { font-size: 0.75rem; }
     }
 
-    .cs-toc { max-width: var(--layout-measure); margin-top: var(--space-6); }
+    .cs-toc { max-width: var(--layout-measure); }
     .cs-toc ol { list-style: none; margin-top: var(--space-2); border-top: 1px solid var(--ink-quiet); }
     .cs-toc a { display: flex; align-items: baseline; gap: var(--space-2); min-height: 2.75rem; padding-block: 0.6rem; border-bottom: var(--rule-hairline) solid var(--rule); text-decoration: none; }
-    .cs-toc code { font: 500 0.8125rem / 1.3 var(--cs-mono); color: var(--spot); }
+    .cs-toc code { font: 500 0.8125rem / 1.3 var(--cs-mono); color: var(--leaf); }
     .cs-toc .cs-leader { flex: 1 1 auto; min-width: 1rem; border-bottom: 2px dotted var(--rule); translate: 0 -0.3em; }
     .cs-toc-name { font: 480 1.0625rem / 1.2 var(--font-display); font-variation-settings: 'SOFT' 30; text-align: right; text-wrap: balance; }
     .cs-toc a:hover .cs-toc-name { text-decoration: underline; text-decoration-color: var(--spot-large); text-underline-offset: 0.2em; }
@@ -182,23 +190,23 @@
     /* ---------- Sections: one response field each ---------- */
     .cs-sec { padding-block: var(--space-7); border-top: var(--rule-hairline) solid var(--rule); }
     .cs-grid { display: grid; gap: var(--space-6); }
-    .cs-main { min-width: 0; }
+    .cs-main, .cs-side { min-width: 0; }
     .cs-main > p { max-width: var(--layout-measure); text-wrap: pretty; }
     .cs-main > p + p { margin-top: 0.75em; }
     .cs-main > .cs-lead { max-width: 32em; }
     .cs-after-fig { margin-top: var(--space-5); }
     .cs-head { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0 var(--space-4); align-items: end; margin-bottom: var(--space-4); }
-    .cs-n { font: 300 clamp(3.25rem, 7vw, 5rem) / 0.8 var(--font-display); font-variation-settings: 'SOFT' 100; letter-spacing: -0.05em; color: var(--spot-large); }
-    .cs-key { margin-bottom: var(--space-2); color: var(--spot); font: 500 0.8125rem / 1.3 var(--cs-mono); overflow-wrap: anywhere; }
+    .cs-n { min-width: 0.66em; font: 300 clamp(2.25rem, 1.8rem + 2vw, 3.25rem) / 0.85 var(--font-display); font-variation-settings: 'SOFT' 100; letter-spacing: -0.04em; color: var(--spot-large); }
+    .cs-key { margin-bottom: var(--space-2); color: var(--leaf); font: 500 0.8125rem / 1.3 var(--cs-mono); overflow-wrap: anywhere; }
     .cs-h2 { font-family: var(--type-headline-family); font-size: var(--type-headline-size); font-weight: var(--type-headline-weight); line-height: var(--type-headline-line); letter-spacing: var(--type-headline-tracking); font-variation-settings: var(--type-headline-axes); text-wrap: balance; }
     .cs-lead { max-width: 32em; margin-bottom: var(--space-5); }
     .cs-h3 { margin: var(--space-6) 0 var(--space-3); }
     .cs-after { max-width: var(--layout-measure); margin-top: var(--space-3); }
-    @media (min-width: 1024px) {
+    @media (min-width: 1280px) {
       .cs-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--layout-column-gap); }
       .cs-main { grid-column: 1 / span 7; }
       .cs-side { grid-column: 8 / span 5; padding-left: var(--layout-column-gap); border-left: var(--rule-hairline) solid var(--rule); }
-      .cs-side pre { font-size: 0.75rem; }
+      .cs-side pre { padding-inline: 0.75rem; font-size: 0.6875rem; }
       .cs-side > .cs-code { position: sticky; top: 5rem; }
     }
 
@@ -206,9 +214,10 @@
     .cs-spec { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 12.5rem), 1fr)); column-gap: var(--space-5); border-top: 1px solid var(--ink-quiet); }
     .cs-spec > div { display: grid; align-content: start; gap: 0.15rem; min-width: 0; padding-block: 0.55rem; border-bottom: var(--rule-hairline) solid var(--rule); }
     .cs-spec dd { font: var(--text-weight) 1.0625rem / 1.35 var(--font-text); font-variant-numeric: lining-nums tabular-nums; }
+    @media (max-width: 599px) { .cs-spec { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-4); } .cs-spec dd { font-size: 1rem; } }
 
     /* Rules as tests, and the verdict */
-    .cs-badge { display: inline-flex; align-items: center; justify-content: center; width: 100%; height: 1.5rem; padding-inline: 0.4rem; border-radius: var(--shape-full); font: 700 0.625rem / 1 var(--font-label); letter-spacing: 0.14em; text-transform: uppercase; font-stretch: 88%; white-space: nowrap; }
+    .cs-badge { display: inline-flex; align-items: center; justify-content: center; width: 100%; height: 1.375rem; padding-inline: 0.4rem; border-radius: 3px; font: 700 0.6875rem / 1 var(--font-label); letter-spacing: 0.14em; text-transform: uppercase; font-stretch: 88%; white-space: nowrap; }
     .cs-badge.is-pass { background: var(--leaf-fill); color: var(--on-leaf-fill); }
     .cs-badge.is-review { color: var(--ink); box-shadow: inset 0 0 0 1px var(--outline); }
     .cs-badge.is-fail { background: var(--spot-fill); color: var(--on-spot-fill); }
@@ -226,6 +235,8 @@
     .cs-counts .t-folio { margin-top: var(--space-2); }
     .cs-counts .ico { width: 1.75rem; height: 1rem; margin-bottom: 2rem; color: var(--ink-quiet); }
     .cs-counts .is-hot b { color: var(--spot-large); }
+    .cs-counts.field-leaf { padding: var(--space-5) var(--space-5) var(--space-4); }
+    .cs-counts.field-leaf .is-hot .t-folio { text-decoration: underline 2px var(--spot-fill); text-underline-offset: 0.45em; }
     .cs-counts + .t-note { max-width: var(--layout-measure); margin-top: var(--space-4); }
 
     .cs-verdict { list-style: none; border-top: 1px solid var(--ink-quiet); }
@@ -233,7 +244,9 @@
     .cs-v .cs-badge { grid-row: span 2; margin-top: 0.15rem; }
     .cs-v h3 { font: 480 1.3125rem / 1.2 var(--font-display); font-variation-settings: 'SOFT' 30; letter-spacing: -0.01em; }
     .cs-v p { max-width: var(--layout-measure); color: var(--ink); text-wrap: pretty; }
-    .cs-close { max-width: 30em; margin-top: var(--space-6); font: italic var(--type-deck-weight) var(--type-deck-size) / var(--type-deck-line) var(--font-text); text-wrap: pretty; }
+    .cs-close { margin-top: var(--space-6); padding: var(--space-5) clamp(1.25rem, 3vw, 2rem); }
+    .cs-close p { max-width: 24em; font: var(--type-pullquote-style) var(--type-pullquote-weight) clamp(1.375rem, 2.2vw, 1.75rem) / var(--type-pullquote-line) var(--font-display); font-variation-settings: var(--type-pullquote-axes); letter-spacing: var(--type-pullquote-tracking); text-wrap: balance; }
+    .cs-close .end-mark { border-color: var(--spot-fill); }
 
     /* ---------- Figures: one spot colour, a thin frame, a caption ---------- */
     .cs-fig { margin-top: var(--space-6); }
@@ -243,6 +256,7 @@
     .cs-fig .legend { margin-top: var(--space-3); }
     .cs-foot { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-3) var(--space-6); margin-top: var(--space-4); }
     .cs-foot .legend { margin-top: 0; }
+    @media (min-width: 600px) { .cs-foot { flex-wrap: nowrap; } .cs-foot .legend { flex: none; flex-direction: column; align-items: flex-start; gap: var(--space-1); } }
     .cs-sw { width: 0.75rem; height: 0.75rem; flex: none; box-shadow: inset 0 0 0 1px var(--m-edge); }
     .cs-sw.ex { background: var(--m-existing); }
     .cs-sw.cv { background: var(--m-conv); }
@@ -270,16 +284,16 @@
     .cs-pins { position: absolute; inset: 0; pointer-events: none; }
     .cs-pin { position: absolute; left: 0; top: 0; translate: -50% -50%; display: grid; place-items: center; width: 1.625rem; height: 1.625rem; border-radius: 50%; background: var(--ground); color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); font: 700 0.75rem / 1 var(--font-label); font-feature-settings: 'tnum' 1; transition: opacity var(--motion-duration-short); }
     .cs-pin.is-new { background: var(--spot-fill); color: var(--on-spot-fill); box-shadow: none; }
+    .cs-pins [hidden] { display: none; }
     .cs-lbl { position: absolute; left: 0; top: 0; translate: -50% -50%; padding: 0.15rem 0.3rem; background: color-mix(in srgb, var(--ground) 82%, transparent); color: var(--spot); font: 700 0.6875rem / 1 var(--font-label); letter-spacing: 0.06em; font-feature-settings: 'tnum' 1; white-space: nowrap; }
-    .cs-lbl.is-street { background: none; color: var(--ink-quiet); font-size: 0.625rem; letter-spacing: 0.2em; text-transform: uppercase; }
+    .cs-lbl.is-street { background: none; color: var(--ink); font-size: 0.6875rem; letter-spacing: 0.2em; text-transform: uppercase; }
     .cs-lbl.is-tag { background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 1px var(--rule); letter-spacing: 0.04em; }
-    @media (max-width: 479px) { .cs-pin { width: 1.375rem; height: 1.375rem; font-size: 0.6875rem; } .cs-lbl { font-size: 0.625rem; } }
+    @media (max-width: 479px) { .cs-pin { width: 1.375rem; height: 1.375rem; font-size: 0.6875rem; } }
 
     /* The site plan */
-    .cs-plan { margin-top: var(--space-3); padding: var(--space-2); background: var(--sunk); box-shadow: inset 0 0 0 1px var(--rule); }
-    .cs-plan svg { width: 100%; height: auto; }
-    /* On a phone the plan stands upright; cap it so it never outruns the screen. */
-    @media (max-width: 559px) { .cs-plan svg { max-height: 78vh; } }
+    .cs-plan { margin-top: var(--space-3); }
+    /* In a narrow column the plan stands upright; cap it so it never outruns the screen. */
+    .cs-plan svg { width: 100%; height: auto; max-height: min(78vh, 40rem); }
     .p-street { fill: var(--m-street); } .p-walk { fill: var(--m-walk); } .p-lot { fill: var(--m-lot); } .p-paved { fill: var(--m-paved); }
     .p-ex { fill: var(--m-existing); } .p-cv { fill: var(--m-conv); } .p-nw { fill: var(--m-new); }
     .p-bld { stroke: var(--m-edge); stroke-width: 0.45; }
@@ -287,10 +301,11 @@
     .p-set { fill: none; stroke: var(--ink-quiet); stroke-width: 0.35; stroke-dasharray: 1.6 1.2; }
     .p-aduset { fill: none; stroke: var(--m-line); stroke-width: 0.4; stroke-dasharray: 1.6 1.2; }
     .p-dim { stroke: var(--spot); stroke-width: 0.35; }
-    .p-t { fill: var(--ink-quiet); font-family: var(--font-label); font-weight: 600; letter-spacing: 0.08em; }
+    .p-t { fill: var(--ink); font-family: var(--font-label); font-weight: 600; letter-spacing: 0.08em; }
+    .p-t--bld { fill: var(--m-edge); }
     .p-tf { fill: var(--spot); font-family: var(--font-label); font-weight: 700; }
     .p-pin { fill: var(--ground); stroke: var(--ink); stroke-width: 0.45; }
-    .p-pin.is-new { fill: var(--spot-fill); stroke: none; }
+    .p-pin.is-new { fill: var(--spot-fill); stroke: var(--on-spot-fill); stroke-width: 0.45; }
     .p-pnum { fill: var(--ink); font-family: var(--font-label); font-weight: 700; }
     .p-pnum.is-new { fill: var(--on-spot-fill); }
     .p-hatch { stroke: var(--m-edge); stroke-width: 0.45; opacity: 0.55; }
@@ -302,11 +317,14 @@
     .cs-table th { padding: 0 var(--space-3) var(--space-2) 0; border-bottom: 1px solid var(--ink-quiet); text-align: left; vertical-align: bottom; }
     .cs-table td { padding: 0.55rem var(--space-3) 0.55rem 0; border-bottom: var(--rule-hairline) solid var(--rule); font: var(--text-weight) 1rem / 1.35 var(--font-text); vertical-align: middle; }
     .cs-table th.n { padding-right: 0; text-align: right; }
+    .cs-table tbody th { padding: 0.55rem var(--space-3) 0.55rem 0; border-bottom: var(--rule-hairline) solid var(--rule); font: var(--text-weight) 1rem / 1.35 var(--font-text); text-align: left; vertical-align: middle; }
     .cs-table td.n, .cs-prices td:first-child { font: 600 0.9375rem / 1.2 var(--font-label); font-feature-settings: 'tnum' 1; white-space: nowrap; }
     .cs-table td.n { padding-right: 0; text-align: right; }
-    .cs-table tr.is-off td { opacity: 0.38; }
+    .cs-table tr.is-off td { color: var(--ink-quiet); }
+    .cs-table tr.is-off .cs-pinnum.is-new { background: none; color: var(--ink-quiet); box-shadow: inset 0 0 0 1.5px var(--outline); }
+    .cs-table tr:not(.is-off) .cs-off { display: none; }
     .cs-table tr.is-neg td.n { color: var(--ink-quiet); font-weight: 500; }
-    .cs-table tr.is-sum td { border-top: var(--rule-heavy) solid var(--ink); border-bottom: 0; font-weight: 600; }
+    .cs-table tr.is-sum td, .cs-table tr.is-sum th { border-top: var(--rule-heavy) solid var(--ink); border-bottom: 0; font-weight: 600; }
     .cs-table tr.is-base td { color: var(--spot); font-weight: 600; }
     .cs-homes { margin-top: var(--space-5); }
     .cs-pinnum { display: inline-grid; place-items: center; width: 1.5rem; height: 1.5rem; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--ink); font: 700 0.6875rem / 1 var(--font-label); }
@@ -316,7 +334,10 @@
     .cs-prices { margin-top: var(--space-5); }
 
     /* Figures in the In brief manner: a light figure, a small orange unit, a label */
-    .cs-figs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); gap: var(--space-5); margin-block: var(--space-6); list-style: none; }
+    .cs-figs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5) var(--space-4); margin-block: var(--space-6); list-style: none; }
+    #capital .cs-figs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 599px) { #capital .cs-figs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 379px) { .cs-figs { column-gap: var(--space-3); } .cs-figs b { font-size: 2rem; } }
     .cs-figs li { min-width: 0; padding-top: var(--space-2); border-top: 1px solid var(--ink-quiet); }
     .cs-figs b { display: flex; align-items: baseline; font: 300 clamp(2.25rem, 4.2vw, 3rem) / 0.95 var(--font-display); font-variation-settings: 'SOFT' 0; letter-spacing: -0.04em; font-feature-settings: 'lnum' 1; white-space: nowrap; }
     .cs-figs b small { margin-left: 0.06em; color: var(--spot); font: 600 0.9375rem / 1 var(--font-label); letter-spacing: 0.02em; }
@@ -367,17 +388,17 @@
     .cs-pt { position: relative; height: 1.625rem; }
     .cs-pt .zero, .cs-pt .hurdle { position: absolute; top: -2px; bottom: -2px; width: 0; }
     .cs-pt .zero { border-left: 1px solid var(--ink-quiet); }
-    .cs-pt .hurdle { border-left: 2px dashed var(--spot); }
+    .cs-pt .hurdle { border-left: 2px dashed var(--ink); }
     .cs-pt i { position: absolute; top: 0.375rem; bottom: 0.375rem; border-radius: 2px; background: var(--ink-quiet); }
-    .cs-pt i.is-clear { background: var(--leaf); }
+    .cs-pt i.is-clear { background: var(--spot-large); }
     .cs-pt i.is-neg { background: repeating-linear-gradient(135deg, var(--ink-quiet) 0 1.5px, transparent 1.5px 5px); box-shadow: inset 0 0 0 1px var(--ink-quiet); }
-    .cs-prow.is-base .cs-pl, .cs-prow.is-base .cs-pv { color: var(--spot); }
+    .cs-prow.is-base .cs-pl { text-decoration: underline 2px var(--spot-large); text-underline-offset: 0.3em; }
     .cs-paxis .cs-pt { height: 1.25rem; }
     .cs-paxis .cs-pt span { position: absolute; top: 0.2rem; translate: -50% 0; color: var(--ink-quiet); font: 500 0.75rem / 1 var(--font-label); white-space: nowrap; }
     .cs-sw.bar-q { background: var(--ink-quiet); box-shadow: none; }
-    .cs-sw.bar-g { background: var(--leaf); box-shadow: none; }
+    .cs-sw.bar-g { background: var(--spot-large); box-shadow: none; }
     .cs-sw.bar-h { background: repeating-linear-gradient(135deg, var(--ink-quiet) 0 1.5px, transparent 1.5px 5px); box-shadow: inset 0 0 0 1px var(--ink-quiet); }
-    .cs-sw.line-h { width: 0; height: 0.875rem; box-shadow: none; border-left: 2px dashed var(--spot); }
+    .cs-sw.line-h { width: 0; height: 0.875rem; box-shadow: none; border-left: 2px dashed var(--ink); }
     @media (max-width: 559px) { .cs-prow, .cs-paxis { grid-template-columns: 4rem minmax(0, 1fr) 3.5rem; gap: var(--space-2); } }
 
     .cs-list { display: grid; gap: var(--space-2); max-width: var(--layout-measure); padding-left: 1.1rem; }
@@ -389,7 +410,12 @@
     @media (min-width: 1024px) {
       .cs-pg { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--layout-column-gap); align-items: start; }
       .cs-pg-in { grid-column: 1 / span 6; }
-      .cs-pg-out { grid-column: 7 / span 6; position: sticky; top: 5rem; }
+      .cs-pg-out { grid-column: 7 / span 6; align-self: stretch; padding-left: var(--layout-column-gap); border-left: var(--rule-hairline) solid var(--rule); }
+      .cs-pg-out > .cs-code { position: sticky; top: 5rem; }
+    }
+    @media (min-width: 1280px) {
+      .cs-pg-in { grid-column: 1 / span 7; }
+      .cs-pg-out { grid-column: 8 / span 5; }
     }
     .cs-ctl { padding-block: var(--space-3) var(--space-2); border-bottom: var(--rule-hairline) solid var(--rule); }
     .cs-ctl:first-child { border-top: 1px solid var(--ink-quiet); }
@@ -403,7 +429,7 @@
     .cs-trace { list-style: none; counter-reset: step; border-top: 1px solid var(--ink-quiet); }
     .cs-trace li { counter-increment: step; display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); gap: 0.15rem var(--space-3); padding-block: var(--space-3); border-bottom: var(--rule-hairline) solid var(--rule); break-inside: avoid; }
     .cs-trace li::before { content: counter(step, decimal-leading-zero); grid-row: span 3; color: var(--spot-large); font: 300 1.75rem / 1 var(--font-display); font-variation-settings: 'SOFT' 100; letter-spacing: -0.03em; }
-    .cs-trace code { color: var(--spot); font: 600 0.8125rem / 1.4 var(--cs-mono); }
+    .cs-trace code { color: var(--leaf); font: 600 0.8125rem / 1.4 var(--cs-mono); }
     .cs-trace .r { font-size: 1rem; line-height: 1.45; text-wrap: pretty; }
     @media (min-width: 840px) { .cs-trace { columns: 2; column-gap: var(--layout-text-columns-gap); } }
 
@@ -417,6 +443,13 @@
     .cs-way { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-5); padding-block: var(--space-2) var(--space-5); }
     .cs-way .btn--text { margin-left: -0.25rem; }
     .cs-frieze { margin-top: var(--space-2); color: var(--art-ink); opacity: 0.88; }
+    /* Once the contents have scrolled away, a Contents link waits at the foot of
+       the screen, as Serotiny's Chapters link does. Without script it is always there. */
+    .cs-to-toc { position: sticky; bottom: var(--space-4); z-index: 2; display: flex; justify-content: flex-end; margin-top: calc(-1 * var(--touch-target)); pointer-events: none; transition: opacity var(--motion-duration-short), visibility var(--motion-duration-short); }
+    .cs-to-toc .btn { gap: 0.5em; background: var(--ground); pointer-events: auto; }
+    .cs-to-toc .ico { rotate: -90deg; }
+    .js .cs-to-toc:not(.is-shown) { opacity: 0; visibility: hidden; }
+    .cs-nw { white-space: nowrap; }
     .cs-frieze svg { width: 100%; height: clamp(8.5rem, 22vw, 17.5rem); }
 
     /* ---------- Edges ---------- */
@@ -424,15 +457,28 @@
     @media (forced-colors: active) {
       .cs-badge, .cs-pill, .cs-pin, .cs-pinnum, .cs-stack > div { border: 1px solid CanvasText; }
       .cs-dt i, .cs-dt b, .cs-pt i, .cs-sw { forced-color-adjust: none; }
+      .cs-drow .cs-dt { forced-color-adjust: none; background: linear-gradient(CanvasText, CanvasText) center / 100% 1px no-repeat; }
+      .cs-dt i, .cs-dt b, .cs-pt i, .cs-sw.dot-q, .cs-sw.bar-q { background: CanvasText; }
+      .cs-drow.is-ours i, .cs-pt i.is-clear, .cs-sw.dot-o, .cs-sw.bar-g { background: Highlight; }
+      .cs-drow.is-soft i { background: Canvas; box-shadow: inset 0 0 0 2px Highlight; }
+      .cs-drow.is-warn i { box-shadow: 0 0 0 2px Canvas, 0 0 0 4px Highlight; }
+      .cs-pt i.is-neg, .cs-sw.bar-h { background: repeating-linear-gradient(135deg, CanvasText 0 1.5px, transparent 1.5px 5px); box-shadow: inset 0 0 0 1px CanvasText; }
+      .cs-sw.line-h { border-left-color: CanvasText; }
+      .legend li:has(> .cs-sw.band) { display: none; }
     }
+    /* Without JavaScript (the head script sets .js): no dead controls, no empty frames. */
+    :root:not(.js) :is(#send, .cs-stage-bar, .cs-axo, .cs-axo ~ .legend, #planFig, #priceFig, #playground, .cs-toc li:has(> a[href="#playground"])) { display: none; }
     @media print {
       .cs-band { padding-block: 0 var(--space-5); background: none; color: var(--ink); }
       .cs-band::before, .cs-band::after, .cs-band > .rim, .cs-band .checker, .cs-ticker, .cs-band-aside, .cs-band .rh { display: none; }
       .cs-frame { border: 0; padding: 0; }
       .cs-frame::before { display: none; }
-      #send, .cs-turn, #playground, .cs-way, .cs-frieze, .cs-toc { display: none !important; }
-      .cs-side > .cs-code, .cs-pg-out { position: static; }
-      .cs-fig, .cs-code, .cs-t, .cs-v, .cs-trace li, .cs-table tr { break-inside: avoid; }
+      #send, .cs-turn, #playground, .cs-way, .cs-frieze, .cs-toc, .cs-to-toc { display: none !important; }
+      .cs-side > .cs-code, .cs-pg-out > .cs-code { position: static; }
+      .cs-fig, .cs-code, .cs-t, .cs-v, .cs-trace li, .cs-table tr, .cs-close { break-inside: avoid; }
+      .cs-head, .cs-lead { break-inside: avoid; break-after: avoid; }
+      /* Every mark here is a background; print it with background graphics off. */
+      .cs-dt, .cs-dt i, .cs-dt b, .cs-pt i, .cs-stack > div, .cs-sw, .cs-badge, .cs-pill, .cs-pin, .cs-pinnum, .segmented button[aria-pressed="true"] { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       .cs-sec { padding-block: var(--space-5); }
     }
   </style>
@@ -503,7 +549,7 @@
   <main id="main" class="case">
     <header class="cs-band field-spot">
       <div class="wrap">
-        <div class="rh rh--verso t-folio"><span class="rh-pg">01</span><span class="rh-title">Work &middot; Case study</span><span class="rh-pub">Ben Siverly &middot; Issue 01 &middot; Autumn 2026</span></div>
+        <div class="rh rh--verso t-folio"><span class="rh-pg">01</span><span class="rh-title"><a href="index.html#work">Work</a><span aria-hidden="true"> &middot; </span>Housing as an API call</span><span class="rh-pub">Ben Siverly &middot; Issue 01 &middot; Autumn 2026</span></div>
         <div class="checker" aria-hidden="true"></div>
         <div class="cs-frame">
           <p class="cs-ticker cs-ticker--top" aria-hidden="true"><span>Ben&#8197;Siverly</span> &middot;&nbsp;<span>Product,&#8197;data&#8197;and&#8197;AI</span> &middot;&nbsp;<span>Issue&#8197;01</span> &middot;&nbsp;<span>Work</span> &middot;&nbsp;<span>Ben&#8197;Siverly</span> &middot;&nbsp;<span>Product,&#8197;data&#8197;and&#8197;AI</span> &middot;&nbsp;<span>Issue&#8197;01</span> &middot;&nbsp;<span>Work</span> &middot;&nbsp;<span>Ben&#8197;Siverly</span> &middot;&nbsp;<span>Product,&#8197;data&#8197;and&#8197;AI</span> &middot;&nbsp;<span>Issue&#8197;01</span> &middot;&nbsp;<span>Work</span> &middot;&nbsp;<span>Ben&#8197;Siverly</span> &middot;&nbsp;<span>Product,&#8197;data&#8197;and&#8197;AI</span> &middot;&nbsp;<span>Issue&#8197;01</span> &middot;&nbsp;<span>Work</span></p>
@@ -513,12 +559,12 @@
             <div class="cs-band-main">
               <p class="t-kicker">Case study &middot; San Mateo, California</p>
               <h1>Housing as an API call</h1>
-              <p class="t-deck">One address in. What the law allows, what it looks like, and whether the money works, out.</p>
+              <p class="t-deck">One address in. Out: room for five homes where two stand today, and the purchase price that decides whether they get built. I ran the call with an AI research agent, from the zoning code to the capital stack.</p>
               <p class="t-byline">By Ben Siverly &middot; November 2026 &middot; <span data-read="cs-body">9</span> min read</p>
             </div>
             <figure class="cs-band-aside">
               <div class="art"><svg viewBox="330 40 240 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#art-street" width="1200" height="280"/></svg></div>
-              <figcaption>One roof, two homes, on land zoned for more.</figcaption>
+              <figcaption>A house on a block zoned for apartments.</figcaption>
             </figure>
           </div>
         </div>
@@ -531,28 +577,14 @@
       <div class="cs-intro wrap">
         <div class="cs-intro-grid">
           <div class="cs-intro-text">
-            <p class="dropcap">The house at 1xx Hobart Ave is a 1953 duplex in San Mateo. Two 2-bed units sit at the ends of one long roof, with two 2-car garages between them. The lot is 8,750 sq ft and zoned for apartments.</p>
+            <p class="dropcap">The house at 1xx Hobart Ave is a 1953 duplex in San Mateo. Two <span class="cs-nw">2-bed</span> units sit at the ends of one long roof, with two <span class="cs-nw">2-car</span> garages between them. The lot is 8,750 sq ft and zoned for apartments.</p>
             <p>California now lets an owner add homes to a lot like this without a public hearing. Most owners never learn how many, because the answer takes a zoning read, a site plan, rent comps, a cost estimate, and a pro forma. On a project that adds three homes, nobody pays for that work.</p>
             <p>So I treated it as an API call. I gave an AI research agent the address and worked the problem with it in one long conversation. Here is the request. The response follows, one field at a time.</p>
-            <nav class="cs-toc" aria-labelledby="cs-toc-h">
-              <p class="t-folio" id="cs-toc-h">In this response</p>
-              <ol>
-                <li><a href="#parcel"><code>parcel</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">The parcel</span></a></li>
-                <li><a href="#entitlements"><code>entitlements</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">What the law allows</span></a></li>
-                <li><a href="#renders"><code>renders</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">What it looks like</span></a></li>
-                <li><a href="#market"><code>market</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">What it rents for</span></a></li>
-                <li><a href="#underwriting"><code>underwriting</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">The math for five homes</span></a></li>
-                <li><a href="#capital"><code>capital</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">If I raised it</span></a></li>
-                <li><a href="#verdict"><code>verdict</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">The answer</span></a></li>
-                <li><a href="#playground"><code>underwrite</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">Run your own numbers</span></a></li>
-                <li><a href="#trace"><code>trace</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">How the call ran</span></a></li>
-              </ol>
-            </nav>
           </div>
           <div class="cs-calls">
             <div class="cs-code">
               <div class="cs-code-bar"><span class="cs-code-path"><b class="cs-pill cs-pill--post">POST</b>/v1/sites</span><button class="btn btn--spot btn--sm" type="button" id="send">Send request</button></div>
-<pre tabindex="0" aria-label="The request, as JSON"><code class="json">{
+<pre tabindex="0" role="group" aria-label="The request, as JSON"><code class="json">{
   "address": "1xx Hobart Ave, San Mateo, CA 94402",
   "goal": "max_homes",
   "prefer": "by_right",
@@ -562,7 +594,7 @@
             </div>
             <div class="cs-code">
               <div class="cs-code-bar"><span class="cs-code-path"><b class="cs-pill cs-pill--ok" id="status">200 OK</b><span id="statusText">application/json</span></span></div>
-<pre tabindex="0" aria-label="The response, as JSON"><code class="json" id="heroRes">{
+<pre tabindex="0" role="group" aria-label="The response, as JSON"><code class="json" id="heroRes">{
   "apn": "034-382-xxx",
   "zoning": "R3",
   "homes": { "today": 2, "by_right": 5, "max": 6 },
@@ -572,7 +604,22 @@
   "verdict": "pencils_as_home"
 }</code></pre>
             </div>
+            <p class="visually-hidden" id="sendSay" role="status"></p>
           </div>
+          <nav class="cs-toc" aria-labelledby="cs-toc-h">
+            <p class="t-folio" id="cs-toc-h">In this response</p>
+            <ol>
+              <li><a href="#parcel"><code>parcel</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">The parcel</span></a></li>
+              <li><a href="#entitlements"><code>entitlements</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">What the law allows</span></a></li>
+              <li><a href="#renders"><code>renders</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">What it looks like</span></a></li>
+              <li><a href="#market"><code>market</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">What it rents for</span></a></li>
+              <li><a href="#underwriting"><code>underwriting</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">The math for five homes</span></a></li>
+              <li><a href="#capital"><code>capital</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">If I raised it</span></a></li>
+              <li><a href="#verdict"><code>verdict</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">The answer</span></a></li>
+              <li><a href="#playground"><code>underwrite</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">Run your own numbers</span></a></li>
+              <li><a href="#trace"><code>trace</code><span class="cs-leader" aria-hidden="true"></span><span class="cs-toc-name">How the call ran</span></a></li>
+            </ol>
+          </nav>
         </div>
       </div>
 
@@ -580,10 +627,10 @@
       <section class="cs-sec" id="parcel" aria-labelledby="parcel-h">
         <div class="wrap cs-grid">
           <div class="cs-main">
-            <header class="cs-head"><span class="cs-n" aria-hidden="true">01</span><div><p class="cs-key">response.parcel</p><h2 class="cs-h2" id="parcel-h">The parcel</h2></div></header>
+            <header class="cs-head"><span class="cs-n" aria-hidden="true">1</span><div><p class="cs-key">response.parcel</p><h2 class="cs-h2" id="parcel-h">The parcel</h2></div></header>
             <p class="t-deck cs-lead">One story, stucco, built in 1953, on a deep lot zoned for apartments. Each unit has its own meters.</p>
             <dl class="cs-spec">
-              <div><dt class="t-folio">APN</dt><dd>034-382-xxx</dd></div>
+              <div><dt class="t-folio">Parcel number</dt><dd>034-382-xxx</dd></div>
               <div><dt class="t-folio">Lot</dt><dd>8,750 sq ft, level</dd></div>
               <div><dt class="t-folio">Lot shape</dt><dd>About 50 × 175 ft</dd></div>
               <div><dt class="t-folio">Zoning</dt><dd>R3, multifamily</dd></div>
@@ -594,14 +641,14 @@
               <div><dt class="t-folio">Last sale</dt><dd>$920,000 in 2009</dd></div>
               <div><dt class="t-folio">Assessed, 2025</dt><dd>$1,211,292</dd></div>
               <div><dt class="t-folio">Property tax, 2025</dt><dd>$15,327</dd></div>
-              <div><dt class="t-folio">Estimate</dt><dd>$1.98M ($1.88M to $2.28M)</dd></div>
+              <div><dt class="t-folio">Market value, est.</dt><dd>$1.98M ($1.88M to $2.28M)</dd></div>
             </dl>
             <p class="t-note cs-after">The county records 3,370 sq ft. The listing says 2,400 living. The difference is about the size of two 2-car garages. The lot shape comes from an aerial photo, so it is an estimate. Flood and fire risk are minimal.</p>
           </div>
-          <aside class="cs-side" aria-label="The parcel, as JSON">
+          <div class="cs-side">
             <div class="cs-code" data-fold>
               <div class="cs-code-bar fold-head"><h3>response.parcel</h3><span aria-hidden="true">JSON</span></div>
-<pre tabindex="0" data-fold-body><code class="json">"parcel": {
+<pre tabindex="0" role="group" aria-label="The parcel, as JSON" data-fold-body><code class="json">"parcel": {
   "apn": "034-382-xxx",
   "lot_sq_ft": 8750,
   "lot_dims_ft": [50, 175],
@@ -619,7 +666,7 @@
   }
 }</code></pre>
             </div>
-          </aside>
+          </div>
         </div>
       </section>
 
@@ -627,22 +674,22 @@
       <section class="cs-sec" id="entitlements" aria-labelledby="entitlements-h">
         <div class="wrap cs-grid">
           <div class="cs-main">
-            <header class="cs-head"><span class="cs-n" aria-hidden="true">02</span><div><p class="cs-key">response.entitlements</p><h2 class="cs-h2" id="entitlements-h">What the law allows</h2></div></header>
+            <header class="cs-head"><span class="cs-n" aria-hidden="true">2</span><div><p class="cs-key">response.entitlements</p><h2 class="cs-h2" id="entitlements-h">What the law allows</h2></div></header>
             <p class="t-deck cs-lead">Each rule runs like a test. Five pass, one needs review, and two fail. The failures shape the answer as much as the passes.</p>
             <div class="cs-tests">
-              <p class="cs-tests-head t-folio"><code>rules.run(parcel)</code><span>5 pass &middot; 1 review &middot; 2 fail</span></p>
+              <p class="cs-tests-head t-folio"><code>rules.run(parcel)</code><span>8 rules</span></p>
               <ol>
-                <li class="cs-t"><span class="cs-badge is-pass">Pass</span><code class="cs-rid">density.r3</code><span class="cs-res">1 home per 2,500 sq ft on a 50-ft lot. 8,750 ÷ 2,500 = 3.5, so 3 primary homes.</span><span class="cs-src t-note">San Mateo Code 27.22.040</span></li>
-                <li class="cs-t"><span class="cs-badge is-pass">Pass</span><code class="cs-rid">adu.conversion</code><span class="cs-res">At least 1 ADU inside non-living space. Both garages become one home.</span><span class="cs-src t-note">Gov. Code 66323</span></li>
+                <li class="cs-t"><span class="cs-badge is-pass">Pass</span><code class="cs-rid">density.r3</code><span class="cs-res">1 home per 2,500 sq ft on a <span class="cs-nw">50-ft</span> lot. 8,750 ÷ 2,500 = 3.5, so 3 primary homes.</span><span class="cs-src t-note">San Mateo Code 27.22.040</span></li>
+                <li class="cs-t"><span class="cs-badge is-pass">Pass</span><code class="cs-rid">adu.conversion</code><span class="cs-res">At least 1 ADU (accessory dwelling unit, an extra home on a lot that already has one) inside non-living space. Both garages become one home.</span><span class="cs-src t-note">Gov. Code 66323</span></li>
                 <li class="cs-t"><span class="cs-badge is-pass">Pass</span><code class="cs-rid">adu.detached</code><span class="cs-res">1 detached ADU per existing unit, so 2.</span><span class="cs-src t-note">SB 1211</span></li>
-                <li class="cs-t"><span class="cs-badge is-pass">Pass</span><code class="cs-rid">adu.height</code><span class="cs-res">18 ft to the top plate, 24 ft to the peak. Each ADU gets 2 stories.</span><span class="cs-src t-note">San Mateo Code 27.19, 2026 update</span></li>
+                <li class="cs-t"><span class="cs-badge is-pass">Pass</span><code class="cs-rid">adu.height</code><span class="cs-res">18 ft to the top of the walls, 24 ft to the peak. Each ADU gets 2 stories.</span><span class="cs-src t-note">San Mateo Code 27.19, 2026 update</span></li>
                 <li class="cs-t"><span class="cs-badge is-pass">Pass</span><code class="cs-rid">adu.parking</code><span class="cs-res">No replacement parking for a converted garage.</span><span class="cs-src t-note">Gov. Code 66322</span></li>
                 <li class="cs-t"><span class="cs-badge is-review">Review</span><code class="cs-rid">primary.third</code><span class="cs-res">A third primary home fits under the density cap. It needs normal zoning review, including parking.</span><span class="cs-src t-note">San Mateo Code 27.22</span></li>
                 <li class="cs-t"><span class="cs-badge is-fail">Fail</span><code class="cs-rid">sb684.small_lot</code><span class="cs-res">Up to 10 homes on a small multifamily lot, but not where tenants lived in the last 5 years.</span><span class="cs-src t-note">SB 684</span></li>
-                <li class="cs-t"><span class="cs-badge is-fail">Fail</span><code class="cs-rid">adu.detached.third</code><span class="cs-res">Legal once there are 3 primary homes. It does not fit inside the 4-ft setbacks.</span><span class="cs-src t-note">Site fit</span></li>
+                <li class="cs-t"><span class="cs-badge is-fail">Fail</span><code class="cs-rid">adu.detached.third</code><span class="cs-res">Legal once there are 3 primary homes. It does not fit inside the <span class="cs-nw">4-ft</span> setbacks, the strip an ADU must leave clear along the side and rear lot lines.</span><span class="cs-src t-note">Site fit</span></li>
               </ol>
             </div>
-            <div class="cs-counts" role="img" aria-label="Homes on the lot: 2 today, 5 by right, 6 at most">
+            <div class="cs-counts field-leaf" role="img" aria-label="Homes on the lot: 2 today, 5 by right, 6 at most">
               <div><b>2</b><span class="t-folio">Today</span></div>
               <svg class="ico" viewBox="0 0 18 10" aria-hidden="true"><use href="#i-arrow"/></svg>
               <div><b>5</b><span class="t-folio">By right</span></div>
@@ -651,10 +698,10 @@
             </div>
             <p class="t-note">By right means city staff approve it with no hearing. The sixth home is the only one that goes through normal review.</p>
           </div>
-          <aside class="cs-side" aria-label="What the law allows, as JSON">
+          <div class="cs-side">
             <div class="cs-code" data-fold>
               <div class="cs-code-bar fold-head"><h3>response.entitlements</h3><span aria-hidden="true">JSON</span></div>
-<pre tabindex="0" data-fold-body><code class="json">"entitlements": {
+<pre tabindex="0" role="group" aria-label="What the law allows, as JSON" data-fold-body><code class="json">"entitlements": {
   "primary_units_allowed": 3,
   "conversion_adus": 1,
   "detached_adus": 2,
@@ -665,14 +712,14 @@
   "homes": { "today": 2, "by_right": 5, "max": 6 }
 }</code></pre>
             </div>
-          </aside>
+          </div>
         </div>
       </section>
       <!-- response.renders -->
       <section class="cs-sec" id="renders" aria-labelledby="renders-h">
         <div class="wrap cs-grid">
           <div class="cs-main">
-            <header class="cs-head"><span class="cs-n" aria-hidden="true">03</span><div><p class="cs-key">response.renders</p><h2 class="cs-h2" id="renders-h">What it looks like</h2></div></header>
+            <header class="cs-head"><span class="cs-n" aria-hidden="true">3</span><div><p class="cs-key">response.renders</p><h2 class="cs-h2" id="renders-h">What it looks like</h2></div></header>
             <p class="t-deck cs-lead">Rough massing, traced from an aerial photo and the county&rsquo;s square footage. Drag the model to turn it.</p>
             <figure class="cs-fig">
               <div class="plate">
@@ -689,7 +736,7 @@
                   <svg id="axo" viewBox="0 0 1000 680" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Massing model of the lot at its most: 6 homes"></svg>
                   <div class="cs-pins" id="axoPins" aria-hidden="true"></div>
                 </div>
-                <noscript><p class="t-note">The model, the site plan and the playground need JavaScript. Everything else on this page reads without it.</p></noscript>
+                <noscript><p class="t-note">The model, the site plan, the LP return chart and the playground need JavaScript, so they are left out. Everything else on this page reads without it.</p></noscript>
                 <ul class="legend">
                   <li><span class="cs-sw ex"></span>Existing</li>
                   <li><span class="cs-sw cv"></span>Converted</li>
@@ -699,8 +746,11 @@
               </div>
               <figcaption class="t-caption fig-cap"><b>Fig. 1</b> Heights: the existing homes 16 ft, the upper unit 23 ft, the rear ADUs 24 ft to the peak.</figcaption>
             </figure>
-            <figure class="cs-fig">
-              <div class="cs-plan" id="planWrap"><svg id="plan" role="img" aria-label="Site plan of the lot"></svg></div>
+            <figure class="cs-fig" id="planFig">
+              <div class="plate">
+                <p class="plate-title"><span>Site plan</span><span id="planScen">Max, 6 homes</span></p>
+                <div class="cs-plan" id="planWrap"><svg id="plan" role="img" aria-label="Site plan of the lot"></svg></div>
+              </div>
               <figcaption class="t-caption fig-cap"><b>Fig. 2</b> <span id="planCap">Site plan. Gray dashes: 15-ft front setback. Orange dashes: 4-ft ADU setback.</span></figcaption>
             </figure>
             <table class="cs-table cs-homes" id="homes">
@@ -709,17 +759,17 @@
               <tbody>
                 <tr data-in="today by_right max"><td><span class="cs-pinnum">1</span></td><td>Front unit</td><td>Existing</td><td class="n">1,088</td></tr>
                 <tr data-in="today by_right max"><td><span class="cs-pinnum">2</span></td><td>Back unit</td><td>Existing</td><td class="n">1,280</td></tr>
-                <tr data-in="by_right max"><td><span class="cs-pinnum is-new">3</span></td><td>Garage ADU</td><td>Conversion</td><td class="n">1,008</td></tr>
-                <tr data-in="by_right max"><td><span class="cs-pinnum is-new">4</span></td><td>Rear ADU, left</td><td>New, 2 stories</td><td class="n">1,008</td></tr>
-                <tr data-in="by_right max"><td><span class="cs-pinnum is-new">5</span></td><td>Rear ADU, right</td><td>New, 2 stories</td><td class="n">1,008</td></tr>
-                <tr data-in="max"><td><span class="cs-pinnum is-new">6</span></td><td>Upper unit</td><td>New primary home</td><td class="n">1,008</td></tr>
+                <tr data-in="by_right max"><td><span class="cs-pinnum is-new">3</span></td><td>Garage ADU<span class="cs-off visually-hidden">, not in this scenario</span></td><td>Conversion</td><td class="n">1,008</td></tr>
+                <tr data-in="by_right max"><td><span class="cs-pinnum is-new">4</span></td><td>Rear ADU, left<span class="cs-off visually-hidden">, not in this scenario</span></td><td>New, 2 stories</td><td class="n">1,008</td></tr>
+                <tr data-in="by_right max"><td><span class="cs-pinnum is-new">5</span></td><td>Rear ADU, right<span class="cs-off visually-hidden">, not in this scenario</span></td><td>New, 2 stories</td><td class="n">1,008</td></tr>
+                <tr data-in="max"><td><span class="cs-pinnum is-new">6</span></td><td>Upper unit<span class="cs-off visually-hidden">, not in this scenario</span></td><td>New primary home</td><td class="n">1,008</td></tr>
               </tbody>
             </table>
           </div>
-          <aside class="cs-side" aria-label="What it looks like, as JSON">
+          <div class="cs-side">
             <div class="cs-code" data-fold>
               <div class="cs-code-bar fold-head"><h3>response.renders</h3><span aria-hidden="true">JSON</span></div>
-<pre tabindex="0" data-fold-body><code class="json">"renders": {
+<pre tabindex="0" role="group" aria-label="What it looks like, as JSON" data-fold-body><code class="json">"renders": {
   "style": "axonometric_massing",
   "scenarios": ["today", "by_right", "max"],
   "homes": [
@@ -735,7 +785,7 @@
   }
 }</code></pre>
             </div>
-          </aside>
+          </div>
         </div>
       </section>
 
@@ -743,12 +793,12 @@
       <section class="cs-sec" id="market" aria-labelledby="market-h">
         <div class="wrap cs-grid">
           <div class="cs-main">
-            <header class="cs-head"><span class="cs-n" aria-hidden="true">04</span><div><p class="cs-key">response.market</p><h2 class="cs-h2" id="market-h">What it rents for</h2></div></header>
+            <header class="cs-head"><span class="cs-n" aria-hidden="true">4</span><div><p class="cs-key">response.market</p><h2 class="cs-h2" id="market-h">What it rents for</h2></div></header>
             <p class="t-deck cs-lead">Every home is priced at the upper third of San Mateo rents, $4.50 per sq ft a month. The city average was $4.26 in July 2026.</p>
             <figure class="cs-fig">
               <div class="plate">
-                <p class="plate-title"><span>Monthly rent, 2-bed homes</span><span>San Mateo</span></p>
-                <div class="cs-dots" style="--a: 7.5%; --b: 60.1%" role="img" aria-label="Monthly rents. San Mateo 2-bed rents run from $3,225 at the 25th percentile to $4,802 at the 75th. The ADUs rent for $4,536, unit 1 for $4,896, and unit 2 for $5,760.">
+                <p class="plate-title"><span>Monthly rent</span><span>Against San Mateo 2-bed rents</span></p>
+                <div class="cs-dots" style="--a: 7.5%; --b: 60.1%" role="img" aria-label="Monthly rents. San Mateo 2-bed rents: $3,225 at the 25th percentile, $3,732 median, $4,430 for the upper third (estimated), $4,802 at the 75th percentile, and $5,000 at the 75th percentile for a 2-bed house. These homes: ADUs 3, 4 and 5 at $4,536 each, unit 1 at $4,896, and unit 2 at $5,760.">
                   <div class="cs-daxis"><span></span><span class="cs-dt"><span style="left: 0%">$3k</span><span style="left: 33.3%">$4k</span><span style="left: 66.7%">$5k</span><span style="left: 100%">$6k</span></span><span></span></div>
                   <div class="cs-drow"><span class="cs-dl">2-bed, 25th percentile</span><span class="cs-dt"><i style="left: 7.5%"></i></span><span class="cs-dv">$3,225</span></div>
                   <div class="cs-drow"><span class="cs-dl">2-bed, median</span><span class="cs-dt"><i style="left: 24.4%"></i></span><span class="cs-dv">$3,732</span></div>
@@ -771,13 +821,13 @@
               </div>
               <figcaption class="t-caption fig-cap"><b>Fig. 3</b> San Mateo 2-bed rents, January 2026. The upper-third figure is interpolated.</figcaption>
             </figure>
-            <p class="cs-after-fig">Unit 2 is the weak point. Cap it at $5,000 and the yield falls from 6.4% to 6.1%.</p>
-            <p>Small apartment buildings in San Mateo trade at roughly 4% to 5.5% cap rates. A similar duplex on the same block listed at $2.6M in June 2026.</p>
+            <p class="cs-after-fig">Unit 2 is the weak point. Hold it to $5,000 a month and the project earns 6.1% a year on its cost instead of 6.4%.</p>
+            <p>Small apartment buildings in San Mateo trade at roughly 4% to 5.5% cap rates. A cap rate is a year of a building&rsquo;s rent, after expenses, over its price, so at 5% a buyer pays 20 times what the building nets in a year. A similar duplex on the same block listed at $2.6M in June 2026.</p>
           </div>
-          <aside class="cs-side" aria-label="What it rents for, as JSON">
+          <div class="cs-side">
             <div class="cs-code" data-fold>
               <div class="cs-code-bar fold-head"><h3>response.market</h3><span aria-hidden="true">JSON</span></div>
-<pre tabindex="0" data-fold-body><code class="json">"market": {
+<pre tabindex="0" role="group" aria-label="What it rents for, as JSON" data-fold-body><code class="json">"market": {
   "rent_basis": "upper_third",
   "rent_psf_month": 4.50,
   "city_avg_psf": 4.26,
@@ -787,7 +837,7 @@
   "block_comp_ask": 2600000
 }</code></pre>
             </div>
-          </aside>
+          </div>
         </div>
       </section>
 
@@ -795,37 +845,38 @@
       <section class="cs-sec" id="underwriting" aria-labelledby="underwriting-h">
         <div class="wrap cs-grid">
           <div class="cs-main">
-            <header class="cs-head"><span class="cs-n" aria-hidden="true">05</span><div><p class="cs-key">response.underwriting</p><h2 class="cs-h2" id="underwriting-h">The math for five homes</h2></div></header>
+            <header class="cs-head"><span class="cs-n" aria-hidden="true">5</span><div><p class="cs-key">response.underwriting</p><h2 class="cs-h2" id="underwriting-h">The math for five homes</h2></div></header>
             <p class="t-deck cs-lead">Buy at $1.58M, build three homes by right, rent all five.</p>
             <div class="cs-ledgers">
               <table class="cs-table">
                 <caption class="t-kicker">Income, per year</caption>
                 <tbody>
-                  <tr><td>Gross rent</td><td class="n">$291,168</td></tr>
-                  <tr class="is-neg"><td>Vacancy, 5%</td><td class="n">&minus;$14,558</td></tr>
-                  <tr><td>Effective income</td><td class="n">$276,610</td></tr>
-                  <tr class="is-neg"><td>Property tax, 1.27%</td><td class="n">&minus;$38,435</td></tr>
-                  <tr class="is-neg"><td>Insurance</td><td class="n">&minus;$10,000</td></tr>
-                  <tr class="is-neg"><td>Repairs</td><td class="n">&minus;$9,000</td></tr>
-                  <tr class="is-neg"><td>Water, sewer, trash</td><td class="n">&minus;$7,500</td></tr>
-                  <tr class="is-neg"><td>Reserves</td><td class="n">&minus;$1,500</td></tr>
-                  <tr class="is-neg"><td>Management, 5%</td><td class="n">&minus;$13,830</td></tr>
-                  <tr class="is-sum"><td>Net operating income</td><td class="n">$196,344</td></tr>
+                  <tr><th scope="row">Gross rent</th><td class="n">$291,168</td></tr>
+                  <tr class="is-neg"><th scope="row">Vacancy, 5%</th><td class="n">&minus;$14,558</td></tr>
+                  <tr><th scope="row">Effective income</th><td class="n">$276,610</td></tr>
+                  <tr class="is-neg"><th scope="row">Property tax, 1.27%</th><td class="n">&minus;$38,435</td></tr>
+                  <tr class="is-neg"><th scope="row">Insurance</th><td class="n">&minus;$10,000</td></tr>
+                  <tr class="is-neg"><th scope="row">Repairs</th><td class="n">&minus;$9,000</td></tr>
+                  <tr class="is-neg"><th scope="row">Water, sewer, trash</th><td class="n">&minus;$7,500</td></tr>
+                  <tr class="is-neg"><th scope="row">Reserves</th><td class="n">&minus;$1,500</td></tr>
+                  <tr class="is-neg"><th scope="row">Management, 5%</th><td class="n">&minus;$13,830</td></tr>
+                  <tr class="is-sum"><th scope="row">Net operating income (NOI)</th><td class="n">$196,344</td></tr>
                 </tbody>
               </table>
               <table class="cs-table">
                 <caption class="t-kicker">Cost, all in</caption>
                 <tbody>
-                  <tr><td>Purchase</td><td class="n">$1,580,000</td></tr>
-                  <tr><td>Closing, 1.5%</td><td class="n">$23,700</td></tr>
-                  <tr><td>Garage ADU</td><td class="n">$275,000</td></tr>
-                  <tr><td>Two 2-story ADUs</td><td class="n">$950,000</td></tr>
-                  <tr><td>Refresh units 1 and 2</td><td class="n">$100,000</td></tr>
-                  <tr><td>Contingency, 10%</td><td class="n">$132,500</td></tr>
-                  <tr class="is-sum"><td>All-in cost</td><td class="n">$3,061,200</td></tr>
+                  <tr><th scope="row">Purchase</th><td class="n">$1,580,000</td></tr>
+                  <tr><th scope="row">Closing, 1.5%</th><td class="n">$23,700</td></tr>
+                  <tr><th scope="row">Garage ADU</th><td class="n">$275,000</td></tr>
+                  <tr><th scope="row">Two 2-story ADUs</th><td class="n">$950,000</td></tr>
+                  <tr><th scope="row">Refresh units 1 and 2</th><td class="n">$100,000</td></tr>
+                  <tr><th scope="row">Contingency, 10%</th><td class="n">$132,500</td></tr>
+                  <tr class="is-sum"><th scope="row">All-in cost</th><td class="n">$3,061,200</td></tr>
                 </tbody>
               </table>
             </div>
+            <p class="t-note cs-after">Each line is rounded to the dollar, so the income column adds to $1 more than the NOI.</p>
             <ul class="cs-figs">
               <li class="is-hot"><b>6.4<small>%</small></b><span class="t-folio">Yield on cost</span></li>
               <li><b>$3.93<small>M</small></b><span class="t-folio">Value at a 5% cap</span></li>
@@ -834,7 +885,7 @@
             <figure class="cs-fig">
               <div class="plate">
                 <p class="plate-title"><span>Yield on cost against the market and the money</span></p>
-                <div class="cs-dots" style="--a: 15.4%; --b: 38.5%" role="img" aria-label="Yield on cost of 6.4% sits above San Mateo cap rates of 4 to 5.5%, below a 6.75% loan rate and a 7.5% target.">
+                <div class="cs-dots" style="--a: 15.4%; --b: 38.5%" role="img" aria-label="Yield on cost of 6.4%, or 5.6% with fees and interest, sits above San Mateo cap rates of 4 to 5.5% and below a 6.75% permanent loan rate, a 7.5% target yield and a 9.0% construction loan.">
                   <div class="cs-daxis"><span></span><span class="cs-dt"><span style="left: 0%">3%</span><span style="left: 30.8%">5%</span><span style="left: 61.5%">7%</span><span style="left: 92.3%">9%</span></span><span></span></div>
                   <div class="cs-drow"><span class="cs-dl">Cap rates, San Mateo</span><span class="cs-dt"><b style="left: 15.4%; width: 23.1%"></b></span><span class="cs-dv">4 to 5.5%</span></div>
                   <div class="cs-drow is-ours"><span class="cs-dl">Yield on cost</span><span class="cs-dt"><i style="left: 52.5%"></i></span><span class="cs-dv">6.4%</span></div>
@@ -844,7 +895,7 @@
                   <div class="cs-drow"><span class="cs-dl">Construction loan</span><span class="cs-dt"><i style="left: 92.3%"></i></span><span class="cs-dv">9.0%</span></div>
                 </div>
                 <div class="cs-foot">
-                  <p class="takeaway">The yield clears the cap rate, so the build creates value. It does not clear the cost of a loan, so debt adds no return.</p>
+                  <p class="takeaway"><b>0.9</b> points over the top cap rate, so the build creates value. It is under the loan rate, so on a hold, debt cuts the cash yield.</p>
                 </div>
               </div>
               <figcaption class="t-caption fig-cap"><b>Fig. 4</b> Yield on cost is a year of net operating income over the all-in cost. Shaded: the cap rates small San Mateo apartment buildings trade at.</figcaption>
@@ -860,10 +911,10 @@
               </tbody>
             </table>
           </div>
-          <aside class="cs-side" aria-label="The math for five homes, as JSON">
+          <div class="cs-side">
             <div class="cs-code" data-fold>
               <div class="cs-code-bar fold-head"><h3>response.underwriting</h3><span aria-hidden="true">JSON</span></div>
-<pre tabindex="0" data-fold-body><code class="json">"underwriting": {
+<pre tabindex="0" role="group" aria-label="The math for five homes, as JSON" data-fold-body><code class="json">"underwriting": {
   "scenario": "by_right",
   "homes": 5,
   "gross_rent": 291168,
@@ -877,7 +928,7 @@
   "price_for_zero_value": 2262681
 }</code></pre>
             </div>
-          </aside>
+          </div>
         </div>
       </section>
 
@@ -885,8 +936,8 @@
       <section class="cs-sec" id="capital" aria-labelledby="capital-h">
         <div class="wrap cs-grid">
           <div class="cs-main">
-            <header class="cs-head"><span class="cs-n" aria-hidden="true">06</span><div><p class="cs-key">response.capital</p><h2 class="cs-h2" id="capital-h">If I raised it</h2></div></header>
-            <p class="t-deck cs-lead">Same deal with outside money. A construction loan at 65% of cost and 9%. Investors get an 8% preferred return, then profit splits 70/30. Sell at month 24.</p>
+            <header class="cs-head"><span class="cs-n" aria-hidden="true">6</span><div><p class="cs-key">response.capital</p><h2 class="cs-h2" id="capital-h">If I raised it</h2></div></header>
+            <p class="t-deck cs-lead">Same deal with outside money. A construction loan at 65% of cost and 9%. Investors get an 8% preferred return first. After that they take 70% of the profit, and the GP, who runs the deal, takes 30%. Sell at month 24.</p>
             <figure class="cs-fig">
               <div class="plate">
                 <p class="plate-title"><span>Capital stack</span><span>Month 0 to 24</span></p>
@@ -896,19 +947,19 @@
                   <div class="is-gp" style="width: 3.5%"></div>
                 </div>
                 <div class="cs-stack-key">
-                  <p><b>$3.48M</b>Total project, with a 4% developer fee, $40k of legal and setup, and $224k of interest</p>
+                  <p><b>$3.48M</b>Total project, with a 4% developer fee, $40k of legal and setup, a $34k loan fee, and $224k of interest</p>
                   <p><b>$1.22M</b>Equity: $1.10M from LPs, $122k from the GP</p>
                 </div>
               </div>
-              <figcaption class="t-caption fig-cap"><b>Fig. 5</b> LPs are the outside investors. The GP, the general partner, runs the deal and puts in the last sliver, in orange.</figcaption>
+              <figcaption class="t-caption fig-cap"><b>Fig. 5</b> LPs are the outside investors. The GP, the general partner, puts in the thin orange sliver, 10% of the equity, alongside them.</figcaption>
             </figure>
             <ul class="cs-figs">
               <li><b>$457<small>k</small></b><span class="t-folio">Profit at sale</span></li>
               <li><b>17.2<small>%</small></b><span class="t-folio">Deal IRR</span></li>
-              <li class="is-hot"><b>14.6<small>%</small></b><span class="t-folio">LP net IRR, 1.31x</span></li>
+              <li class="is-hot"><b>14.6<small>%</small></b><span class="t-folio">LP net IRR, 1.31&times;</span></li>
               <li><b>$237<small>k</small></b><span class="t-folio">GP take</span></li>
             </ul>
-            <p>The GP take is a $122k developer fee, a $76k promote, and $38k earned on the GP&rsquo;s own $122k. About half of it is fee.</p>
+            <p>IRR is the return per year. The LPs&rsquo; figure is after the GP&rsquo;s fee and promote, and 1.31&times; means they get $1.31 back for every $1 they put in. The GP take, $236,640, is a $122k developer fee, a $76k promote (the GP&rsquo;s 30% of the profit), and $38k earned on its own $122k. About half of it is fee.</p>
 
             <h3 class="t-kicker cs-h3">Minimum in for the GP</h3>
             <ul class="cs-list">
@@ -924,10 +975,10 @@
               <li>Hold and refinance: the bank lends about $2.02M against a $2.10M construction payoff. The GP adds $79k, and LPs earn about 3% cash.</li>
             </ul>
 
-            <figure class="cs-fig">
+            <figure class="cs-fig" id="priceFig">
               <div class="plate">
                 <p class="plate-title"><span>LP net IRR by purchase price</span></p>
-                <div class="cs-price-chart" id="priceChart" role="img" aria-label="LP net IRR by purchase price, with a 15% hurdle line: 31.1% at $1.20M, 22.1% at $1.40M, 14.6% at $1.58M, and below zero from $1.98M"></div>
+                <div class="cs-price-chart" id="priceChart" role="img" aria-label="LP net IRR by purchase price, with a 15% hurdle line: 31.1% at $1.20M, 26.5% at $1.30M, 22.1% at $1.40M, 17.8% at $1.50M, 14.6% at $1.58M, 9.8% at $1.70M, 5.0% at $1.80M, and &minus;4.7% at $1.98M"></div>
                 <div class="cs-foot">
                   <ul class="legend">
                     <li><span class="cs-sw bar-g"></span>Clears 15%</li>
@@ -935,16 +986,16 @@
                     <li><span class="cs-sw bar-h"></span>A loss</li>
                     <li><span class="cs-sw line-h"></span>15% hurdle</li>
                   </ul>
-                  <p class="takeaway"><b>$1.50M</b> or less, and LPs clear the 15% bar.</p>
+                  <p class="takeaway"><b>$1.56M</b> or less, and LPs clear the 15% bar.</p>
                 </div>
               </div>
-              <figcaption class="t-caption fig-cap"><b>Fig. 6</b> Same model at each price. The dashed line is a 15% net return, a common bar for small ground-up deals.</figcaption>
+              <figcaption class="t-caption fig-cap"><b>Fig. 6</b> Same model at each price. $1.98M is the parcel&rsquo;s estimated market value. The dashed line is a 15% net return, a common bar for small ground-up deals.</figcaption>
             </figure>
           </div>
-          <aside class="cs-side" aria-label="If I raised it, as JSON">
+          <div class="cs-side">
             <div class="cs-code" data-fold>
               <div class="cs-code-bar fold-head"><h3>response.capital</h3><span aria-hidden="true">JSON</span></div>
-<pre tabindex="0" data-fold-body><code class="json">"capital": {
+<pre tabindex="0" role="group" aria-label="If I raised it, as JSON" data-fold-body><code class="json">"capital": {
   "total_project": 3481377,
   "loan": { "ltc": 0.65, "rate": 0.09, "amount": 2262895 },
   "equity": { "lp": 1096634, "gp": 121848 },
@@ -958,26 +1009,26 @@
   "refi_gap": -78524
 }</code></pre>
             </div>
-          </aside>
+          </div>
         </div>
       </section>
       <!-- response.verdict -->
       <section class="cs-sec" id="verdict" aria-labelledby="verdict-h">
         <div class="wrap cs-grid">
           <div class="cs-main">
-            <header class="cs-head"><span class="cs-n" aria-hidden="true">07</span><div><p class="cs-key">response.verdict</p><h2 class="cs-h2" id="verdict-h">The answer</h2></div></header>
+            <header class="cs-head"><span class="cs-n" aria-hidden="true">7</span><div><p class="cs-key">response.verdict</p><h2 class="cs-h2" id="verdict-h">The answer</h2></div></header>
             <ol class="cs-verdict">
-              <li class="cs-v"><span class="cs-badge is-pass">Pass</span><h3>As a home</h3><p>Live in one unit and rent four. Net housing cost is about $6,100 a month at $1.58M.</p></li>
-              <li class="cs-v"><span class="cs-badge is-review">Thin</span><h3>As a sale</h3><p>17% deal IRR at $1.58M. Half a point on the exit cap erases most of it.</p></li>
-              <li class="cs-v"><span class="cs-badge is-pass">Pass</span><h3>For outside capital, at $1.40M or less</h3><p>LPs net about 22% at $1.40M, and the refinance returns cash.</p></li>
-              <li class="cs-v"><span class="cs-badge is-fail">Fail</span><h3>As a hold</h3><p>At today&rsquo;s rates the refinance returns no capital, and investors earn about 3% cash.</p></li>
+              <li class="cs-v"><span class="cs-badge is-pass" aria-hidden="true">Pass</span><h3>As a home<span class="visually-hidden">: pass</span></h3><p>Live in one unit and rent four. Net housing cost is about $6,100 a month at $1.58M.</p></li>
+              <li class="cs-v"><span class="cs-badge is-review" aria-hidden="true">Thin</span><h3>As a sale<span class="visually-hidden">: thin</span></h3><p>17% deal IRR at $1.58M. Half a point on the exit cap erases most of it.</p></li>
+              <li class="cs-v"><span class="cs-badge is-pass" aria-hidden="true">Pass</span><h3>For outside capital, at $1.40M or less<span class="visually-hidden">: pass</span></h3><p>LPs net about 22% at $1.40M, and a refinance still hands back cash. They clear 15% up to about $1.56M, but past about $1.49M a refinance returns nothing.</p></li>
+              <li class="cs-v"><span class="cs-badge is-fail" aria-hidden="true">Fail</span><h3>As a hold<span class="visually-hidden">: fail</span></h3><p>At today&rsquo;s rates the new loan falls $79k short of paying off the construction loan, so no money goes back to investors, and they earn about 3% a year in cash.</p></li>
             </ol>
-            <p class="cs-close">The law already allows five homes here. The purchase price decides whether they get built. Next, the same call runs on every R3 lot in San Mateo, ranked by the price each one needs.<span class="end-mark" aria-hidden="true"></span></p>
+            <div class="cs-close field-leaf"><p>The law already allows five homes here. The purchase price decides whether they get built. Next, the same call runs on every R3 lot in San Mateo, ranked by the price each one needs.<span class="end-mark" aria-hidden="true"></span></p></div>
           </div>
-          <aside class="cs-side" aria-label="The answer, as JSON">
+          <div class="cs-side">
             <div class="cs-code" data-fold>
               <div class="cs-code-bar fold-head"><h3>response.verdict</h3><span aria-hidden="true">JSON</span></div>
-<pre tabindex="0" data-fold-body><code class="json">"verdict": {
+<pre tabindex="0" role="group" aria-label="The answer, as JSON" data-fold-body><code class="json">"verdict": {
   "as_home": "pass",
   "as_sale": "thin",
   "outside_capital": "pass_at_or_below_1400000",
@@ -986,31 +1037,31 @@
   "max_price": { "home": 1580000, "raise": 1400000 }
 }</code></pre>
             </div>
-          </aside>
+          </div>
         </div>
       </section>
 
       <!-- POST /v1/sites/underwrite -->
       <section class="cs-sec" id="playground" aria-labelledby="playground-h">
         <div class="wrap">
-          <header class="cs-head"><span class="cs-n" aria-hidden="true">08</span><div><p class="cs-key">POST /v1/sites/underwrite</p><h2 class="cs-h2" id="playground-h">Run your own numbers</h2></div></header>
+          <header class="cs-head"><span class="cs-n" aria-hidden="true">8</span><div><p class="cs-key">POST /v1/sites/underwrite</p><h2 class="cs-h2" id="playground-h">Run your own numbers</h2></div></header>
           <p class="t-deck cs-lead">Move the inputs and the response updates. It is the same model as above, for the five-home plan.</p>
           <div class="cs-pg">
             <div class="cs-pg-in">
               <div class="cs-ctl">
-                <div class="cs-ctl-head"><label class="t-folio" for="inPrice">Purchase price</label><output id="oPrice" for="inPrice">$1,580,000</output></div>
+                <div class="cs-ctl-head"><label class="t-folio" for="inPrice">Purchase price</label><output id="oPrice" for="inPrice" aria-live="off">$1,580,000</output></div>
                 <div class="slider" style="--p: 0.271"><input id="inPrice" type="range" min="1200000" max="2600000" step="10000" value="1580000"><div class="slider-scale" aria-hidden="true"><span>$1.2M</span><span>$2.6M</span></div></div>
               </div>
               <div class="cs-ctl">
-                <div class="cs-ctl-head"><label class="t-folio" for="inRent">Rent per sq ft, monthly</label><output id="oRent" for="inRent">$4.50</output></div>
+                <div class="cs-ctl-head"><label class="t-folio" for="inRent">Rent per sq ft, monthly</label><output id="oRent" for="inRent" aria-live="off">$4.50</output></div>
                 <div class="slider" style="--p: 0.5"><input id="inRent" type="range" min="3.75" max="5.25" step="0.05" value="4.5"><div class="slider-scale" aria-hidden="true"><span>$3.75</span><span>$5.25</span></div></div>
               </div>
               <div class="cs-ctl">
-                <div class="cs-ctl-head"><label class="t-folio" for="inCap">Exit cap rate</label><output id="oCap" for="inCap">5.00%</output></div>
+                <div class="cs-ctl-head"><label class="t-folio" for="inCap">Exit cap rate</label><output id="oCap" for="inCap" aria-live="off">5.00%</output></div>
                 <div class="slider" style="--p: 0.5"><input id="inCap" type="range" min="4" max="6" step="0.05" value="5"><div class="slider-scale" aria-hidden="true"><span>4%</span><span>6%</span></div></div>
               </div>
               <div class="cs-ctl">
-                <div class="cs-ctl-head"><label class="t-folio" for="inCost">Build cost vs. estimate</label><output id="oCost" for="inCost">100%</output></div>
+                <div class="cs-ctl-head"><label class="t-folio" for="inCost">Build cost vs. estimate</label><output id="oCost" for="inCost" aria-live="off">100%</output></div>
                 <div class="slider" style="--p: 0.455"><input id="inCost" type="range" min="75" max="130" step="5" value="100"><div class="slider-scale" aria-hidden="true"><span>75%</span><span>130%</span></div></div>
               </div>
               <button class="btn btn--outlined btn--sm cs-reset" type="button" id="pgReset">Reset to the case</button>
@@ -1025,7 +1076,7 @@
             <div class="cs-pg-out">
               <div class="cs-code">
                 <div class="cs-code-bar"><span class="cs-code-path"><b class="cs-pill cs-pill--ok">200 OK</b>underwrite</span><span aria-hidden="true">JSON</span></div>
-<pre tabindex="0" aria-label="The underwrite response, as JSON"><code class="json" id="pgOut">{
+<pre tabindex="0" role="group" aria-label="The underwrite response, as JSON"><code class="json" id="pgOut">{
   "inputs": {
     "price": 1580000,
     "rent_psf": 4.5,
@@ -1054,22 +1105,24 @@
       <!-- response.trace -->
       <section class="cs-sec" id="trace" aria-labelledby="trace-h">
         <div class="wrap">
-          <header class="cs-head"><span class="cs-n" aria-hidden="true">09</span><div><p class="cs-key">response.trace</p><h2 class="cs-h2" id="trace-h">How the call ran</h2></div></header>
-          <p class="t-deck cs-lead">Ten steps, in order. Each one has a source you can check.</p>
+          <header class="cs-head"><span class="cs-n" aria-hidden="true">9</span><div><p class="cs-key">response.trace</p><h2 class="cs-h2" id="trace-h">How the call ran</h2></div></header>
+          <p class="t-deck cs-lead">Ten steps, in order. Each one names its source.</p>
           <ol class="cs-trace">
-            <li><code>parcel.lookup</code><span class="r">APN 034-382-xxx, 8,750 sq ft, R3, built 1953.</span><span class="s t-note">County records</span></li>
-            <li><code>zoning.resolve</code><span class="r">1 home per 2,500 sq ft on a 50-ft lot, so 3 primary homes.</span><span class="s t-note"><a href="https://law.cityofsanmateo.org/us/ca/cities/san-mateo/code/27.22.040">San Mateo Code 27.22.040</a></span></li>
-            <li><code>law.overlay</code><span class="r">One garage ADU, two detached ADUs, 18-ft plate. SB 684 blocked by recent tenancy.</span><span class="s t-note"><a href="https://law.cityofsanmateo.org/us/ca/cities/san-mateo/code/27.19.070">San Mateo Code 27.19.070</a> &middot; <a href="https://www.smcgov.org/planning/sb-684sb-1123-small-lot-subdivision-and-housing-development">San Mateo County on SB 684</a></span></li>
-            <li><code>site.fit</code><span class="r">Footprint traced from an aerial photo. A seventh home fails the 4-ft setbacks.</span><span class="s t-note">Aerial photo, county square footage</span></li>
+            <li><code>parcel.lookup</code><span class="r">Parcel 034-382-xxx, 8,750 sq ft, R3, built 1953.</span><span class="s t-note">County records</span></li>
+            <li><code>zoning.resolve</code><span class="r">1 home per 2,500 sq ft on a <span class="cs-nw">50-ft</span> lot, so 3 primary homes.</span><span class="s t-note"><a href="https://law.cityofsanmateo.org/us/ca/cities/san-mateo/code/27.22.040">San Mateo Code 27.22.040</a></span></li>
+            <li><code>law.overlay</code><span class="r">One garage ADU, two detached ADUs, <span class="cs-nw">18-ft</span> walls. SB 684 blocked by recent tenancy.</span><span class="s t-note"><a href="https://law.cityofsanmateo.org/us/ca/cities/san-mateo/code/27.19.070">San Mateo Code 27.19.070</a> &middot; <a href="https://www.smcgov.org/planning/sb-684sb-1123-small-lot-subdivision-and-housing-development">San Mateo County on SB 684</a></span></li>
+            <li><code>site.fit</code><span class="r">Footprint traced from an aerial photo. A seventh home fails the <span class="cs-nw">4-ft</span> setbacks.</span><span class="s t-note">Aerial photo, county square footage</span></li>
             <li><code>massing.render</code><span class="r">Three scenarios, drawn as axonometric massing and a site plan.</span><span class="s t-note">Generated on this page</span></li>
             <li><code>market.rents</code><span class="r">$4.50 per sq ft for the upper third. Cap rates of 4% to 5.5%.</span><span class="s t-note"><a href="https://www.zumper.com/rent-research/near-college-of-san-mateo-ca">Zumper</a> &middot; <a href="https://assets.rentometer.com/average-rent-in/ca/san-mateo-ca">Rentometer</a> &middot; <a href="https://rzadvisors.com/blog/rates-cap-rates-and-pricing-how-lower-borrowing-costs-can-reprice-bay-area-apartments">RZ Advisors</a></span></li>
-            <li><code>cost.estimate</code><span class="r">$1.46M to build: garage ADU $275k, two 2-story ADUs at $475k each, $100k of refresh, 10% contingency.</span><span class="s t-note"><a href="https://rhinobuilders1989.com/adu-cost-in-the-bay-area/">Rhino Builders, Bay Area ADU costs</a></span></li>
+            <li><code>cost.estimate</code><span class="r">$1.46M to build: garage ADU $275k, two <span class="cs-nw">2-story</span> ADUs at $475k each, $100k of refresh, 10% contingency.</span><span class="s t-note"><a href="https://rhinobuilders1989.com/adu-cost-in-the-bay-area/">Rhino Builders, Bay Area ADU costs</a></span></li>
             <li><code>underwrite.noi</code><span class="r">NOI of $196k on $3.06M all in, a 6.4% yield on cost.</span><span class="s t-note">Model on this page</span></li>
             <li><code>capital.structure</code><span class="r">65% loan to cost at 9%, 8% preferred return, 70/30 split, sale at month 24.</span><span class="s t-note"><a href="https://angelinvestorsnetwork.com/real-estate/real-estate-syndication-structure-gp-lp-returns">Angel Investors Network</a> &middot; <a href="https://info.c-loans.com/video-training-lesson-the-net-worth-to-loan-size-ratio">C-Loans</a></span></li>
             <li><code>verdict</code><span class="r">Works as a home at $1.58M. Works for outside capital at $1.40M or less.</span><span class="s t-note">See response.verdict</span></li>
           </ol>
         </div>
       </section>
+
+      <p class="wrap cs-to-toc"><a class="btn btn--outlined btn--sm" href="#cs-toc-h"><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg>Contents</a></p>
 
       <div class="wrap">
         <footer class="cs-end">
@@ -1100,7 +1153,7 @@
           <p class="t-note cs-fine">A case study built with an AI research agent. The figures are estimates. This page is not an offer to sell securities or a solicitation to invest.</p>
         </footer>
         <nav class="cs-way" aria-label="More in 01 Work">
-          <a class="btn btn--text" href="index.html#work">Read the cover story <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          <a class="btn btn--text" href="index.html#work">The application nobody could finish <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
           <a class="btn btn--text" href="resume.html">The one-page résumé <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
         </nav>
         <div class="cs-frieze" aria-hidden="true"><svg viewBox="0 0 1200 280" preserveAspectRatio="xMidYMax slice"><use href="#art-street" width="1200" height="280"/></svg></div>
@@ -1251,15 +1304,19 @@
 
       /* The opener: replay the call */
       function wireSend() {
-        const btn = $('#send'), out = $('#heroRes'), status = $('#status'), statusText = $('#statusText');
+        const btn = $('#send'), out = $('#heroRes'), status = $('#status'), statusText = $('#statusText'), say = $('#sendSay'), pre = out.parentElement;
         const lines = out.innerHTML.split('\n');
         const steps = ['parcel.lookup', 'zoning.resolve', 'law.overlay', 'site.fit', 'massing.render', 'market.rents', 'cost.estimate', 'underwrite.noi', 'capital.structure', 'verdict'];
+        const done = 'Response received: 200 OK, ' + steps.length + ' steps.';
         let running = false;
         btn.addEventListener('click', () => {
           if (running) return;
-          if (reduceMotion) { out.innerHTML = lines.join('\n'); return; }
+          // Without motion the call answers at once, and the bar says how many steps it ran.
+          if (reduceMotion) { statusText.textContent = steps.length + ' steps \u00b7 application/json'; say.textContent = done; return; }
           running = true;
+          say.textContent = 'Sending the request.';
           btn.setAttribute('aria-disabled', 'true');
+          pre.style.minHeight = pre.offsetHeight + 'px';   // the plate keeps its height while it refills
           out.innerHTML = '';
           status.textContent = '…';
           status.classList.add('is-pending');
@@ -1278,6 +1335,8 @@
                   status.textContent = '200 OK';
                   status.classList.remove('is-pending');
                   statusText.textContent = 'application/json';
+                  say.textContent = done;
+                  pre.style.minHeight = '';
                   btn.removeAttribute('aria-disabled');
                   running = false;
                 }
@@ -1328,14 +1387,14 @@
       const PINS = [
         { unit: 1, at: [21, 37, 18], in: ALL },
         { unit: 2, at: [21, 116, 18], in: ALL },
-        { tag: 'Garages', at: [33, 75, 4], in: ['today'] },
-        { unit: 3, at: [33, 75, 4.5], in: NEWB, add: true, block: 'garage' },
+        { tag: 'Garages', at: [33, 75, 4], alt: [1, 75, 4], in: ['today'] },
+        { unit: 3, at: [33, 75, 4.5], alt: [1, 75, 4.5], in: NEWB, add: true, block: 'garage' },
         { unit: 4, at: [13, 157, 26], in: NEWB, add: true, block: 'aduL' },
         { unit: 5, at: [37, 157, 26], in: NEWB, add: true, block: 'aduR' },
         { unit: 6, at: [17, 75, 25], in: ['max'], add: true, block: 'upper' },
         { lbl: '50 ft', at: [25, -4.5, 0], in: ALL },
-        { lbl: '175 ft', at: [55, 118, 0], in: ALL },
-        { street: 'Hobart Ave', at: [25, -18, 0], in: ALL },
+        { lbl: '175 ft', at: [55, 118, 0], alt: [-5, 118, 0], in: ALL },
+        { street: 'Hobart Ave', at: [44, -20, 0], alt: [6, -20, 0], in: ALL },
       ];
       const SCENES = { today: 'today: 2 homes', by_right: 'by right: 5 homes', max: 'at its most: 6 homes' };
       const axo = { th: -32, ph: 34, scen: 'max', grow: {} };
@@ -1403,7 +1462,7 @@
         const OX = AXW / 2 - K * (mnx + mxx) / 2, OY = AXH / 2 - K * (mny + mxy) / 2;
         const S = (X, Y, Z) => { const p = proj(X, Y, Z); return [OX + p[0] * K, OY + p[1] * K, p[2]]; };
         const pts = (arr) => arr.map((p) => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
-        const out = [];
+        const out = ['<defs><pattern id="axo-shade" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0V5" style="stroke:var(--m-edge);stroke-width:1.3;stroke-opacity:.6"/></pattern></defs>'];
         const poly = (P3, fill, stroke = true) => out.push('<polygon points="' + pts(P3.map((q) => S(q[0], q[1], q[2]))) + '" style="fill:' + fill +
           (stroke ? ';stroke:var(--m-edge);stroke-opacity:.5;stroke-width:1;stroke-linejoin:round' : '') + '"/>');
         const flat = (x0, x1, y0, y1, fill, stroke) => poly([[x0, y0, 0], [x1, y0, 0], [x1, y1, 0], [x0, y1, 0]], fill, !!stroke);
@@ -1461,7 +1520,9 @@
             let faces = boxFaces(B.x0, B.x1, B.y0, B.y1, B.z0, z1, !hasRoof).map((F) => Object.assign(F, { tok: F.f === 'top' ? rTok : wTok }));
             if (hasRoof) faces = faces.concat(hipFaces(B.x0, B.x1, B.y0, B.y1, z1, B.rh * t).map((F) => Object.assign(F, { tok: rTok })));
             faces.filter((F) => visible(F.n)).map((F) => Object.assign(F, { d: depth(F.p) })).sort((a, b) => b.d - a.d).forEach((F) => {
-              poly(F.p, ink(F.tok, shade(F.n)));
+              const f = shade(F.n), tint = /^--m-(new|conv)/.test(F.tok);
+              poly(F.p, ink(F.tok, tint ? 1 : f));
+              if (tint && f < 0.8) poly(F.p, 'url(#axo-shade)', false);
               if (F.f && F.f !== 'top' && B.open) B.open.filter((o) => o.f === F.f && (!o.in || o.in.includes(axo.scen))).forEach((o) => drawOpening(B, o, t));
             });
           });
@@ -1473,7 +1534,7 @@
           const on = p.in.includes(axo.scen);
           el.hidden = !on;
           if (!on) return;
-          const s = S(p.at[0], p.at[1], p.at[2]);
+          const s = S(...(p.alt && !visible([1, 0, 0]) ? p.alt : p.at));
           el.style.left = (s[0] / AXW * 100).toFixed(2) + '%';
           el.style.top = (s[1] / AXH * 100).toFixed(2) + '%';
           el.style.opacity = p.block && (axo.grow[p.block] ?? 1) < 1 ? '0' : '1';
@@ -1483,9 +1544,9 @@
       /* The site plan: the street at the left on wide screens, at the foot on phones. */
       function renderPlan() {
         const wrap = $('#planWrap'), svg = $('#plan'), s = axo.scen;
-        const land = wrap.clientWidth >= 560;
+        const land = wrap.clientWidth >= 480;
         const T = land ? (X, Y) => [Y + 36, X + 13] : (X, Y) => [X + 13, 175 - Y + 13];
-        const fs = land ? 4.2 : 3.6, pr = land ? 4.4 : 3.8;
+        const fs = land ? Math.max(4.2, 12.5 * 226 / wrap.clientWidth) : 3.6, pr = land ? Math.max(4.4, fs + 0.2) : 3.8;
         const f2 = (n) => n.toFixed(2);
         const o = [];
         const R = (x0, x1, y0, y1, cls) => {
@@ -1528,7 +1589,7 @@
         if (s !== 'today') { R(4, 22, 143, 171, 'p-nw p-bld'); R(28, 46, 143, 171, 'p-nw p-bld'); }
         R(0, 50, 0, 175, 'p-lotline');
         pin(21, 37, 1); pin(21, 116, 2);
-        if (s === 'today') text(17, 75, 'garages', 'p-t', land ? 0 : -90);
+        if (s === 'today') text(17, 75, 'garages', 'p-t p-t--bld', land ? 0 : -90);
         else pin(17, s === 'max' ? 66 : 75, 3, true);
         if (s === 'max') pin(17, 86, 6, true);
         if (s !== 'today') { pin(13, 157, 4, true); pin(37, 157, 5, true); }
@@ -1539,6 +1600,7 @@
         svg.setAttribute('viewBox', land ? '0 0 226 76' : '0 0 76 226');
         svg.innerHTML = o.join('');
         svg.setAttribute('aria-label', 'Site plan of the lot, ' + SCENES[s]);
+        $('#planScen').textContent = { today: 'Today, 2 homes', by_right: 'By right, 5 homes', max: 'Max, 6 homes' }[s];
         $('#planCap').textContent = 'Site plan, street at ' + (land ? 'left' : 'bottom') + '. Gray dashes: 15-ft front setback.' + (s === 'today' ? '' : ' Orange dashes: 4-ft ADU setback.') + (s === 'max' ? ' Hatching: the upper unit over the garage ADU.' : '');
       }
 
@@ -1602,8 +1664,8 @@
         const end = () => { drag = null; wrap.classList.remove('is-drag'); };
         wrap.addEventListener('pointerup', end);
         wrap.addEventListener('pointercancel', end);
-        let lastLand = null;
-        const onResize = () => { const land = $('#planWrap').clientWidth >= 560; if (land !== lastLand) { lastLand = land; renderPlan(); } };
+        let lastW = 0;
+        const onResize = () => { const w = $('#planWrap').clientWidth; if (w !== lastW) { lastW = w; renderPlan(); } };
         if (window.ResizeObserver) new ResizeObserver(onResize).observe($('#planWrap'));
         else window.addEventListener('resize', onResize);
       }
@@ -1641,6 +1703,10 @@
           $('#oRent').textContent = '$' + p.rent.toFixed(2);
           $('#oCap').textContent = (p.cap * 100).toFixed(2) + '%';
           $('#oCost').textContent = ins.cost.value + '%';
+          ins.price.setAttribute('aria-valuetext', usd(p.price));
+          ins.rent.setAttribute('aria-valuetext', '$' + p.rent.toFixed(2) + ' per sq ft');
+          ins.cap.setAttribute('aria-valuetext', (p.cap * 100).toFixed(2) + '%');
+          ins.cost.setAttribute('aria-valuetext', ins.cost.value + '% of the estimate');
           const u = underwrite(p), r = raiseModel(p), own = ownerNet(p);
           const verdict = r.lpIrr >= 0.15 ? 'raise_ready' : u.created > 0 ? 'pencils_as_home' : 'does_not_pencil';
           const out = {
@@ -1673,6 +1739,14 @@
         run(false);
       }
 
+      /* The way back to the contents, once they have scrolled away */
+      function wireToToc() {
+        const link = $('.cs-to-toc'), toc = $('.cs-toc');
+        if (!link || !toc) return;
+        if (!('IntersectionObserver' in window)) { link.classList.add('is-shown'); return; }
+        new IntersectionObserver(([e]) => link.classList.toggle('is-shown', !e.isIntersecting && e.boundingClientRect.top < 0)).observe(toc);
+      }
+
       /* Boot */
       $$('code.json').forEach((el) => { el.innerHTML = highlight(el.textContent); });
       wireSend();
@@ -1680,6 +1754,7 @@
       setScenario('max', false);
       buildPriceChart();
       wirePlayground();
+      wireToToc();
     })();
   </script>
   <!-- chrome:script -->
