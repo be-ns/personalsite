@@ -454,9 +454,10 @@
     .cs-to-toc .ico { rotate: -90deg; }
     .js .cs-to-toc:not(.is-shown) { opacity: 0; visibility: hidden; }
     html { scroll-padding-bottom: 5rem; }   /* Tab scrolls a focused control clear of the pill */
+    html:has(.cs-to-toc .btn:focus) { scroll-padding-bottom: 0; }   /* but not the pill itself, which sits inside that margin */
     .cs-nw { white-space: nowrap; }
-    /* One column from 1024 to 1279: the two drawings keep about their two-column size, so each fits a screen with its controls. */
-    @media (min-width: 1024px) and (max-width: 1279px) { #renders .cs-fig { max-width: 46rem; } }
+    /* One column from 1024 to 1279: the two drawings and the homes table, their key, keep about their two-column size, so each drawing fits a screen with its controls. */
+    @media (min-width: 1024px) and (max-width: 1279px) { #renders .cs-main { max-width: 46rem; } }
     .cs-frieze svg { width: 100%; height: clamp(8.5rem, 22vw, 17.5rem); }
 
     /* ---------- Edges ---------- */
@@ -488,6 +489,8 @@
       /* Every mark here is a background; print it with background graphics off. */
       .cs-dt, .cs-dt i, .cs-dt b, .cs-pt i, .cs-stack > div, .cs-sw, .cs-badge, .cs-pill, .cs-pin, .cs-pinnum, .segmented button[aria-pressed="true"] { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       .cs-sec { padding-block: var(--space-5); }
+      /* Fig. 6's rows a little tighter, so on a Letter page the chart fits under the capital lists. */
+      #priceFig .cs-prow .cs-pt { height: 1.375rem; }
     }
   </style>
 </head>
@@ -1276,7 +1279,7 @@
         const contrib = eqf.map(x => Math.max(-x, 0)), dist = eqf.map(x => Math.max(x, 0));
         const pr = Math.pow(1 + PREF, 1 / 12) - 1;
         const lp = new Array(EXIT + 1).fill(0), gp = new Array(EXIT + 1).fill(0);
-        let owed = 0;
+        let owed = 0, promote = 0;
         for (let m = 0; m <= EXIT; m++) {
           owed *= 1 + pr; owed += contrib[m];
           lp[m] -= contrib[m] * (1 - GPC); gp[m] -= contrib[m] * GPC;
@@ -1284,6 +1287,7 @@
           const t1 = Math.min(d, owed); owed -= t1; d -= t1;
           lp[m] += t1 * (1 - GPC) + d * (1 - SPLIT) * (1 - GPC);
           gp[m] += t1 * GPC + d * (1 - SPLIT) * GPC + d * SPLIT;
+          promote += d * SPLIT;
         }
         const sum = a => a.reduce((s, x) => s + x, 0);
         const equity = sum(contrib);
@@ -1293,7 +1297,8 @@
           total: usesSum + ig, commit, loan: bal, equity, fee, profit: sum(eqf),
           dealIrr: irr(eqf), lpIrr: irr(lp),
           lpMult: sum(lp.filter(x => x > 0)) / -sum(lp.filter(x => x < 0)),
-          gpProfit: sum(gp), gpTake: sum(gp) + fee, perm, refiGap: perm - bal
+          gpProfit: sum(gp), gpTake: sum(gp) + fee, perm, refiGap: perm - bal,
+          interest: ig, promote
         };
       }
       /* MODEL END */
