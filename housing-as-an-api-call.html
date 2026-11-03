@@ -1743,8 +1743,11 @@
       function wireToToc() {
         const link = $('.cs-to-toc'), toc = $('.cs-toc');
         if (!link || !toc) return;
-        if (!('IntersectionObserver' in window)) { link.classList.add('is-shown'); return; }
-        new IntersectionObserver(([e]) => link.classList.toggle('is-shown', !e.isIntersecting && e.boundingClientRect.top < 0)).observe(toc);
+        // A scroll check, not an observer: a jump straight past the list still counts.
+        let queued = false;
+        const check = () => { queued = false; link.classList.toggle('is-shown', toc.getBoundingClientRect().bottom < 0); };
+        addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(check); } }, { passive: true });
+        check();
       }
 
       /* Boot */
