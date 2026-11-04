@@ -4,9 +4,10 @@
 //
 //   1. The address stays masked, in the page's own source: it says
 //      "1xx Hobart Ave" and "034-382-xxx", and no file in the repo, tracked
-//      or not, carries the street number, the whole parcel number or the
-//      name of the listing site the draft linked. Those strings are built
-//      from pieces below, so this file never carries them itself.
+//      or not, carries a numbered address on Hobart, a whole parcel number
+//      on the same page of the county map, or the name of the listing site
+//      the draft linked. The checks are patterns, so this file never needs
+//      the real ones.
 //   2. The numbers are the model's. The page's own deal math, the inline
 //      script between its /* MODEL START and /* MODEL END */ comments, runs
 //      here in node:vm on the case and gives every figure the page prints:
@@ -28,8 +29,9 @@ const { parseHtml, decodeEntities, findAll, hasClass, textContent } = require('.
 const PAGE = 'housing-as-an-api-call.html';
 const TITLE = 'Housing as an API call';
 
-const STREET = ['123', 'Hobart'].join(' ');
-const APN = ['034', '382', '030'].join('-');
+// Any numbered address on the street, and any whole parcel number on the same map page.
+const STREET = /\b\d+\s+Hobart\b/i;
+const APN = /\b034-382-\d{3}\b/;
 const LISTING = new RegExp(['red', 'fin'].join(''), 'i');
 
 const flat = (el) => textContent(el, (e) => e.tag === 'script' || e.tag === 'style').replace(/\s+/g, ' ').trim();
@@ -73,8 +75,8 @@ test('no file in the repo names the street number, the whole parcel number or th
     read += 1;
     const text = buf.toString('utf8');
     const name = path.relative(ROOT, file);
-    assert.ok(!text.includes(STREET), `${name} gives the street number`);
-    assert.ok(!text.includes(APN), `${name} gives the whole parcel number`);
+    assert.ok(!STREET.test(text), `${name} gives a street number on Hobart`);
+    assert.ok(!APN.test(text), `${name} gives a whole parcel number`);
     assert.ok(!LISTING.test(text), `${name} names the listing site`);
   }
   assert.ok(read > 50, `${read} text files read`);
@@ -98,7 +100,7 @@ function model() {
   const to = script.indexOf('/* MODEL END */', from);
   assert.ok(to > from, 'the model closes with /* MODEL END */');
   const sandbox = { module: { exports: {} } };
-  const names = 'underwrite, ownerNet, raiseModel, opex, pmt, SF, TAX_RATE, FIXED, BUILDS, LTC, LOAN_RATE, PERM_RATE, DEV_FEE, PREF, SPLIT, GPC, EXIT';
+  const names = 'underwrite, ownerNet, raiseModel, opex, pmt, SF, TAX_RATE, FIXED, BUILDS, LTC, LOAN_RATE, PERM_RATE, DEV_FEE, PREF, SPLIT, GPC, EXIT, SALE_COST, DOWN, HOME_RATE, BUILD_RATE';
   vm.runInNewContext(`'use strict';\n${script.slice(from, to)}\nmodule.exports = { ${names} };\n`, sandbox, { filename: `${PAGE} (model)` });
   return sandbox.module.exports;
 }
@@ -108,6 +110,11 @@ function model() {
 const CASE = { price: 1580000, rent: 4.5, cap: 0.05, cost: 1 };
 // The market the page measures it against: San Mateo cap rates, and the yield it aims for.
 const CAP_RANGE = [0.04, 0.055], TARGET = 0.075;
+// The average rent near the College of San Mateo, a sq ft a month, and the parcel's estimated market value.
+const AREA_AVG = 4.26, ESTIMATE = 1980000;
+// The verdict's line for outside capital, and what passes there: LPs net 15% or more, and a refinance repays the construction loan.
+const LINE = 1400000, BAR = 0.15;
+const passes = (x) => x.lpIrr >= BAR && x.refiGap >= 0;
 
 const round = (x, places) => Math.round(x * 10 ** places) / 10 ** places;
 
@@ -142,7 +149,7 @@ function compute() {
     yield75: solve((price) => underwrite({ ...CASE, price }).yoc - TARGET),
     zero: solve((price) => underwrite({ ...CASE, price }).created),
     // The prices where the LPs fall under 15%, and where a refinance stops returning cash.
-    lp15: solve((price) => raiseModel({ ...CASE, price }).lpIrr - 0.15, 1.4e6, 1.7e6),
+    lp15: solve((price) => raiseModel({ ...CASE, price }).lpIrr - BAR, 1.4e6, 1.7e6),
     refi0: solve((price) => raiseModel({ ...CASE, price }).refiGap, 1.3e6, 1.6e6),
     loanFee,
     // What the total adds beyond the all-in cost, the fees and the interest: legal and setup.
@@ -155,8 +162,18 @@ function compute() {
     tax: TAX_RATE * (CASE.price + u.buildAll),
     fixed: Math.round(opex(CASE.price, u.egi, u.buildAll, false) - TAX_RATE * (CASE.price + u.buildAll)),
     // The raise at $1.40M, where the verdict draws its line, and sold at the top cap rate.
-    at140: raiseModel({ ...CASE, price: 1400000 }),
+    at140: raiseModel({ ...CASE, price: LINE }),
     capTop: raiseModel({ ...CASE, cap: CAP_RANGE[1] }),
+    // Rents at the area's average, and the rent at which the sale's profit is gone.
+    atAvg: raiseModel({ ...CASE, rent: AREA_AVG }),
+    rentZero: solve((rent) => raiseModel({ ...CASE, rent }).profit, 3.5, 4.5),
+    // The build 10% over budget.
+    over10: raiseModel({ ...CASE, cost: 1.1 }),
+    // The most, in whole percent, the build can run over at the line with both bars still passing.
+    room: (() => { let o = 0; while (o < 50 && passes(raiseModel({ ...CASE, price: LINE, cost: 1 + (o + 1) / 100 }))) o += 1; return o; })(),
+    // The sale after its costs, and the rent collected before it: less the total project, they make the profit.
+    saleNet: u.value * (1 - m.SALE_COST),
+    rentBefore: r.profit - (u.value * (1 - m.SALE_COST) - r.total),
   };
 }
 
@@ -195,12 +212,16 @@ test('the page\'s model gives the case\'s figures', () => {
   assert.equal(usdM(r.perm), '$2.02M', 'the permanent loan');
   assert.equal(usdM(r.loan), '$2.10M', 'the construction payoff');
   assert.equal(pct(figures().capTop.dealIrr), '4.6%', 'deal IRR at a 5.5% exit cap');
-  assert.ok(raiseModel({ ...CASE, rent: 4 }).profit < 0, '$4.00 rents turn the profit into a loss');
-  assert.equal(Math.round(figures().at140.lpIrr * 100), 22, 'LP net IRR at $1.40M');
+  const { rentZero, at140, room, pmt } = figures();
+  assert.ok(raiseModel({ ...CASE, rent: rentZero - 0.005 }).profit < 0 && raiseModel({ ...CASE, rent: rentZero + 0.005 }).profit > 0, 'the rent where the profit is gone is found');
+  assert.equal(Math.round(at140.lpIrr * 100), 22, 'LP net IRR at $1.40M');
+  assert.ok(passes(at140) && passes(raiseModel({ ...CASE, price: LINE, cost: 1 + room / 100 })) && !passes(raiseModel({ ...CASE, price: LINE, cost: 1 + (room + 1) / 100 })), `at the line, both bars hold with the build ${room}% over, and not ${room + 1}%`);
+  assert.equal(pmt(1000, 0.06), pmt(1000, 0.06, 360), 'loans run 30 years unless the model says otherwise');
   // The solver's brackets hold the crossings the capital and verdict sections draw their lines at.
   const { lp15, refi0, coEarned } = figures();
   assert.ok(raiseModel({ ...CASE, price: step(lp15) }).lpIrr >= 0.15 && raiseModel({ ...CASE, price: step(lp15) + 1e4 }).lpIrr < 0.15, 'the 15% crossing is found, at a $10k step');
   assert.ok(raiseModel({ ...CASE, price: step(refi0) }).refiGap > 0 && raiseModel({ ...CASE, price: step(refi0) + 1e4 }).refiGap < 0, 'the refinance crossing is found, at a $10k step');
+  assert.ok(refi0 < lp15, 'the refinance is the bar that binds first, so both hold up to its crossing');
   // The GP's own money earns what the LPs' does: 10% of the profit the promote leaves.
   assert.ok(Math.abs(coEarned - 0.1 * (r.profit - r.promote)) < 1, 'the GP\'s co-invest earns pari passu with the LPs');
 });
@@ -225,17 +246,14 @@ test('the page prints the model\'s figures', () => {
     assert.ok(text.includes(want), `the page prints ${what} as ${want}`);
   }
   // The same figures inside the sentences that carry them.
-  const { lp15, refi0, loanFee, setup, coEarned, holdCash, unit2At5k, at140, capTop, raiseModel } = figures();
-  const { LTC, LOAN_RATE, PREF, SPLIT, GPC, EXIT } = figures();
+  const { lp15, refi0, loanFee, setup, coEarned, holdCash, unit2At5k, at140, capTop, atAvg, rentZero, over10, room, saleNet, rentBefore } = figures();
+  const { LTC, LOAN_RATE, PERM_RATE, PREF, SPLIT, GPC, EXIT, SALE_COST, DOWN, HOME_RATE, BUILD_RATE } = figures();
   const { interest, promote } = r;
-  const terms = `A construction loan at ${whole(LTC)}% of cost and ${whole(LOAN_RATE)}%. Investors get an ${whole(PREF)}% preferred return first. After that they take ${whole(1 - SPLIT)}% of the profit, and the GP, who runs the deal, takes ${whole(SPLIT)}%. Sell at month ${EXIT}.`;
-  const loss = raiseModel({ ...CASE, rent: 4 }).profit < 0 ? 'a loss' : 'a profit';
+  const terms = `A construction loan covers ${whole(LTC)}% of the cost at ${whole(LOAN_RATE)}%, and investors put in the rest. Everyone gets their money back plus an ${whole(PREF)}% preferred return first. Then the GP, who runs the deal, takes ${whole(SPLIT)}% of the profit, and the other ${whole(1 - SPLIT)}% is split by what each put in. Sell at month ${EXIT} at a ${whole(CASE.cap)}% cap rate.`;
   const said = [
     ['the 15% line', usdM(step(lp15)), '$1.56M', `${usdM(step(lp15))} or less, and LPs clear the 15% bar`],
-    ['the 15% line, in the verdict', usdM(step(lp15)), '$1.56M', `They clear 15% up to about ${usdM(step(lp15))}`],
-    ['the refinance line', usdM(step(refi0)), '$1.49M', `past about ${usdM(step(refi0))} a refinance returns nothing`],
-    ['the refinance shortfall', usdK(-r.refiGap), '$79k', `the new loan falls ${usdK(-r.refiGap)} short`],
-    ['the GP adds at a refinance', usdK(-r.refiGap), '$79k', `The GP adds ${usdK(-r.refiGap)}`],
+    ['the line both bars hold to, in the verdict', usdM(step(refi0)), '$1.49M', `Both hold up to about ${usdM(step(refi0))}`],
+    ['the gap at a refinance', usdK(-r.refiGap), '$79k', `That leaves ${usdK(-r.refiGap)} to cover`],
     ['legal and setup', usdK(setup), '$40k', `${usdK(setup)} of legal and setup, a ${usdK(loanFee)} loan fee`],
     ['the loan fee', usdK(loanFee), '$34k', `a ${usdK(loanFee)} loan fee, and ${usdK(interest)} of interest`],
     ['the interest', usdK(interest), '$224k', `and ${usdK(interest)} of interest`],
@@ -246,16 +264,27 @@ test('the page prints the model\'s figures', () => {
     ['the GP\'s co-invest earnings', usdK(coEarned), '$38k', `and ${usdK(coEarned)} earned on its own ${usdK(r.equity * 0.1)}`],
     ['the GP\'s co-invest', usdK(r.equity * GPC), '$122k', `Co-invest: ${usdK(r.equity * GPC)}, which is ${whole(GPC)}% of the equity`],
     ['the yield over the top cap rate', ((u.yoc - CAP_RANGE[1]) * 100).toFixed(1), '0.9', `${((u.yoc - CAP_RANGE[1]) * 100).toFixed(1)} points over the top cap rate`],
-    ['the raise\'s terms, in the deck', terms, 'A construction loan at 65% of cost and 9%. Investors get an 8% preferred return first. After that they take 70% of the profit, and the GP, who runs the deal, takes 30%. Sell at month 24.', terms],
+    ['the raise\'s terms, in the deck', terms, 'A construction loan covers 65% of the cost at 9%, and investors put in the rest. Everyone gets their money back plus an 8% preferred return first. Then the GP, who runs the deal, takes 30% of the profit, and the other 70% is split by what each put in. Sell at month 24 at a 5% cap rate.', terms],
     ['the deal IRR at the top cap rate', pct(capTop.dealIrr), '4.6%', `A ${whole(CAP_RANGE[1])}% exit cap drops the deal IRR to ${pct(capTop.dealIrr)}`],
-    ['$4.00 rents', loss, 'a loss', `Median rents, $4.00 per sq ft, turn the profit into ${loss}`],
-    ['the refinance loan and the payoff', `${usdM(r.perm)} against ${usdM(r.loan)}`, '$2.02M against $2.10M', `the bank lends about ${usdM(r.perm)} against a ${usdM(r.loan)} construction payoff`],
+    ['the deal IRR at the area\'s average rent', pct(atAvg.dealIrr), '7.2%', `At the $${AREA_AVG.toFixed(2)} average rent, the deal IRR falls to ${pct(atAvg.dealIrr)}`],
+    ['the rent where the profit is gone', `$${rentZero.toFixed(2)}`, '$4.10', `At about $${rentZero.toFixed(2)}, the profit is gone`],
+    ['the LPs with the build 10% over', pct(over10.lpIrr), '9.3%', `A build 10% over budget cuts the LPs to ${pct(over10.lpIrr)}`],
+    ['the refinance loan and what is owed', `${usdM(r.perm)} and ${usdM(r.loan)}`, '$2.02M and $2.10M', `at ${whole(PERM_RATE)}%, the rent supports a new loan of about ${usdM(r.perm)}, but ${usdM(r.loan)} is owed on the construction loan`],
     ['the deal IRR, in the verdict', `${Math.round(r.dealIrr * 100)}%`, '17%', `${Math.round(r.dealIrr * 100)}% deal IRR at ${usdM(CASE.price)}`],
-    ['LPs at $1.40M, in the verdict', `${Math.round(at140.lpIrr * 100)}%`, '22%', `LPs net about ${Math.round(at140.lpIrr * 100)}% at ${usdM(1400000)}`],
+    ['LPs at the line, in the verdict', `${Math.round(at140.lpIrr * 100)}%`, '22%', `At ${usdM(LINE)}, LPs net about ${Math.round(at140.lpIrr * 100)}%`],
+    ['the room at the line, in the verdict', String(room), '7', `both still hold if the build runs ${room}% over`],
     ['unit 2 held to $5,000', pct(unit2At5k), '6.1%', `the project earns ${pct(unit2At5k)} a year on its cost instead of ${pct(u.yoc)}`],
     ['the price over a year\'s net at a 5% cap', String(Math.round(u.value / u.noi)), '20', `at 5% a buyer pays ${Math.round(u.value / u.noi)} times what the building nets`],
     ['cash on a hold, in the capital lists', `${Math.round(holdCash * 100)}%`, '3%', `LPs earn about ${Math.round(holdCash * 100)}% cash`],
-    ['cash on a hold, in the verdict', `${Math.round(holdCash * 100)}%`, '3%', `they earn about ${Math.round(holdCash * 100)}% a year in cash`],
+    ['cash on a hold, in the verdict', `${Math.round(holdCash * 100)}%`, '3%', `Investors earn about ${Math.round(holdCash * 100)}% a year in cash`],
+    ['the hold\'s price and rate, in the verdict', `${usdM(CASE.price)} at ${whole(PERM_RATE)}%`, '$1.58M at 6.75%', `At ${usdM(CASE.price)}, with the new loan at ${whole(PERM_RATE)}%, it falls ${usdK(-r.refiGap)} short of paying off the construction loan`],
+    ['the owner-occupant\'s terms, in the verdict', `${whole(DOWN)}% down at ${whole(HOME_RATE)}%, build at ${whole(BUILD_RATE)}%`, '20% down at 6.5%, build at 7.5%', `the owner pays about ${usd(Math.round(own / 100) * 100)} a month at ${usdM(CASE.price)}, with ${whole(DOWN)}% down at ${whole(HOME_RATE)}% and the build borrowed at ${whole(BUILD_RATE)}%, both over 30 years`],
+    ['the case\'s price under the estimate', usdK(ESTIMATE - CASE.price), '$400k', `Say I buy the duplex for ${usdM(CASE.price)}, ${usdK(ESTIMATE - CASE.price)} under its estimated market value`],
+    ['the sale after its costs', usdM(saleNet), '$3.77M', `The sale nets ${usdM(saleNet)} after ${whole(SALE_COST)}% in costs`],
+    ['the profit, from the sale, the project and the rent', `${usdM(r.total)}, ${usdK(rentBefore)}, ${usdK(r.profit)}`, '$3.48M, $168k, $457k', `Take away the ${usdM(r.total)} project, add ${usdK(rentBefore)} of rent collected before the sale, and the profit is ${usdK(r.profit)}`],
+    ['the permanent loan, in Fig. 4\'s takeaway', `${whole(PERM_RATE)}%`, '6.75%', `It is under the ${whole(PERM_RATE)}% permanent loan`],
+    ['the total project, in Fig. 4\'s caption', usdM(r.total), '$3.48M', `With fees and interest: the same income over the ${usdM(r.total)} total project in Fig. 5`],
+    ['the area\'s average rent, in the market deck', `$${AREA_AVG.toFixed(2)}`, '$4.26', `Zumper’s average near the College of San Mateo was $${AREA_AVG.toFixed(2)} in July 2026`],
   ];
   for (const [what, made, want, sentence] of said) {
     assert.equal(made, want, `the model gives ${what} as ${made}`);
@@ -306,7 +335,7 @@ test('the underwriting ledgers and Fig. 4 are the model\'s, line by line', () =>
   line('Gross rent', gross);
   line('Vacancy, 5%', -0.05 * gross);
   line('Effective income', u.egi);
-  line(`Property tax, ${(TAX_RATE * 100).toFixed(2)}%`, -tax);
+  line(`Property tax, ${(TAX_RATE * 100).toFixed(2)}% of price plus build`, -tax);
   line('Management, 5%', -mgmt);
   line('Net operating income (NOI)', u.noi);
   line('Insurance', -FIXED.insurance);
@@ -406,6 +435,10 @@ test('Fig. 3 puts these homes at the model\'s rents, and every mark at its value
   assert.ok(label.includes(`These homes: ADUs 3, 4 and 5 at ${ours[0][1]} each, unit 1 at ${ours[1][1]}, and unit 2 at ${ours[2][1]}.`), `Fig. 3's label gives these homes: ${label}`);
   assert.ok(flat(sec).includes(`${ours[2][1]} for unit 2`), 'the takeaway gives unit 2\'s rent');
   assert.ok(flat(sec).includes(`$${CASE.rent.toFixed(2)} per sq ft a month`), 'the deck gives the case\'s rent per sq ft');
+  const third = chart.rows.find((row) => row.name === '2-bed, upper third (est.)');
+  assert.ok(third, 'Fig. 3 has the 2-bed upper third');
+  assert.ok(chart.rows.filter((row) => row.ours).every((row) => dollars(row.value) > dollars(third.value)), 'all five homes rent above the 2-bed upper third');
+  assert.ok(flat(sec).includes(`At $${CASE.rent.toFixed(2)} per sq ft, all five homes rent above it.`), 'the caption says all five rent above it');
 });
 
 test('the tiles, Fig. 5 and the price table are the model\'s', () => {
@@ -435,7 +468,7 @@ test('the tiles, Fig. 5 and the price table are the model\'s', () => {
   const stack = findAll(root, (el) => hasClass(el, 'cs-stack'))[0];
   assert.ok(stack, `${PAGE} has the capital stack`);
   const lp = (1 - GPC) * r.equity, gp = GPC * r.equity;
-  assert.equal(decodeEntities(stack.attrs['aria-label']), `Capital stack: loan ${usdM(r.commit)}, investor equity ${usdM(lp)}, sponsor equity ${usdK(gp)}, total ${usdM(r.total)}`, 'Fig. 5\'s label is the model\'s stack');
+  assert.equal(decodeEntities(stack.attrs['aria-label']), `Capital stack: loan ${usdM(r.commit)}, LP equity ${usdM(lp)}, GP equity ${usdK(gp)}, total ${usdM(r.total)}`, 'Fig. 5\'s label is the model\'s stack');
   const bar = (cls) => findAll(stack, (el) => hasClass(el, cls))[0];
   const share = (x) => `${round(x / r.total * 100, 1)}%`;
   for (const [cls, text, amount] of [['is-debt', `Loan ${usdM(r.commit)}`, r.commit], ['is-lp', `LPs ${usdM(lp)}`, lp], ['is-gp', '', gp]]) {
@@ -448,7 +481,7 @@ test('the tiles, Fig. 5 and the price table are the model\'s', () => {
     return [figure, flat(p).slice(figure.length).trim()];
   });
   assert.deepEqual(keyLines, [
-    [usdM(r.total), `Total project, with a ${whole(DEV_FEE)}% developer fee, ${usdK(setup)} of legal and setup, a ${usdK(loanFee)} loan fee, and ${usdK(r.interest)} of interest`],
+    [usdM(r.total), `Total project: the ${usdM(u.allIn)} all-in cost plus a ${whole(DEV_FEE)}% developer fee, ${usdK(setup)} of legal and setup, a ${usdK(loanFee)} loan fee, and ${usdK(r.interest)} of interest`],
     [usdM(r.equity), `Equity: ${usdM(lp)} from LPs, ${usdK(gp)} from the GP`],
   ], 'Fig. 5\'s key is the model\'s');
   // What the price does: each row's all-in cost, NOI and yield at that price, starting from the case.
@@ -469,7 +502,7 @@ test('the JSON plates print the model\'s numbers, to the places they show', () =
     gross_rent: u.egi / 0.95, noi: u.noi, all_in_cost: u.allIn, yield_on_cost: u.yoc, value_at_5_cap: u.value,
     value_created: u.created, price_for_7_5_yield: yield75, price_for_zero_value: zero, total_project: r.total,
     deal_irr: r.dealIrr, lp_irr: r.lpIrr, lp_multiple: r.lpMult, gp_take: r.gpTake, refi_gap: r.refiGap,
-    owner_occupant_monthly: own,
+    owner_occupant_monthly: own, assumed_price: CASE.price, rent_psf_month: CASE.rent, area_avg_psf: AREA_AVG,
   };
   const seen = new Set();
   for (const [, key, num] of shown().matchAll(/"([a-z0-9_]+)":\s*(-?\d+(?:\.\d+)?)/g)) {
@@ -478,19 +511,54 @@ test('the JSON plates print the model\'s numbers, to the places they show', () =
     const places = (num.split('.')[1] || '').length;
     assert.equal(Number(num), round(KEYS[key], places), `"${key}": ${num}, where the model gives ${round(KEYS[key], places)}`);
   }
-  for (const key of ['noi', 'all_in_cost', 'yield_on_cost', 'value_created', 'deal_irr', 'lp_irr', 'gp_take', 'refi_gap', 'owner_occupant_monthly']) {
+  for (const key of ['noi', 'all_in_cost', 'yield_on_cost', 'value_created', 'deal_irr', 'lp_irr', 'gp_take', 'refi_gap', 'owner_occupant_monthly', 'assumed_price', 'area_avg_psf']) {
     assert.ok(seen.has(key), `a JSON plate prints "${key}"`);
   }
   // The capital plate, parsed, field by field: the loan, the equity and the raise's terms.
-  const { LTC, LOAN_RATE, PREF, SPLIT, GPC, EXIT } = figures();
+  const { LTC, LOAN_RATE, PREF, SPLIT, GPC, EXIT, SALE_COST } = figures();
   const plates = findAll(parseHtml(page()), (el) => el.tag === 'code' && hasClass(el, 'json')).map(flat);
   const parsed = plates.map((t) => { try { return JSON.parse(t.startsWith('{') ? t : `{${t}}`); } catch (e) { return null; } });
   const c = (parsed.find((o) => o && o.capital) || {}).capital;
   assert.ok(c, 'a JSON plate prints the capital response');
   assert.deepEqual(
-    { ltc: c.loan.ltc, rate: c.loan.rate, amount: c.loan.amount, lp: c.equity.lp, gp: c.equity.gp, pref: c.pref, split: c.split, exit: c.exit },
-    { ltc: LTC, rate: LOAN_RATE, amount: Math.round(r.commit), lp: Math.round((1 - GPC) * r.equity), gp: Math.round(GPC * r.equity), pref: PREF, split: { lp: round(1 - SPLIT, 2), gp: SPLIT }, exit: { month: EXIT, cap: CASE.cap } },
+    { ltc: c.loan.ltc, rate: c.loan.rate, commitment: c.loan.commitment, lp: c.equity.lp, gp: c.equity.gp, pref: c.pref, split: c.split, exit: c.exit },
+    { ltc: LTC, rate: LOAN_RATE, commitment: Math.round(r.commit), lp: Math.round((1 - GPC) * r.equity), gp: Math.round(GPC * r.equity), pref: PREF, split: { equity: round(1 - SPLIT, 2), gp: SPLIT }, exit: { month: EXIT, cap: CASE.cap, cost: SALE_COST } },
     'the capital plate gives the model\'s loan, equity and terms');
+  // The verdict plate: the price it was run at, the line for outside capital, and the owner's month.
+  const v = (parsed.find((o) => o && o.verdict && typeof o.verdict === 'object') || {}).verdict;
+  assert.ok(v, 'a JSON plate prints the verdict');
+  assert.deepEqual(
+    { assumed_price: v.assumed_price, outside_capital: v.outside_capital, owner_occupant_monthly: v.owner_occupant_monthly },
+    { assumed_price: CASE.price, outside_capital: `pass_at_or_below_${LINE}`, owner_occupant_monthly: Math.round(own) },
+    'the verdict plate gives the case\'s price, the line and the owner\'s month');
+});
+
+test('the playground\'s verdict is the page\'s: raise-ready only where both bars hold', () => {
+  const { underwrite, raiseModel } = figures();
+  const found = inlineScripts(page()).map((s) => s.match(/const verdict = ([^;]+);/)).find(Boolean);
+  assert.ok(found, 'the playground names its verdict rule');
+  const rule = vm.runInNewContext(`(r, u) => ${found[1]}`);
+  const at = (price) => rule(raiseModel({ ...CASE, price }), underwrite({ ...CASE, price }));
+  for (let price = 1200000; price <= 2600000; price += 10000) {
+    const want = passes(raiseModel({ ...CASE, price })) ? 'raise_ready' : underwrite({ ...CASE, price }).created > 0 ? 'pencils_as_home' : 'does_not_pencil';
+    assert.equal(at(price), want, `the playground's verdict at ${usdM(price)}`);
+  }
+  assert.equal(at(LINE), 'raise_ready', 'raise-ready at the verdict\'s line');
+  // Along price alone the refinance always binds first, so the 15% bar is held where exit caps run high:
+  // some of these points keep the refinance whole while LPs land between 14% and 15%.
+  const atCap = (price, cap) => rule(raiseModel({ ...CASE, price, cap }), underwrite({ ...CASE, price, cap }));
+  let barDecides = 0;
+  for (let price = 1200000; price <= 1500000; price += 50000) {
+    for (let cap = 0.055; cap <= 0.0601; cap += 0.001) {
+      const r = raiseModel({ ...CASE, price, cap }), u = underwrite({ ...CASE, price, cap });
+      if (r.refiGap >= 0 && r.lpIrr >= BAR - 0.01 && r.lpIrr < BAR) barDecides += 1;
+      assert.equal(atCap(price, cap), passes(r) ? 'raise_ready' : u.created > 0 ? 'pencils_as_home' : 'does_not_pencil', `the playground's verdict at ${usdM(price)} and a ${(cap * 100).toFixed(1)}% exit cap`);
+    }
+  }
+  assert.ok(barDecides > 0, 'the grid reaches a point where the 15% bar alone decides');
+  // The response up top and the playground's plate give the rule's verdict at the case.
+  const given = [...shown().matchAll(/"verdict": "([a-z_]+)"/g)].map((x) => x[1]);
+  assert.deepEqual(given, [at(CASE.price), at(CASE.price)], 'both plates give the case\'s verdict');
 });
 
 // ------------------------------------------------------------ the way in ----

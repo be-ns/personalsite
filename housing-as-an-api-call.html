@@ -572,8 +572,8 @@
             <div class="cs-band-main">
               <p class="t-kicker">Case study &middot; San Mateo, California</p>
               <h1>Housing as an API call</h1>
-              <p class="t-deck">One address in. Out: five homes by right where two stand today, and the most the lot can cost before building them stops paying. I ran the call with an AI research agent, from the zoning code to the capital stack.</p>
-              <p class="t-byline">By Ben Siverly &middot; November 2026 &middot; <span data-read="cs-body">9</span> min read</p>
+              <p class="t-deck">One address in. Out: five homes by right where two stand today, and whether the money works. I ran the call with an AI research agent, from the zoning code to the investor returns.</p>
+              <p class="t-byline">By Ben Siverly &middot; November 2026 &middot; <span data-read="cs-body">11</span> min read</p>
             </div>
             <figure class="cs-band-aside">
               <div class="art"><svg viewBox="330 40 240 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#art-street" width="1200" height="280"/></svg></div>
@@ -611,6 +611,7 @@
   "apn": "034-382-xxx",
   "zoning": "R3",
   "homes": { "today": 2, "by_right": 5, "max": 6 },
+  "assumed_price": 1580000,
   "yield_on_cost": 0.064,
   "value_created": 865686,
   "lp_irr": 0.146,
@@ -675,7 +676,7 @@
   "tax_2025": 15327,
   "last_sale": { "year": 2009, "price": 920000 },
   "estimate": {
-    "low": 1880000, "mid": 1980000, "high": 2280000
+    "low": 1880000, "value": 1980000, "high": 2280000
   }
 }</code></pre>
             </div>
@@ -695,11 +696,11 @@
                 <li class="cs-t"><span class="cs-badge is-pass">Pass</span><code class="cs-rid">density.r3</code><span class="cs-res">1 home per 2,500 sq ft on a <span class="cs-nw">50-ft</span> lot. 8,750 ÷ 2,500 = 3.5, so 3 primary homes.</span><span class="cs-src t-note">San Mateo Code 27.22.040</span></li>
                 <li class="cs-t"><span class="cs-badge is-pass">Pass</span><code class="cs-rid">adu.conversion</code><span class="cs-res">At least 1 ADU (accessory dwelling unit, an extra home on a lot that already has one) inside non-living space. Both garages become one home.</span><span class="cs-src t-note">Gov. Code 66323</span></li>
                 <li class="cs-t"><span class="cs-badge is-pass">Pass</span><code class="cs-rid">adu.detached</code><span class="cs-res">1 detached ADU per existing unit, so 2.</span><span class="cs-src t-note">SB 1211</span></li>
-                <li class="cs-t"><span class="cs-badge is-pass">Pass</span><code class="cs-rid">adu.height</code><span class="cs-res">18 ft to the top of the walls, 24 ft to the peak. Each ADU gets 2 stories.</span><span class="cs-src t-note">San Mateo Code 27.19, 2026 update</span></li>
-                <li class="cs-t"><span class="cs-badge is-pass">Pass</span><code class="cs-rid">adu.parking</code><span class="cs-res">No replacement parking for a converted garage.</span><span class="cs-src t-note">Gov. Code 66322</span></li>
+                <li class="cs-t"><span class="cs-badge is-pass">Pass</span><code class="cs-rid">adu.height</code><span class="cs-res">18 ft to the top of the walls, 24 ft to the peak. Each detached ADU gets 2 stories.</span><span class="cs-src t-note">San Mateo Code 27.19, 2026 update</span></li>
+                <li class="cs-t"><span class="cs-badge is-pass">Pass</span><code class="cs-rid">adu.parking</code><span class="cs-res">No replacement parking for a converted garage.</span><span class="cs-src t-note">Gov. Code 66314</span></li>
                 <li class="cs-t"><span class="cs-badge is-review">Review</span><code class="cs-rid">primary.third</code><span class="cs-res">A third primary home fits under the density cap. It needs normal zoning review, including parking.</span><span class="cs-src t-note">San Mateo Code 27.22</span></li>
-                <li class="cs-t"><span class="cs-badge is-fail">Fail</span><code class="cs-rid">sb684.small_lot</code><span class="cs-res">Up to 10 homes on a small multifamily lot, but not where tenants lived in the last 5 years.</span><span class="cs-src t-note">SB 684</span></li>
-                <li class="cs-t"><span class="cs-badge is-fail">Fail</span><code class="cs-rid">adu.detached.third</code><span class="cs-res">Legal once there are 3 primary homes. It does not fit inside the <span class="cs-nw">4-ft</span> setbacks, the strip an ADU must leave clear along the side and rear lot lines.</span><span class="cs-src t-note">Site fit</span></li>
+                <li class="cs-t"><span class="cs-badge is-fail">Fail</span><code class="cs-rid">sb684.small_lot</code><span class="cs-res">Up to 10 homes on a small multifamily lot, but not if the project tears down or alters housing that tenants lived in during the last 5 years.</span><span class="cs-src t-note">SB 684</span></li>
+                <li class="cs-t"><span class="cs-badge is-fail">Fail</span><code class="cs-rid">adu.detached.third</code><span class="cs-res">Legal once there are 3 primary homes, but there is no room for it outside the <span class="cs-nw">4-ft</span> setbacks, the strip an ADU must leave clear along the side and rear lot lines.</span><span class="cs-src t-note">Site fit</span></li>
               </ol>
             </div>
             <div class="cs-counts field-leaf" role="img" aria-label="Homes on the lot: 2 today, 5 by right, 6 at most">
@@ -807,7 +808,7 @@
         <div class="wrap cs-grid">
           <div class="cs-main">
             <header class="cs-head"><span class="cs-n" aria-hidden="true">4</span><div><p class="cs-key">response.market</p><h2 class="cs-h2" id="market-h">What it rents for</h2></div></header>
-            <p class="t-deck cs-lead">Every home is priced at the upper third of San Mateo rents, $4.50 per sq ft a month. The city average was $4.26 in July 2026.</p>
+            <p class="t-deck cs-lead">Every home is priced at $4.50 per sq ft a month, the upper third of San Mateo rents. Zumper&rsquo;s average near the College of San Mateo was $4.26 in July 2026.</p>
             <figure class="cs-fig">
               <div class="plate">
                 <p class="plate-title"><span>Monthly rent</span><span>Against San Mateo 2-bed rents</span></p>
@@ -832,7 +833,7 @@
                   <p class="takeaway"><b>$5,760</b> for unit 2, above the 75th percentile for any 2-bed in the city.</p>
                 </div>
               </div>
-              <figcaption class="t-caption fig-cap"><b>Fig. 3</b> San Mateo 2-bed rents, January 2026. The upper-third figure is interpolated.</figcaption>
+              <figcaption class="t-caption fig-cap"><b>Fig. 3</b> San Mateo 2-bed rents, January 2026. The upper-third figure is interpolated. At $4.50 per sq ft, all five homes rent above it.</figcaption>
             </figure>
             <p class="cs-after-fig">Unit 2 is the weak point. Hold it to $5,000 a month and the project earns 6.1% a year on its cost instead of 6.4%.</p>
             <p>Small apartment buildings in San Mateo trade at roughly 4% to 5.5% cap rates. A cap rate is a year of a building&rsquo;s rent, after expenses, over its price, so at 5% a buyer pays 20 times what the building nets in a year. A similar duplex on the same block listed at $2.6M in June 2026.</p>
@@ -843,7 +844,7 @@
 <pre tabindex="0" role="group" aria-label="What it rents for, as JSON" data-fold-body><code class="json">"market": {
   "rent_basis": "upper_third",
   "rent_psf_month": 4.50,
-  "city_avg_psf": 4.26,
+  "area_avg_psf": 4.26,
   "two_bed": { "p25": 3225, "median": 3732, "p75": 4802 },
   "unit_rents": [4896, 5760, 4536, 4536, 4536],
   "cap_rate_range": [0.04, 0.055],
@@ -859,7 +860,7 @@
         <div class="wrap cs-grid">
           <div class="cs-main">
             <header class="cs-head"><span class="cs-n" aria-hidden="true">5</span><div><p class="cs-key">response.underwriting</p><h2 class="cs-h2" id="underwriting-h">The math for five homes</h2></div></header>
-            <p class="t-deck cs-lead">Buy at $1.58M, build three homes by right, rent all five.</p>
+            <p class="t-deck cs-lead">Say I buy the duplex for $1.58M, $400k under its estimated market value, build three homes by right, and rent all five.</p>
             <div class="cs-ledgers">
               <table class="cs-table">
                 <caption class="t-kicker">Income, per year</caption>
@@ -867,7 +868,7 @@
                   <tr><th scope="row">Gross rent</th><td class="n">$291,168</td></tr>
                   <tr class="is-neg"><th scope="row">Vacancy, 5%</th><td class="n">&minus;$14,558</td></tr>
                   <tr><th scope="row">Effective income</th><td class="n">$276,610</td></tr>
-                  <tr class="is-neg"><th scope="row">Property tax, 1.27%</th><td class="n">&minus;$38,435</td></tr>
+                  <tr class="is-neg"><th scope="row">Property tax, 1.27% of price plus build</th><td class="n">&minus;$38,435</td></tr>
                   <tr class="is-neg"><th scope="row">Insurance</th><td class="n">&minus;$10,000</td></tr>
                   <tr class="is-neg"><th scope="row">Repairs</th><td class="n">&minus;$9,000</td></tr>
                   <tr class="is-neg"><th scope="row">Water, sewer, trash</th><td class="n">&minus;$7,500</td></tr>
@@ -908,10 +909,10 @@
                   <div class="cs-drow"><span class="cs-dl">Construction loan</span><span class="cs-dt"><i style="left: 92.3%"></i></span><span class="cs-dv">9.0%</span></div>
                 </div>
                 <div class="cs-foot">
-                  <p class="takeaway"><b>0.9</b> points over the top cap rate, so the build creates value. It is under the loan rate, so on a hold, debt cuts the cash yield.</p>
+                  <p class="takeaway"><b>0.9</b> points over the top cap rate, so the build creates value. It is under the 6.75% permanent loan, so on a hold, each borrowed dollar costs more than it earns.</p>
                 </div>
               </div>
-              <figcaption class="t-caption fig-cap"><b>Fig. 4</b> Yield on cost is a year of net operating income over the all-in cost. Shaded: the cap rates small San Mateo apartment buildings trade at.</figcaption>
+              <figcaption class="t-caption fig-cap"><b>Fig. 4</b> Yield on cost is a year of net operating income over the all-in cost. With fees and interest: the same income over the $3.48M total project in Fig. 5. Shaded: the cap rates small San Mateo apartment buildings trade at.</figcaption>
             </figure>
             <p class="cs-after-fig">A 7.5% yield needs a purchase price near $1.21M. Above about $2.26M, the build creates no value at all.</p>
             <table class="cs-table cs-prices">
@@ -950,17 +951,17 @@
         <div class="wrap cs-grid">
           <div class="cs-main">
             <header class="cs-head"><span class="cs-n" aria-hidden="true">6</span><div><p class="cs-key">response.capital</p><h2 class="cs-h2" id="capital-h">If I raised it</h2></div></header>
-            <p class="t-deck cs-lead">Same deal with outside money. A construction loan at 65% of cost and 9%. Investors get an 8% preferred return first. After that they take 70% of the profit, and the GP, who runs the deal, takes 30%. Sell at month 24.</p>
+            <p class="t-deck cs-lead">Same deal with outside money. A construction loan covers 65% of the cost at 9%, and investors put in the rest. Everyone gets their money back plus an 8% preferred return first. Then the GP, who runs the deal, takes 30% of the profit, and the other 70% is split by what each put in. Sell at month 24 at a 5% cap rate.</p>
             <figure class="cs-fig">
               <div class="plate">
                 <p class="plate-title"><span>Capital stack</span><span>Month 0 to 24</span></p>
-                <div class="cs-stack" role="img" aria-label="Capital stack: loan $2.26M, investor equity $1.10M, sponsor equity $122k, total $3.48M">
+                <div class="cs-stack" role="img" aria-label="Capital stack: loan $2.26M, LP equity $1.10M, GP equity $122k, total $3.48M">
                   <div class="is-debt" style="width: 65%">Loan $2.26M</div>
                   <div class="is-lp" style="width: 31.5%">LPs $1.10M</div>
                   <div class="is-gp" style="width: 3.5%"></div>
                 </div>
                 <div class="cs-stack-key">
-                  <p><b>$3.48M</b>Total project, with a 4% developer fee, $40k of legal and setup, a $34k loan fee, and $224k of interest</p>
+                  <p><b>$3.48M</b>Total project: the $3.06M all-in cost plus a 4% developer fee, $40k of legal and setup, a $34k loan fee, and $224k of interest</p>
                   <p><b>$1.22M</b>Equity: $1.10M from LPs, $122k from the GP</p>
                 </div>
               </div>
@@ -972,7 +973,8 @@
               <li class="is-hot"><b>14.6<small>%</small></b><span class="t-folio">LP net IRR, 1.31&times;</span></li>
               <li><b>$237<small>k</small></b><span class="t-folio">GP take</span></li>
             </ul>
-            <p>IRR is the return per year. The LPs&rsquo; figure is after the GP&rsquo;s fee and promote, and 1.31&times; means they get $1.31 back for every $1 they put in. The GP take, $236,640, is a $122k developer fee, a $76k promote (the GP&rsquo;s 30% of the profit after the preferred return), and $38k earned on its own $122k. About half of it is fee.</p>
+            <p>The sale nets $3.77M after 4% in costs. Take away the $3.48M project, add $168k of rent collected before the sale, and the profit is $457k.</p>
+            <p>IRR is the return per year. Both IRRs are after the GP&rsquo;s fee. The LPs&rsquo; is also after the promote, and their 1.31&times; means they get $1.31 back for every $1 they put in. The GP take, $236,640, is a $122k developer fee, a $76k promote (the GP&rsquo;s 30% of the profit after the preferred return), and $38k earned on its own $122k. About half of it is fee.</p>
 
             <h3 class="t-kicker cs-h3">Minimum in for the GP</h3>
             <ul class="cs-list">
@@ -984,8 +986,9 @@
             <h3 class="t-kicker cs-h3">Where it breaks</h3>
             <ul class="cs-list">
               <li>A 5.5% exit cap drops the deal IRR to 4.6%.</li>
-              <li>Median rents, $4.00 per sq ft, turn the profit into a loss.</li>
-              <li>Hold and refinance: the bank lends about $2.02M against a $2.10M construction payoff. The GP adds $79k, and LPs earn about 3% cash.</li>
+              <li>At the $4.26 average rent, the deal IRR falls to 7.2%. At about $4.10, the profit is gone.</li>
+              <li>A build 10% over budget cuts the LPs to 9.3%.</li>
+              <li>Hold and refinance: at 6.75%, the rent supports a new loan of about $2.02M, but $2.10M is owed on the construction loan. That leaves $79k to cover, and LPs earn about 3% cash.</li>
             </ul>
 
             <figure class="cs-fig" id="priceFig">
@@ -1010,11 +1013,11 @@
               <div class="cs-code-bar fold-head"><h3>response.capital</h3><span aria-hidden="true">JSON</span></div>
 <pre tabindex="0" role="group" aria-label="If I raised it, as JSON" data-fold-body><code class="json">"capital": {
   "total_project": 3481377,
-  "loan": { "ltc": 0.65, "rate": 0.09, "amount": 2262895 },
+  "loan": { "ltc": 0.65, "rate": 0.09, "commitment": 2262895 },
   "equity": { "lp": 1096634, "gp": 121848 },
   "pref": 0.08,
-  "split": { "lp": 0.70, "gp": 0.30 },
-  "exit": { "month": 24, "cap": 0.05 },
+  "split": { "equity": 0.70, "gp": 0.30 },
+  "exit": { "month": 24, "cap": 0.05, "cost": 0.04 },
   "deal_irr": 0.172,
   "lp_irr": 0.146,
   "lp_multiple": 1.31,
@@ -1031,10 +1034,10 @@
           <div class="cs-main">
             <header class="cs-head"><span class="cs-n" aria-hidden="true">7</span><div><p class="cs-key">response.verdict</p><h2 class="cs-h2" id="verdict-h">The answer</h2></div></header>
             <ol class="cs-verdict">
-              <li class="cs-v"><span class="cs-badge is-pass" aria-hidden="true">Pass</span><h3>As a home<span class="visually-hidden">: pass</span></h3><p>Live in one unit and rent four. Net housing cost is about $6,100 a month at $1.58M.</p></li>
+              <li class="cs-v"><span class="cs-badge is-pass" aria-hidden="true">Pass</span><h3>As a home<span class="visually-hidden">: pass</span></h3><p>Live in unit 2 and rent the other four. Net of their rent, the owner pays about $6,100 a month at $1.58M, with 20% down at 6.5% and the build borrowed at 7.5%, both over 30 years. It passes because the finished homes are worth more than they cost.</p></li>
               <li class="cs-v"><span class="cs-badge is-review" aria-hidden="true">Thin</span><h3>As a sale<span class="visually-hidden">: thin</span></h3><p>17% deal IRR at $1.58M. Half a point on the exit cap erases most of it.</p></li>
-              <li class="cs-v"><span class="cs-badge is-pass" aria-hidden="true">Pass</span><h3>For outside capital, at $1.40M or less<span class="visually-hidden">: pass</span></h3><p>LPs net about 22% at $1.40M, and a refinance still hands back cash. They clear 15% up to about $1.56M, but past about $1.49M a refinance returns nothing.</p></li>
-              <li class="cs-v"><span class="cs-badge is-fail" aria-hidden="true">Fail</span><h3>As a hold<span class="visually-hidden">: fail</span></h3><p>At today&rsquo;s rates the new loan falls $79k short of paying off the construction loan, so no money goes back to investors, and they earn about 3% a year in cash.</p></li>
+              <li class="cs-v"><span class="cs-badge is-pass" aria-hidden="true">Pass</span><h3>For outside capital, at $1.40M or less<span class="visually-hidden">: pass</span></h3><p>Pass means LPs net 15% or more and a refinance could repay the construction loan. Both hold up to about $1.49M. At $1.40M, LPs net about 22%, and both still hold if the build runs 7% over.</p></li>
+              <li class="cs-v"><span class="cs-badge is-fail" aria-hidden="true">Fail</span><h3>As a hold<span class="visually-hidden">: fail</span></h3><p>At $1.58M, with the new loan at 6.75%, it falls $79k short of paying off the construction loan, so the refinance returns no capital. Investors earn about 3% a year in cash.</p></li>
             </ol>
             <div class="cs-close field-leaf"><p>The law already allows five homes here. The purchase price decides whether they get built. Next, the same call runs on every R3 lot in San Mateo, ranked by the price each one needs.<span class="end-mark" aria-hidden="true"></span></p></div>
           </div>
@@ -1042,12 +1045,12 @@
             <div class="cs-code" data-fold>
               <div class="cs-code-bar fold-head"><h3>response.verdict</h3><span aria-hidden="true">JSON</span></div>
 <pre tabindex="0" role="group" aria-label="The answer, as JSON" data-fold-body><code class="json">"verdict": {
+  "assumed_price": 1580000,
   "as_home": "pass",
   "as_sale": "thin",
   "outside_capital": "pass_at_or_below_1400000",
   "hold_and_refi": "fail",
-  "owner_occupant_monthly": 6138,
-  "max_price": { "home": 1580000, "raise": 1400000 }
+  "owner_occupant_monthly": 6138
 }</code></pre>
             </div>
           </div>
@@ -1129,8 +1132,8 @@
             <li><code>market.rents</code><span class="r">$4.50 per sq ft for the upper third. Cap rates of 4% to 5.5%.</span><span class="s t-note"><a href="https://www.zumper.com/rent-research/near-college-of-san-mateo-ca">Zumper</a> &middot; <a href="https://assets.rentometer.com/average-rent-in/ca/san-mateo-ca">Rentometer</a> &middot; <a href="https://rzadvisors.com/blog/rates-cap-rates-and-pricing-how-lower-borrowing-costs-can-reprice-bay-area-apartments">RZ Advisors</a></span></li>
             <li><code>cost.estimate</code><span class="r">$1.46M to build: garage ADU $275k, two <span class="cs-nw">2-story</span> ADUs at $475k each, $100k of refresh, 10% contingency.</span><span class="s t-note"><a href="https://rhinobuilders1989.com/adu-cost-in-the-bay-area/">Rhino Builders, Bay Area ADU costs</a></span></li>
             <li><code>underwrite.noi</code><span class="r">NOI of $196k on $3.06M all in, a 6.4% yield on cost.</span><span class="s t-note">Model on this page</span></li>
-            <li><code>capital.structure</code><span class="r">65% loan to cost at 9%, 8% preferred return, 70/30 split, sale at month 24.</span><span class="s t-note"><a href="https://angelinvestorsnetwork.com/real-estate/real-estate-syndication-structure-gp-lp-returns">Angel Investors Network</a> &middot; <a href="https://info.c-loans.com/video-training-lesson-the-net-worth-to-loan-size-ratio">C-Loans</a></span></li>
-            <li><code>verdict</code><span class="r">Works as a home at $1.58M. Works for outside capital at $1.40M or less.</span><span class="s t-note">See response.verdict</span></li>
+            <li><code>capital.structure</code><span class="r">65% loan to cost at 9% (assumed), 8% preferred return, 70/30 split, sale at month 24.</span><span class="s t-note"><a href="https://angelinvestorsnetwork.com/real-estate/real-estate-syndication-structure-gp-lp-returns">Angel Investors Network</a> &middot; <a href="https://info.c-loans.com/video-training-lesson-the-net-worth-to-loan-size-ratio">C-Loans</a></span></li>
+            <li><code>verdict</code><span class="r">Works as a home at $1.58M. Thin as a sale, fails as a hold. Works for outside capital at $1.40M or less.</span><span class="s t-note">See response.verdict</span></li>
           </ol>
         </div>
       </section>
@@ -1142,10 +1145,12 @@
           <div>
             <h2 class="t-kicker">Limits</h2>
             <ul>
-              <li>The lot size and footprint come from an aerial photo, not a survey.</li>
-              <li>Rents, costs, and cap rates are estimates from public sources as of mid 2026.</li>
+              <li>The lot shape and the building footprint come from an aerial photo, not a survey.</li>
+              <li>Rents, build costs, and cap rates are estimates from public sources checked in 2026. Operating costs, loan terms, and fees are assumptions.</li>
+              <li>The model re-rents units 1 and 2 at the new homes&rsquo; rate after the refresh. For tenants already there, state law may cap rent increases and limit evictions.</li>
               <li>San Mateo Planning would need to confirm ADU heights, tree limits, and parking for the third primary home.</li>
               <li>The renders are rough massing, not a design.</li>
+              <li>There is no public API. The playground runs the page&rsquo;s model in your browser.</li>
               <li>The street number and the end of the parcel number are withheld. The owner and tenants did not ask to be in a case study.</li>
             </ul>
           </div>
@@ -1155,7 +1160,7 @@
               <li><a href="https://law.cityofsanmateo.org/us/ca/cities/san-mateo/code/27.22.040">San Mateo Code 27.22.040, R3 density</a></li>
               <li><a href="https://law.cityofsanmateo.org/us/ca/cities/san-mateo/code/27.19.070">San Mateo Code 27.19.070, multifamily ADUs</a></li>
               <li><a href="https://www.smcgov.org/planning/sb-684sb-1123-small-lot-subdivision-and-housing-development">San Mateo County, SB 684 and SB 1123</a></li>
-              <li><a href="https://www.zumper.com/rent-research/near-college-of-san-mateo-ca">Zumper, San Mateo rents</a></li>
+              <li><a href="https://www.zumper.com/rent-research/near-college-of-san-mateo-ca">Zumper, rents near the College of San Mateo</a></li>
               <li><a href="https://assets.rentometer.com/average-rent-in/ca/san-mateo-ca">Rentometer, San Mateo rents by bedroom</a></li>
               <li><a href="https://rzadvisors.com/blog/rates-cap-rates-and-pricing-how-lower-borrowing-costs-can-reprice-bay-area-apartments">RZ Advisors, Bay Area cap rates</a></li>
               <li><a href="https://rhinobuilders1989.com/adu-cost-in-the-bay-area/">Rhino Builders, Bay Area ADU costs</a></li>
@@ -1222,7 +1227,8 @@
       const LTC = 0.65, LOAN_RATE = 0.09;                // construction loan: share of cost, rate
       const PERM_RATE = 0.0675;                          // permanent loan, on a refinance
       const DEV_FEE = 0.04, PREF = 0.08, SPLIT = 0.30;   // developer fee, LPs' preferred return, GP's promote after it
-      const GPC = 0.10, EXIT = 24;                       // GP's share of the equity, month of sale
+      const GPC = 0.10, EXIT = 24, SALE_COST = 0.04;     // GP's share of the equity, month of sale, cost of selling
+      const DOWN = 0.20, HOME_RATE = 0.065, BUILD_RATE = 0.075;   // owner-occupant: down payment, mortgage rate, rate on the build loan
 
       function pmt(principal, rate, months = 360) {
         const i = rate / 12;
@@ -1241,7 +1247,7 @@
       function ownerNet(p) {
         const buildAll = BUILD * p.cost * 1.1;
         const egi = (SF_TOTAL - SF[1]) * p.rent * 12 * 0.95;   // owner lives in home 2
-        return pmt(0.8 * p.price, 0.065) + pmt(buildAll, 0.075) + opex(p.price, egi, buildAll, false) / 12 - egi / 12;
+        return pmt((1 - DOWN) * p.price, HOME_RATE) + pmt(buildAll, BUILD_RATE) + opex(p.price, egi, buildAll, false) / 12 - egi / 12;
       }
       function irr(flows) {
         const f = r => flows.reduce((s, c, t) => s + c / Math.pow(1 + r, t), 0);
@@ -1282,7 +1288,7 @@
           ig = inte; commit = LTC * (usesSum + ig);
         }
         const value = noi / p.cap;
-        eqf[EXIT] += value * 0.96 - bal;                  // sale, 4% costs, repay the loan
+        eqf[EXIT] += value * (1 - SALE_COST) - bal;       // sale, less its costs, repays the loan
         const contrib = eqf.map(x => Math.max(-x, 0)), dist = eqf.map(x => Math.max(x, 0));
         const pr = Math.pow(1 + PREF, 1 / 12) - 1;
         const lp = new Array(EXIT + 1).fill(0), gp = new Array(EXIT + 1).fill(0);
@@ -1728,7 +1734,7 @@
           ins.cap.setAttribute('aria-valuetext', (p.cap * 100).toFixed(2) + '%');
           ins.cost.setAttribute('aria-valuetext', ins.cost.value + '% of the estimate');
           const u = underwrite(p), r = raiseModel(p), own = ownerNet(p);
-          const verdict = r.lpIrr >= 0.15 ? 'raise_ready' : u.created > 0 ? 'pencils_as_home' : 'does_not_pencil';
+          const verdict = r.lpIrr >= 0.15 && r.refiGap >= 0 ? 'raise_ready' : u.created > 0 ? 'pencils_as_home' : 'does_not_pencil';
           const out = {
             inputs: { price: p.price, rent_psf: p.rent, exit_cap: r4(p.cap), build_cost: Math.round(u.buildAll) },
             noi: Math.round(u.noi),
