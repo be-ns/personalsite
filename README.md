@@ -85,8 +85,8 @@ service-of-life.html
 memorial-preferences.html
 decision-assist.html
 writings.html              Poetry and prose
-resume.html                One-page resume on proof stock, with its five PDFs
-render-resume-pdf.js       Prints the five resume PDFs and checks them: one Letter page, the site's fonts, reading order
+resume.html                One-page resume on proof stock, with its six PDFs
+render-resume-pdf.js       Prints the six resume PDFs and checks them: one Letter page, the site's fonts, reading order
 assets/native-plants/      Static JSON datasets: plants, regions, nurseries, ZIP index
 images/                    The share cards (og-*.png, 1200x630) and the manifest's icons
 generate-og-images.js      Draws the share cards in headless Chrome with the site's own CSS and fonts (npm run generate-og)

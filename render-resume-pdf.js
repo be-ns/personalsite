@@ -1,10 +1,11 @@
-// Prints resume.html to the five downloadable PDFs (npm run generate-resume-pdf).
+// Prints resume.html to the six downloadable PDFs (npm run generate-resume-pdf).
 //
 //   ?version=proptech   Ben-Siverly-Resume-Proptech.pdf   the public one (site.json)
 //   ?version=payments   Ben-Siverly-Resume-Payments.pdf
 //   ?version=ai-native  Ben-Siverly-Resume-AI-Native.pdf
 //   ?version=general    Ben-Siverly-Resume.pdf
 //   ?version=clipboard  Ben-Siverly-Resume-Clipboard.pdf
+//   ?version=mixer      Ben_Siverly_Resume.pdf
 //
 // Serves the checkout over http so the page's own script picks the version,
 // then prints through the page's print CSS and its @page rule (Letter, the
@@ -48,6 +49,7 @@ const VERSIONS = [
   { q: 'ai-native', out: 'Ben-Siverly-Resume-AI-Native.pdf' },
   { q: 'general', out: 'Ben-Siverly-Resume.pdf' },
   { q: 'clipboard', out: 'Ben-Siverly-Resume-Clipboard.pdf' },
+  { q: 'mixer', out: 'Ben_Siverly_Resume.pdf' },
 ];
 
 // The families the sheet is set in, as the page loads them and as the PDF

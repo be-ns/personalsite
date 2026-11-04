@@ -3,11 +3,12 @@
 // The résumé on proof stock (redesign-plan.md, step 3). The redesign
 // retypeset it and changed none of its words: test/fixtures/resume-content.json
 // holds the text, links, emphasis, AppFolio lines and versions captured from
-// the page before the move, plus the Proptech and Clipboard sheets added
-// since, and this file holds the page to them. Three sheets share the
+// the page before the move, plus the Proptech, Clipboard and Mixer sheets
+// added since, and this file holds the page to them. Four sheets share the
 // markup: Proptech, the default, Payments, which the Payments, AI-Native and
-// General versions print, and Clipboard. An element's data-sheet names the
-// sheets it belongs to, with spaces between. The five PDFs are checked as files here (one Letter page, the site's faces only);
+// General versions print, Clipboard, and Mixer. An element's data-sheet
+// names the sheets it belongs to, with spaces between. The six PDFs are
+// checked as files here (one Letter page, the site's faces only);
 // render-resume-pdf.js checks them again as it writes them, with their
 // reading order, and check-browser.js prints every version.
 
