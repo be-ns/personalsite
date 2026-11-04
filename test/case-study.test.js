@@ -100,7 +100,7 @@ function model() {
   const to = script.indexOf('/* MODEL END */', from);
   assert.ok(to > from, 'the model closes with /* MODEL END */');
   const sandbox = { module: { exports: {} } };
-  const names = 'underwrite, ownerNet, raiseModel, opex, pmt, SF, TAX_RATE, FIXED, BUILDS, LTC, LOAN_RATE, PERM_RATE, DEV_FEE, PREF, SPLIT, GPC, EXIT, SALE_COST, DOWN, HOME_RATE, BUILD_RATE';
+  const names = 'underwrite, ownerNet, raiseModel, opex, pmt, SF, TAX_RATE, FIXED, BUILDS, LTC, LOAN_RATE, PERM_RATE, DEV_FEE, PREF, SPLIT, GPC, EXIT, SALE_COST, DOWN, HOME_RATE, BUILD_RATE, COVER';
   vm.runInNewContext(`'use strict';\n${script.slice(from, to)}\nmodule.exports = { ${names} };\n`, sandbox, { filename: `${PAGE} (model)` });
   return sandbox.module.exports;
 }
@@ -171,7 +171,7 @@ function compute() {
     over10: raiseModel({ ...CASE, cost: 1.1 }),
     // The most, in whole percent, the build can run over at the line with both bars still passing.
     room: (() => { let o = 0; while (o < 50 && passes(raiseModel({ ...CASE, price: LINE, cost: 1 + (o + 1) / 100 }))) o += 1; return o; })(),
-    // The sale after its costs, and the rent collected before it: less the total project, they make the profit.
+    // The sale after its costs, and the rent, net of expenses, collected before it: less the total project, they make the profit.
     saleNet: u.value * (1 - m.SALE_COST),
     rentBefore: r.profit - (u.value * (1 - m.SALE_COST) - r.total),
   };
@@ -247,12 +247,12 @@ test('the page prints the model\'s figures', () => {
   }
   // The same figures inside the sentences that carry them.
   const { lp15, refi0, loanFee, setup, coEarned, holdCash, unit2At5k, at140, capTop, atAvg, rentZero, over10, room, saleNet, rentBefore } = figures();
-  const { LTC, LOAN_RATE, PERM_RATE, PREF, SPLIT, GPC, EXIT, SALE_COST, DOWN, HOME_RATE, BUILD_RATE } = figures();
+  const { LTC, LOAN_RATE, PERM_RATE, PREF, SPLIT, GPC, EXIT, SALE_COST, DOWN, HOME_RATE, BUILD_RATE, COVER } = figures();
   const { interest, promote } = r;
-  const terms = `A construction loan covers ${whole(LTC)}% of the cost at ${whole(LOAN_RATE)}%, and investors put in the rest. Everyone gets their money back plus an ${whole(PREF)}% preferred return first. Then the GP, who runs the deal, takes ${whole(SPLIT)}% of the profit, and the other ${whole(1 - SPLIT)}% is split by what each put in. Sell at month ${EXIT} at a ${whole(CASE.cap)}% cap rate.`;
+  const terms = `A construction loan covers ${whole(LTC)}% of the total project cost at ${whole(LOAN_RATE)}%, and investors put in the rest. Everyone first gets their money back plus a preferred return of ${whole(PREF)}% a year. Then the GP, who runs the deal, takes ${whole(SPLIT)}% of what is left, and the other ${whole(1 - SPLIT)}% is split by what each put in. Sell at month ${EXIT} at a ${whole(CASE.cap)}% cap rate.`;
   const said = [
     ['the 15% line', usdM(step(lp15)), '$1.56M', `${usdM(step(lp15))} or less, and LPs clear the 15% bar`],
-    ['the line both bars hold to, in the verdict', usdM(step(refi0)), '$1.49M', `Both hold up to about ${usdM(step(refi0))}`],
+    ['the line both bars are true to, and the bar, in the verdict', usdM(step(refi0)), '$1.49M', `Both are true up to about ${usdM(step(refi0))}, but I set the bar at ${usdM(LINE)}`],
     ['the gap at a refinance', usdK(-r.refiGap), '$79k', `That leaves ${usdK(-r.refiGap)} to cover`],
     ['legal and setup', usdK(setup), '$40k', `${usdK(setup)} of legal and setup, a ${usdK(loanFee)} loan fee`],
     ['the loan fee', usdK(loanFee), '$34k', `a ${usdK(loanFee)} loan fee, and ${usdK(interest)} of interest`],
@@ -264,25 +264,26 @@ test('the page prints the model\'s figures', () => {
     ['the GP\'s co-invest earnings', usdK(coEarned), '$38k', `and ${usdK(coEarned)} earned on its own ${usdK(r.equity * 0.1)}`],
     ['the GP\'s co-invest', usdK(r.equity * GPC), '$122k', `Co-invest: ${usdK(r.equity * GPC)}, which is ${whole(GPC)}% of the equity`],
     ['the yield over the top cap rate', ((u.yoc - CAP_RANGE[1]) * 100).toFixed(1), '0.9', `${((u.yoc - CAP_RANGE[1]) * 100).toFixed(1)} points over the top cap rate`],
-    ['the raise\'s terms, in the deck', terms, 'A construction loan covers 65% of the cost at 9%, and investors put in the rest. Everyone gets their money back plus an 8% preferred return first. Then the GP, who runs the deal, takes 30% of the profit, and the other 70% is split by what each put in. Sell at month 24 at a 5% cap rate.', terms],
+    ['the raise\'s terms, in the deck', terms, 'A construction loan covers 65% of the total project cost at 9%, and investors put in the rest. Everyone first gets their money back plus a preferred return of 8% a year. Then the GP, who runs the deal, takes 30% of what is left, and the other 70% is split by what each put in. Sell at month 24 at a 5% cap rate.', terms],
     ['the deal IRR at the top cap rate', pct(capTop.dealIrr), '4.6%', `A ${whole(CAP_RANGE[1])}% exit cap drops the deal IRR to ${pct(capTop.dealIrr)}`],
     ['the deal IRR at the area\'s average rent', pct(atAvg.dealIrr), '7.2%', `At the $${AREA_AVG.toFixed(2)} average rent, the deal IRR falls to ${pct(atAvg.dealIrr)}`],
     ['the rent where the profit is gone', `$${rentZero.toFixed(2)}`, '$4.10', `At about $${rentZero.toFixed(2)}, the profit is gone`],
     ['the LPs with the build 10% over', pct(over10.lpIrr), '9.3%', `A build 10% over budget cuts the LPs to ${pct(over10.lpIrr)}`],
-    ['the refinance loan and what is owed', `${usdM(r.perm)} and ${usdM(r.loan)}`, '$2.02M and $2.10M', `at ${whole(PERM_RATE)}%, the rent supports a new loan of about ${usdM(r.perm)}, but ${usdM(r.loan)} is owed on the construction loan`],
+    ['the refinance loan and how it is sized', usdM(r.perm), '$2.02M', `a new 30-year loan at ${whole(PERM_RATE)}%, sized so rent after expenses covers its payments ${COVER} times, comes to about ${usdM(r.perm)}`],
+    ['what is drawn on the construction loan', `${usdM(r.loan)} of ${usdM(r.commit)}`, '$2.10M of $2.26M', `only ${usdM(r.loan)} of the ${usdM(r.commit)} construction loan is drawn by then`],
     ['the deal IRR, in the verdict', `${Math.round(r.dealIrr * 100)}%`, '17%', `${Math.round(r.dealIrr * 100)}% deal IRR at ${usdM(CASE.price)}`],
-    ['LPs at the line, in the verdict', `${Math.round(at140.lpIrr * 100)}%`, '22%', `At ${usdM(LINE)}, LPs net about ${Math.round(at140.lpIrr * 100)}%`],
-    ['the room at the line, in the verdict', String(room), '7', `both still hold if the build runs ${room}% over`],
+    ['LPs at the line, in the verdict', `${Math.round(at140.lpIrr * 100)}%`, '22%', `where LPs net about ${Math.round(at140.lpIrr * 100)}%`],
+    ['the room at the line, in the verdict', String(room), '7', `both stay true even if the build runs ${room}% over`],
     ['unit 2 held to $5,000', pct(unit2At5k), '6.1%', `the project earns ${pct(unit2At5k)} a year on its cost instead of ${pct(u.yoc)}`],
     ['the price over a year\'s net at a 5% cap', String(Math.round(u.value / u.noi)), '20', `at 5% a buyer pays ${Math.round(u.value / u.noi)} times what the building nets`],
-    ['cash on a hold, in the capital lists', `${Math.round(holdCash * 100)}%`, '3%', `LPs earn about ${Math.round(holdCash * 100)}% cash`],
+    ['cash on a hold, in the capital lists', `${Math.round(holdCash * 100)}%`, '3%', `LPs earn about ${Math.round(holdCash * 100)}% a year in cash`],
     ['cash on a hold, in the verdict', `${Math.round(holdCash * 100)}%`, '3%', `Investors earn about ${Math.round(holdCash * 100)}% a year in cash`],
     ['the hold\'s price and rate, in the verdict', `${usdM(CASE.price)} at ${whole(PERM_RATE)}%`, '$1.58M at 6.75%', `At ${usdM(CASE.price)}, with the new loan at ${whole(PERM_RATE)}%, it falls ${usdK(-r.refiGap)} short of paying off the construction loan`],
     ['the owner-occupant\'s terms, in the verdict', `${whole(DOWN)}% down at ${whole(HOME_RATE)}%, build at ${whole(BUILD_RATE)}%`, '20% down at 6.5%, build at 7.5%', `the owner pays about ${usd(Math.round(own / 100) * 100)} a month at ${usdM(CASE.price)}, with ${whole(DOWN)}% down at ${whole(HOME_RATE)}% and the build borrowed at ${whole(BUILD_RATE)}%, both over 30 years`],
     ['the case\'s price under the estimate', usdK(ESTIMATE - CASE.price), '$400k', `Say I buy the duplex for ${usdM(CASE.price)}, ${usdK(ESTIMATE - CASE.price)} under its estimated market value`],
-    ['the sale after its costs', usdM(saleNet), '$3.77M', `The sale nets ${usdM(saleNet)} after ${whole(SALE_COST)}% in costs`],
-    ['the profit, from the sale, the project and the rent', `${usdM(r.total)}, ${usdK(rentBefore)}, ${usdK(r.profit)}`, '$3.48M, $168k, $457k', `Take away the ${usdM(r.total)} project, add ${usdK(rentBefore)} of rent collected before the sale, and the profit is ${usdK(r.profit)}`],
-    ['the permanent loan, in Fig. 4\'s takeaway', `${whole(PERM_RATE)}%`, '6.75%', `It is under the ${whole(PERM_RATE)}% permanent loan`],
+    ['the sale after its costs', usd(saleNet), '$3,769,811', `The sale nets ${usd(saleNet)} after ${whole(SALE_COST)}% in costs`],
+    ['the profit, from the sale, the project and the rent', `${usd(r.total)}, ${usd(rentBefore)}, ${usd(r.profit)}`, '$3,481,377, $168,141, $456,575', `Take away the ${usd(r.total)} project, add ${usd(rentBefore)} of rent net of expenses before the sale, and the profit is ${usd(r.profit)}`],
+    ['the permanent loan, in Fig. 4\'s takeaway', `${whole(PERM_RATE)}%`, '6.75%', `The yield is under the ${whole(PERM_RATE)}% permanent loan rate`],
     ['the total project, in Fig. 4\'s caption', usdM(r.total), '$3.48M', `With fees and interest: the same income over the ${usdM(r.total)} total project in Fig. 5`],
     ['the area\'s average rent, in the market deck', `$${AREA_AVG.toFixed(2)}`, '$4.26', `Zumper’s average near the College of San Mateo was $${AREA_AVG.toFixed(2)} in July 2026`],
   ];
@@ -290,6 +291,8 @@ test('the page prints the model\'s figures', () => {
     assert.equal(made, want, `the model gives ${what} as ${made}`);
     assert.ok(text.includes(sentence), `the page says ${what}: "${sentence}"`);
   }
+  // The profit walk adds up to the dollar, as printed.
+  assert.equal(Math.round(saleNet) - Math.round(r.total) + Math.round(rentBefore), Math.round(r.profit), 'the printed sale, less the project, plus the rent, is the printed profit');
 });
 
 test('Fig. 6\'s label gives the model\'s LP return at each price it names', () => {
@@ -335,7 +338,7 @@ test('the underwriting ledgers and Fig. 4 are the model\'s, line by line', () =>
   line('Gross rent', gross);
   line('Vacancy, 5%', -0.05 * gross);
   line('Effective income', u.egi);
-  line(`Property tax, ${(TAX_RATE * 100).toFixed(2)}% of price plus build`, -tax);
+  line(`Property tax, about ${(TAX_RATE * 100).toFixed(2)}% of price plus build`, -tax);
   line('Management, 5%', -mgmt);
   line('Net operating income (NOI)', u.noi);
   line('Insurance', -FIXED.insurance);
@@ -481,7 +484,7 @@ test('the tiles, Fig. 5 and the price table are the model\'s', () => {
     return [figure, flat(p).slice(figure.length).trim()];
   });
   assert.deepEqual(keyLines, [
-    [usdM(r.total), `Total project: the ${usdM(u.allIn)} all-in cost plus a ${whole(DEV_FEE)}% developer fee, ${usdK(setup)} of legal and setup, a ${usdK(loanFee)} loan fee, and ${usdK(r.interest)} of interest`],
+    [usdM(r.total), `Total project: ${usdM(u.allIn)} to buy and build, plus a ${whole(DEV_FEE)}% developer fee, ${usdK(setup)} of legal and setup, a ${usdK(loanFee)} loan fee, and ${usdK(r.interest)} of interest`],
     [usdM(r.equity), `Equity: ${usdM(lp)} from LPs, ${usdK(gp)} from the GP`],
   ], 'Fig. 5\'s key is the model\'s');
   // What the price does: each row's all-in cost, NOI and yield at that price, starting from the case.
