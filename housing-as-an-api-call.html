@@ -573,7 +573,7 @@
               <p class="t-kicker">Case study &middot; San Mateo, California</p>
               <h1>Housing as an API call</h1>
               <p class="t-deck">One address in. Out: five homes by right where two stand today, and whether the money works. I ran the call with an AI research agent, from the zoning code to the investor returns.</p>
-              <p class="t-byline">By Ben Siverly &middot; November 2026 &middot; <span data-read="cs-body">11</span> min read</p>
+              <p class="t-byline">By Ben Siverly &middot; November 2026 &middot; <span data-read="cs-body">12</span> min read</p>
             </div>
             <figure class="cs-band-aside">
               <div class="art"><svg viewBox="330 40 240 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#art-street" width="1200" height="280"/></svg></div>
@@ -652,9 +652,8 @@
               <div><dt class="t-folio">Homes</dt><dd>2 units, 2 bd / 1.5 ba each</dd></div>
               <div><dt class="t-folio">Living area</dt><dd>About 2,400 sq ft</dd></div>
               <div><dt class="t-folio">Garages</dt><dd>Two 2-car, attached</dd></div>
-              <div><dt class="t-folio">Last sale</dt><dd>$920,000 in 2009</dd></div>
-              <div><dt class="t-folio">Assessed, 2025</dt><dd>$1,211,292</dd></div>
-              <div><dt class="t-folio">Property tax, 2025</dt><dd>$15,327</dd></div>
+              <div><dt class="t-folio">Last sale</dt><dd>2009</dd></div>
+              <div><dt class="t-folio">Property tax, 2025</dt><dd>About 1.27% of assessed value</dd></div>
               <div><dt class="t-folio">Market value, est.</dt><dd>$1.98M ($1.88M to $2.28M)</dd></div>
             </dl>
             <p class="t-note cs-after">The county records 3,370 sq ft. A real estate site gives 2,400 living. The difference is about the size of two 2-car garages. The lot shape comes from an aerial photo, so it is an estimate. Flood and fire risk are minimal.</p>
@@ -672,9 +671,8 @@
   "units": 2,
   "garages": 2,
   "living_sq_ft": 2400,
-  "assessed_2025": 1211292,
-  "tax_2025": 15327,
-  "last_sale": { "year": 2009, "price": 920000 },
+  "tax_rate_2025": 0.0127,
+  "last_sale_year": 2009,
   "estimate": {
     "low": 1880000, "value": 1980000, "high": 2280000
   }
@@ -973,8 +971,8 @@
               <li class="is-hot"><b>14.6<small>%</small></b><span class="t-folio">LP net IRR, 1.31&times;</span></li>
               <li><b>$237<small>k</small></b><span class="t-folio">GP take</span></li>
             </ul>
-            <p>The profit starts from the $866k of value created. Selling costs of 4% take $157k, and fees and interest take $420k. Rent net of expenses before the sale adds back $168k, which leaves $457k.</p>
-            <p>IRR is the return per year. The deal IRR is the return on all the equity, LPs and GP together. Both IRRs are after the GP&rsquo;s fee. The LPs&rsquo; is also after the promote, and their 1.31&times; means they get $1.31 back for every $1 they put in. The GP take, $236,640, is a $122k developer fee, a $76k promote (the GP&rsquo;s 30% of the profit after the preferred return), and $38k earned on its own $122k. About half of it is fee.</p>
+            <p>The profit starts from the $866k of value created. Selling costs, 4% of the $3.93M sale price, take $157k, and fees and interest take $420k. Rent net of expenses before the sale adds back $168k, which leaves $457k.</p>
+            <p>IRR is the return per year. The deal IRR is the return on all the equity, LPs and GP together. Both IRRs are after the GP&rsquo;s fee. The LPs&rsquo; is also after the promote, and their 1.31&times; means they get $1.31 back for every $1 they put in. The GP take, $236,640, is a $122k developer fee, a $76k promote (the GP&rsquo;s 30% of the profit after the preferred return), and $38k earned on its 10% share of the equity. About half of it is fee.</p>
 
             <h3 class="t-kicker cs-h3">Minimum in for the GP</h3>
             <ul class="cs-list">
@@ -986,9 +984,10 @@
             <h3 class="t-kicker cs-h3">Where it breaks</h3>
             <ul class="cs-list">
               <li>A 5.5% exit cap drops the deal IRR to 4.6%.</li>
+              <li>A buyer&rsquo;s property tax resets to about 1.27% of their price, about $9k a year more than the $38k here, so a 5% cap pays about $3.75M and the deal IRR falls to 11.0%.</li>
               <li>At the $4.26 average rent, the deal IRR falls to 7.2%. At about $4.10, the profit is gone.</li>
               <li>A build 10% over budget cuts the LPs to 9.3%.</li>
-              <li>If units 1 and 2 keep paying the $8,000 a month the model collects from them during the build, the yield falls to 5.5% and the sale loses $107k.</li>
+              <li>If units 1 and 2 keep paying the $8,000 a month the model collects from them during the build, the yield falls to 5.5% and the $457k profit becomes a $107k loss.</li>
               <li>Hold and refinance: a new 30-year loan at 6.75%, sized so rent after expenses covers its payments 1.25 times, comes to about $2.02M. Rent through month 24 pays most of the construction loan&rsquo;s interest, so only $2.10M of the $2.26M loan is drawn. Repaying that $2.10M with the new loan leaves $79k to cover, and LPs earn about 3% a year in cash.</li>
             </ul>
 
@@ -1148,7 +1147,7 @@
             <ul>
               <li>The lot shape and the building footprint come from an aerial photo, not a survey.</li>
               <li>Rents, build costs, and cap rates are estimates from public sources checked in 2026. Operating costs, loan terms, and fees are assumptions.</li>
-              <li>The model re-rents units 1 and 2 at the new homes&rsquo; rate after the refresh. For tenants already there, state law may cap rent increases, and state and city rules may limit evictions.</li>
+              <li>The model re-rents units 1 and 2 at the new homes&rsquo; rate after the refresh, and the home plan puts the owner in unit 2. For tenants already there, state law may cap rent increases, and state and city rules may limit evictions.</li>
               <li>San Mateo Planning would need to confirm ADU heights, tree limits, and parking for the third primary home.</li>
               <li>The renders are rough massing, not a design.</li>
               <li>There is no public API. The playground runs the page&rsquo;s model in your browser.</li>
@@ -1221,7 +1220,7 @@
       /* MODEL START: the deal math behind every number on this page */
       const SF = [1088, 1280, 1008, 1008, 1008];        // homes 1 to 5
       const SF_TOTAL = SF.reduce((a, b) => a + b, 0);
-      const TAX_RATE = 15327 / 1211292;                  // 2025 bill / 2025 assessed value
+      const TAX_RATE = 0.01265343121229233;             // the 2025 tax bill over the 2025 assessed value
       const FIXED = { insurance: 10000, repairs: 9000, utilities: 7500, reserves: 1500 };   // a year
       const BUILDS = { garage: 275000, adus: 950000, refresh: 100000 };                       // garage ADU, two 2-story ADUs, refresh units 1 and 2
       const BUILD = BUILDS.garage + BUILDS.adus + BUILDS.refresh;

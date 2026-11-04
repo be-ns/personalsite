@@ -7,7 +7,8 @@
 //      or not, carries a numbered address on Hobart, a whole parcel number
 //      on the same page of the county map, or the name of the listing site
 //      the draft linked. The checks are patterns, so this file never needs
-//      the real ones.
+//      the real ones. The parcel prints no exact sale price, assessed value
+//      or tax bill, which beside the street would find the house.
 //   2. The numbers are the model's. The page's own deal math, the inline
 //      script between its /* MODEL START and /* MODEL END */ comments, runs
 //      here in node:vm on the case and gives every figure the page prints:
@@ -80,6 +81,17 @@ test('no file in the repo names the street number, the whole parcel number or th
     assert.ok(!LISTING.test(text), `${name} names the listing site`);
   }
   assert.ok(read > 50, `${read} text files read`);
+});
+
+test('the parcel gives no exact sale price, assessed value or tax bill', () => {
+  const html = page();
+  const sec = findAll(parseHtml(html), (el) => el.attrs.id === 'parcel')[0];
+  assert.ok(sec, `${PAGE} has #parcel`);
+  const facts = findAll(sec, (el) => el.tag === 'dd').map(flat);
+  assert.ok(facts.length >= 10, `the parcel lists its facts (${facts.length})`);
+  assert.ok(facts.every((d) => !d.includes('$') || d.startsWith('$1.98M')), `no dollar figure but the estimate: ${facts.join(' | ')}`);
+  assert.doesNotMatch(flat(sec), /"(assessed|tax)_20\d\d"|"price":/, 'the parcel JSON carries no assessed value, tax bill or sale price');
+  assert.match(html, /const TAX_RATE = 0\.\d+;/, 'the model carries the tax rate, not the bill and the assessment behind it');
 });
 
 test('the page masks the address in its source, not at run time', () => {
@@ -180,6 +192,8 @@ function compute() {
     saleCost: u.value * m.SALE_COST,
     feesInt: r.total - u.allIn,
     // Units 1 and 2 kept at what they pay while the build runs; the three ADUs at the case's rent.
+    // A buyer's tax resets to the rate on what they pay, so a 5% cap on the buyer's net prices the sale lower.
+    buyer: (() => { const tax = TAX_RATE * (CASE.price + u.buildAll), value = (u.noi + tax) / (CASE.cap + TAX_RATE); return { value, extra: TAX_RATE * value - tax, r: raiseModel({ ...CASE, cap: u.noi / value }) }; })(),
     heldOld: (() => { const rent = ((SF[2] + SF[3] + SF[4]) * CASE.rent + m.OLD_RENT / 12) / sfTotal; return { u: underwrite({ ...CASE, rent }), r: raiseModel({ ...CASE, rent }) }; })(),
     // Cash a year on a hold at the line, on all the equity and on what the refinance leaves in.
     holdCashLine: (() => { const at = raiseModel({ ...CASE, price: LINE }), cash = underwrite({ ...CASE, price: LINE }).noi - 12 * pmt(at.perm, PERM_RATE); return [cash / at.equity, cash / (at.equity - Math.max(at.refiGap, 0))]; })(),
@@ -255,7 +269,7 @@ test('the page prints the model\'s figures', () => {
     assert.ok(text.includes(want), `the page prints ${what} as ${want}`);
   }
   // The same figures inside the sentences that carry them.
-  const { lp15, refi0, loanFee, setup, coEarned, holdCash, unit2At5k, at140, capTop, atAvg, rentZero, over10, room, rentBefore, saleCost, feesInt, heldOld, holdCashLine, underwrite } = figures();
+  const { lp15, refi0, loanFee, setup, coEarned, holdCash, unit2At5k, at140, capTop, atAvg, rentZero, over10, room, rentBefore, saleCost, feesInt, heldOld, holdCashLine, underwrite, buyer, TAX_RATE, tax } = figures();
   const { LTC, LOAN_RATE, PERM_RATE, PREF, SPLIT, GPC, EXIT, SALE_COST, DOWN, HOME_RATE, BUILD_RATE, COVER, BUILD_FROM, BUILD_TO, LEASED, OLD_RENT } = figures();
   const { interest, promote } = r;
   const terms = `A construction loan covers ${whole(LTC)}% of the total project cost at ${whole(LOAN_RATE)}%, and investors put in the rest. Everyone first gets their money back plus a preferred return of ${whole(PREF)}% a year. Then the GP, who runs the deal, takes ${whole(SPLIT)}% of what is left, and the other ${whole(1 - SPLIT)}% is split by what each put in. The build runs months ${BUILD_FROM} to ${BUILD_TO}, the homes fill over months ${BUILD_TO + 1} to ${LEASED - 1}, and the building sells at month ${EXIT} at a ${whole(CASE.cap)}% cap rate.`;
@@ -270,7 +284,7 @@ test('the page prints the model\'s figures', () => {
     ['the GP take, exact', usd(r.gpTake), '$236,640', `The GP take, ${usd(r.gpTake)}, is a`],
     ['the developer fee', usdK(r.fee), '$122k', `is a ${usdK(r.fee)} developer fee`],
     ['the promote', usdK(promote), '$76k', `a ${usdK(promote)} promote (the GP’s 30% of the profit after the preferred return)`],
-    ['the GP\'s co-invest earnings', usdK(coEarned), '$38k', `and ${usdK(coEarned)} earned on its own ${usdK(r.equity * 0.1)}`],
+    ['the GP\'s co-invest earnings', usdK(coEarned), '$38k', `and ${usdK(coEarned)} earned on its ${whole(GPC)}% share of the equity`],
     ['the GP\'s co-invest', usdK(r.equity * GPC), '$122k', `Co-invest: ${usdK(r.equity * GPC)}, which is ${whole(GPC)}% of the equity`],
     ['the yield over the top cap rate', ((u.yoc - CAP_RANGE[1]) * 100).toFixed(1), '0.9', `${((u.yoc - CAP_RANGE[1]) * 100).toFixed(1)} points over the top cap rate`],
     ['the raise\'s terms, in the deck', terms, 'A construction loan covers 65% of the total project cost at 9%, and investors put in the rest. Everyone first gets their money back plus a preferred return of 8% a year. Then the GP, who runs the deal, takes 30% of what is left, and the other 70% is split by what each put in. The build runs months 7 to 18, the homes fill over months 19 to 21, and the building sells at month 24 at a 5% cap rate.', terms],
@@ -287,11 +301,12 @@ test('the page prints the model\'s figures', () => {
     ['the price over a year\'s net at a 5% cap', String(Math.round(u.value / u.noi)), '20', `at 5% a buyer pays ${Math.round(u.value / u.noi)} times what the building nets`],
     ['cash on a hold, in the capital lists', `${Math.round(holdCash * 100)}%`, '3%', `LPs earn about ${Math.round(holdCash * 100)}% a year in cash`],
     ['cash on a hold, in the verdict', `${Math.round(holdCash * 100)}%`, '3%', `Investors earn about ${Math.round(holdCash * 100)}% a year in cash, and under 4% even at ${usdM(LINE)}`],
-    ['units 1 and 2 at their old rent', `${usd(OLD_RENT / 12)}, ${pct(heldOld.u.yoc)}, ${usdK(-heldOld.r.profit)}`, '$8,000, 5.5%, $107k', `If units 1 and 2 keep paying the ${usd(OLD_RENT / 12)} a month the model collects from them during the build, the yield falls to ${pct(heldOld.u.yoc)} and the sale loses ${usdK(-heldOld.r.profit)}`],
+    ['units 1 and 2 at their old rent', `${usd(OLD_RENT / 12)}, ${pct(heldOld.u.yoc)}, ${usdK(-heldOld.r.profit)}`, '$8,000, 5.5%, $107k', `If units 1 and 2 keep paying the ${usd(OLD_RENT / 12)} a month the model collects from them during the build, the yield falls to ${pct(heldOld.u.yoc)} and the ${usdK(r.profit)} profit becomes a ${usdK(-heldOld.r.profit)} loss`],
+    ['a buyer\'s reassessed tax', `${usdK(buyer.extra)}, ${usdM(buyer.value)}, ${pct(buyer.r.dealIrr)}`, '$9k, $3.75M, 11.0%', `A buyer’s property tax resets to about ${(TAX_RATE * 100).toFixed(2)}% of their price, about ${usdK(buyer.extra)} a year more than the ${usdK(tax)} here, so a ${whole(CASE.cap)}% cap pays about ${usdM(buyer.value)} and the deal IRR falls to ${pct(buyer.r.dealIrr)}`],
     ['the hold\'s price and rate, in the verdict', `${usdM(CASE.price)} at ${whole(PERM_RATE)}%`, '$1.58M at 6.75%', `At ${usdM(CASE.price)}, with the new loan at ${whole(PERM_RATE)}%, it falls ${usdK(-r.refiGap)} short of paying off the construction loan`],
     ['the owner-occupant\'s terms, in the verdict', `${whole(DOWN)}% down at ${whole(HOME_RATE)}%, build at ${whole(BUILD_RATE)}%`, '20% down at 6.5%, build at 7.5%', `the owner pays about ${usd(Math.round(own / 100) * 100)} a month at ${usdM(CASE.price)}, with ${whole(DOWN)}% down at ${whole(HOME_RATE)}% and the build borrowed at ${whole(BUILD_RATE)}%, both over 30 years`],
     ['the case\'s price under the estimate', usdK(ESTIMATE - CASE.price), '$400k', `Say I buy the duplex for ${usdM(CASE.price)}, ${usdK(ESTIMATE - CASE.price)} under its estimated market value`],
-    ['the profit, from the value created', `${usdK(u.created)}, ${usdK(saleCost)}, ${usdK(feesInt)}, ${usdK(rentBefore)}, ${usdK(r.profit)}`, '$866k, $157k, $420k, $168k, $457k', `The profit starts from the ${usdK(u.created)} of value created. Selling costs of ${whole(SALE_COST)}% take ${usdK(saleCost)}, and fees and interest take ${usdK(feesInt)}. Rent net of expenses before the sale adds back ${usdK(rentBefore)}, which leaves ${usdK(r.profit)}.`],
+    ['the profit, from the value created', `${usdK(u.created)}, ${usdK(saleCost)}, ${usdK(feesInt)}, ${usdK(rentBefore)}, ${usdK(r.profit)}`, '$866k, $157k, $420k, $168k, $457k', `The profit starts from the ${usdK(u.created)} of value created. Selling costs, ${whole(SALE_COST)}% of the ${usdM(u.value)} sale price, take ${usdK(saleCost)}, and fees and interest take ${usdK(feesInt)}. Rent net of expenses before the sale adds back ${usdK(rentBefore)}, which leaves ${usdK(r.profit)}.`],
     ['the block\'s listing, at this lot', String(underwrite({ ...CASE, price: COMP }).created < 0), 'true', 'listed at $2.6M in June 2026. At that price, these five homes would be worth less than they cost.'],
     ['the permanent loan, in Fig. 4\'s takeaway', `${whole(PERM_RATE)}%`, '6.75%', `The yield is under the ${whole(PERM_RATE)}% permanent loan rate`],
     ['the total project, in Fig. 4\'s caption', usdM(r.total), '$3.48M', `With fees and interest: the same income over the ${usdM(r.total)} total project in Fig. 5`],
@@ -513,12 +528,12 @@ test('the tiles, Fig. 5 and the price table are the model\'s', () => {
 });
 
 test('the JSON plates print the model\'s numbers, to the places they show', () => {
-  const { u, r, own, yield75, zero } = figures();
+  const { u, r, own, yield75, zero, TAX_RATE } = figures();
   const KEYS = {
     gross_rent: u.egi / 0.95, noi: u.noi, all_in_cost: u.allIn, yield_on_cost: u.yoc, value_at_5_cap: u.value,
     value_created: u.created, price_for_7_5_yield: yield75, price_for_zero_value: zero, total_project: r.total,
     deal_irr: r.dealIrr, lp_irr: r.lpIrr, lp_multiple: r.lpMult, gp_take: r.gpTake, refi_gap: r.refiGap,
-    owner_occupant_monthly: own, assumed_price: CASE.price, rent_psf_month: CASE.rent, area_avg_psf: AREA_AVG, block_comp_ask: COMP,
+    owner_occupant_monthly: own, assumed_price: CASE.price, rent_psf_month: CASE.rent, area_avg_psf: AREA_AVG, block_comp_ask: COMP, tax_rate_2025: TAX_RATE,
   };
   const seen = new Set();
   for (const [, key, num] of shown().matchAll(/"([a-z0-9_]+)":\s*(-?\d+(?:\.\d+)?)/g)) {
